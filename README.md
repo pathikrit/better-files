@@ -40,24 +40,26 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
 **TODO**
-touch
-extractors
-permissions
-createIfNotExists
-File.temp()
-name(excludeExtension = true)
-parent or '..'
-extension
-file.lines
-copy 
-move
-watch
-contentEquals
-size
-delete (rmdir)
-list()
-glob()
-checkSum
-all above works for dirs too
-code coverage
-version-eye
+* extractors: http://stackoverflow.com/questions/32518393
+* touch
+* createIfNotExists
+* readAttributes incl. lastModifiedTime, owner, permissions, contentType, hidden?
+* File.temp()
+* name(excludeExtension = true)
+* parent or '..'
+* extension
+* file.lines
+* copyTo 
+* moveTo
+* watch
+* contentEquals
+* size
+* delete - true, false, nosuchfile?
+* list()
+* glob()
+* checkSum
+* all above works for dirs too
+
+* code coverage
+* version-eye
+* doc

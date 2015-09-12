@@ -15,7 +15,7 @@ package object files {
 
     def /(child: String): File = new JFile(file, child)
 
-    def append(lines: String*): File = Files.write(this, lines, APPEND, CREATE)
+    def append(lines: String*): File = Files.write(this, lines.toSeq, APPEND, CREATE)
     def <<(line: String): File = append(line)
 
     def write(text: String): File = Files.write(this, text)
@@ -24,6 +24,47 @@ package object files {
 
     def contents: Array[Byte] = Files.readAllBytes(this)
     def contents(charset: Charset = Charset.defaultCharset()): String = new String(contents, charset)
+
+    /**
+     * @return Some(target) if this is a symbolic link (to target) else None
+     */
+    def symLink: Option[File] = when(Files.isSymbolicLink(this))(Files.readSymbolicLink(this))
+
+    /**
+     * @return true if this file (or the file found by following symlink) is a directory
+     */
+    def isDirectory: Boolean = Files.isDirectory(this)
+
+    /**
+     * @return true if this file (or the file found by following symlink) is a regular file
+     */
+    def isRegularFile: Boolean = Files.isRegularFile(this)
+
+    override def toString = path.toString
+  }
+
+  object File {
+    /**
+     * A trait to capture various file types
+     * Note: A file may not fall into any of these types e.g. UNIX pipes, sockets, devices etc
+     * @see https://en.wikipedia.org/wiki/Unix_file_types
+     */
+    sealed trait Type
+
+    case class RegularFile(contents: Array[Byte]) extends Type
+    object RegularFile {
+      def unapply(file: File): Option[RegularFile] = when(file.isRegularFile)(RegularFile(file.contents))
+    }
+
+    case class Directory(children: Seq[File]) extends Type
+    object Directory {
+      def unapply(file: File): Option[Directory] = when(file.isDirectory)(Directory(file.listFiles().map(f => new File(f))))
+    }
+
+    case class SymbolicLink(to: File) extends Type
+    object SymbolicLink {
+      def unapply(file: File): Option[SymbolicLink] = file.symLink map SymbolicLink.apply
+    }
   }
 
   /**
@@ -56,4 +97,5 @@ package object files {
   implicit def javaPathToFile(path: JPath): File = pathToFile(path)
 
   private[this] implicit def stringToBytes(s: String): Array[Byte] = s.getBytes
+  private[this] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }

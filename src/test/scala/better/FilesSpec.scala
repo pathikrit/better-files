@@ -40,6 +40,16 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     val f2: File = root / "User" / "johndoe" / "Documents"
     val f3: File = home / "Documents"
     val f4: File = new java.io.File("/User/johndoe/Documents")
+    val f5: File = "src" / "test"
+  }
+
+  "file types" can "be matched" in {
+    a1 match {
+      case File.Directory(children) =>
+    }
+    /*a11 match {
+      case File.RegularFile(text) =>
+    }*/
   }
 
   it should "do basic I/O" in {
