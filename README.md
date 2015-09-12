@@ -21,13 +21,13 @@ val f4: File = new java.io.File("/User/johndoe/Documents")
 **I/O**: Dead simple I/O:
 ```scala
 val file = root / "tmp" / "test.txt"
-file < "hello"    // file.overwrite("hello")
-file << "world"   // file.append("world")
+file < "hello"    // file.overwrite("hello") if you don't like symbols
+file << "world"   // file.append("world") if you don't like symbols
 assert(file.contents() == "hello\nworld")
 ```
 All operations are chainable e.g.
 ```scala
-assert((file << "hello" << "world").contents() == "hello\nworld\n")
+assert((file < "hello" << "world").contents() == "hello\nworld\n")
 ```
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
@@ -38,3 +38,26 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
+
+**TODO**
+touch
+extractors
+permissions
+createIfNotExists
+File.temp()
+name(excludeExtension = true)
+parent or '..'
+extension
+file.lines
+copy 
+move
+watch
+contentEquals
+size
+delete (rmdir)
+list()
+glob()
+checkSum
+all above works for dirs too
+code coverage
+version-eye
