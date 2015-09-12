@@ -1,5 +1,0 @@
-package better
-
-object Files {
-
-}
