@@ -50,7 +50,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   "file types" can "be matched" in {
-    file"src/test/foo" match {
+    "src" / "test" / "foo" match {
       case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
       case Directory(children) => fail()
       case RegularFile(contents) => fail()

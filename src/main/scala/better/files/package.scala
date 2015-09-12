@@ -23,7 +23,7 @@ package object files {
     val >>: = << _
 
     def write(text: String): File = Files.write(javaPath, text)
-    val overwrite = write _
+    val overwrite = write _       //TODO: Method alias macro
     val < = write _
     val `>:` = write _
 
@@ -92,7 +92,7 @@ package object files {
   }
 
   implicit def pathToFile(path: Path): File = path.toFile
-  implicit def javaToFile(file: JFile): File = File(file)
+  implicit def javaToFile(file: JFile): File = File(file)           //TODO: Iso implicits
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
   private[this] implicit def stringToBytes(s: String): File.Contents = s.getBytes
