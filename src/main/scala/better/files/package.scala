@@ -53,6 +53,9 @@ package object files {
   }
 
   object File {
+    def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
+    def newTempFile(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
+
     def apply(path: String): File = path.toFile
 
     type Contents = Array[Byte]

@@ -1,7 +1,7 @@
 better-files 
 ---
 [![Circle CI](https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb)](https://circleci.com/gh/pathikrit/better-files)
-[![Codacy](https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1)](https://www.codacy.com) 
+[![Codacy](https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1)](https://www.codacy.com/app/pathikrit/better-files/dashboard) 
 [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
 
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
@@ -73,6 +73,9 @@ file.delete     // unlike the Java API, also works on directories as expected
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
+
+File.newTempDir()
+File.newTempFile()
 ```
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
@@ -85,7 +88,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
 **TODO**
-* File.temp()
 * parent or '..'
 * watch
 * contentEquals

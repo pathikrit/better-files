@@ -2,12 +2,12 @@ package better
 
 import better.files._
 
-import java.nio.file.{Files, NoSuchFileException}
+import java.nio.file.NoSuchFileException
 
 import org.scalatest._
 
 class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
-  val testRoot: File = Files.createTempDirectory("better-files")
+  val testRoot = File.newTempDir("better-files")
 
   /**
    * Setup the following directory structure under root
