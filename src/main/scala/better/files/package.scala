@@ -1,8 +1,8 @@
 package better
 
 import java.io.{File => JFile}
-import java.nio.charset.Charset
-import java.nio.file.{Path => JPath, StandardOpenOption, Files, Paths}, StandardOpenOption._
+import java.nio.charset.Charset, Charset.defaultCharset
+import java.nio.file.{Path => JPath, StandardOpenOption, Files, Paths}
 
 import scala.collection.JavaConversions._
 
@@ -15,7 +15,7 @@ package object files {
 
     def /(child: String): File = new JFile(file, child)
 
-    def append(lines: String*): File = Files.write(this, lines.toSeq, APPEND, CREATE)
+    def append(lines: String*): File = Files.write(this, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String): File = append(line)
 
     def write(text: String): File = Files.write(this, text)
@@ -23,7 +23,7 @@ package object files {
     val < = write _  //TODO: use method alias
 
     def contents: Array[Byte] = Files.readAllBytes(this)
-    def contents(charset: Charset = Charset.defaultCharset()): String = new String(contents, charset)
+    def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
@@ -44,6 +44,8 @@ package object files {
   }
 
   object File {
+    def apply(path: Path): File = pathToFile(path)
+
     /**
      * A trait to capture various file types
      * Note: A file may not fall into any of these types e.g. UNIX pipes, sockets, devices etc
@@ -78,7 +80,7 @@ package object files {
     override def toString = path.toAbsolutePath.toString
   }
 
-  def root: Path = File(JFile.listRoots().head)
+  def root: Path = JFile.listRoots().head.toPath
   def home: Path = sys.props("user.home")
 
   implicit class StringInterpolations(sc: StringContext) {

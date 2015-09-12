@@ -12,6 +12,7 @@ These instances can be interchangeably used with Java classes via automatic impl
 ```scala
 import better.files._
 
+val f = File("/User/johndoe/Documents")
 val f1: File = file"/User/johndoe/Documents"
 val f2: File = root / "User" / "johndoe" / "Documents"
 val f3: File = home / "Documents"
@@ -59,7 +60,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * glob()
 * checkSum
 * all above works for dirs too
-
 * code coverage
 * version-eye
 * doc

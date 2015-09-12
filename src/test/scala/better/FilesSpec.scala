@@ -36,6 +36,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   "files" can "be instantiated" in {
+    val f = File("/User/johndoe/Documents")
     val f1: File = file"/User/johndoe/Documents"
     val f2: File = root / "User" / "johndoe" / "Documents"
     val f3: File = home / "Documents"
