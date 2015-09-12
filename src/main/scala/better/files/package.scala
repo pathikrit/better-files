@@ -19,10 +19,8 @@ package object files {
     def <<(line: String): File = append(line)
 
     def write(text: String): File = Files.write(this, text)
-
     val overwrite = write _
-    //TODO: use method alias
-    val < = write _
+    val < = write _ //TODO: use method alias
 
     def contents: Array[Byte] = Files.readAllBytes(this)
     def contents(charset: Charset = Charset.defaultCharset()): String = new String(contents, charset)
@@ -35,16 +33,19 @@ package object files {
     def file: File = path.toFile
 
     def /(name: String): Path = path.resolve(name)
+
+    override def toString = path.toAbsolutePath.toString
   }
 
-  /**
-   * Root path
-   */
-  val / : Path = File(JFile.listRoots().head)
+  def root: Path = File(JFile.listRoots().head)
+
+  def home: Path = sys.props("user.home")
 
   implicit class StringInterpolations(sc: StringContext) {
-    def file(args: Any*): File = pathToFile(Paths.get(sc.s(args: _*)))
+    def file(args: Any*): File = pathToFile(sc.s(args: _*))
   }
+
+  implicit def stringToPath(str: String): Path = Paths.get(str)
 
   implicit def pathToFile(path: Path): File = path.file
   implicit def fileToPath(file: File): Path = file.path

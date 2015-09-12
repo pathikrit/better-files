@@ -1,23 +1,21 @@
 better-files [![Circle CI](https://img.shields.io/circleci/project/pathikrit/better-files.svg)](https://circleci.com/gh/pathikrit/better-files) [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
 --------
+better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs:
 
-better-files is a [dependency-free](build.sbt) [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs:
-
-**Usage**: Just add this import to use better-files in your Scala code:
-```scala
-import better.files._
-```
-
-**Concepts**: Just 2 concepts - `Path` and `File` :
+**Concepts**: Just 2 concepts - `Path` and `File`:
 * `better.files.Path` is Scala wrapper for `java.nio.file.Path` and 
 * `better.files.File` is Scala wrapper for `java.io.File`
-better-file instances are 100% compatible and can interchangeably be used with Java file classes through automatic implicit conversions from Java to Scala and vice-versa.
+
+These instances can be interchangeably used with Java classes via automatic implicit conversions from Java to Scala and vice-versa
 
 **Instantiation**: The following are all equivalent:
 ```scala
-val f1 = file"/User/johndoe/Documents"
-val f2 = / "User" / "johndoe" / "Documents"
-val f3 = ~/ "johndoe" / "Documents"
+import better.files._
+
+val f1: File = file"/User/johndoe/Documents"
+val f2: File = root / "User" / "johndoe" / "Documents"
+val f3: File = home / "Documents"
+val f4: File = new java.io.File("/User/johndoe/Documents")
 ```
 
 **I/O**: Dead simple I/O:

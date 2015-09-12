@@ -7,7 +7,7 @@ import java.nio.file.{Files, NoSuchFileException}
 import org.scalatest._
 
 class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
-  val root: File = Files.createTempDirectory("better-files")
+  val testRoot: File = Files.createTempDirectory("better-files")
 
   /**
    * Setup the following directory structure under root
@@ -19,12 +19,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
    * /b
    */
   val (fa, a1, a2, a11, a22, fb) = (
-    root / "a",
-    root / "a" / "a1",
-    root / "a" / "a2",
-    root / "a" / "a1" / "a11.txt",
-    root / "a" / "a1" / "a21.txt",
-    root / "b"
+    testRoot / "a",
+    testRoot / "a" / "a1",
+    testRoot / "a" / "a2",
+    testRoot / "a" / "a1" / "a11.txt",
+    testRoot / "a" / "a1" / "a21.txt",
+    testRoot / "b"
     )
 
   before {
@@ -36,6 +36,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   "files" can "be instantiated" in {
+    val f1: File = file"/User/johndoe/Documents"
+    val f2: File = root / "User" / "johndoe" / "Documents"
+    val f3: File = home / "Documents"
+    val f4: File = new java.io.File("/User/johndoe/Documents")
   }
 
   it should "do basic I/O" in {
@@ -48,5 +52,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.contents() shouldEqual "foo bar"
     a11.append("hello", "world")
     a11.contents() shouldEqual "foo barhello\nworld\n"
+  }
+
+  "paths" should "have dsl" in {
+    (root / "usr" / "johndoe" / "docs").toString shouldEqual "/usr/johndoe/docs"
   }
 }
