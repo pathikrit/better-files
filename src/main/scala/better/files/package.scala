@@ -16,7 +16,6 @@ package object files {
     def /(child: String): File = new JFile(file, child)
 
     def append(lines: String*): File = Files.write(this, lines, APPEND, CREATE)
-
     def <<(line: String): File = append(line)
 
     def write(text: String): File = Files.write(this, text)
@@ -26,7 +25,6 @@ package object files {
     val < = write _
 
     def contents: Array[Byte] = Files.readAllBytes(this)
-
     def contents(charset: Charset = Charset.defaultCharset()): String = new String(contents, charset)
   }
 
@@ -52,11 +50,9 @@ package object files {
   implicit def fileToPath(file: File): Path = file.path
 
   implicit def pathToJavaPath(path: Path): JPath = path.path
-
   implicit def fileToJavaFile(file: File): JFile = file.file //TODO: Use bidirectional implicits?
 
   implicit def fileToJavaPath(file: File): JPath = fileToPath(file)
-
   implicit def javaPathToFile(path: JPath): File = pathToFile(path)
 
   private[this] implicit def stringToBytes(s: String): Array[Byte] = s.getBytes

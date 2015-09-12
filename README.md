@@ -3,27 +3,24 @@ better-files [![Circle CI](https://img.shields.io/circleci/project/pathikrit/bet
 
 better-files is a [dependency-free](build.sbt) [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs:
 
-**Usage**: 
-Just add this import to use better-files in your Scala code:
+**Usage**: Just add this import to use better-files in your Scala code:
 ```scala
 import better.files._
 ```
-Two main concepts:
 
-`better.files.Path` is Scala wrapper for `java.nio.file.Path` and 
+**Concepts**: Just 2 concepts - `Path` and `File` :
+* `better.files.Path` is Scala wrapper for `java.nio.file.Path` and 
+* `better.files.File` is Scala wrapper for `java.io.File`
+better-file instances are 100% compatible and can interchangeably be used with Java file classes through automatic implicit conversions from Java to Scala and vice-versa.
 
-`better.files.File` is Scala wrapper for `java.io.File`
-
-better-file instances are 100% compatible and interchangeably used with Java file classes through automatic implicit conversions from Java to Scala and vice-versa.
-
-There are many ways to refer to a file. The following are all equivalent:
+**Instantiation**: The following are all equivalent:
 ```scala
 val f1 = file"/User/johndoe/Documents"
 val f2 = / "User" / "johndoe" / "Documents"
 val f3 = ~/ "johndoe" / "Documents"
 ```
 
-Dead simple I/O:
+**I/O**: Dead simple I/O:
 ```scala
 val file = / "tmp" / "test.txt"
 file < "hello"    // file.overwrite("hello")

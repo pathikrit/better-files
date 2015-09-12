@@ -36,7 +36,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   "files" can "be instantiated" in {
-
   }
 
   it should "do basic I/O" in {
