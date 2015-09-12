@@ -10,48 +10,49 @@ package object files {
   /**
    * Scala wrapper for java.io.File
    */
-  implicit class File(val file: JFile) {
-    def path: Path = file.toPath
+  case class File(javaFile: JFile) {
+    def javaPath: JPath = javaFile.toPath
+    def path: String = javaPath.toString
 
-    def name: String = file.getName
+    def name: String = javaFile.getName
 
-    def /(child: String): File = new JFile(file, child)
+    def /(child: String): File = new JFile(javaFile, child)
 
-    def append(lines: String*): File = Files.write(this, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    def append(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String): File = append(line)
     val >>: = << _
 
-    def write(text: String): File = Files.write(this, text)
+    def write(text: String): File = Files.write(javaPath, text)
     val overwrite = write _
     val < = write _
     val `>:` = write _
 
-    def contents: File.Contents = Files.readAllBytes(this)
+    def contents: File.Contents = Files.readAllBytes(javaPath)
     def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
      */
-    def symLink: Option[File] = when(Files.isSymbolicLink(this))(Files.readSymbolicLink(this))
+    def symLink: Option[File] = when(Files.isSymbolicLink(javaPath))(Files.readSymbolicLink(javaPath))
 
     /**
      * @return true if this file (or the file found by following symlink) is a directory
      */
-    def isDirectory: Boolean = Files.isDirectory(this)
+    def isDirectory: Boolean = Files.isDirectory(javaPath)
 
     /**
      * @return true if this file (or the file found by following symlink) is a regular file
      */
-    def isRegularFile: Boolean = Files.isRegularFile(this)
+    def isRegularFile: Boolean = Files.isRegularFile(javaPath)
 
-    def list: Seq[File] = file.listFiles() map {f => new File(f)}
+    def list: Seq[File] = javaFile.listFiles() map File.apply
     def children: Seq[File] = list
 
-    override def toString = path.toString
+    override def toString = path
   }
 
   object File {
-    def apply(path: Path): File = pathToFile(path)
+    def apply(path: String): File = path.toFile
 
     type Contents = Array[Byte]
   }
@@ -77,34 +78,21 @@ package object files {
     def unapply(file: File): Option[File] = file.symLink
   }
 
-  /**
-   * Scala wrapper for java.nio.file.Path
-   */
-  implicit class Path(val path: JPath) {
-    def file: File = path.toFile
-
-    def /(name: String): Path = path.resolve(name)
-
-    override def toString = path.toAbsolutePath.toString
-  }
-
-  def root: Path = JFile.listRoots().head.toPath
-  def home: Path = sys.props("user.home")
+  def root: File = JFile.listRoots().head
+  def home: File = sys.props("user.home").toFile
 
   implicit class StringInterpolations(sc: StringContext) {
-    def file(args: Any*): File = pathToFile(sc.s(args: _*))
+    def file(args: Any*): File = sc.s(args: _*).toFile
   }
 
-  implicit def stringToPath(str: String): Path = Paths.get(str)
+  implicit class StringOps(str: String) {
+    def toFile: File = lift(Paths.get(str))
+    def /(child: String): File = toFile / child
+  }
 
-  implicit def pathToFile(path: Path): File = path.file
-  implicit def fileToPath(file: File): Path = file.path
-
-  implicit def pathToJavaPath(path: Path): JPath = path.path
-  implicit def fileToJavaFile(file: File): JFile = file.file
-
-  implicit def fileToJavaPath(file: File): JPath = fileToPath(file)
-  implicit def javaPathToFile(path: JPath): File = pathToFile(path)
+  implicit def lift(path: JPath): File = path.toFile
+  implicit def lift(file: JFile): File = File(file)
+  implicit def toJavaFile(file: File): JFile = file.javaFile
 
   private[this] implicit def stringToBytes(s: String): File.Contents = s.getBytes
   private[this] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

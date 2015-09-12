@@ -44,6 +44,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     val f3: File = home / "Documents"
     val f4: File = new java.io.File("/User/johndoe/Documents")
     val f5: File = "src" / "test"
+    val f6: File = "/User/johndoe/Documents".toFile
   }
 
   "file types" can "be matched" in {
@@ -54,13 +55,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
       case other if other.exists() => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
       case _ =>                               //A file that does not exist
     }
-    (root / "dev" / "null").file match {
+    root / "dev" / "null" match {
       case SymbolicLink(to) => fail()
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
       case other if other.exists() =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
     }
-    (root / "dev").file match {
+    root / "dev" match {
       case Directory(children) => children.exists(_.name == "null") shouldBe true // /dev should have 'null'
     }
     //TODO: test for each of the above
