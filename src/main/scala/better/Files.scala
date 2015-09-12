@@ -1,0 +1,5 @@
+package better
+
+object Files {
+
+}
