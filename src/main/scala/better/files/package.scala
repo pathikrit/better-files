@@ -20,7 +20,7 @@ package object files {
 
     def write(text: String): File = Files.write(this, text)
     val overwrite = write _
-    val < = write _ //TODO: use method alias
+    val < = write _  //TODO: use method alias
 
     def contents: Array[Byte] = Files.readAllBytes(this)
     def contents(charset: Charset = Charset.defaultCharset()): String = new String(contents, charset)
@@ -38,7 +38,6 @@ package object files {
   }
 
   def root: Path = File(JFile.listRoots().head)
-
   def home: Path = sys.props("user.home")
 
   implicit class StringInterpolations(sc: StringContext) {

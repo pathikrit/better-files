@@ -12,20 +12,20 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   /**
    * Setup the following directory structure under root
    * /a
-   * /a1
-   * /a2
-   * a21.txt
-   * a22.txt
+   *  /a1
+   *  /a2
+   *    a21.txt
+   *    a22.txt
    * /b
    */
-  val (fa, a1, a2, a11, a22, fb) = (
+  val (fa, a1, a2, a11, a12, fb) = (
     testRoot / "a",
     testRoot / "a" / "a1",
     testRoot / "a" / "a2",
     testRoot / "a" / "a1" / "a11.txt",
     testRoot / "a" / "a1" / "a21.txt",
     testRoot / "b"
-    )
+  )
 
   before {
     Seq(a1, a2, fb).foreach(_.mkdirs())
@@ -52,6 +52,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.contents() shouldEqual "foo bar"
     a11.append("hello", "world")
     a11.contents() shouldEqual "foo barhello\nworld\n"
+    (a12 << "hello" << "world").contents() shouldEqual "hello\nworld\n"
   }
 
   "paths" should "have dsl" in {

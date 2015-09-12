@@ -20,13 +20,17 @@ val f4: File = new java.io.File("/User/johndoe/Documents")
 
 **I/O**: Dead simple I/O:
 ```scala
-val file = / "tmp" / "test.txt"
+val file = root / "tmp" / "test.txt"
 file < "hello"    // file.overwrite("hello")
 file << "world"   // file.append("world")
-file.contents() == "hello\nworld"
+assert(file.contents() == "hello\nworld")
+```
+All operations are chainable e.g.
+```scala
+assert((file << "hello" << "world").contents() == "hello\nworld\n")
 ```
 
-For more examples, consult the [tests](src/test/scala/better/FileSpec.scala)
+For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
 **sbt**: In your `build.sbt`, add this:
 ```scala
