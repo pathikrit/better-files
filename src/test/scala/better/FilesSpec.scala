@@ -43,8 +43,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     val f2: File = root / "User" / "johndoe" / "Documents"
     val f3: File = home / "Documents"
     val f4: File = new java.io.File("/User/johndoe/Documents")
-    val f5: File = "src" / "test"
+    val f5: File = "/User" / "johndoe" / "Documents"
     val f6: File = "/User/johndoe/Documents".toFile
+
+    Seq(f, f1, f2, f4, f5, f6).map(_.toString).toSet shouldBe Set("/User/johndoe/Documents")
   }
 
   "file types" can "be matched" in {

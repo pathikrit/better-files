@@ -11,3 +11,5 @@ crossVersion := CrossVersion.binary
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+
+coverageEnabled := true

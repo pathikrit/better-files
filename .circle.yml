@@ -1,0 +1,5 @@
+test:
+  post:
+    - sbt coverageReport
+    - sbt coverageAggregate
+    - sbt codacyCoverage

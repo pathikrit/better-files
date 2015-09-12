@@ -2,7 +2,7 @@ package better
 
 import java.io.{File => JFile}
 import java.nio.charset.Charset, Charset.defaultCharset
-import java.nio.file.{Path => JPath, StandardOpenOption, Files, Paths}
+import java.nio.file.{Path, StandardOpenOption, Files, Paths}
 
 import scala.collection.JavaConversions._
 
@@ -11,7 +11,7 @@ package object files {
    * Scala wrapper for java.io.File
    */
   case class File(javaFile: JFile) {
-    def javaPath: JPath = javaFile.toPath
+    def javaPath: Path = javaFile.toPath
     def path: String = javaPath.toString
 
     def name: String = javaFile.getName
@@ -44,6 +44,7 @@ package object files {
      * @return true if this file (or the file found by following symlink) is a regular file
      */
     def isRegularFile: Boolean = Files.isRegularFile(javaPath)
+    def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
 
     def list: Seq[File] = javaFile.listFiles() map File.apply
     def children: Seq[File] = list
@@ -86,12 +87,12 @@ package object files {
   }
 
   implicit class StringOps(str: String) {
-    def toFile: File = lift(Paths.get(str))
+    def toFile: File = Paths.get(str)
     def /(child: String): File = toFile / child
   }
 
-  implicit def lift(path: JPath): File = path.toFile
-  implicit def lift(file: JFile): File = File(file)
+  implicit def pathToFile(path: Path): File = path.toFile
+  implicit def javaToFile(file: JFile): File = File(file)
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
   private[this] implicit def stringToBytes(s: String): File.Contents = s.getBytes
