@@ -17,10 +17,12 @@ package object files {
 
     def append(lines: String*): File = Files.write(this, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String): File = append(line)
+    val >>: = << _
 
     def write(text: String): File = Files.write(this, text)
     val overwrite = write _
-    val < = write _  //TODO: use method alias
+    val < = write _
+    val ->: = write _
 
     def contents: Array[Byte] = Files.readAllBytes(this)
     def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
@@ -45,28 +47,28 @@ package object files {
 
   object File {
     def apply(path: Path): File = pathToFile(path)
+  }
 
-    /**
-     * A trait to capture various file types
-     * Note: A file may not fall into any of these types e.g. UNIX pipes, sockets, devices etc
-     * @see https://en.wikipedia.org/wiki/Unix_file_types
-     */
-    sealed trait Type
+  /**
+   * A trait to capture various file types
+   * Note: A file may not fall into any of these types e.g. UNIX pipes, sockets, devices etc
+   * @see https://en.wikipedia.org/wiki/Unix_file_types
+   */
+  sealed trait FileType
 
-    case class RegularFile(contents: Array[Byte]) extends Type
-    object RegularFile {
-      def unapply(file: File): Option[RegularFile] = when(file.isRegularFile)(RegularFile(file.contents))
-    }
+  case class RegularFile(contents: Array[Byte]) extends FileType
+  object RegularFile {
+    def unapply(file: File): Option[RegularFile] = when(file.isRegularFile)(RegularFile(file.contents))
+  }
 
-    case class Directory(children: Seq[File]) extends Type
-    object Directory {
-      def unapply(file: File): Option[Directory] = when(file.isDirectory)(Directory(file.listFiles().map(f => new File(f))))
-    }
+  case class Directory(children: Seq[File]) extends FileType
+  object Directory {
+    def unapply(file: File): Option[Directory] = when(file.isDirectory)(Directory(file.listFiles().map(f => new File(f))))
+  }
 
-    case class SymbolicLink(to: File) extends Type
-    object SymbolicLink {
-      def unapply(file: File): Option[SymbolicLink] = file.symLink map SymbolicLink.apply
-    }
+  case class SymbolicLink(to: File) extends FileType
+  object SymbolicLink {
+    def unapply(file: File): Option[SymbolicLink] = file.symLink map SymbolicLink.apply
   }
 
   /**
@@ -93,7 +95,7 @@ package object files {
   implicit def fileToPath(file: File): Path = file.path
 
   implicit def pathToJavaPath(path: Path): JPath = path.path
-  implicit def fileToJavaFile(file: File): JFile = file.file //TODO: Use bidirectional implicits?
+  implicit def fileToJavaFile(file: File): JFile = file.file
 
   implicit def fileToJavaPath(file: File): JPath = fileToPath(file)
   implicit def javaPathToFile(path: JPath): File = pathToFile(path)

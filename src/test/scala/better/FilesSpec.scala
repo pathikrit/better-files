@@ -17,6 +17,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
    *    a21.txt
    *    a22.txt
    * /b
+   *    b1/ --> ../a1
+   *    b2.txt --> ../a2/a22.txt
    */
   val (fa, a1, a2, a11, a12, fb) = (
     testRoot / "a",
@@ -45,12 +47,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   "file types" can "be matched" in {
-    a1 match {
-      case File.Directory(children) =>
+    file"src/test/foo" match {
+      case SymbolicLink(to) => fail()   //thus must be first case statement if you want to handle symlinks specially; else will follow link
+      case Directory(children) => fail()
+      case RegularFile(contents) => fail()
+      case other if other.exists() => fail()  //A file can be not any of the above e.g. UNIX pipes & sockets etc
+      case _ =>                               //A file that does not exist
     }
-    /*a11 match {
-      case File.RegularFile(text) =>
-    }*/
+    //TODO: test for each of the above
   }
 
   it should "do basic I/O" in {
@@ -59,10 +63,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.contents() shouldEqual "hello"
     a11 << "world"
     a11.contents() shouldEqual "helloworld\n"
-    a11 < "foo bar"
-    a11.contents() shouldEqual "foo bar"
+    "foo" ->: a11
+    "bar" >>: a11
+    a11.contents() shouldEqual "foobar\n"
     a11.append("hello", "world")
-    a11.contents() shouldEqual "foo barhello\nworld\n"
+    a11.contents() shouldEqual "foobar\nhello\nworld\n"
     (a12 << "hello" << "world").contents() shouldEqual "hello\nworld\n"
   }
 

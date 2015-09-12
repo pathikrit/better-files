@@ -1,4 +1,4 @@
-better-files [![Circle CI](https://img.shields.io/circleci/project/pathikrit/better-files.svg)](https://circleci.com/gh/pathikrit/better-files) [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
+better-files [![Circle CI](https://circleci.com/gh/pathikrit/better-files.svg?style=svg)](https://circleci.com/gh/pathikrit/better-files) [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
 --------
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs:
 
@@ -22,9 +22,19 @@ val f4: File = new java.io.File("/User/johndoe/Documents")
 **I/O**: Dead simple I/O:
 ```scala
 val file = root / "tmp" / "test.txt"
-file < "hello"    // file.overwrite("hello") if you don't like symbols
-file << "world"   // file.append("world") if you don't like symbols
+file.overwrite("hello")
+file.append("world")
 assert(file.contents() == "hello\nworld")
+```
+If you are someone who likes symbols, then the above code can also be written as:
+```scala
+file < "hello"
+file << "world"
+```
+Or even, right-associative ones:
+```
+"hello" >: file
+"world" >>: file 
 ```
 All operations are chainable e.g.
 ```scala
@@ -62,4 +72,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * all above works for dirs too
 * code coverage
 * version-eye
-* doc
+* code doc
+* tut?
+* method alias, bi-directional implicits
