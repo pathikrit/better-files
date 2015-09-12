@@ -32,13 +32,24 @@ file < "hello"
 file << "world"
 ```
 Or even, right-associative ones:
-```
+```scala
 "hello" >: file
 "world" >>: file 
 ```
 All operations are chainable e.g.
 ```scala
 assert((file < "hello" << "world").contents() == "hello\nworld\n")
+```
+
+**Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
+```scala
+file"src/test/foo" match {
+  case SymbolicLink(to) =>          //this must be first case statement if you want to handle symlinks specially; else will follow link
+  case Directory(children) => 
+  case RegularFile(contents) => 
+  case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
+  case _ =>                         //A file that does not exist
+}
 ```
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
@@ -51,7 +62,7 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
 **TODO**
-* extractors: http://stackoverflow.com/questions/32518393
+* remove path?
 * touch
 * createIfNotExists
 * readAttributes incl. lastModifiedTime, owner, permissions, contentType, hidden?

@@ -48,11 +48,20 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
 
   "file types" can "be matched" in {
     file"src/test/foo" match {
-      case SymbolicLink(to) => fail()   //thus must be first case statement if you want to handle symlinks specially; else will follow link
+      case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
-      case other if other.exists() => fail()  //A file can be not any of the above e.g. UNIX pipes & sockets etc
+      case other if other.exists() => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
       case _ =>                               //A file that does not exist
+    }
+    (root / "dev" / "null").file match {
+      case SymbolicLink(to) => fail()
+      case Directory(children) => fail()
+      case RegularFile(contents) => fail()
+      case other if other.exists() =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
+    }
+    (root / "dev").file match {
+      case Directory(children) => children.exists(_.name == "null") shouldBe true // /dev should have 'null'
     }
     //TODO: test for each of the above
   }
@@ -63,7 +72,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.contents() shouldEqual "hello"
     a11 << "world"
     a11.contents() shouldEqual "helloworld\n"
-    "foo" ->: a11
+    "foo" `>:` a11
     "bar" >>: a11
     a11.contents() shouldEqual "foobar\n"
     a11.append("hello", "world")

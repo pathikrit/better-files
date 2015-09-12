@@ -13,6 +13,8 @@ package object files {
   implicit class File(val file: JFile) {
     def path: Path = file.toPath
 
+    def name: String = file.getName
+
     def /(child: String): File = new JFile(file, child)
 
     def append(lines: String*): File = Files.write(this, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
@@ -22,9 +24,9 @@ package object files {
     def write(text: String): File = Files.write(this, text)
     val overwrite = write _
     val < = write _
-    val ->: = write _
+    val `>:` = write _
 
-    def contents: Array[Byte] = Files.readAllBytes(this)
+    def contents: File.Contents = Files.readAllBytes(this)
     def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
 
     /**
@@ -42,33 +44,37 @@ package object files {
      */
     def isRegularFile: Boolean = Files.isRegularFile(this)
 
+    def list: Seq[File] = file.listFiles() map {f => new File(f)}
+    def children: Seq[File] = list
+
     override def toString = path.toString
   }
 
   object File {
     def apply(path: Path): File = pathToFile(path)
+
+    type Contents = Array[Byte]
   }
 
-  /**
-   * A trait to capture various file types
-   * Note: A file may not fall into any of these types e.g. UNIX pipes, sockets, devices etc
-   * @see https://en.wikipedia.org/wiki/Unix_file_types
-   */
-  sealed trait FileType
-
-  case class RegularFile(contents: Array[Byte]) extends FileType
   object RegularFile {
-    def unapply(file: File): Option[RegularFile] = when(file.isRegularFile)(RegularFile(file.contents))
+    /**
+     * @return contents of this file if it is a regular file
+     */
+    def unapply(file: File): Option[File.Contents] = when(file.isRegularFile)(file.contents)
   }
 
-  case class Directory(children: Seq[File]) extends FileType
   object Directory {
-    def unapply(file: File): Option[Directory] = when(file.isDirectory)(Directory(file.listFiles().map(f => new File(f))))
+    /**
+     * @return children of this directory if file a directory
+     */
+    def unapply(file: File): Option[Seq[File]] = when(file.isDirectory)(file.list)
   }
 
-  case class SymbolicLink(to: File) extends FileType
   object SymbolicLink {
-    def unapply(file: File): Option[SymbolicLink] = file.symLink map SymbolicLink.apply
+    /**
+     * @return target of this symlink if file is a symlink
+     */
+    def unapply(file: File): Option[File] = file.symLink
   }
 
   /**
@@ -100,6 +106,6 @@ package object files {
   implicit def fileToJavaPath(file: File): JPath = fileToPath(file)
   implicit def javaPathToFile(path: JPath): File = pathToFile(path)
 
-  private[this] implicit def stringToBytes(s: String): Array[Byte] = s.getBytes
+  private[this] implicit def stringToBytes(s: String): File.Contents = s.getBytes
   private[this] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }
