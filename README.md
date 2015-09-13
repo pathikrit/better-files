@@ -26,7 +26,7 @@ val f6: File = "/User/johndoe/Documents".toFile
 val file = root / "tmp" / "test.txt"
 file.overwrite("hello")
 file.append("world")
-assert(file.contents() == "hello\nworld")
+assert(file.contents == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -38,8 +38,9 @@ Or even, right-associatively:
 ```scala
 "hello" >: file
 "world" >>: file 
+val contents: Array[Byte] = file.bytes
 ```
-All operations are chainable e.g.`(file < "hello" << "world").contents()`
+All operations are chainable e.g.`(file < "hello" << "world").read()
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
@@ -72,18 +73,24 @@ file.attrs.isHidden
 file.size                       // for a directory, computes the directory size
 ```
 
-**File-system operations**: Utilities to `cp`, `rm`, `ls`, `mv`, `md5`, `touch` etc:
+**File-system operations**: Utilities to `cp`, `rm`, `ls`, `mv`, `md5`, `diff`, `touch` etc:
 ```scala
 file.name       // simpler than java.io.File#getname
 file.touch
 file.extension
-file.readLines
+file.readLines 
 file.delete     // unlike the Java API, also works on directories as expected
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
 File.newTempDir()
 File.newTempFile()
+```
+
+**Equality**: Use `==` to check for path-based equality and `===` for content-based equality
+```scala
+file1 == file2    // true iff both point to same path on the filesystem
+file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
 ```
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
@@ -99,6 +106,5 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * parent or '..'
 * watch
 * resource stringcontext
-* contentEquals
 * all above works for dirs too
 * version-eye

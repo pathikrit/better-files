@@ -29,9 +29,10 @@ package object files {
     val < = write _
     val `>:` = write _
 
-    def contents: File.Contents = Files.readAllBytes(javaPath)
-    def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
-    def ! :String = contents()
+    def bytes: File.Contents = Files.readAllBytes(javaPath)
+    def read(charset: Charset = defaultCharset()): String = new String(bytes, charset)
+    def contents: String = read()
+    def ! :String = contents
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
