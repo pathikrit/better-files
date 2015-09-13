@@ -8,7 +8,9 @@ scalaVersion := "2.11.7"
 crossScalaVersions := Seq("2.10.5", "2.11.7")
 crossVersion := CrossVersion.binary
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
+  "-language:implicitConversions", "-language:postfixOps"
+)
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 

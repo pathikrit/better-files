@@ -80,7 +80,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.contents() shouldEqual "foobar\n"
     a11.append("hello", "world")
     a11.contents() shouldEqual "foobar\nhello\nworld\n"
-    (a12 << "hello" << "world").contents() shouldEqual "hello\nworld\n"
+    ((a12 << "hello" << "world")!) shouldEqual "hello\nworld\n"
   }
 
   "paths" should "have dsl" in {

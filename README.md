@@ -32,16 +32,14 @@ If you are someone who likes symbols, then the above code can also be written as
 ```scala
 file < "hello"
 file << "world"
+assert(file! == "hello\nworld")
 ```
 Or even, right-associatively:
 ```scala
 "hello" >: file
 "world" >>: file 
 ```
-All operations are chainable e.g.
-```scala
-assert((file < "hello" << "world").contents() == "hello\nworld\n")
-```
+All operations are chainable e.g.`(file < "hello" << "world").contents()`
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
@@ -60,7 +58,7 @@ val matches: Set[File] = ("src" / "test").glob("**/*.{java,scala}")
 ```
 You can even use the more advanced regex syntax instead of glob syntax:
 ```scala
-val matches: Set[File] = ("src" / "test").glob("**/*.{java,scala}", syntax = "regex")
+val matches = ("src" / "test").glob("**/*.{java,scala}", syntax = "regex")
 ```
 
 **File attribute APIs**: Query various file attributes e.g.:
@@ -83,7 +81,6 @@ file.delete     // unlike the Java API, also works on directories as expected
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
-
 File.newTempDir()
 File.newTempFile()
 ```

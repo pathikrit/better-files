@@ -29,6 +29,7 @@ package object files {
 
     def contents: File.Contents = Files.readAllBytes(javaPath)
     def contents(charset: Charset = defaultCharset()): String = new String(contents, charset)
+    def ! :String = contents()
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
