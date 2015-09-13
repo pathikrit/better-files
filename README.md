@@ -5,7 +5,8 @@ better-files
 [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
 
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
-that can be interchangeably used with Java classes via automatic bi-directional implicit conversions from/to Java.
+(uses [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)) underneath for all I/O)
+that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
 **Instantiation**: The following are all equivalent:
 ```scala
@@ -50,7 +51,16 @@ assert((file < "hello" << "world").contents() == "hello\nworld\n")
   case RegularFile(contents) => 
   case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         //A file that does not exist
-}
+```
+
+**Globbing**: You don't have to Google "How to glob in Java/Scala" 
+and try to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala next time:
+```scala
+val matches: Set[File] = ("src" / "test").glob("**/*.{java,scala}")
+```
+You can even use the more advanced regex syntax instead of glob syntax:
+```scala
+val matches: Set[File] = ("src" / "test").glob("**/*.{java,scala}", syntax = "regex")
 ```
 
 **File attribute APIs**: Query various file attributes e.g.:
@@ -90,8 +100,8 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 **TODO**
 * parent or '..'
 * watch
+* listrecursively/list
+* resource stringcontext
 * contentEquals
-* size
-* glob()
 * all above works for dirs too
 * version-eye

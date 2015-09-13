@@ -1,8 +1,8 @@
 package better
 
-import java.io.{File => JFile}
+import java.io.{File => JFile, IOException}
+import java.nio.file._
 import java.nio.charset.Charset, Charset.defaultCharset
-import java.nio.file.{Path, StandardOpenOption, Files, Paths}
 
 import scala.collection.JavaConversions._
 
@@ -48,6 +48,33 @@ package object files {
 
     def list: Seq[File] = javaFile.listFiles() map File.apply
     def children: Seq[File] = list
+
+    /**
+     * Util to glob from this file's path
+     * @param ignoreIOExceptions when set to true, any file visit exceptions (e.g. a read or permission error) would be silently ignored
+     * @return Set of files that matched
+     */
+    def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Set[File] = {
+      val matches = scala.collection.mutable.Set.empty[File]
+      val visitor = new SimpleFileVisitor[Path] {
+        val matcher = FileSystems.getDefault.getPathMatcher(s"$syntax:$pattern")
+
+        override def visitFileFailed(file: Path, exc: IOException) = if (ignoreIOExceptions) {
+          FileVisitResult.CONTINUE
+        } else {
+          super.visitFileFailed(file, exc)
+        }
+
+        override def visitFile(file: Path, attrs: attribute.BasicFileAttributes) = {
+          if (matcher.matches(file)) {
+            matches += file
+          }
+          super.visitFile(file, attrs)
+        }
+      }
+      Files.walkFileTree(javaPath, visitor)
+      matches.toSet
+    }
 
     override def toString = path
   }
@@ -95,9 +122,9 @@ package object files {
   }
 
   implicit def pathToFile(path: Path): File = path.toFile
-  implicit def javaToFile(file: JFile): File = File(file)           //TODO: Iso implicits
+  implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
-  private[this] implicit def stringToBytes(s: String): File.Contents = s.getBytes
-  private[this] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
+  private[files] implicit def stringToBytes(s: String): File.Contents = s.getBytes
+  private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }

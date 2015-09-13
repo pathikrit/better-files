@@ -86,4 +86,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   "paths" should "have dsl" in {
     (root / "usr" / "johndoe" / "docs").toString shouldEqual "/usr/johndoe/docs"
   }
+
+  it should "glob" in {
+    ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Set("FilesSpec.scala")
+  }
 }
