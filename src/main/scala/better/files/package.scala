@@ -36,7 +36,7 @@ package object files {
     def bytes: File.Contents = Files.readAllBytes(javaPath)
     def read(charset: Charset = defaultCharset()): String = new String(bytes, charset)
     def contents: String = read()
-    def ! :String = contents
+    def `!`:String = contents
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
@@ -64,9 +64,11 @@ package object files {
      * @return Set of files that matched
      */
     def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
-      val matcher = FileSystems.getDefault.getPathMatcher(s"$syntax:$pattern")
+      val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
       Files.walk(javaPath).filter((matcher.matches _).asJava)
     }
+
+    def fileSystem: FileSystem = javaPath.getFileSystem
 
     override def toString = path
   }
@@ -106,7 +108,7 @@ package object files {
     def unapply(file: File): Option[File] = file.symLink
   }
 
-  def root: File = JFile.listRoots().head
+  def root: File = FileSystems.getDefault.getRootDirectories.head
   def home: File = sys.props("user.home").toFile
 
   implicit class StringInterpolations(sc: StringContext) {

@@ -1,9 +1,15 @@
-[![Circle CI](https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb)](https://circleci.com/gh/pathikrit/better-files)
-[![Dependency Status](https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1)
-[![Codacy](https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1)](https://www.codacy.com/app/pathikrit/better-files/dashboard) 
-[![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
+better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink]
+---
+[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb
+[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
+[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
+[codacyImg]: https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1
+[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
+[bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
+[bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
 
-**better-files** is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
+better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
 **Instantiation**: The following are all equivalent:
@@ -20,7 +26,7 @@ val f6: File = "/User/johndoe/Documents".toFile
 val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 ```
 
-**I/O**: Dead simple I/O (via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+**I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root / "tmp" / "test.txt"
 file.overwrite("hello")
@@ -39,7 +45,7 @@ Or even, right-associatively:
 "hello" >: file
 "world" >>: file 
 ```
-All operations are chainable e.g.`(file < "hello" << "world").read()`
+All operations are chainable e.g.`file.write("My name is").append("Inigo", "Montoya").read()`
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
@@ -49,16 +55,20 @@ All operations are chainable e.g.`(file < "hello" << "world").read()`
   case RegularFile(contents) => 
   case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         //A file that does not exist
+}
 ```
 
 **Globbing**: You don't have to Google "How to glob in Java/Scala" 
 and try to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala next time:
 ```scala
-val matches: Set[File] = ("src" / "test").glob("**/*.{java,scala}")
+val dir = "src" / "test"
+val matches: Set[File] = dir.glob("**/*.{java,scala}")
+// also:
+dir.listRecursively.filter(f => f.extension == ".java" || f.extension == ".scala") 
 ```
 You can even use the more advanced regex syntax instead of glob syntax:
 ```scala
-val matches = ("src" / "test").glob("**/*.{java,scala}", syntax = "regex")
+val matches = dir.glob("**/*.{java,scala}", syntax = "regex")
 ```
 For simpler cases, you can always use `dir.list` or `dir.listRecursively`
 
@@ -101,6 +111,8 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
-**TODO**
-* watch
-* resource stringcontext
+**Future work**
+* File watchers using Akka actors
+* Classpath resource APIs
+* zip/unzip
+* gitter.im
