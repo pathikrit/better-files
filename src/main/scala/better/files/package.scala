@@ -18,7 +18,11 @@ package object files {
 
     def name: String = javaFile.getName
 
+    def parent: File = javaFile.getParentFile
+
     def /(child: String): File = new JFile(javaFile, child)
+
+    def /(f: File => File): File = f(this)
 
     def append(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String): File = append(line)
@@ -66,6 +70,9 @@ package object files {
 
     override def toString = path
   }
+
+  val `..`: File => File = _.parent
+  val  `.`: File => File = identity
 
   type Files = Seq[File]
 

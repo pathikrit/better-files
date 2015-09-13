@@ -19,6 +19,7 @@ val f3: File = home / "Documents"
 val f4: File = new java.io.File("/User/johndoe/Documents")
 val f5: File = "/User" / "johndoe" / "Documents"
 val f6: File = "/User/johndoe/Documents".toFile
+val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 ```
 
 **I/O**: Dead simple I/O:
@@ -103,7 +104,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
 **TODO**
-* parent or '..'
 * watch
 * resource stringcontext
 * all above works for dirs too
