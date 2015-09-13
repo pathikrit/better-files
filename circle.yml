@@ -1,4 +1,6 @@
-test:
+machine:
+  java:
+    version: oraclejdk8
   post:
     - sbt coverageReport
     - sbt coverageAggregate

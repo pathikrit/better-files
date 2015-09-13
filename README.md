@@ -1,11 +1,9 @@
-better-files 
----
 [![Circle CI](https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb)](https://circleci.com/gh/pathikrit/better-files)
+[![Dependency Status](https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1)
 [![Codacy](https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1)](https://www.codacy.com/app/pathikrit/better-files/dashboard) 
 [![Download](https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg)](https://bintray.com/pathikrit/maven/better-files/_latestVersion)
 
-better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
-(uses [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)) underneath for all I/O)
+**better-files** is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
 **Instantiation**: The following are all equivalent:
@@ -22,12 +20,13 @@ val f6: File = "/User/johndoe/Documents".toFile
 val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 ```
 
-**I/O**: Dead simple I/O:
+**I/O**: Dead simple I/O (via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root / "tmp" / "test.txt"
 file.overwrite("hello")
 file.append("world")
 assert(file.contents == "hello\nworld")
+val contents: Array[Byte] = file.bytes
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -39,9 +38,8 @@ Or even, right-associatively:
 ```scala
 "hello" >: file
 "world" >>: file 
-val contents: Array[Byte] = file.bytes
 ```
-All operations are chainable e.g.`(file < "hello" << "world").read()
+All operations are chainable e.g.`(file < "hello" << "world").read()`
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
@@ -106,5 +104,3 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 **TODO**
 * watch
 * resource stringcontext
-* all above works for dirs too
-* version-eye
