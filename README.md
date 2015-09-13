@@ -25,6 +25,7 @@ val f5: File = "/User" / "johndoe" / "Documents"
 val f6: File = "/User/johndoe/Documents".toFile
 val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 ```
+Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
 **I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
@@ -58,8 +59,7 @@ All operations are chainable e.g.`file.write("My name is").append("Inigo", "Mont
 }
 ```
 
-**Globbing**: You don't have to Google "How to glob in Java/Scala" 
-and try to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala next time:
+**Globbing**: No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src" / "test"
 val matches: Set[File] = dir.glob("**/*.{java,scala}")
@@ -101,6 +101,16 @@ File.newTempFile()
 file1 == file2    // true iff both point to same path on the filesystem
 file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
 ```
+<!---
+WIP
+**Zip APIs**: You don't have to lookup on StackOverflow "How to zip/unzip in Java/Scala?":
+```scala
+val zipFile = file"path/to/research.zip"
+val documents = home / "Documents"
+val research: File = zipFile.unzipTo(documents / "research")    // Unzip
+```
+You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents / "research")`
+--->
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 

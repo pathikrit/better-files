@@ -7,6 +7,7 @@ import java.util.stream.{Stream => JStream}
 
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
+import scala.io.Source
 
 package object files {
   /**
@@ -112,7 +113,9 @@ package object files {
   def home: File = sys.props("user.home").toFile
 
   implicit class StringInterpolations(sc: StringContext) {
-    def file(args: Any*): File = sc.s(args: _*).toFile
+    def file(args: Any*): File = value(args).toFile
+    def resource(args: Any*): Source = Source.fromInputStream(getClass.getResourceAsStream(value(args)))
+    private[this] def value(args: Seq[Any]) = sc.s(args: _*)
   }
 
   implicit class StringOps(str: String) {
