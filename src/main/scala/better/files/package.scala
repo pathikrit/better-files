@@ -19,6 +19,11 @@ package object files {
 
     def name: String = javaFile.getName
 
+    /**
+     * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
+     */
+    def extension: Option[String] = when(isRegularFile && (name contains "."))(name.substring(name indexOf "."))
+
     def parent: File = javaFile.getParentFile
 
     def /(child: String): File = new JFile(javaFile, child)

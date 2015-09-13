@@ -27,7 +27,7 @@ val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-**I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+**File I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root / "tmp" / "test.txt"
 file.overwrite("hello")
@@ -62,13 +62,13 @@ All operations are chainable e.g.`file.write("My name is").append("Inigo", "Mont
 **Globbing**: No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src" / "test"
-val matches: Set[File] = dir.glob("**/*.{java,scala}")
-// also:
-dir.listRecursively.filter(f => f.extension == ".java" || f.extension == ".scala") 
+val matches: Seq[File] = dir.glob("**/*.{java,scala}")
+// above code is equivalent to:
+dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
 ```
 You can even use the more advanced regex syntax instead of glob syntax:
 ```scala
-val matches = dir.glob("**/*.{java,scala}", syntax = "regex")
+val matches = dir.glob("^\w*$", syntax = "regex")
 ```
 For simpler cases, you can always use `dir.list` or `dir.listRecursively`
 
@@ -84,7 +84,7 @@ file.size                       // for a directory, computes the directory size
 
 **File-system operations**: Utilities to `cp`, `rm`, `ls`, `mv`, `md5`, `diff`, `touch` etc:
 ```scala
-file.name       // simpler than java.io.File#getname
+file.name       // simpler than java.io.File#getName
 file.touch
 file.extension
 file.readLines 
@@ -92,8 +92,7 @@ file.delete     // unlike the Java API, also works on directories as expected
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
-File.newTempDir()
-File.newTempFile()
+File.newTempDir() / File.newTempFile()
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
@@ -102,7 +101,6 @@ file1 == file2    // true iff both point to same path on the filesystem
 file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
 ```
 <!---
-WIP
 **Zip APIs**: You don't have to lookup on StackOverflow "How to zip/unzip in Java/Scala?":
 ```scala
 val zipFile = file"path/to/research.zip"
@@ -121,8 +119,8 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 ```
 
-**Future work**
+**Future work**:
 * File watchers using Akka actors
 * Classpath resource APIs
-* zip/unzip
+* Zip APIs
 * gitter.im

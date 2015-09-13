@@ -95,5 +95,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     ("src" / "test").listRecursively should have length 4
   }
 
+  it should "support file attribute APIs" in {
+    fa.extension shouldBe None
+    a11.extension shouldBe Some(".txt")
+  }
+
   //TODO: Test above for all kinds of FileType
 }
