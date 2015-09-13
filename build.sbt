@@ -12,6 +12,9 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
   "-language:implicitConversions", "-language:postfixOps"
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+libraryDependencies ++= Seq(
+  "org.scala-lang.modules"    %% "scala-java8-compat"   % "0.7.0",
+  "org.scalatest"             %% "scalatest"            % "2.2.5"   % Test
+)
 
 coverageEnabled := true

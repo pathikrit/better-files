@@ -1,10 +1,12 @@
 package better
 
-import java.io.{File => JFile, IOException}
+import java.io.{File => JFile}
 import java.nio.file._
 import java.nio.charset.Charset, Charset.defaultCharset
+import java.util.stream.{Stream => JStream}
 
 import scala.collection.JavaConversions._
+import scala.compat.java8.FunctionConverters._
 
 package object files {
   /**
@@ -56,25 +58,8 @@ package object files {
      * @return Set of files that matched
      */
     def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Set[File] = {
-      val matches = scala.collection.mutable.Set.empty[File]
-      val visitor = new SimpleFileVisitor[Path] {
-        val matcher = FileSystems.getDefault.getPathMatcher(s"$syntax:$pattern")
-
-        override def visitFileFailed(file: Path, exc: IOException) = if (ignoreIOExceptions) {
-          FileVisitResult.CONTINUE
-        } else {
-          super.visitFileFailed(file, exc)
-        }
-
-        override def visitFile(file: Path, attrs: attribute.BasicFileAttributes) = {
-          if (matcher.matches(file)) {
-            matches += file
-          }
-          super.visitFile(file, attrs)
-        }
-      }
-      Files.walkFileTree(javaPath, visitor)
-      matches.toSet
+      val matcher = FileSystems.getDefault.getPathMatcher(s"$syntax:$pattern")
+      Files.walk(javaPath).filter((matcher.matches _).asJava)
     }
 
     override def toString = path
@@ -127,5 +112,6 @@ package object files {
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
   private[files] implicit def stringToBytes(s: String): File.Contents = s.getBytes
+  private[files] implicit def pathStreamToFileSet(files: JStream[Path]): Set[File] = files.iterator().toSet.map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }
