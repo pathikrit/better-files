@@ -60,6 +60,7 @@ You can even use the more advanced regex syntax instead of glob syntax:
 ```scala
 val matches = ("src" / "test").glob("**/*.{java,scala}", syntax = "regex")
 ```
+For simpler cases, you can always use `dir.list` or `dir.listRecursively`
 
 **File attribute APIs**: Query various file attributes e.g.:
 ```scala
@@ -97,7 +98,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 **TODO**
 * parent or '..'
 * watch
-* listrecursively/list
 * resource stringcontext
 * contentEquals
 * all above works for dirs too

@@ -13,7 +13,7 @@ package object files {
    * Scala wrapper for java.io.File
    */
   case class File(javaFile: JFile) {
-    def javaPath: Path = javaFile.toPath
+    implicit def javaPath: Path = javaFile.toPath
     def path: String = javaPath.toString
 
     def name: String = javaFile.getName
@@ -49,21 +49,24 @@ package object files {
     def isRegularFile: Boolean = Files.isRegularFile(javaPath)
     def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
 
-    def list: Seq[File] = javaFile.listFiles() map File.apply
-    def children: Seq[File] = list
+    def list: Files = javaFile.listFiles() map File.apply
+    def children: Files = list
+    def listRecursively: Files = Files.walk(javaPath)
 
     /**
      * Util to glob from this file's path
      * @param ignoreIOExceptions when set to true, any file visit exceptions (e.g. a read or permission error) would be silently ignored
      * @return Set of files that matched
      */
-    def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Set[File] = {
+    def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
       val matcher = FileSystems.getDefault.getPathMatcher(s"$syntax:$pattern")
       Files.walk(javaPath).filter((matcher.matches _).asJava)
     }
 
     override def toString = path
   }
+
+  type Files = Seq[File]
 
   object File {
     def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
@@ -112,6 +115,6 @@ package object files {
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
   private[files] implicit def stringToBytes(s: String): File.Contents = s.getBytes
-  private[files] implicit def pathStreamToFileSet(files: JStream[Path]): Set[File] = files.iterator().toSet.map(pathToFile)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().toSeq.map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }

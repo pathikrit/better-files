@@ -62,11 +62,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
       case other if other.exists() =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
+      case _ => fail()
     }
     root / "dev" match {
       case Directory(children) => children.exists(_.name == "null") shouldBe true // /dev should have 'null'
+      case _ => fail()
     }
-    //TODO: test for each of the above
   }
 
   it should "do basic I/O" in {
@@ -88,6 +89,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   it should "glob" in {
-    ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Set("FilesSpec.scala")
+    ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
+    ("src" / "test").list should have length 1
+    ("src" / "test").listRecursively should have length 4
   }
+
+  //TODO: Test above for all kinds of FileType
 }
