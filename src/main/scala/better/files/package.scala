@@ -141,6 +141,15 @@ package object files {
       this
     }
 
+    def samePathAs(that: File): Boolean = this.javaPath == that.javaPath
+
+    override def equals(obj: Any) = obj match {
+      case that: File => samePathAs(that)
+      case _ => false
+    }
+
+    override def hashCode = javaPath.hashCode()
+
     override def toString = path
   }
 

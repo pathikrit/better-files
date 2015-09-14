@@ -56,7 +56,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     Seq(f, f1, f2, f4, f5, f6, f7).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
-  "file types" can "be matched" in {
+  it can "be matched" in {
     "src" / "test" / "foo" match {
       case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
       case Directory(children) => fail()
@@ -98,7 +98,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     ("src" / "test").listRecursively() should have length 4
   }
 
-  "files" should "support names/extensions" in {
+  it should "support names/extensions" in {
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
     a11.extension shouldBe Some(".txt")
@@ -106,7 +106,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     a11.nameWithoutExtension shouldBe "a11"
   }
 
-  "files" should "have .size" in {
+  it must "have .size" in {
     a11.size shouldBe 0
     a11.write("Hello World")
     a11.size should be > 0L
@@ -114,16 +114,19 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "set/unset permissions" in {
-    val file = a11
-
     import java.nio.file.attribute.PosixFilePermission
-    assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+    a11.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
-    file += PosixFilePermission.OWNER_EXECUTE
-    assert(file(PosixFilePermission.OWNER_EXECUTE))
+    a11 += PosixFilePermission.OWNER_EXECUTE
+    a11(PosixFilePermission.OWNER_EXECUTE) shouldBe true
 
-    file -= PosixFilePermission.OWNER_EXECUTE
-    assert(!file.isOwnerExecutable)
+    a11 -= PosixFilePermission.OWNER_EXECUTE
+    a11.isOwnerExecutable shouldBe false
+  }
+
+  it should "support equality" in {
+    fa shouldEqual (testRoot / "a")
+    fa shouldNot equal (testRoot / "b")
   }
 
   //TODO: Test above for all kinds of FileType

@@ -104,12 +104,12 @@ File.newTemp() / File.newTempDir()
 ```
 `chmod`:
 ```scala
-import java.nio.file.attribute.PosixFilePermission
-file += PosixFilePermission.OWNER_EXECUTE     // chmod +x
-file -= PosixFilePermission.OWNER_EXECUTE     // chmod -x
+import java.nio.file.attribute.PosixFilePermission._
+file += OWNER_EXECUTE     // chmod +x
+file -= OWNER_EXECUTE     // chmod -x
 // The following are all equivalent:
-assert(file.permissions(PosixFilePermission.OWNER_EXECUTE))
-assert(file(PosixFilePermission.OWNER_EXECUTE))
+assert(file.permissions contains OWNER_EXECUTE)
+assert(file(OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
 ```
 `chown`:
