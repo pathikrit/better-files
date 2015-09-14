@@ -75,14 +75,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a[NoSuchFileException] should be thrownBy a11.read()
     a11 < "hello"
     a11.read() shouldEqual "hello"
-    a11 << "world"
-    (a11!) shouldEqual "helloworld\n"
+    a11.appendNewLine << "world"
+    (a11!) shouldEqual "hello\nworld\n"
     "foo" `>:` a11
     "bar" >>: a11
     a11.contents shouldEqual "foobar\n"
-    a11.append("hello", "world")
+    a11.appendLines("hello", "world")
     a11.contents shouldEqual "foobar\nhello\nworld\n"
-    (a12 << "hello" << "world").read() shouldEqual "hello\nworld\n"
+    a12.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
   }
 
   "paths" should "have dsl" in {
@@ -97,7 +97,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
 
   it should "support file attribute APIs" in {
     fa.extension shouldBe None
+    fa.nameWithoutExtension shouldBe fa.name
     a11.extension shouldBe Some(".txt")
+    a11.name shouldBe "a11.txt"
+    a11.nameWithoutExtension shouldBe "a11"
   }
 
   //TODO: Test above for all kinds of FileType

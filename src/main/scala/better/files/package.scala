@@ -14,15 +14,17 @@ package object files {
    * Scala wrapper for java.io.File
    */
   case class File(javaFile: JFile) {
-    implicit def javaPath: Path = javaFile.toPath
+    def javaPath: Path = javaFile.toPath
     def path: String = javaPath.toString
 
     def name: String = javaFile.getName
+    def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
     /**
      * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
      */
-    def extension: Option[String] = when(isRegularFile && (name contains "."))(name.substring(name indexOf "."))
+    def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
+    def hasExtension: Boolean = isRegularFile && (name contains ".")
 
     def parent: File = javaFile.getParentFile
 
@@ -30,9 +32,10 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
-    def append(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-    def <<(line: String): File = append(line)
+    def appendLines(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    def <<(line: String): File = appendLines(line)
     val >>: = << _
+    def appendNewLine: File = appendLines("")
 
     def write(text: String): File = Files.write(javaPath, text)
     val overwrite = write _       //TODO: Method alias macro
@@ -79,11 +82,6 @@ package object files {
     override def toString = path
   }
 
-  val `..`: File => File = _.parent
-  val  `.`: File => File = identity
-
-  type Files = Seq[File]
-
   object File {
     def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
     def newTempFile(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
@@ -114,8 +112,12 @@ package object files {
     def unapply(file: File): Option[File] = file.symLink
   }
 
+  type Files = Seq[File]
+
   def root: File = FileSystems.getDefault.getRootDirectories.head
   def home: File = sys.props("user.home").toFile
+  val `..`: File => File = _.parent
+  val  `.`: File => File = identity
 
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File = value(args).toFile
