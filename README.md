@@ -48,10 +48,13 @@ Or even, right-associatively:
 ```
 All operations are chainable e.g.
 ```scala
- (home / "Documents" / "diary")
+ (root / "tmp" / "diary.txt")
   .createIfNotExists()  
   .appendNewLine
   .appendLines("My name is", "Inigo Montoya")
+  .moveTo(home / "Documents")
+  .renameTo("princess_diary.txt")
+  .changeExtensionTo(".md")
   .readLines
 ```
 
@@ -86,7 +89,8 @@ file.delete()     // unlike the Java API, also works on directories as expected 
 file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)
-file.linkTo(destination)    // ln -s file destination
+file.linkTo(destination)                     // ln file destination
+file.linkTo(destination, symbolic = true)    // ln -s file destination
 file.checksum
 file.setOwner(user: String)     // chown user file
 file.setGroup(group: String)    // chgrp user group
@@ -94,8 +98,8 @@ file.setGroup(group: String)    // chgrp user group
 `chmod`:
 ```scala
 import java.nio.file.attribute.PosixFilePermission._
-file += OWNER_EXECUTE     // chmod +x file
-file -= OWNER_EXECUTE     // chmod -x file
+file.addPermissions(OWNER_EXECUTE)     // chmod +x file
+file.removePermissions(OWNER_WRITE)    // chmod -w file
 // The following are all equivalent:
 assert(file.permissions contains OWNER_EXECUTE)
 assert(file(OWNER_EXECUTE))

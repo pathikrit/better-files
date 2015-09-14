@@ -97,21 +97,11 @@ package object files {
     def size: Long = listRecursively().map(f => Files.size(f.javaPath)).sum
 
     def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(javaPath).toSet
-
     def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(javaPath, permissions)
-
+    def addPermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
+    def removePermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
     /**
-     * Add file permissions
-     */
-    def +=(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
-
-    /**
-     * Remove file permissions
-     */
-    def -=(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
-
-    /**
-     * get file permisson
+     * test if file has this permission
      */
     def apply(permission: PosixFilePermission): Boolean = permissions(permission)
     def isOwnerReadable   : Boolean = this(PosixFilePermission.OWNER_READ)
@@ -154,10 +144,34 @@ package object files {
       this
     }
 
+    def moveTo(destination: Path, overwrite: Boolean): File = if (overwrite) {
+      Files.move(javaPath, destination, StandardCopyOption.REPLACE_EXISTING)
+    } else {
+      Files.move(javaPath, destination)
+    }
+
+    def renameTo(newName: String): File = moveTo(javaPath resolveSibling newName)
+
+    def moveTo(destination: File, overwrite: Boolean = false): File = moveTo(destination.javaPath, overwrite)
+
+    def copyTo(destination: File, overwrite: Boolean = false): File = if (overwrite) {
+      Files.copy(javaPath, destination.javaPath, StandardCopyOption.REPLACE_EXISTING)
+    } else {
+      Files.copy(javaPath, destination.javaPath)
+    }
+
+    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) {
+      Files.createSymbolicLink(javaPath, destination.javaPath)
+    } else {
+      Files.createLink(javaPath, destination.javaPath)
+    }
+
     def samePathAs(that: File): Boolean = this.javaPath == that.javaPath
 
+    def sameFileAs(that: File): Boolean = Files.isSameFile(this.javaPath, that.javaPath)
+
     override def equals(obj: Any) = obj match {
-      case that: File => samePathAs(that)
+      case file: File => sameFileAs(file)
       case _ => false
     }
 

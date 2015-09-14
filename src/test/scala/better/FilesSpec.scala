@@ -1,5 +1,7 @@
 package better
 
+import java.nio.file.FileAlreadyExistsException
+
 import better.files._
 
 import org.scalatest._
@@ -12,6 +14,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   var t1: File = _
   var t2: File = _
   var fb: File = _
+  var b1: File = _
+  var b2: File = _
 
   /**
    * Setup the following directory structure under root
@@ -33,6 +37,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1 = testRoot / "a" / "a1" / "t1.txt"
     t2 = testRoot / "a" / "a1" / "t2.txt"
     fb = testRoot / "b"
+    b1 = testRoot / "b" / "b1"
+    b2 = testRoot / "b" / "b2.txt"
     Seq(a1, a2, fb).foreach(_.mkdirs())
     t1.touch()
     t2.touch()
@@ -122,10 +128,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     import java.nio.file.attribute.PosixFilePermission
     t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
-    t1 += PosixFilePermission.OWNER_EXECUTE
+    t1.addPermissions(PosixFilePermission.OWNER_EXECUTE)
     t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
 
-    t1 -= PosixFilePermission.OWNER_EXECUTE
+    t1.removePermissions(PosixFilePermission.OWNER_EXECUTE)
     t1.isOwnerExecutable shouldBe false
   }
 
@@ -137,6 +143,31 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support chown/chgrp" in {
     fa.owner.getName should not be empty
     //fa.chown("nobody").chgrp("nobody")
+  }
+
+  it should "support ln/cp/mv" in {
+    val magicWord = "Hello World"
+    t1 write magicWord
+    // link
+    b1 linkTo a1
+    b2.linkTo(t2, symbolic = true)
+    (b1 / "t1.txt").read() shouldEqual magicWord
+    // copy
+    b2.contents shouldBe empty
+    a[FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
+    t1.copyTo(t2, overwrite = true)
+    b2.contents shouldEqual magicWord
+    // rename
+    t2.name shouldBe "t2.txt"
+    t2.exists() shouldBe true
+    val t3 = t2 renameTo "t3.txt"
+    t3.name shouldBe "t3.txt"
+    t2.exists() shouldBe false
+    t3.exists() shouldBe true
+    // move
+    t3 moveTo t2
+    t2.exists() shouldBe true
+    t3.exists() shouldBe false
   }
 
   //TODO: Test above for all kinds of FileType
