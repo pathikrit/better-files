@@ -100,8 +100,21 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.name shouldBe "a11.txt"
     a11.nameWithoutExtension shouldBe "a11"
 
-    testRoot.size shouldBe 575
-    a11.size shouldBe 19
+    a11.size shouldBe >(0)
+    testRoot.size shouldBe >(a11.size + a12.size)
+  }
+
+  it should "set/unset permissions" in {
+    val file = a11
+
+    import java.nio.file.attribute.PosixFilePermission
+    assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+
+    file += PosixFilePermission.OWNER_EXECUTE
+    assert(file.permissions(PosixFilePermission.OWNER_EXECUTE))
+
+    file -= PosixFilePermission.OWNER_EXECUTE
+    assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
   }
 
   //TODO: Test above for all kinds of FileType

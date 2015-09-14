@@ -3,6 +3,7 @@ package better
 import java.io.{File => JFile}
 import java.nio.file._
 import java.nio.charset.Charset, Charset.defaultCharset
+import java.nio.file.attribute.PosixFilePermission
 import java.util.stream.{Stream => JStream}
 
 import scala.collection.JavaConversions._
@@ -37,6 +38,7 @@ package object files {
     val >>: = << _
     def appendNewLine: File = appendLines("")
 
+    def write(bytes: File.Contents): File = Files.write(javaPath, bytes)
     def write(text: String): File = Files.write(javaPath, text)
     val overwrite = write _       //TODO: Method alias macro
     val < = write _
@@ -83,6 +85,21 @@ package object files {
      * @return file size (for directories, return size of the directory) in bytes
      */
     def size: Long = listRecursively.map(f => Files.size(f.javaPath)).sum
+
+    def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(javaPath).toSet
+
+    def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(javaPath, permissions)
+
+    /**
+     * Add file permissions
+     */
+    def +=(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
+
+    /**
+     * Remove file permissions
+     */
+    def -=(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
+
 
     override def toString = path
   }

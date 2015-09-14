@@ -83,10 +83,10 @@ For simpler cases, you can always use `dir.list` or `dir.listRecursively`
 ```scala
 file.lastModifiedTime     // returns JSR-310 time
 file.owner
-file.permissions
 file.contentType
 file.isDirectory
 file.isHidden
+file.isOwnerExecutable/file.isGroupReadable // see file.permissions
 file.size                 // for a directory, computes the directory size
 ```
 
@@ -101,6 +101,20 @@ file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
 File.newTemp() / File.newTempDir() 
+```
+`chmod`:
+```
+import java.nio.file.attribute.PosixFilePermission
+assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+
+file += PosixFilePermission.OWNER_EXECUTE
+assert(file.permissions(PosixFilePermission.OWNER_EXECUTE))
+
+file -= PosixFilePermission.OWNER_EXECUTE
+assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+```
+`chown`:
+```scala
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
