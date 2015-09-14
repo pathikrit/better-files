@@ -47,6 +47,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     val f6: File = "/User/johndoe/Documents".toFile
     val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
 
+    (root / "usr" / "johndoe" / "docs").toString shouldEqual "/usr/johndoe/docs"
     Seq(f, f1, f2, f4, f5, f6, f7).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
@@ -85,12 +86,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a12.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
   }
 
-  "paths" should "have dsl" in {
-    (root / "usr" / "johndoe" / "docs").toString shouldEqual "/usr/johndoe/docs"
-  }
-
   it should "glob" in {
     ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
+    ("src" / "test").listRecursively.filter(_.extension contains ".scala") should have length 1
     ("src" / "test").list should have length 1
     ("src" / "test").listRecursively should have length 4
   }
@@ -101,6 +99,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.extension shouldBe Some(".txt")
     a11.name shouldBe "a11.txt"
     a11.nameWithoutExtension shouldBe "a11"
+
+    testRoot.size shouldBe 575
+    a11.size shouldBe 19
   }
 
   //TODO: Test above for all kinds of FileType

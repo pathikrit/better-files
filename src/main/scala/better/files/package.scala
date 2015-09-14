@@ -79,12 +79,17 @@ package object files {
 
     def fileSystem: FileSystem = javaPath.getFileSystem
 
+    /**
+     * @return file size (for directories, return size of the directory) in bytes
+     */
+    def size: Long = listRecursively.map(f => Files.size(f.javaPath)).sum
+
     override def toString = path
   }
 
   object File {
     def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
-    def newTempFile(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
+    def newTemp(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
 
     def apply(path: String): File = path.toFile
 

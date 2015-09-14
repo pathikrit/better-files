@@ -81,15 +81,16 @@ For simpler cases, you can always use `dir.list` or `dir.listRecursively`
 
 **File attribute APIs**: Query various file attributes e.g.:
 ```scala
-file.attrs.lastModifiedTime     // returns JSR-310 time
-file.attrs.owner
-file.attrs.permissions
-file.attrs.contentType
-file.attrs.isHidden
-file.size                       // for a directory, computes the directory size
+file.lastModifiedTime     // returns JSR-310 time
+file.owner
+file.permissions
+file.contentType
+file.isDirectory
+file.isHidden
+file.size                 // for a directory, computes the directory size
 ```
 
-**File-system operations**: Utilities to `cp`, `rm`, `ls`, `mv`, `md5`, `diff`, `touch` etc:
+**File-system operations**: Utilities to `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
 file.name       // simpler than java.io.File#getName
 file.touch
@@ -99,7 +100,7 @@ file.delete     // unlike the Java API, also works on directories as expected
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
-File.newTempDir() / File.newTempFile()
+File.newTemp() / File.newTempDir() 
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
