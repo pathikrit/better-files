@@ -2,8 +2,6 @@ package better
 
 import better.files._
 
-import java.nio.file.NoSuchFileException
-
 import org.scalatest._
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
@@ -110,6 +108,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.extension shouldBe Some(".txt")
     t1.name shouldBe "t1.txt"
     t1.nameWithoutExtension shouldBe "t1"
+    //t1.contentType shouldBe Some("txt")
   }
 
   it must "have .size" in {
@@ -136,6 +135,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support chown/chgrp" in {
+    fa.owner.getName should not be empty
     //fa.chown("nobody").chgrp("nobody")
   }
 

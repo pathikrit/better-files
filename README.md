@@ -112,6 +112,7 @@ file.owner
 file.group
 file.isDirectory
 file.isHidden
+file.hide() / file.unhide()
 file.isOwnerExecutable/file.isGroupReadable // see file.permissions
 file.size                 // for a directory, computes the directory size
 ```

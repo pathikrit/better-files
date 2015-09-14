@@ -1,7 +1,7 @@
 package better
 
 import java.io.{File => JFile, IOException}
-import java.nio.file._, java.nio.file.attribute.{FileTime, PosixFilePermission}
+import java.nio.file._, attribute.{UserPrincipal, FileTime, PosixFilePermission}
 import java.nio.charset.Charset, Charset.defaultCharset
 import java.time.Instant
 import java.util.stream.{Stream => JStream}
@@ -26,6 +26,8 @@ package object files {
      */
     def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
     def hasExtension: Boolean = isRegularFile && (name contains ".")
+
+    def contentType: Option[String] = Option(Files.probeContentType(javaPath))
 
     def parent: File = javaFile.getParentFile
 
@@ -66,7 +68,10 @@ package object files {
      * @return true if this file (or the file found by following symlink) is a regular file
      */
     def isRegularFile: Boolean = Files.isRegularFile(javaPath)
+
     def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
+
+    def isHidden: Boolean = Files.isHidden(javaPath)
 
     def list: Files = javaFile.list map File.apply
     def children: Files = list
@@ -118,6 +123,8 @@ package object files {
     def isOtherReadable   : Boolean = this(PosixFilePermission.OTHERS_READ)
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
+
+    def owner: UserPrincipal = Files.getOwner(javaPath)
 
     def setOwner(owner: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
