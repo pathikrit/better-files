@@ -114,6 +114,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.extension shouldBe Some(".txt")
     t1.name shouldBe "t1.txt"
     t1.nameWithoutExtension shouldBe "t1"
+    t1.changeExtensionTo(".md").name shouldBe "t1.md"
     //t1.contentType shouldBe Some("txt")
   }
 
@@ -149,7 +150,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val magicWord = "Hello World"
     t1 write magicWord
     // link
-    b1 linkTo a1
+    b1.linkTo(a1, symbolic = true)
     b2.linkTo(t2, symbolic = true)
     (b1 / "t1.txt").read() shouldEqual magicWord
     // copy

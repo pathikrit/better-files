@@ -27,6 +27,8 @@ package object files {
     def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
     def hasExtension: Boolean = isRegularFile && (name contains ".")
 
+    def changeExtensionTo(extension: String): File = if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
+
     def contentType: Option[String] = Option(Files.probeContentType(javaPath))
 
     def parent: File = javaFile.getParentFile

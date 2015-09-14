@@ -1,4 +1,4 @@
-better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink]
+better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
 ---
 [circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
@@ -8,6 +8,8 @@ better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeI
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 [bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
 [bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
+[gitterImg]: https://gitter.im/pathikrit/better-files
+[gitterLink]: https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
@@ -93,7 +95,7 @@ file.linkTo(destination)                     // ln file destination
 file.linkTo(destination, symbolic = true)    // ln -s file destination
 file.checksum
 file.setOwner(user: String)     // chown user file
-file.setGroup(group: String)    // chgrp user group
+file.setGroup(group: String)    // chgrp group file
 ```
 `chmod`:
 ```scala
@@ -150,5 +152,5 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * Classpath resource APIs
 * Zip APIs
 * CSV handling
-* File converters?
+* File converters
 * gitter.im
