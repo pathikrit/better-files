@@ -114,9 +114,8 @@ file.name       // simpler than java.io.File#getName
 file.extension
 file.contentType
 file.lastModifiedTime     // returns JSR-310 time
-file.owner
-file.group
-file.isDirectory
+file.owner / file.group
+file.isDirectory / file.isSymbolicLink etc
 file.isHidden
 file.hide() / file.unhide()
 file.isOwnerExecutable/file.isGroupReadable // see file.permissions
@@ -144,7 +143,7 @@ For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.0"
 ```
 
 **Future work**:
