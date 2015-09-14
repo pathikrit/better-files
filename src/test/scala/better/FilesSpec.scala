@@ -88,9 +88,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
 
   it should "glob" in {
     ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
-    ("src" / "test").listRecursively.filter(_.extension contains ".scala") should have length 1
+    ("src" / "test").listRecursively().filter(_.extension contains ".scala") should have length 1
     ("src" / "test").list should have length 1
-    ("src" / "test").listRecursively should have length 4
+    ("src" / "test").listRecursively(maxDepth = 1) should have length 2
+    ("src" / "test").listRecursively() should have length 4
   }
 
   it should "support file attribute APIs" in {

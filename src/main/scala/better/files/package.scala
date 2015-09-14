@@ -51,7 +51,7 @@ package object files {
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
      */
-    def symLink: Option[File] = when(Files.isSymbolicLink(javaPath))(Files.readSymbolicLink(javaPath))
+    def symLink: Option[File] = when(isSymLink)(Files.readSymbolicLink(javaPath))
 
     /**
      * @return true if this file (or the file found by following symlink) is a directory
@@ -64,9 +64,11 @@ package object files {
     def isRegularFile: Boolean = Files.isRegularFile(javaPath)
     def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
 
-    def list: Files = javaFile.listFiles() map File.apply
+    def list: Files = javaFile.list map File.apply
     def children: Files = list
-    def listRecursively: Files = Files.walk(javaPath)
+    def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(javaPath, maxDepth)
+
+    //TODO: Add def walk(maxDepth: Int): Stream[Path] = that ignores I/O errors and excludes self
 
     /**
      * Util to glob from this file's path
@@ -83,7 +85,7 @@ package object files {
     /**
      * @return file size (for directories, return size of the directory) in bytes
      */
-    def size: Long = listRecursively.map(f => Files.size(f.javaPath)).sum
+    def size: Long = listRecursively().map(f => Files.size(f.javaPath)).sum
 
     def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(javaPath).toSet
 
@@ -136,7 +138,7 @@ package object files {
     /**
      * @return children of this directory if file a directory
      */
-    def unapply(file: File): Option[Seq[File]] = when(file.isDirectory)(file.list)
+    def unapply(file: File): Option[Seq[File]] = when(file.isDirectory)(file.children)
   }
 
   object SymbolicLink {

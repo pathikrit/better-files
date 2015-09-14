@@ -90,7 +90,7 @@ file.isOwnerExecutable/file.isGroupReadable // see file.permissions
 file.size                 // for a directory, computes the directory size
 ```
 
-**File-system operations**: Utilities to `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
+**File-system operations**: Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
 file.name       // simpler than java.io.File#getName
 file.touch
@@ -101,6 +101,7 @@ file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
 File.newTemp() / File.newTempDir() 
+file.listRecursively(maxDepth: Int)
 ```
 `chmod`:
 ```scala
