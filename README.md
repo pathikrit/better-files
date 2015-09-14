@@ -103,15 +103,14 @@ file.checksum
 File.newTemp() / File.newTempDir() 
 ```
 `chmod`:
-```
+```scala
 import java.nio.file.attribute.PosixFilePermission
-assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
-
-file += PosixFilePermission.OWNER_EXECUTE
+file += PosixFilePermission.OWNER_EXECUTE     // chmod +x
+file -= PosixFilePermission.OWNER_EXECUTE     // chmod -x
+// The following are all equivalent:
 assert(file.permissions(PosixFilePermission.OWNER_EXECUTE))
-
-file -= PosixFilePermission.OWNER_EXECUTE
-assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+assert(file(PosixFilePermission.OWNER_EXECUTE))
+assert(file.isOwnerExecutable)
 ```
 `chown`:
 ```scala

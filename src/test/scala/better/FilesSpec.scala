@@ -100,8 +100,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     a11.name shouldBe "a11.txt"
     a11.nameWithoutExtension shouldBe "a11"
 
-    a11.size shouldBe >(0)
-    testRoot.size shouldBe >(a11.size + a12.size)
+    a11.size should be > 0L
+    testRoot.size should be > (a11.size + a12.size)
   }
 
   it should "set/unset permissions" in {
@@ -111,10 +111,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
 
     file += PosixFilePermission.OWNER_EXECUTE
-    assert(file.permissions(PosixFilePermission.OWNER_EXECUTE))
+    assert(file(PosixFilePermission.OWNER_EXECUTE))
 
     file -= PosixFilePermission.OWNER_EXECUTE
-    assert(!file.permissions(PosixFilePermission.OWNER_EXECUTE))
+    assert(!file.isOwnerExecutable)
   }
 
   //TODO: Test above for all kinds of FileType

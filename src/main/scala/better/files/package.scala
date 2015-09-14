@@ -1,9 +1,8 @@
 package better
 
 import java.io.{File => JFile}
-import java.nio.file._
+import java.nio.file._, attribute.PosixFilePermission
 import java.nio.charset.Charset, Charset.defaultCharset
-import java.nio.file.attribute.PosixFilePermission
 import java.util.stream.{Stream => JStream}
 
 import scala.collection.JavaConversions._
@@ -100,6 +99,19 @@ package object files {
      */
     def -=(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
 
+    /**
+     * get file permisson
+     */
+    def apply(permission: PosixFilePermission): Boolean = permissions(permission)
+    def isOwnerReadable   : Boolean = this(PosixFilePermission.OWNER_READ)
+    def isOwnerWritable   : Boolean = this(PosixFilePermission.OWNER_WRITE)
+    def isOwnerExecutable : Boolean = this(PosixFilePermission.OWNER_EXECUTE)
+    def isGroupReadable   : Boolean = this(PosixFilePermission.GROUP_READ)
+    def isGroupWritable   : Boolean = this(PosixFilePermission.GROUP_WRITE)
+    def isGroupExecutable : Boolean = this(PosixFilePermission.GROUP_EXECUTE)
+    def isOtherReadable   : Boolean = this(PosixFilePermission.OTHERS_READ)
+    def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
+    def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
     override def toString = path
   }
