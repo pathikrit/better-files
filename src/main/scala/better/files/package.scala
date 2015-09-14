@@ -118,6 +118,11 @@ package object files {
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
+    def setOwner(owner: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
+    def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
+    val chown = setOwner _
+    val chgrp = setGroup _
+
     /**
      * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
      */

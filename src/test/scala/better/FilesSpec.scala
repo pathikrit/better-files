@@ -11,8 +11,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   var fa: File = _
   var a1: File = _
   var a2: File = _
-  var a11: File = _
-  var a12: File = _
+  var t1: File = _
+  var t2: File = _
   var fb: File = _
 
   /**
@@ -32,12 +32,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     fa = testRoot / "a"
     a1 = testRoot / "a" / "a1"
     a2 = testRoot / "a" / "a2"
-    a11 = testRoot / "a" / "a1" / "a11.txt"
-    a12 = testRoot / "a" / "a1" / "a21.txt"
+    t1 = testRoot / "a" / "a1" / "t1.txt"
+    t2 = testRoot / "a" / "a1" / "t2.txt"
     fb = testRoot / "b"
     Seq(a1, a2, fb).foreach(_.mkdirs())
-    a11.touch()
-    a12.touch()
+    t1.touch()
+    t2.touch()
   }
 
   override def afterEach() = testRoot.delete()
@@ -78,16 +78,16 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "do basic I/O" in {
-    a11 < "hello"
-    a11.read() shouldEqual "hello"
-    a11.appendNewLine << "world"
-    (a11!) shouldEqual "hello\nworld\n"
-    "foo" `>:` a11
-    "bar" >>: a11
-    a11.contents shouldEqual "foobar\n"
-    a11.appendLines("hello", "world")
-    a11.contents shouldEqual "foobar\nhello\nworld\n"
-    a12.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
+    t1 < "hello"
+    t1.read() shouldEqual "hello"
+    t1.appendNewLine << "world"
+    (t1!) shouldEqual "hello\nworld\n"
+    "foo" `>:` t1
+    "bar" >>: t1
+    t1.contents shouldEqual "foobar\n"
+    t1.appendLines("hello", "world")
+    t1.contents shouldEqual "foobar\nhello\nworld\n"
+    t2.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
   }
 
   it should "glob" in {
@@ -101,32 +101,36 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support names/extensions" in {
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
-    a11.extension shouldBe Some(".txt")
-    a11.name shouldBe "a11.txt"
-    a11.nameWithoutExtension shouldBe "a11"
+    t1.extension shouldBe Some(".txt")
+    t1.name shouldBe "t1.txt"
+    t1.nameWithoutExtension shouldBe "t1"
   }
 
   it must "have .size" in {
-    a11.size shouldBe 0
-    a11.write("Hello World")
-    a11.size should be > 0L
-    testRoot.size should be > (a11.size + a12.size)
+    t1.size shouldBe 0
+    t1.write("Hello World")
+    t1.size should be > 0L
+    testRoot.size should be > (t1.size + t2.size)
   }
 
   it should "set/unset permissions" in {
     import java.nio.file.attribute.PosixFilePermission
-    a11.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
+    t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
-    a11 += PosixFilePermission.OWNER_EXECUTE
-    a11(PosixFilePermission.OWNER_EXECUTE) shouldBe true
+    t1 += PosixFilePermission.OWNER_EXECUTE
+    t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
 
-    a11 -= PosixFilePermission.OWNER_EXECUTE
-    a11.isOwnerExecutable shouldBe false
+    t1 -= PosixFilePermission.OWNER_EXECUTE
+    t1.isOwnerExecutable shouldBe false
   }
 
   it should "support equality" in {
     fa shouldEqual (testRoot / "a")
     fa shouldNot equal (testRoot / "b")
+  }
+
+  it should "support chown/chgrp" in {
+    //fa.chown("nobody").chgrp("nobody")
   }
 
   //TODO: Test above for all kinds of FileType

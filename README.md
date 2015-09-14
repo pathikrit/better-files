@@ -52,7 +52,7 @@ All operations are chainable e.g.
   .createIfNotExists()  
   .appendNewLine
   .appendLines("My name is", "Inigo Montoya")
-  .read()
+  .readLines()
 ```
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
@@ -95,25 +95,25 @@ file.size                 // for a directory, computes the directory size
 file.name       // simpler than java.io.File#getName
 file.touch()
 file.extension
-file.readLines 
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
+file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)
+file.linkTo(destination)    // ln -s file destination
 file.checksum
 File.newTemp() / File.newTempDir()
+file.setOwner(user: String)     // chown user file
+file.setGroup(group: String)    // chgrp user group
 ```
 `chmod`:
 ```scala
 import java.nio.file.attribute.PosixFilePermission._
-file += OWNER_EXECUTE     // chmod +x
-file -= OWNER_EXECUTE     // chmod -x
+file += OWNER_EXECUTE     // chmod +x file
+file -= OWNER_EXECUTE     // chmod -x file
 // The following are all equivalent:
 assert(file.permissions contains OWNER_EXECUTE)
 assert(file(OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
-```
-`chown`:
-```scala
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
