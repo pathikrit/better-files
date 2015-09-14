@@ -139,10 +139,19 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support equality" in {
     fa shouldEqual (testRoot / "a")
     fa shouldNot equal (testRoot / "b")
+    //val c1 = fa.checksum()
+    //fa.checksum() shouldEqual c1
+    t1 < "hello"
+    t2 < "hello"
+    (t1 == t2) shouldBe false
+    (t1 === t2) shouldBe true
+    t2 < "hello world"
+    (t1 == t2) shouldBe false
+    (t1 === t2) shouldBe false
+    //fa.checksum() should not equal c1
   }
 
   it should "support chown/chgrp" in {
-    a[java.io.IOException] should be thrownBy b1.checksum()
     fa.owner.getName should not be empty
     //fa.chown("nobody").chgrp("nobody")
   }

@@ -29,6 +29,10 @@ package object files {
     def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
     def hasExtension: Boolean = isRegularFile && (name contains ".")
 
+    /**
+     * Changes the file-extension; if file does not have an extension, it add the extension
+     * Example usage file"foo.java".changeExtensionTo(".scala")
+     */
     def changeExtensionTo(extension: String): File = if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
 
     def contentType: Option[String] = Option(Files.probeContentType(javaPath))
@@ -59,7 +63,7 @@ package object files {
     def readLines: Seq[String] = Files.readAllLines(javaPath)
 
     /**
-     * @return checksum of this file in hex format
+     * @return checksum of this file in hex format //TODO: make this work for directories too
      */
     def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes))
 
@@ -81,6 +85,10 @@ package object files {
     def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
 
     def isHidden: Boolean = Files.isHidden(javaPath)
+
+    // TODO:
+    //def hide(): Boolean = ???
+    //def unhide(): Boolean = ???
 
     def list: Files = javaFile.list map File.apply
     def children: Files = list
@@ -124,6 +132,7 @@ package object files {
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
     def owner: UserPrincipal = Files.getOwner(javaPath)
+    //TODO: def groups: UserPrincipal = ???
 
     def setOwner(owner: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
@@ -178,6 +187,12 @@ package object files {
     def samePathAs(that: File): Boolean = this.javaPath == that.javaPath
 
     def sameFileAs(that: File): Boolean = Files.isSameFile(this.javaPath, that.javaPath)
+
+    /**
+     * @return true if this file is exactly same as that file TODO: recursively for directories
+     */
+    def contentSameAs(that: File): Boolean = this.bytes sameElements that.bytes
+    val `===` = contentSameAs _
 
     override def equals(obj: Any) = obj match {
       case file: File => sameFileAs(file)

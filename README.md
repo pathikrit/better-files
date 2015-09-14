@@ -151,6 +151,5 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * File watchers using Akka actors
 * Classpath resource APIs
 * Zip APIs
-* CSV handling
-* File converters
-* gitter.im
+* CSV handling?
+* File converters/Text extractors?
