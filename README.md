@@ -1,5 +1,7 @@
 better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink]
 ---
+
+[![Join the chat at https://gitter.im/pathikrit/better-files](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
