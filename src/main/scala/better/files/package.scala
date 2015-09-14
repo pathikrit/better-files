@@ -178,11 +178,9 @@ package object files {
       Files.copy(javaPath, destination.javaPath)
     }
 
-    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) {
-      Files.createSymbolicLink(javaPath, destination.javaPath)
-    } else {
-      Files.createLink(javaPath, destination.javaPath)
-    }
+    def symLinkTo(destination: File) = Files.createSymbolicLink(javaPath, destination.javaPath)
+
+    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symLinkTo(destination) else Files.createLink(javaPath, destination.javaPath)
 
     def samePathAs(that: File): Boolean = this.javaPath == that.javaPath
 

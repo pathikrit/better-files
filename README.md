@@ -39,8 +39,8 @@ val contents: Array[Byte] = file.bytes
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
-file < "hello"
-file << "world"
+file < "hello"     // same as file.overwrite("hello")
+file << "world"    // same as file.appendLines("world")
 assert(file! == "hello\nworld")
 ```
 Or even, right-associatively:
@@ -92,7 +92,7 @@ file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)
 file.linkTo(destination)                     // ln file destination
-file.linkTo(destination, symbolic = true)    // ln -s file destination
+file.symLinkTo(destination)                  // ln -s file destination
 file.checksum
 file.setOwner(user: String)     // chown user file
 file.setGroup(group: String)    // chgrp group file
@@ -100,8 +100,8 @@ file.setGroup(group: String)    // chgrp group file
 `chmod`:
 ```scala
 import java.nio.file.attribute.PosixFilePermission._
-file.addPermissions(OWNER_EXECUTE)     // chmod +x file
-file.removePermissions(OWNER_WRITE)    // chmod -w file
+file.addPermissions(OWNER_EXECUTE, GROUP_EXECUTE)      // chmod +X file
+file.removePermissions(OWNER_WRITE)                    // chmod -w file
 // The following are all equivalent:
 assert(file.permissions contains OWNER_EXECUTE)
 assert(file(OWNER_EXECUTE))
@@ -115,10 +115,10 @@ file.extension
 file.contentType
 file.lastModifiedTime     // returns JSR-310 time
 file.owner / file.group
-file.isDirectory / file.isSymbolicLink etc
+file.isDirectory / file.isSymbolicLink / file.isRegularFile
 file.isHidden
 file.hide() / file.unhide()
-file.isOwnerExecutable/file.isGroupReadable // see file.permissions
+file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
 ```
 

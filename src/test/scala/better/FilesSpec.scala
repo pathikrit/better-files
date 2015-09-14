@@ -161,7 +161,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1 write magicWord
     // link
     b1.linkTo(a1, symbolic = true)
-    b2.linkTo(t2, symbolic = true)
+    b2.symLinkTo(t2)
     (b1 / "t1.txt").read() shouldEqual magicWord
     // copy
     b2.contents shouldBe empty
