@@ -49,9 +49,9 @@ Or even, right-associatively:
 All operations are chainable e.g.
 ```scala
  (home / "Documents" / "diary")
-  .write("My name is")
+  .createIfNotExists()  
   .appendNewLine
-  .appendLines("Inigo", "Montoya")
+  .appendLines("My name is", "Inigo Montoya")
   .read()
 ```
 
@@ -77,7 +77,7 @@ You can even use more advanced regex syntax instead of glob syntax:
 ```scala
 val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
-For simpler cases, you can always use `dir.list` or `dir.listRecursively`
+For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
 
 **File attribute APIs**: Query various file attributes e.g.:
 ```scala
@@ -93,15 +93,14 @@ file.size                 // for a directory, computes the directory size
 **File-system operations**: Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
 file.name       // simpler than java.io.File#getName
-file.touch
+file.touch()
 file.extension
 file.readLines 
-file.delete     // unlike the Java API, also works on directories as expected
+file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
 file.moveTo(destination)
 file.copyTo(destination)
 file.checksum
-File.newTemp() / File.newTempDir() 
-file.listRecursively(maxDepth: Int)
+File.newTemp() / File.newTempDir()
 ```
 `chmod`:
 ```scala

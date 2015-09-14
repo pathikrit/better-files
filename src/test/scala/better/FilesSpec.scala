@@ -6,8 +6,14 @@ import java.nio.file.NoSuchFileException
 
 import org.scalatest._
 
-class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
-  val testRoot = File.newTempDir("better-files")
+class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
+  var testRoot: File = _
+  var fa: File = _
+  var a1: File = _
+  var a2: File = _
+  var a11: File = _
+  var a12: File = _
+  var fb: File = _
 
   /**
    * Setup the following directory structure under root
@@ -20,22 +26,21 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
    *    b1/ --> ../a1
    *    b2.txt --> ../a2/a22.txt
    */
-  val (fa, a1, a2, a11, a12, fb) = (
-    testRoot / "a",
-    testRoot / "a" / "a1",
-    testRoot / "a" / "a2",
-    testRoot / "a" / "a1" / "a11.txt",
-    testRoot / "a" / "a1" / "a21.txt",
-    testRoot / "b"
-  )
 
-  before {
+  override def beforeEach() = {
+    testRoot = File.newTempDir("better-files")
+    fa = testRoot / "a"
+    a1 = testRoot / "a" / "a1"
+    a2 = testRoot / "a" / "a2"
+    a11 = testRoot / "a" / "a1" / "a11.txt"
+    a12 = testRoot / "a" / "a1" / "a21.txt"
+    fb = testRoot / "b"
     Seq(a1, a2, fb).foreach(_.mkdirs())
+    a11.touch()
+    a12.touch()
   }
 
-  after {
-    //root.de
-  }
+  override def afterEach() = testRoot.delete()
 
   "files" can "be instantiated" in {
     val f = File("/User/johndoe/Documents")
@@ -73,7 +78,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
   }
 
   it should "do basic I/O" in {
-    a[NoSuchFileException] should be thrownBy a11.read()
     a11 < "hello"
     a11.read() shouldEqual "hello"
     a11.appendNewLine << "world"
@@ -94,13 +98,17 @@ class FilesSpec extends FlatSpec with BeforeAndAfter with Matchers {
     ("src" / "test").listRecursively() should have length 4
   }
 
-  it should "support file attribute APIs" in {
+  "files" should "support names/extensions" in {
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
     a11.extension shouldBe Some(".txt")
     a11.name shouldBe "a11.txt"
     a11.nameWithoutExtension shouldBe "a11"
+  }
 
+  "files" should "have .size" in {
+    a11.size shouldBe 0
+    a11.write("Hello World")
     a11.size should be > 0L
     testRoot.size should be > (a11.size + a12.size)
   }

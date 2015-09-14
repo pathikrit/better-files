@@ -1,8 +1,9 @@
 package better
 
-import java.io.{File => JFile}
-import java.nio.file._, attribute.PosixFilePermission
+import java.io.{File => JFile, IOException}
+import java.nio.file._, java.nio.file.attribute.{FileTime, PosixFilePermission}
 import java.nio.charset.Charset, Charset.defaultCharset
+import java.time.Instant
 import java.util.stream.{Stream => JStream}
 
 import scala.collection.JavaConversions._
@@ -31,6 +32,8 @@ package object files {
     def /(child: String): File = new JFile(javaFile, child)
 
     def /(f: File => File): File = f(this)
+
+    def createIfNotExists(): File = if (javaFile.exists()) this else Files.createFile(javaPath)
 
     def appendLines(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String): File = appendLines(line)
@@ -114,6 +117,29 @@ package object files {
     def isOtherReadable   : Boolean = this(PosixFilePermission.OTHERS_READ)
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
+
+    /**
+     * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
+     */
+    def touch(time: Instant = Instant.now()): File = Files.setLastModifiedTime(createIfNotExists().javaPath, FileTime.from(time))
+
+    def lastModifiedTime: Instant = Files.getLastModifiedTime(javaPath).toInstant
+
+    /**
+     * Deletes this file or directory
+     * @param ignoreIOExceptions If this is set to true, an exception is thrown when delete fails (else it is swallowed)
+     */
+    def delete(ignoreIOExceptions: Boolean = false): File = {
+      try {
+        this match {
+          case Directory(children) => children.foreach(_.delete(ignoreIOExceptions))
+          case _ => javaFile.delete()
+        }
+      } catch {
+        case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
+      }
+      this
+    }
 
     override def toString = path
   }
