@@ -1,6 +1,6 @@
 better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
 ---
-[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg&circle-token=3800512b1d901f1cf24538b392df471117d40cfb
+[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
@@ -8,7 +8,7 @@ better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeI
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 [bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
 [bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
-[gitterImg]: https://gitter.im/pathikrit/better-files
+[gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 

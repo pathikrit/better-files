@@ -3,8 +3,10 @@ package better
 import java.io.{File => JFile, IOException}
 import java.nio.file._, attribute.{UserPrincipal, FileTime, PosixFilePermission}
 import java.nio.charset.Charset, Charset.defaultCharset
+import java.security.MessageDigest
 import java.time.Instant
 import java.util.stream.{Stream => JStream}
+import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
@@ -55,6 +57,11 @@ package object files {
     def contents: String = read()
     def `!`:String = contents
     def readLines: Seq[String] = Files.readAllLines(javaPath)
+
+    /**
+     * @return checksum of this file in hex format
+     */
+    def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes))
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None

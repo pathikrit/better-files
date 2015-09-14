@@ -142,6 +142,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support chown/chgrp" in {
+    a[java.io.IOException] should be thrownBy b1.checksum()
     fa.owner.getName should not be empty
     //fa.chown("nobody").chgrp("nobody")
   }
@@ -155,8 +156,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (b1 / "t1.txt").read() shouldEqual magicWord
     // copy
     b2.contents shouldBe empty
+    t1.checksum() should not equal t2.checksum()
     a[FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
     t1.copyTo(t2, overwrite = true)
+    t1.exists() shouldBe true
+    t1.checksum() shouldEqual t2.checksum()
     b2.contents shouldEqual magicWord
     // rename
     t2.name shouldBe "t2.txt"
