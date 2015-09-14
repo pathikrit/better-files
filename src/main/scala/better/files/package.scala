@@ -50,6 +50,7 @@ package object files {
     def read(charset: Charset = defaultCharset()): String = new String(bytes, charset)
     def contents: String = read()
     def `!`:String = contents
+    def readLines: Seq[String] = Files.readAllLines(javaPath)
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None

@@ -88,6 +88,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.appendLines("hello", "world")
     t1.contents shouldEqual "foobar\nhello\nworld\n"
     t2.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
+
+    (testRoot / "diary")
+      .createIfNotExists()
+      .appendNewLine
+      .appendLines("My name is", "Inigo Montoya")
+      .readLines should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
   }
 
   it should "glob" in {

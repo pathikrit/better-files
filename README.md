@@ -52,7 +52,7 @@ All operations are chainable e.g.
   .createIfNotExists()  
   .appendNewLine
   .appendLines("My name is", "Inigo Montoya")
-  .readLines()
+  .readLines
 ```
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
@@ -79,29 +79,15 @@ val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
 For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
 
-**File attribute APIs**: Query various file attributes e.g.:
-```scala
-file.lastModifiedTime     // returns JSR-310 time
-file.owner
-file.contentType
-file.isDirectory
-file.isHidden
-file.isOwnerExecutable/file.isGroupReadable // see file.permissions
-file.size                 // for a directory, computes the directory size
-```
-
 **File-system operations**: Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
-file.name       // simpler than java.io.File#getName
 file.touch()
-file.extension
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
 file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)
 file.linkTo(destination)    // ln -s file destination
 file.checksum
-File.newTemp() / File.newTempDir()
 file.setOwner(user: String)     // chown user file
 file.setGroup(group: String)    // chgrp user group
 ```
@@ -114,6 +100,20 @@ file -= OWNER_EXECUTE     // chmod -x file
 assert(file.permissions contains OWNER_EXECUTE)
 assert(file(OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
+```
+
+**File attribute APIs**: Query various file attributes e.g.:
+```scala
+file.name       // simpler than java.io.File#getName
+file.extension
+file.contentType
+file.lastModifiedTime     // returns JSR-310 time
+file.owner
+file.group
+file.isDirectory
+file.isHidden
+file.isOwnerExecutable/file.isGroupReadable // see file.permissions
+file.size                 // for a directory, computes the directory size
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
@@ -144,4 +144,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "0.0.1"
 * File watchers using Akka actors
 * Classpath resource APIs
 * Zip APIs
+* CSV handling
+* File converters?
 * gitter.im
