@@ -35,7 +35,6 @@ val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
 file.append("world")
 assert(file.contentAsString == "hello\nworld")
-val contents: Stream[Byte] = file.bytes
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -46,7 +45,10 @@ assert(file! == "hello\nworld")
 Or even, right-associatively:
 ```scala
 "hello" >: file
-"world" >>: file 
+"world" >>: file
+// concat files:
+Seq(file1, file2, file3) >: file4     // same as cat file1 file2 file3 > file4
+Seq(file1, file2, file3) >>: file4    // same as cat file1 file2 file3 >> file4
 ```
 All operations are chainable e.g.
 ```scala
@@ -67,22 +69,28 @@ file.content            // returns scala.io.BufferedSource
 file.contentAsString    // returns String (contents of file) 
 file.readLines          // returns Stream[String] (lines in the file)
  ```
- You can supply your own `scala.io.Codec` too (be default it uses `Codec.default`):
+ You can supply your own `scala.io.Codec` too (by default it uses `Codec.default`):
  ```scala
 import scala.io.Codec
-file.contentAsString(Codec.UTF8)
-```
-Or:
-```
+val content: String = file.contentAsString(Codec.UTF8)
+//or
 import scala.io.Codec.string2codec
-file.readLines(codec = "US-ASCII")
- ```
+val content: String = file.contentAsString(codec = "US-ASCII")
+//or
+implicit val codec = Codec.ISO8859
+val content: String = file.contentAsString
+ ```scala
 You can always access the Java I/O classes:
 ```
 file.reader   // returns java.io.BufferedReader
 file.out      // returns java.io.OutputStream
 file.writer   // returns java.io.BufferedWriter
 file.in       // returns java.io.InputStream
+```
+The library also add useful implicits to above classes e.g.:
+```scala
+file1.in |> file2.out   //pipes an inputstream to an outputstream
+System.in |> file2.out  
 ```
  
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
@@ -152,15 +160,18 @@ file.size                 // for a directory, computes the directory size
 file1 == file2    // true iff both point to same path on the filesystem
 file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
 ```
-<!---
-**Zip APIs**: You don't have to lookup on StackOverflow "How to zip/unzip in Java/Scala?":
+
+**Zip APIs**: You don't have to lookup on StackOverflow ["How to zip/unzip in Java/Scala?"](http://stackoverflow.com/questions/9324933/):
 ```scala
 val zipFile = file"path/to/research.zip"
 val documents = home/"Documents"
-val research: File = zipFile.unzipTo(documents/"research")    // Unzip
+val research: File = zipFile.unzipTo(documents/"research")    // unzip
 ```
 You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents/"research")`
---->
+Similarly, zipping files is trivial:
+```scala
+val target = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
+````
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
@@ -172,7 +183,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
 ```
 
 **Future work**:
-* concat/pipe (|>)
 * file.attrs
 * File watchers using Akka actors
 * Classpath resource APIs
