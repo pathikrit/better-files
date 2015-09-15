@@ -31,7 +31,7 @@ package object files {
     def hasExtension: Boolean = isRegularFile && (name contains ".")
 
     /**
-     * Changes the file-extension; if file does not have an extension, it add the extension
+     * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
      * Example usage file"foo.java".changeExtensionTo(".scala")
      */
     def changeExtensionTo(extension: String): File = if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this

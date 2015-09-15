@@ -34,8 +34,8 @@ Resources in the classpath can be accessed using resource interpolator e.g. `res
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
 file.append("world")
-assert(file.contents == "hello\nworld")
-val contents: Array[Byte] = file.bytes
+assert(file.contentAsString == "hello\nworld")
+val contents: Stream[Byte] = file.bytes
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -60,12 +60,37 @@ All operations are chainable e.g.
   .readLines
 ```
 
+**Stream APIs**: There are various ways to slurp a file:
+ ```scala
+file.bytes              // returns Stream[Byte]
+file.content            // returns scala.io.BufferedSource
+file.contentAsString    // returns String (contents of file) 
+file.readLines          // returns Stream[String] (lines in the file)
+ ```
+ You can supply your own `scala.io.Codec` too (be default it uses `Codec.default`):
+ ```scala
+import scala.io.Codec
+file.contentAsString(Codec.UTF8)
+```
+Or:
+```
+import scala.io.Codec.string2codec
+file.readLines(codec = "US-ASCII")
+ ```
+You can always access the Java I/O classes:
+```
+file.reader   // returns java.io.BufferedReader
+file.out      // returns java.io.OutputStream
+file.writer   // returns java.io.BufferedWriter
+file.in       // returns java.io.InputStream
+```
+ 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
 "src"/"test"/"foo" match {
   case SymbolicLink(to) =>          //this must be first case statement if you want to handle symlinks specially; else will follow link
   case Directory(children) => 
-  case RegularFile(contents) => 
+  case RegularFile(content) => 
   case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         //A file that does not exist
 }
@@ -147,10 +172,12 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
 ```
 
 **Future work**:
-* Return Stream[Byte] instead of Array[Byte] everywhere
-* Implicit handling of Input/OutputStreams and readers/writers
+* concat/pipe (|>)
+* file.attrs
 * File watchers using Akka actors
 * Classpath resource APIs
 * Zip APIs
 * CSV handling?
 * File converters/Text extractors?
+* Code coverage
+* Scala 2.10 compat

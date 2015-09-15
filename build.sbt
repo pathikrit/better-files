@@ -1,5 +1,5 @@
 name := "better-files"
-version := "1.0.3-SNAPSHOT"
+version := "1.1.0-SNAPSHOT"
 description := "Scala wrapper for Java files"
 licenses +=("MIT", url("http://opensource.org/licenses/MIT"))
 organization := "com.github.pathikrit"
