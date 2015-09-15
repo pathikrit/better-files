@@ -1,5 +1,5 @@
 name := "better-files"
-version := "1.0.1-SNAPSHOT"
+version := "1.0.2-SNAPSHOT"
 description := "Scala wrapper for Java files"
 licenses +=("MIT", url("http://opensource.org/licenses/MIT"))
 organization := "com.github.pathikrit"
@@ -17,5 +17,3 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules"    %% "scala-java8-compat"   % "0.7.0",
   "org.scalatest"             %% "scalatest"            % "2.2.5"   % Test
 )
-
-coverageEnabled := true

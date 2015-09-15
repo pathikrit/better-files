@@ -1,8 +1,8 @@
 machine:
   java:
     version: oraclejdk8
-test:
-  post:
-    - sbt coverageReport
-    - sbt coverageAggregate
-    - sbt codacyCoverage
+#test:
+#  post:
+#    - sbt coverageReport
+#    - sbt coverageAggregate
+#    - sbt codacyCoverage

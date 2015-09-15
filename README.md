@@ -143,7 +143,7 @@ For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.0"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.1"
 ```
 
 **Future work**:
