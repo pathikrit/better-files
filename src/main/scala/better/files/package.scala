@@ -11,6 +11,7 @@ import javax.xml.bind.DatatypeConverter
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
 import scala.io.Source
+import scala.util.Properties
 
 package object files {
   /**
@@ -235,7 +236,7 @@ package object files {
   type Files = Seq[File]
 
   def root: File = FileSystems.getDefault.getRootDirectories.head
-  def home: File = sys.props("user.home").toFile
+  def home: File = Paths.get(Properties.userHome)
   val `..`: File => File = _.parent
   val  `.`: File => File = identity
 

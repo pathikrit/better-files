@@ -31,14 +31,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   override def beforeEach() = {
     testRoot = File.newTempDir("better-files")
-    fa = testRoot / "a"
-    a1 = testRoot / "a" / "a1"
-    a2 = testRoot / "a" / "a2"
-    t1 = testRoot / "a" / "a1" / "t1.txt"
-    t2 = testRoot / "a" / "a1" / "t2.txt"
-    fb = testRoot / "b"
-    b1 = testRoot / "b" / "b1"
-    b2 = testRoot / "b" / "b2.txt"
+    fa = testRoot/"a"
+    a1 = testRoot/"a"/"a1"
+    a2 = testRoot/"a"/"a2"
+    t1 = testRoot/"a"/"a1"/"t1.txt"
+    t2 = testRoot/"a"/"a1"/"t2.txt"
+    fb = testRoot/"b"
+    b1 = testRoot/"b"/"b1"
+    b2 = testRoot/"b"/"b2.txt"
     Seq(a1, a2, fb).foreach(_.mkdirs())
     t1.touch()
     t2.touch()
@@ -49,33 +49,35 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   "files" can "be instantiated" in {
     val f = File("/User/johndoe/Documents")
     val f1: File = file"/User/johndoe/Documents"
-    val f2: File = root / "User" / "johndoe" / "Documents"
-    val f3: File = home / "Documents"
+    val f2: File = root/"User"/"johndoe"/"Documents"
+    val f3: File = home/"Documents"
     val f4: File = new java.io.File("/User/johndoe/Documents")
-    val f5: File = "/User" / "johndoe" / "Documents"
+    val f5: File = "/User"/"johndoe"/"Documents"
     val f6: File = "/User/johndoe/Documents".toFile
-    val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
+    val f7: File = root/"User"/"johndoe"/"Documents"/"presentations" / `..`
 
-    (root / "usr" / "johndoe" / "docs").toString shouldEqual "/usr/johndoe/docs"
+    root.toString shouldEqual "/"
+    home.toString.count(_ == '/') should be > 1
+    (root/"usr"/"johndoe"/"docs").toString shouldEqual "/usr/johndoe/docs"
     Seq(f, f1, f2, f4, f5, f6, f7).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
   it can "be matched" in {
-    "src" / "test" / "foo" match {
+    "src"/"test"/"foo" match {
       case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
       case other if other.exists() => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
       case _ =>                               //A file that does not exist
     }
-    root / "dev" / "null" match {
+    root/"dev"/"null" match {
       case SymbolicLink(to) => fail()
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
       case other if other.exists() =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
       case _ => fail()
     }
-    root / "dev" match {
+    root/"dev" match {
       case Directory(children) => children.exists(_.name == "null") shouldBe true // /dev should have 'null'
       case _ => fail()
     }
@@ -93,7 +95,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contents shouldEqual "foobar\nhello\nworld\n"
     t2.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
 
-    (testRoot / "diary")
+    (testRoot/"diary")
       .createIfNotExists()
       .appendNewLine
       .appendLines("My name is", "Inigo Montoya")
@@ -101,11 +103,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    ("src" / "test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
-    ("src" / "test").listRecursively().filter(_.extension contains ".scala") should have length 1
-    ("src" / "test").list should have length 1
-    ("src" / "test").listRecursively(maxDepth = 1) should have length 2
-    ("src" / "test").listRecursively() should have length 4
+    ("src"/"test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
+    ("src"/"test").listRecursively().filter(_.extension contains ".scala") should have length 1
+    ("src"/"test").list should have length 1
+    ("src"/"test").listRecursively(maxDepth = 1) should have length 2
+    ("src"/"test").listRecursively() should have length 4
   }
 
   it should "support names/extensions" in {
@@ -137,8 +139,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support equality" in {
-    fa shouldEqual (testRoot / "a")
-    fa shouldNot equal (testRoot / "b")
+    fa shouldEqual (testRoot/"a")
+    fa shouldNot equal (testRoot/"b")
     //val c1 = fa.checksum()
     //fa.checksum() shouldEqual c1
     t1 < "hello"

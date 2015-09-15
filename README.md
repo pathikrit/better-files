@@ -20,18 +20,18 @@ import better.files._
 
 val f = File("/User/johndoe/Documents")
 val f1: File = file"/User/johndoe/Documents"
-val f2: File = root / "User" / "johndoe" / "Documents"
-val f3: File = home / "Documents"
+val f2: File = root/"User"/"johndoe"/"Documents"
+val f3: File = home/"Documents"
 val f4: File = new java.io.File("/User/johndoe/Documents")
-val f5: File = "/User" / "johndoe" / "Documents"
+val f5: File = "/User"/"johndoe"/"Documents"
 val f6: File = "/User/johndoe/Documents".toFile
-val f7: File = root / "User" / "johndoe" / "Documents" / "presentations" / `..`
+val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
 **File I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
-val file = root / "tmp" / "test.txt"
+val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
 file.append("world")
 assert(file.contents == "hello\nworld")
@@ -50,11 +50,11 @@ Or even, right-associatively:
 ```
 All operations are chainable e.g.
 ```scala
- (root / "tmp" / "diary.txt")
+ (root/"tmp"/"diary.txt")
   .createIfNotExists()  
   .appendNewLine
   .appendLines("My name is", "Inigo Montoya")
-  .moveTo(home / "Documents")
+  .moveTo(home/"Documents")
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
   .readLines
@@ -62,7 +62,7 @@ All operations are chainable e.g.
 
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
 ```scala
-"src" / "test" / "foo" match {
+"src"/"test"/"foo" match {
   case SymbolicLink(to) =>          //this must be first case statement if you want to handle symlinks specially; else will follow link
   case Directory(children) => 
   case RegularFile(contents) => 
@@ -73,7 +73,7 @@ All operations are chainable e.g.
 
 **Globbing**: No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
-val dir = "src" / "test"
+val dir = "src"/"test"
 val matches: Seq[File] = dir.glob("**/*.{java,scala}")
 // above code is equivalent to:
 dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
@@ -131,10 +131,10 @@ file1 === file2   // true iff both have same contents (works for BOTH regular-fi
 **Zip APIs**: You don't have to lookup on StackOverflow "How to zip/unzip in Java/Scala?":
 ```scala
 val zipFile = file"path/to/research.zip"
-val documents = home / "Documents"
-val research: File = zipFile.unzipTo(documents / "research")    // Unzip
+val documents = home/"Documents"
+val research: File = zipFile.unzipTo(documents/"research")    // Unzip
 ```
-You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents / "research")`
+You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents/"research")`
 --->
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
