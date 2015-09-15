@@ -143,10 +143,12 @@ For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.1"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
 ```
 
 **Future work**:
+* Return Stream[Byte] instead of Array[Byte] everywhere
+* Implicit handling of Input/OutputStreams and readers/writers
 * File watchers using Akka actors
 * Classpath resource APIs
 * Zip APIs

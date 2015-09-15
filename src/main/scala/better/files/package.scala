@@ -91,7 +91,7 @@ package object files {
     //def hide(): Boolean = ???
     //def unhide(): Boolean = ???
 
-    def list: Files = javaFile.list map File.apply
+    def list: Files = javaFile.listFiles() map File.apply
     def children: Files = list
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(javaPath, maxDepth)
 
