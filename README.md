@@ -64,13 +64,14 @@ All operations are chainable e.g.
 
 **Stream APIs**: There are various ways to slurp a file:
  ```scala
-file.bytes              // returns Stream[Byte]
-file.content            // returns scala.io.BufferedSource
-file.contentAsString    // returns String (contents of file) 
-file.readLines          // returns Stream[String] (lines in the file)
- ```
- You can supply your own `scala.io.Codec` too (by default it uses `Codec.default`):
- ```scala
+val bytes   : Stream[Byte]            = file.bytes
+val chars   : Stream[Char]            = file.chars
+val lines   : Stream[String]          = file.readLines
+val content : String                  = file.contentAsString
+val source  : scala.io.BufferedSource = file.content 
+```
+You can supply your own `scala.io.Codec` too (by default it uses `Codec.default`):
+```scala
 import scala.io.Codec
 val content: String = file.contentAsString(Codec.UTF8)
 //or
@@ -79,18 +80,18 @@ val content: String = file.contentAsString(codec = "US-ASCII")
 //or
 implicit val codec = Codec.ISO8859
 val content: String = file.contentAsString
- ```scala
+ ```
 You can always access the Java I/O classes:
-```
-file.reader   // returns java.io.BufferedReader
-file.out      // returns java.io.OutputStream
-file.writer   // returns java.io.BufferedWriter
-file.in       // returns java.io.InputStream
-```
-The library also add useful implicits to above classes e.g.:
 ```scala
-file1.in |> file2.out   //pipes an inputstream to an outputstream
-System.in |> file2.out  
+val reader       : java.io.BufferedReader = file.reader 
+val outputstream : java.io.OutputStream   = file.out 
+val writer       : java.io.BufferedWriter = file.writer 
+val inputstream  : java.io.InputStream    = file.in 
+```
+The library also adds some useful implicits to above classes e.g.:
+```scala
+file1.in |> file2.out   //pipes a reader to a writer
+System.in |> file2.out  //pipes an inputstream to an outputstream
 ```
  
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
@@ -153,6 +154,7 @@ file.isHidden
 file.hide() / file.unhide()
 file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
+file.posixAttributes / file.dosAttributes  // see file.attributes
 ```
 
 **Equality**: Use `==` to check for path-based equality and `===` for content-based equality
@@ -183,11 +185,9 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
 ```
 
 **Future work**:
-* file.attrs
 * File watchers using Akka actors
 * Classpath resource APIs
-* Zip APIs
 * CSV handling?
-* File converters/Text extractors?
+* File converters/text extractors?
 * Code coverage
 * Scala 2.10 compat

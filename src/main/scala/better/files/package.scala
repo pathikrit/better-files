@@ -1,7 +1,7 @@
 package better
 
 import java.io.{File => JFile, IOException}
-import java.nio.file._, attribute.{UserPrincipal, FileTime, PosixFilePermission}
+import java.nio.file._, attribute._
 import java.nio.charset.Charset, Charset.defaultCharset
 import java.security.MessageDigest
 import java.time.Instant
@@ -132,6 +132,10 @@ package object files {
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
+    def attributes      : BasicFileAttributes = Files.readAttributes(javaPath, classOf[BasicFileAttributes])
+    def posixAttributes : PosixFileAttributes = Files.readAttributes(javaPath, classOf[PosixFileAttributes])
+    def dosAttributes   : DosFileAttributes   = Files.readAttributes(javaPath, classOf[DosFileAttributes])
+
     def owner: UserPrincipal = Files.getOwner(javaPath)
     //TODO: def groups: UserPrincipal = ???
 
@@ -236,7 +240,8 @@ package object files {
   type Files = Seq[File]
 
   def root: File = FileSystems.getDefault.getRootDirectories.head
-  def home: File = Paths.get(Properties.userHome)
+  def home: File = File(Properties.userHome)
+  def  tmp: File = File(Properties.tmpDir)
   val `..`: File => File = _.parent
   val  `.`: File => File = identity
 
