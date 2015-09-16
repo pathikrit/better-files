@@ -17,12 +17,12 @@ package object files {
   /**
    * Scala wrapper for java.io.File
    */
-  case class File(javaFile: JFile) {
-    def javaPath: Path = javaFile.toPath
+  case class File(file: JFile) {
+    def path: Path = file.toPath
 
-    def path: String = javaPath.toString
+    def fullPath: String = path.toString
 
-    def name: String = javaFile.getName
+    def name: String = file.getName     //TODO: alias as fileName
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
@@ -39,17 +39,17 @@ package object files {
      */
     def changeExtensionTo(extension: String): File = if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
 
-    def contentType: Option[String] = Option(Files.probeContentType(javaPath))
+    def contentType: Option[String] = Option(Files.probeContentType(path))
 
-    def parent: File = javaFile.getParentFile
+    def parent: File = file.getParentFile
 
-    def /(child: String): File = new JFile(javaFile, child)
+    def /(child: String): File = new JFile(file, child)
 
     def /(f: File => File): File = f(this)
 
-    def createIfNotExists(): File = if (javaFile.exists()) this else Files.createFile(javaPath)
+    def createIfNotExists(): File = if (file.exists()) this else Files.createFile(path)
 
-    def content(implicit codec: Codec): BufferedSource = Source.fromFile(javaFile)(codec)
+    def content(implicit codec: Codec): BufferedSource = Source.fromFile(file)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
     def bytes: Iterator[Byte] = {
@@ -64,26 +64,26 @@ package object files {
     def contentAsString(implicit codec: Codec): String = new String(bytes.toArray, codec)
     def `!`(implicit codec: Codec): String = contentAsString(codec)
 
-    def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(javaPath, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def append(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def appendNewLine: File = appendLines("")
 
-    def write(bytes: Iterator[Byte]): File = Files.write(javaPath, bytes.toArray) //TODO: Large I/O?
+    def write(bytes: Iterator[Byte]): File = Files.write(path, bytes.toArray) //TODO: Large I/O?
 
     def write(text: String)(implicit codec: Codec): File = write(text.getBytes(codec).toIterator)
     def overwrite(text: String)(implicit codec: Codec) = write(text)(codec)
     def <(text: String)(implicit codec: Codec) = write(text)(codec)
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
 
-    def reader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(javaPath, codec)
+    def reader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
 
-    def writer(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(javaPath, codec)
+    def writer(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
 
-    def in: InputStream = Files.newInputStream(javaPath)
+    def in: InputStream = Files.newInputStream(path)
 
-    def out: OutputStream = Files.newOutputStream(javaPath)
+    def out: OutputStream = Files.newOutputStream(path)
 
     /**
      * @return checksum of this file in hex format //TODO: make this work for directories too
@@ -93,30 +93,30 @@ package object files {
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
      */
-    def symLink: Option[File] = when(isSymLink)(Files.readSymbolicLink(javaPath))
+    def symLink: Option[File] = when(isSymLink)(Files.readSymbolicLink(path))
 
     /**
      * @return true if this file (or the file found by following symlink) is a directory
      */
-    def isDirectory: Boolean = Files.isDirectory(javaPath)
+    def isDirectory: Boolean = Files.isDirectory(path)
 
     /**
      * @return true if this file (or the file found by following symlink) is a regular file
      */
-    def isRegularFile: Boolean = Files.isRegularFile(javaPath)
+    def isRegularFile: Boolean = Files.isRegularFile(path)
 
-    def isSymLink: Boolean = Files.isSymbolicLink(javaPath)
+    def isSymLink: Boolean = Files.isSymbolicLink(path)
 
-    def isHidden: Boolean = Files.isHidden(javaPath)
+    def isHidden: Boolean = Files.isHidden(path)
 
     // TODO:
     //def hide(): Boolean = ???
     //def unhide(): Boolean = ???
 
-    def list: Files = javaFile.listFiles().toIterator map javaToFile
+    def list: Files = file.listFiles().toIterator map javaToFile
     def children: Files = list
 
-    def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(javaPath, maxDepth)
+    def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
 
     //TODO: Add def walk(maxDepth: Int): Stream[Path] = that ignores I/O errors and excludes self
 
@@ -127,19 +127,19 @@ package object files {
      */
     def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
       val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-      Files.walk(javaPath).filter((matcher.matches _).asJava)
+      Files.walk(path).filter((matcher.matches _).asJava)
     }
 
-    def fileSystem: FileSystem = javaPath.getFileSystem
+    def fileSystem: FileSystem = path.getFileSystem
 
     /**
      * @return file size (for directories, return size of the directory) in bytes
      */
-    def size: Long = listRecursively().map(f => Files.size(f.javaPath)).sum
+    def size: Long = listRecursively().map(f => Files.size(f.path)).sum
 
-    def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(javaPath).toSet
+    def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(path).toSet
 
-    def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(javaPath, permissions)
+    def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
     def addPermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
 
@@ -160,25 +160,26 @@ package object files {
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
-    def attributes      : BasicFileAttributes = Files.readAttributes(javaPath, classOf[BasicFileAttributes])
-    def posixAttributes : PosixFileAttributes = Files.readAttributes(javaPath, classOf[PosixFileAttributes])
-    def dosAttributes   : DosFileAttributes   = Files.readAttributes(javaPath, classOf[DosFileAttributes])
+    def attributes      : BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes])
+    def posixAttributes : PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes])
+    def dosAttributes   : DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes])
 
-    def owner: UserPrincipal = Files.getOwner(javaPath)
+    def owner: UserPrincipal = Files.getOwner(path)
+
     //TODO: def groups: UserPrincipal = ???
 
-    def setOwner(owner: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
+    def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     val chown = setOwner _
 
-    def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
+    def setGroup(group: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
     val chgrp = setGroup _
 
     /**
      * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
      */
-    def touch(time: Instant = Instant.now()): File = Files.setLastModifiedTime(createIfNotExists().javaPath, FileTime.from(time))
+    def touch(time: Instant = Instant.now()): File = Files.setLastModifiedTime(createIfNotExists().path, FileTime.from(time))
 
-    def lastModifiedTime: Instant = Files.getLastModifiedTime(javaPath).toInstant
+    def lastModifiedTime: Instant = Files.getLastModifiedTime(path).toInstant
 
     /**
      * Deletes this file or directory
@@ -188,7 +189,7 @@ package object files {
       try {
         this match {
           case Directory(children) => children.foreach(_.delete(ignoreIOExceptions))
-          case _ => javaFile.delete()
+          case _ => file.delete()
         }
       } catch {
         case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
@@ -196,29 +197,23 @@ package object files {
       this
     }
 
-    def moveTo(destination: Path, overwrite: Boolean): File = if (overwrite) {
-      Files.move(javaPath, destination, StandardCopyOption.REPLACE_EXISTING)
-    } else {
-      Files.move(javaPath, destination)
-    }
+    def moveTo(destination: Path, overwrite: Boolean): File = Files.move(path, destination, copyOptions(overwrite): _*)
 
-    def renameTo(newName: String): File = moveTo(javaPath resolveSibling newName)
+    def renameTo(newName: String): File = moveTo(path resolveSibling newName)
 
-    def moveTo(destination: File, overwrite: Boolean = false): File = moveTo(destination.javaPath, overwrite)
+    def moveTo(destination: File, overwrite: Boolean = false): File = moveTo(destination.path, overwrite)
 
-    def copyTo(destination: File, overwrite: Boolean = false): File = if (overwrite) {
-      Files.copy(javaPath, destination.javaPath, StandardCopyOption.REPLACE_EXISTING)
-    } else {
-      Files.copy(javaPath, destination.javaPath)
-    }
+    def copyTo(destination: File, overwrite: Boolean = false): File = Files.copy(path, destination.path, copyOptions(overwrite): _*)
 
-    def symLinkTo(destination: File) = Files.createSymbolicLink(javaPath, destination.javaPath)
+    private[this] def copyOptions(overwrite: Boolean): Seq[StandardCopyOption] = if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else Nil
 
-    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symLinkTo(destination) else Files.createLink(javaPath, destination.javaPath)
+    def symLinkTo(destination: File) = Files.createSymbolicLink(path, destination.path)
 
-    def samePathAs(that: File): Boolean = this.javaPath == that.javaPath
+    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symLinkTo(destination) else Files.createLink(path, destination.path)
 
-    def sameFileAs(that: File): Boolean = Files.isSameFile(this.javaPath, that.javaPath)
+    def samePathAs(that: File): Boolean = this.path == that.path
+
+    def sameFileAs(that: File): Boolean = Files.isSameFile(this.path, that.path)
 
     /**
      * @return true if this file is exactly same as that file TODO: recursively for directories
@@ -231,9 +226,9 @@ package object files {
       case _ => false
     }
 
-    override def hashCode = javaPath.hashCode()
+    override def hashCode = path.hashCode()
 
-    override def toString = javaPath.toUri.toString
+    override def toString = path.toUri.toString
   }
 
   object File {
@@ -287,7 +282,7 @@ package object files {
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
   implicit def pathToFile(path: Path): File = path.toFile
   implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
-  implicit def toJavaFile(file: File): JFile = file.javaFile
+  implicit def toJavaFile(file: File): JFile = file.file
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

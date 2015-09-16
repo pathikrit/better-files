@@ -14,7 +14,7 @@ better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](sr
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
 1. [Instantiation](#instantiation)
-1. [Simple I/O](#simple-io)
+1. [Simple I/O](#file-read-write)
 1. [Streams and Codecs](#streams-and-codecs)
 1. [Java interpolability](#java-interpolability)
 1. [Pattern matching](#pattern-matching)
@@ -43,8 +43,8 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-## Read/Write
-Dead simple R/W via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+## File Read/Write
+Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
@@ -194,7 +194,12 @@ val zipFile = file"path/to/research.zip"
 // Unzipping:
 val research: File = zipFile.unzipTo(home/"Documents"/"research")   
 // Zipping:
-val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
+val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3).create()
+````
+With passwords:
+```scala
+zipFile.unzipTo(dir, password = Some("secret-sauce"))
+target.zip(file1, file2).create(password = Some("secret-sauce"))
 ````
 --->
 

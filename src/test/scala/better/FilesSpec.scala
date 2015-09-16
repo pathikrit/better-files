@@ -76,7 +76,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       case _ => fail()
     }
     root/"dev" match {
-      case Directory(children) => children.exists(_.path == "/dev/null") shouldBe true // /dev should have 'null'
+      case Directory(children) => children.exists(_.fullPath == "/dev/null") shouldBe true // /dev should have 'null'
       case _ => fail()
     }
   }
