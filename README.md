@@ -14,7 +14,7 @@ better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](sr
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
 1. [Instantiation](#instantiation)
-1. [Simple I/O](#file-read-write)
+1. [Simple I/O](#file-readwrite)
 1. [Streams and Codecs](#streams-and-codecs)
 1. [Java interpolability](#java-interpolability)
 1. [Pattern matching](#pattern-matching)
@@ -103,20 +103,20 @@ val path         : java.nio.file.Path     = file.path
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala
-file1.reader > file2.writer       //pipes a reader to a writer
-System.in > file2.out             //pipes an inputstream to an outputstream
-inputstream.pipeTo(outputstream)  //if you don't like symbols
+file1.reader > file2.writer       // pipes a reader to a writer
+System.in > file2.out             // pipes an inputstream to an outputstream
+src.pipeTo(sink)                  // if you don't like symbols
 ```
  
 ## Pattern matching
 Instead of `if-else`, more idiomatic powerful Scala pattern matching:
 ```scala
 "src"/"test"/"foo" match {
-  case SymbolicLink(to) =>          //this must be first case statement if you want to handle symlinks specially; else will follow link
-  case Directory(children) => 
-  case RegularFile(content) => 
-  case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
-  case _ =>                         //A file that does not exist
+  case SymbolicLink(to) =>          // this must be first case statement if you want to handle symlinks specially; else will follow link
+  case Directory(children) =>       
+  case RegularFile(source) =>       
+  case other if other.exists() =>   // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
+  case _ =>                         // a file that does not exist
 }
 
 val Directory(docs) = (home/"Downloads"/"research.zip") unzipTo (home/"Documents")
@@ -137,7 +137,7 @@ val matches = dir.glob("^\\w*$", syntax = "regex")
 For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
 
 ## File system operations
-Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
+Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch`, `cat` etc:
 ```scala
 file.touch()
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
@@ -147,9 +147,8 @@ file.copyTo(destination)
 file.linkTo(destination)                     // ln file destination
 file.symLinkTo(destination)                  // ln -s file destination
 file.checksum
-file.setOwner(user: String)     // chown user file
-file.setGroup(group: String)    // chgrp group file
-// concat files:
+file.setOwner(user: String)    // chown user file
+file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
 Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
@@ -220,3 +219,4 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.0.0"
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
+* UNIX DSL e.g. `cp(file1, file2)`, `ln(src, target)` or `rm(file*)`. [Ammonite-Ops](https://lihaoyi.github.io/Ammonite/#Ammonite-Ops) already does this.
