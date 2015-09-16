@@ -1,5 +1,4 @@
-better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
----
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
 [circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
@@ -14,7 +13,22 @@ better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeI
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
-**Instantiation**: The following are all equivalent:
+1. [Instantiation](#instantiation)
+1. [Simple I/O](#simple-io)
+1. [Streams and Codecs](#streams-and-codecs)
+1. [Java interpolability](#java-interpolability)
+1. [Pattern matching](#pattern-matching)
+1. [Globbing](#globbing)
+1. [File system operations](##filesystem-operations)
+1. [File attributes](##file-attributes)
+1. [File comparison](#file-comparison)
+
+<!--- 
+1. [Zip/Unzip](#zip-apis) 
+--->
+ 
+## Instantiation 
+The following are all equivalent:
 ```scala
 import better.files._
 
@@ -29,13 +43,13 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-**File I/O**: Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+## Simple I/O
+Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
 file.append("world")
-assert(file.contents == "hello\nworld")
-val contents: Array[Byte] = file.bytes
+assert(file.contentAsString == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -46,7 +60,7 @@ assert(file! == "hello\nworld")
 Or even, right-associatively:
 ```scala
 "hello" >: file
-"world" >>: file 
+"world" >>: file
 ```
 All operations are chainable e.g.
 ```scala
@@ -57,21 +71,59 @@ All operations are chainable e.g.
   .moveTo(home/"Documents")
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
-  .readLines
+  .lines
 ```
 
-**Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
+## Streams and Codecs
+Various ways to slurp a file without loading the contents into memory:
+ ```scala
+val bytes  : Iterator[Byte]            = file.bytes
+val chars  : Iterator[Char]            = file.chars
+val lines  : Iterator[String]          = file.readLines
+val source : scala.io.BufferedSource   = file.content 
+```
+You can supply your own decoder too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
+```scala
+import scala.io.Codec
+file.contentAsString(Codec.ISO8859)
+//or
+import scala.io.Codec.string2codec
+file.write("hello world")(codec = "US-ASCII")
+ ```
+ 
+## Java interpolability 
+You can always access the Java I/O classes:
+```scala
+val reader       : java.io.BufferedReader = file.reader 
+val outputstream : java.io.OutputStream   = file.out 
+val writer       : java.io.BufferedWriter = file.writer 
+val inputstream  : java.io.InputStream    = file.in
+val file         : java.io.File           = file        // implicit conversion
+val path         : java.nio.file.Path     = file.path
+```
+The library also adds some useful implicits to above classes e.g.:
+```scala
+file1.reader > file2.writer       //pipes a reader to a writer
+System.in > file2.out             //pipes an inputstream to an outputstream
+inputstream.pipeTo(outputstream)  //if you don't like symbols
+```
+ 
+## Pattern matching
+Instead of `if-else`, more idiomatic powerful Scala pattern matching:
 ```scala
 "src"/"test"/"foo" match {
   case SymbolicLink(to) =>          //this must be first case statement if you want to handle symlinks specially; else will follow link
   case Directory(children) => 
-  case RegularFile(contents) => 
+  case RegularFile(content) => 
   case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         //A file that does not exist
 }
+
+val Directory(docs) = (home/"Downloads"/"research.zip") unzipTo (home/"Documents")
 ```
 
-**Globbing**: No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
+## Globbing
+No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src"/"test"
 val matches: Seq[File] = dir.glob("**/*.{java,scala}")
@@ -84,7 +136,8 @@ val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
 For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
 
-**File-system operations**: Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
+## File system operations
+Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
 file.touch()
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
@@ -96,6 +149,25 @@ file.symLinkTo(destination)                  // ln -s file destination
 file.checksum
 file.setOwner(user: String)     // chown user file
 file.setGroup(group: String)    // chgrp group file
+// concat files:
+Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
+Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
+```
+
+## File attributes
+Query various file attributes e.g.:
+```scala
+file.name       // simpler than java.io.File#getName
+file.extension
+file.contentType
+file.lastModifiedTime     // returns JSR-310 time
+file.owner / file.group
+file.isDirectory / file.isSymbolicLink / file.isRegularFile
+file.isHidden
+file.hide() / file.unhide()
+file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
+file.size                 // for a directory, computes the directory size
+file.posixAttributes / file.dosAttributes  // see file.attributes
 ```
 `chmod`:
 ```scala
@@ -108,49 +180,38 @@ assert(file(OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
 ```
 
-**File attribute APIs**: Query various file attributes e.g.:
+## File comparison
+Use `==` to check for path-based equality and `===` for content-based equality
 ```scala
-file.name       // simpler than java.io.File#getName
-file.extension
-file.contentType
-file.lastModifiedTime     // returns JSR-310 time
-file.owner / file.group
-file.isDirectory / file.isSymbolicLink / file.isRegularFile
-file.isHidden
-file.hide() / file.unhide()
-file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
-file.size                 // for a directory, computes the directory size
-```
-
-**Equality**: Use `==` to check for path-based equality and `===` for content-based equality
-```scala
-file1 == file2    // true iff both point to same path on the filesystem
-file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
+file1 == file2    // equivalent to file1.samePathAs(file2)
+file1 === file2   // equivalent to file1.sameContentAs(file2) (works for BOTH regular-files and directories)
 ```
 <!---
-**Zip APIs**: You don't have to lookup on StackOverflow "How to zip/unzip in Java/Scala?":
+## Zip APIs
+You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 val zipFile = file"path/to/research.zip"
-val documents = home/"Documents"
-val research: File = zipFile.unzipTo(documents/"research")    // Unzip
-```
-You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents/"research")`
+// Unzipping:
+val research: File = zipFile.unzipTo(home/"Documents"/"research")   
+// Zipping:
+val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
+````
 --->
 
+---
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
-**sbt**: In your `build.sbt`, add this:
+## sbt
+The library is compatible with both Scala 2.10 and 2.11. In your `build.sbt`, add this:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.0.0"
 ```
 
-**Future work**:
-* Return Stream[Byte] instead of Array[Byte] everywhere
-* Implicit handling of Input/OutputStreams and readers/writers
+## Future work
+* Zip APIs
 * File watchers using Akka actors
 * Classpath resource APIs
-* Zip APIs
 * CSV handling?
-* File converters/Text extractors?
+* File converters/text extractors?

@@ -1,8 +1,8 @@
 package better
 
-import java.io.{File => JFile, IOException}
-import java.nio.file._, attribute.{UserPrincipal, FileTime, PosixFilePermission}
-import java.nio.charset.Charset, Charset.defaultCharset
+import java.io.{File => JFile, _}
+import java.nio.file._, attribute._
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.stream.{Stream => JStream}
@@ -10,7 +10,7 @@ import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
-import scala.io.Source
+import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
 package object files {
@@ -19,19 +19,22 @@ package object files {
    */
   case class File(javaFile: JFile) {
     def javaPath: Path = javaFile.toPath
+
     def path: String = javaPath.toString
 
     def name: String = javaFile.getName
+
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
     /**
      * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
      */
     def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
+
     def hasExtension: Boolean = isRegularFile && (name contains ".")
 
     /**
-     * Changes the file-extension; if file does not have an extension, it add the extension
+     * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
      * Example usage file"foo.java".changeExtensionTo(".scala")
      */
     def changeExtensionTo(extension: String): File = if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
@@ -46,27 +49,45 @@ package object files {
 
     def createIfNotExists(): File = if (javaFile.exists()) this else Files.createFile(javaPath)
 
-    def appendLines(lines: String*): File = Files.write(javaPath, lines, defaultCharset(), StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-    def <<(line: String): File = appendLines(line)
-    val >>: = << _
+    def content(implicit codec: Codec): BufferedSource = Source.fromFile(javaFile)(codec)
+    def source(implicit codec: Codec): BufferedSource = content(codec)
+
+    def bytes: Iterator[Byte] = {
+      val stream = in
+      Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
+    }
+
+    def chars(implicit codec: Codec): Iterator[Char] = content(codec)
+
+    def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
+
+    def contentAsString(implicit codec: Codec): String = new String(bytes.toArray, codec)
+    def `!`(implicit codec: Codec): String = contentAsString(codec)
+
+    def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(javaPath, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
+    def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def appendNewLine: File = appendLines("")
 
-    def write(bytes: File.Contents): File = Files.write(javaPath, bytes)
-    def write(text: String): File = Files.write(javaPath, text)
-    val overwrite = write _       //TODO: Method alias macro
-    val < = write _
-    val `>:` = write _
+    def write(bytes: Iterator[Byte]): File = Files.write(javaPath, bytes.toArray) //TODO: Large I/O?
 
-    def bytes: File.Contents = Files.readAllBytes(javaPath)
-    def read(charset: Charset = defaultCharset()): String = new String(bytes, charset)
-    def contents: String = read()
-    def `!`:String = contents
-    def readLines: Seq[String] = Files.readAllLines(javaPath)
+    def write(text: String)(implicit codec: Codec): File = write(text.getBytes(codec).toIterator)
+    def overwrite(text: String)(implicit codec: Codec) = write(text)(codec)
+    def <(text: String)(implicit codec: Codec) = write(text)(codec)
+    def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
+
+    def reader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(javaPath, codec)
+
+    def writer(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(javaPath, codec)
+
+    def in: InputStream = Files.newInputStream(javaPath)
+
+    def out: OutputStream = Files.newOutputStream(javaPath)
 
     /**
      * @return checksum of this file in hex format //TODO: make this work for directories too
      */
-    def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes))
+    def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes.toArray))
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
@@ -91,8 +112,9 @@ package object files {
     //def hide(): Boolean = ???
     //def unhide(): Boolean = ???
 
-    def list: Files = javaFile.listFiles() map File.apply
+    def list: Files = javaFile.listFiles().toIterator map javaToFile
     def children: Files = list
+
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(javaPath, maxDepth)
 
     //TODO: Add def walk(maxDepth: Int): Stream[Path] = that ignores I/O errors and excludes self
@@ -115,13 +137,18 @@ package object files {
     def size: Long = listRecursively().map(f => Files.size(f.javaPath)).sum
 
     def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(javaPath).toSet
+
     def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(javaPath, permissions)
+
     def addPermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
+
     def removePermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
+
     /**
      * test if file has this permission
      */
     def apply(permission: PosixFilePermission): Boolean = permissions(permission)
+
     def isOwnerReadable   : Boolean = this(PosixFilePermission.OWNER_READ)
     def isOwnerWritable   : Boolean = this(PosixFilePermission.OWNER_WRITE)
     def isOwnerExecutable : Boolean = this(PosixFilePermission.OWNER_EXECUTE)
@@ -132,12 +159,17 @@ package object files {
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
+    def attributes      : BasicFileAttributes = Files.readAttributes(javaPath, classOf[BasicFileAttributes])
+    def posixAttributes : PosixFileAttributes = Files.readAttributes(javaPath, classOf[PosixFileAttributes])
+    def dosAttributes   : DosFileAttributes   = Files.readAttributes(javaPath, classOf[DosFileAttributes])
+
     def owner: UserPrincipal = Files.getOwner(javaPath)
     //TODO: def groups: UserPrincipal = ???
 
     def setOwner(owner: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
-    def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
     val chown = setOwner _
+
+    def setGroup(group: String): File = Files.setOwner(javaPath, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
     val chgrp = setGroup _
 
     /**
@@ -200,30 +232,29 @@ package object files {
 
     override def hashCode = javaPath.hashCode()
 
-    override def toString = path
+    override def toString = javaPath.toUri.toString
   }
 
   object File {
     def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
+
     def newTemp(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
 
-    def apply(path: String): File = path.toFile
-
-    type Contents = Array[Byte]
+    def apply(path: String): File = Paths.get(path)
   }
 
   object RegularFile {
     /**
      * @return contents of this file if it is a regular file
      */
-    def unapply(file: File): Option[File.Contents] = when(file.isRegularFile)(file.contents)
+    def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.content)
   }
 
   object Directory {
     /**
      * @return children of this directory if file a directory
      */
-    def unapply(file: File): Option[Seq[File]] = when(file.isDirectory)(file.children)
+    def unapply(file: File): Option[Files] = when(file.isDirectory)(file.children)
   }
 
   object SymbolicLink {
@@ -233,10 +264,11 @@ package object files {
     def unapply(file: File): Option[File] = file.symLink
   }
 
-  type Files = Seq[File]
+  type Files = Iterator[File]
 
   def root: File = FileSystems.getDefault.getRootDirectories.head
-  def home: File = Paths.get(Properties.userHome)
+  def home: File = Properties.userHome.toFile
+  def  tmp: File = Properties.tmpDir.toFile
   val `..`: File => File = _.parent
   val  `.`: File => File = identity
 
@@ -247,15 +279,15 @@ package object files {
   }
 
   implicit class StringOps(str: String) {
-    def toFile: File = Paths.get(str)
-    def /(child: String): File = toFile / child
+    def toFile: File = File(str)
+    def /(child: String): File = toFile/child
   }
 
+  implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
   implicit def pathToFile(path: Path): File = path.toFile
   implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
   implicit def toJavaFile(file: File): JFile = file.javaFile
 
-  private[files] implicit def stringToBytes(s: String): File.Contents = s.getBytes
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().toSeq.map(pathToFile)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }
