@@ -131,6 +131,7 @@ package object files {
     }
 
     def fileSystem: FileSystem = path.getFileSystem
+    def fs: FileSystem = fileSystem
 
     /**
      * @return file size (for directories, return size of the directory) in bytes

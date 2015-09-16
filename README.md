@@ -1,14 +1,4 @@
-# better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
-[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
-[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
-[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
-[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
-[codacyImg]: https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1
-[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
-[bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
-[bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
-[gitterImg]: https://badges.gitter.im/Join%20Chat.svg
-[gitterLink]: https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
@@ -16,7 +6,7 @@ that can be **interchangeably used with Java classes** via automatic bi-directio
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
 1. [Streams and Codecs](#streams-and-codecs)
-1. [Java interpolability](#java-interpolability)
+1. [Java compatibility](#java-interoperability)
 1. [Pattern matching](#pattern-matching)
 1. [Globbing](#globbing)
 1. [File system operations](#file-system-operations)
@@ -79,11 +69,13 @@ Various ways to slurp a file without loading the contents into memory:
  ```scala
 val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
-val lines  : Iterator[String]          = file.readLines
+val lines  : Iterator[String]          = file.lines
 val source : scala.io.BufferedSource   = file.content 
 ```
-You can supply your own decoder too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
+You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
+val content: String = file.contentAsString  // default codec
+// custom codec:
 import scala.io.Codec
 file.contentAsString(Codec.ISO8859)
 //or
@@ -91,15 +83,16 @@ import scala.io.Codec.string2codec
 file.write("hello world")(codec = "US-ASCII")
  ```
  
-## Java interpolability 
+## Java interoperability
 You can always access the Java I/O classes:
 ```scala
-val reader       : java.io.BufferedReader = file.reader 
-val outputstream : java.io.OutputStream   = file.out 
-val writer       : java.io.BufferedWriter = file.writer 
-val inputstream  : java.io.InputStream    = file.in
-val file         : java.io.File           = file        // implicit conversion
-val path         : java.nio.file.Path     = file.path
+val reader       : java.io.BufferedReader   = file.reader 
+val outputstream : java.io.OutputStream     = file.out 
+val writer       : java.io.BufferedWriter   = file.writer 
+val inputstream  : java.io.InputStream      = file.in
+val file         : java.io.File             = file        // implicit conversion
+val path         : java.nio.file.Path       = file.path
+val fs           : java.nio.file.FileSystem = file.fileSystem
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala
@@ -182,8 +175,8 @@ assert(file.isOwnerExecutable)
 ## File comparison
 Use `==` to check for path-based equality and `===` for content-based equality
 ```scala
-file1 == file2    // equivalent to file1.samePathAs(file2)
-file1 === file2   // equivalent to file1.sameContentAs(file2) (works for BOTH regular-files and directories)
+file1 == file2    // equivalent to `file1.samePathAs(file2)`
+file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
 ```
 <!---
 ## Zip APIs
@@ -205,12 +198,12 @@ target.zip(file1, file2).create(password = Some("secret-sauce"))
 ---
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
-## sbt
-The library is compatible with both Scala 2.10 and 2.11. In your `build.sbt`, add this:
+## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Bintray][bintrayImg]][bintrayLink]
+The library is compatible with both Scala 2.10.x and 2.11.x. In your `build.sbt`, add this:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.0.0"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
 
 ## Future work
@@ -219,4 +212,15 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.0.0"
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
-* UNIX DSL e.g. `cp(file1, file2)`, `ln(src, target)` or `rm(file*)`. [Ammonite-Ops](https://lihaoyi.github.io/Ammonite/#Ammonite-Ops) already does this.
+* [UNIX DSL](https://lihaoyi.github.io/Ammonite/#Ammonite-Ops) e.g. `cp(file1, file2)`, `ln(src, target)` or `rm(file*)`
+
+[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
+[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
+[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
+[codacyImg]: https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1
+[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
+[bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
+[bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
+[gitterImg]: https://badges.gitter.im/Join%20Chat.svg
+[gitterLink]: https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
