@@ -1,5 +1,4 @@
-better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
----
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeImg]][versionEyeLink] [![Codacy][codacyImg]][codacyLink] [![Bintray][bintrayImg]][bintrayLink] [![Gitter][gitterImg]][gitterLink]
 [circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
@@ -14,18 +13,20 @@ better-files [![CircleCI][circleCiImg]][circleCiLink] [![VersionEye][versionEyeI
 better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
 that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
 
-# Table of Contents
 1. [Instantiation](#instantiation)
-2. [File I/O](#io)
-3. [Stream APIs](#stream-apis)
-4. [Java interpolability](#java-interpolability)
-5. [Pattern matching](#pattern-matching)
-6. [Globbing](#globbing)
-7. [File-system operations](#fs-ops)
-8. [File attribute APIs](#file-attrs)
-9. [File comparison](#file-comparison)
-10. [Zip APIs](#zipping)
+1. [Simple I/O](#simple-io)
+1. [Streams and Codecs](#streams-and-codecs)
+1. [Java interpolability](#java-interpolability)
+1. [Pattern matching](#pattern-matching)
+1. [Globbing](#globbing)
+1. [File system operations](##filesystem-operations)
+1. [File attributes](##file-attributes)
+1. [File comparison](#file-comparison)
 
+<!--- 
+1. [Zip/Unzip](#zip-apis) 
+--->
+ 
 ## Instantiation 
 The following are all equivalent:
 ```scala
@@ -42,7 +43,7 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-## File I/O
+## Simple I/O
 Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root/"tmp"/"test.txt"
@@ -60,9 +61,6 @@ Or even, right-associatively:
 ```scala
 "hello" >: file
 "world" >>: file
-// concat files:
-Seq(file1, file2) >: file3    // same as cat file1 file2 > file3
-Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
 All operations are chainable e.g.
 ```scala
@@ -76,7 +74,7 @@ All operations are chainable e.g.
   .lines
 ```
 
-## Stream APIs
+## Streams and Codecs
 Various ways to slurp a file without loading the contents into memory:
  ```scala
 val bytes  : Iterator[Byte]            = file.bytes
@@ -84,7 +82,7 @@ val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.readLines
 val source : scala.io.BufferedSource   = file.content 
 ```
-You can supply your own decoder too for any method that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
+You can supply your own decoder too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
 import scala.io.Codec
 file.contentAsString(Codec.ISO8859)
@@ -138,7 +136,7 @@ val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
 For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
 
-## File-system operations
+## File system operations
 Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch` etc:
 ```scala
 file.touch()
@@ -151,19 +149,12 @@ file.symLinkTo(destination)                  // ln -s file destination
 file.checksum
 file.setOwner(user: String)     // chown user file
 file.setGroup(group: String)    // chgrp group file
-```
-`chmod`:
-```scala
-import java.nio.file.attribute.PosixFilePermission._
-file.addPermissions(OWNER_EXECUTE, GROUP_EXECUTE)      // chmod +X file
-file.removePermissions(OWNER_WRITE)                    // chmod -w file
-// The following are all equivalent:
-assert(file.permissions contains OWNER_EXECUTE)
-assert(file(OWNER_EXECUTE))
-assert(file.isOwnerExecutable)
+// concat files:
+Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
+Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
 
-## File attribute APIs
+## File attributes
 Query various file attributes e.g.:
 ```scala
 file.name       // simpler than java.io.File#getName
@@ -178,6 +169,16 @@ file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
 file.posixAttributes / file.dosAttributes  // see file.attributes
 ```
+`chmod`:
+```scala
+import java.nio.file.attribute.PosixFilePermission._
+file.addPermissions(OWNER_EXECUTE, GROUP_EXECUTE)      // chmod +X file
+file.removePermissions(OWNER_WRITE)                    // chmod -w file
+// The following are all equivalent:
+assert(file.permissions contains OWNER_EXECUTE)
+assert(file(OWNER_EXECUTE))
+assert(file.isOwnerExecutable)
+```
 
 ## File comparison
 Use `==` to check for path-based equality and `===` for content-based equality
@@ -185,7 +186,7 @@ Use `==` to check for path-based equality and `===` for content-based equality
 file1 == file2    // equivalent to file1.samePathAs(file2)
 file1 === file2   // equivalent to file1.sameContentAs(file2) (works for BOTH regular-files and directories)
 ```
-
+<!---
 ## Zip APIs
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
@@ -195,7 +196,9 @@ val research: File = zipFile.unzipTo(home/"Documents"/"research")
 // Zipping:
 val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
 ````
+--->
 
+---
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
 ## sbt
@@ -203,10 +206,11 @@ The library is compatible with both Scala 2.10 and 2.11. In your `build.sbt`, ad
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
+libraryDependencies += "com.github.pathikrit" %% "better-files" % "2.0.0"
 ```
 
 ## Future work
+* Zip APIs
 * File watchers using Akka actors
 * Classpath resource APIs
 * CSV handling?
