@@ -232,8 +232,6 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
-* ARM
-* Move implicit converters to a special import
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files

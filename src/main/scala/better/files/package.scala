@@ -293,14 +293,31 @@ package object files {
     def mkdir(file: File): File = file.mkdir()
     def chown(owner: String, file: File): File = file.setOwner(owner)
     def chgrp(group: String, file: File): File = file.setGroup(group)
-    def chmod_+(permission: PosixFilePermission, file: File): File = elease v2file.addPermissions(permission)
+    def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermissions(permission)
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermissions(permission)
   }
+
+  implicit class InputStreamOps(in: InputStream) {
+    /**
+     * Pipe an input stream to an output stream
+     */
+    def >(out: OutputStream): Unit = {
+      val buffer = Array.ofDim[Byte](1<<10)
+      var length: Int = in.read(buffer)
+      while(length > 0) {
+        out.write(buffer, 0, length)
+        length = in.read(buffer)
+      }
+      in.close()    //TODO: ARM?
+      out.close()
+    }
+  }
+
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
   implicit def pathToFile(path: Path): File = path.toFile
   implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
-  implicit def toJavaFile(file: File): JFile = file.file
+  implicit def toJavaFile(file: File): JFile = file.file            //TODO: Move implicit converters to a special import?
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
