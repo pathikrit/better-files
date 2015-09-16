@@ -1,6 +1,6 @@
 package better
 
-import java.io.{File => JFile, IOException}
+import java.io.{File => JFile, _}
 import java.nio.file._, attribute._
 import java.nio.charset.Charset, Charset.defaultCharset
 import java.security.MessageDigest
@@ -10,7 +10,7 @@ import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scala.util.Properties
 
 package object files {
@@ -62,6 +62,11 @@ package object files {
     def contents: String = read()
     def `!`:String = contents
     def readLines: Seq[String] = Files.readAllLines(javaPath)
+
+    def reader(implicit codec: Codec = Codec.default): BufferedReader = Files.newBufferedReader(javaPath, codec)
+    def out: OutputStream = Files.newOutputStream(javaPath)
+    def writer: BufferedWriter = Files.newBufferedWriter(javaPath)
+    def in: InputStream = Files.newInputStream(javaPath)
 
     /**
      * @return checksum of this file in hex format //TODO: make this work for directories too
@@ -256,6 +261,7 @@ package object files {
     def /(child: String): File = toFile / child
   }
 
+  implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
   implicit def pathToFile(path: Path): File = path.toFile
   implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
   implicit def toJavaFile(file: File): JFile = file.javaFile

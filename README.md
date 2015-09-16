@@ -47,8 +47,8 @@ Or even, right-associatively:
 "hello" >: file
 "world" >>: file
 // concat files:
-Seq(file1, file2, file3) >: file4     // same as cat file1 file2 file3 > file4
-Seq(file1, file2, file3) >>: file4    // same as cat file1 file2 file3 >> file4
+Seq(file1, file2) >: file3    // same as cat file1 file2 > file3
+Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
 All operations are chainable e.g.
 ```scala
@@ -73,13 +73,13 @@ val source  : scala.io.BufferedSource = file.content
 You can supply your own `scala.io.Codec` too (by default it uses `Codec.default`):
 ```scala
 import scala.io.Codec
-val content: String = file.contentAsString(Codec.UTF8)
+val utf8Content: String = file.contentAsString(Codec.UTF8)
 //or
 import scala.io.Codec.string2codec
-val content: String = file.contentAsString(codec = "US-ASCII")
+val asciiContent: String = file.contentAsString(codec = "US-ASCII")
 //or
 implicit val codec = Codec.ISO8859
-val content: String = file.contentAsString
+val iso8859Content: String = file.contentAsString
  ```
 You can always access the Java I/O classes:
 ```scala
@@ -90,8 +90,9 @@ val inputstream  : java.io.InputStream    = file.in
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala
-file1.in |> file2.out   //pipes a reader to a writer
-System.in |> file2.out  //pipes an inputstream to an outputstream
+file1.reader > file2.writer       //pipes a reader to a writer
+System.in > file2.out             //pipes an inputstream to an outputstream
+inputstream.pipeTo(outputstream)  //if you don't like symbols
 ```
  
 **Powerful pattern matching**: Instead of `if-else`, more readable Scala pattern matching:
@@ -103,6 +104,8 @@ System.in |> file2.out  //pipes an inputstream to an outputstream
   case other if other.exists() =>   //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         //A file that does not exist
 }
+
+val Directory(docs) = (home/"Downloads"/"research.zip") unzipTo (home/"Documents")
 ```
 
 **Globbing**: No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
@@ -163,21 +166,19 @@ file1 == file2    // true iff both point to same path on the filesystem
 file1 === file2   // true iff both have same contents (works for BOTH regular-files and directories)
 ```
 
-**Zip APIs**: You don't have to lookup on StackOverflow ["How to zip/unzip in Java/Scala?"](http://stackoverflow.com/questions/9324933/):
+**Zip APIs**: You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 val zipFile = file"path/to/research.zip"
-val documents = home/"Documents"
-val research: File = zipFile.unzipTo(documents/"research")    // unzip
+val research: File = zipFile.unzipTo(home/"Documents"/"research")    // unzip
 ```
-You can also cleverly use the extractors above: `val Directory(docs) = zipFile.unzipTo(documents/"research")`
 Similarly, zipping files is trivial:
 ```scala
-val target = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
+val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
 ````
 
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
-**sbt**: In your `build.sbt`, add this:
+**sbt**: The library is compatible with both Scala 2.10 and 2.11. In your `build.sbt`, add this:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
@@ -189,5 +190,3 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % "1.0.2"
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
-* Code coverage
-* Scala 2.10 compat

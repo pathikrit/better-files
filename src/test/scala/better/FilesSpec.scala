@@ -186,5 +186,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t3.exists() shouldBe false
   }
 
+  it should "do I/O via streams/writers" in {
+    t1.reader
+    //t1.in > t2.out
+  }
+
   //TODO: Test above for all kinds of FileType
 }
