@@ -59,27 +59,23 @@ All operations are chainable e.g.
   .moveTo(home/"Documents")
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
-  .readLines
+  .lines
 ```
 
-**Stream APIs**: There are various ways to slurp a file:
+**Stream APIs**: There are various ways to slurp a file without loading the contents into memory:
  ```scala
-val bytes   : Stream[Byte]            = file.bytes
-val chars   : Stream[Char]            = file.chars
-val lines   : Stream[String]          = file.readLines
-val content : String                  = file.contentAsString
-val source  : scala.io.BufferedSource = file.content 
+val bytes  : Iterator[Byte]            = file.bytes
+val chars  : Iterator[Char]            = file.chars
+val lines  : Iterator[String]          = file.readLines
+val source : scala.io.BufferedSource   = file.content 
 ```
-You can supply your own `scala.io.Codec` too (by default it uses `Codec.default`):
+You can supply your own decoder too for any method that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
 import scala.io.Codec
-val utf8Content: String = file.contentAsString(Codec.UTF8)
+file.contentAsString(Codec.ISO8859)
 //or
 import scala.io.Codec.string2codec
-val asciiContent: String = file.contentAsString(codec = "US-ASCII")
-//or
-implicit val codec = Codec.ISO8859
-val iso8859Content: String = file.contentAsString
+file.write("hello world")(codec = "US-ASCII")
  ```
 You can always access the Java I/O classes:
 ```scala
@@ -169,10 +165,9 @@ file1 === file2   // true iff both have same contents (works for BOTH regular-fi
 **Zip APIs**: You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 val zipFile = file"path/to/research.zip"
-val research: File = zipFile.unzipTo(home/"Documents"/"research")    // unzip
-```
-Similarly, zipping files is trivial:
-```scala
+// Unzipping:
+val research: File = zipFile.unzipTo(home/"Documents"/"research")   
+// Zipping:
 val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3)
 ````
 

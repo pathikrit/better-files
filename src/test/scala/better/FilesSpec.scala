@@ -1,7 +1,5 @@
 package better
 
-import java.nio.file.FileAlreadyExistsException
-
 import better.files._
 
 import org.scalatest._
@@ -56,9 +54,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val f6: File = "/User/johndoe/Documents".toFile
     val f7: File = root/"User"/"johndoe"/"Documents"/"presentations" / `..`
 
-    root.toString shouldEqual "/"
+    root.toString shouldEqual "file:///"
     home.toString.count(_ == '/') should be > 1
-    (root/"usr"/"johndoe"/"docs").toString shouldEqual "/usr/johndoe/docs"
+    (root/"usr"/"johndoe"/"docs").toString shouldEqual "file:///usr/johndoe/docs"
     Seq(f, f1, f2, f4, f5, f6, f7).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
@@ -85,25 +83,25 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "do basic I/O" in {
     t1 < "hello"
-    t1.read() shouldEqual "hello"
+    t1.contentAsString shouldEqual "hello"
     t1.appendNewLine << "world"
     (t1!) shouldEqual "hello\nworld\n"
     "foo" `>:` t1
     "bar" >>: t1
-    t1.contents shouldEqual "foobar\n"
+    t1.contentAsString shouldEqual "foobar\n"
     t1.appendLines("hello", "world")
-    t1.contents shouldEqual "foobar\nhello\nworld\n"
-    t2.write("hello").appendNewLine.appendLines("world").read() shouldEqual "hello\nworld\n"
+    t1.contentAsString shouldEqual "foobar\nhello\nworld\n"
+    t2.write("hello").appendNewLine.appendLines("world").contentAsString shouldEqual "hello\nworld\n"
 
     (testRoot/"diary")
       .createIfNotExists()
       .appendNewLine
       .appendLines("My name is", "Inigo Montoya")
-      .readLines should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
+      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
   }
 
   it should "glob" in {
-    ("src"/"test").glob("**/*.scala").map(_.name) shouldEqual Seq("FilesSpec.scala")
+    ("src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
     ("src"/"test").listRecursively().filter(_.extension contains ".scala") should have length 1
     ("src"/"test").list should have length 1
     ("src"/"test").listRecursively(maxDepth = 1) should have length 2
@@ -164,15 +162,15 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     // link
     b1.linkTo(a1, symbolic = true)
     b2.symLinkTo(t2)
-    (b1 / "t1.txt").read() shouldEqual magicWord
+    (b1 / "t1.txt").contentAsString shouldEqual magicWord
     // copy
-    b2.contents shouldBe empty
+    b2.contentAsString shouldBe empty
     t1.checksum() should not equal t2.checksum()
-    a[FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
+    a[java.nio.file.FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
     t1.copyTo(t2, overwrite = true)
     t1.exists() shouldBe true
     t1.checksum() shouldEqual t2.checksum()
-    b2.contents shouldEqual magicWord
+    b2.contentAsString shouldEqual magicWord
     // rename
     t2.name shouldBe "t2.txt"
     t2.exists() shouldBe true
@@ -189,6 +187,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "do I/O via streams/writers" in {
     t1.reader
     //t1.in > t2.out
+  }
+
+  it should "support custom codec" in {
+    import scala.io.Codec
+    t1.write("Hello World")(codec = "ISO-8859-1")
+    t1.contentAsString(Codec.ISO8859) shouldEqual "Hello World"
   }
 
   //TODO: Test above for all kinds of FileType
