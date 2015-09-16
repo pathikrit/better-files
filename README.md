@@ -13,10 +13,7 @@ that can be **interchangeably used with Java classes** via automatic bi-directio
 1. [UNIX DSL](#unix-dsl)
 1. [File attributes](#file-attributes)
 1. [File comparison](#file-comparison)
-
-<!--- 
-1. [Zip/Unzip](#zip-apis) 
---->
+1. [Zip/Unzip](#zip-apis)
  
 ## Instantiation 
 The following are all equivalent:
@@ -113,7 +110,8 @@ Instead of `if-else`, more idiomatic powerful Scala pattern matching:
   case _ =>                         // a file that does not exist
 }
 // or as extractors on LHS:
-val Directory(researchDocs) = home/"Downloads"/"research"```
+val Directory(researchDocs) = home/"Downloads"/"research"
+```
 
 ## Globbing
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
@@ -163,6 +161,7 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permissions, files)
 chmod_-(permissions, files)
+unzip(file)
 ```
 
 ## File attributes
@@ -197,8 +196,8 @@ Use `==` to check for path-based equality and `===` for content-based equality
 file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
 ```
-<!---
-## Zip APIs
+
+## Zip APIs (WIP)
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 val zipFile = file"path/to/research.zip"
@@ -211,8 +210,7 @@ With passwords:
 ```scala
 zipFile.unzipTo(dir, password = Some("secret-sauce"))
 target.zip(file1, file2).create(password = Some("secret-sauce"))
-````
---->
+```
 
 ---
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
@@ -227,7 +225,6 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 
 ## Future work
-* Zip APIs
 * File watchers using Akka actors
 * Classpath resource APIs
 * CSV handling?
