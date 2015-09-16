@@ -285,12 +285,16 @@ package object files {
   object Cmds {
     def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
     def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
-    def rm(files: File*): Unit = files.foreach(_.delete(ignoreIOExceptions = true))
+    def rm(file: File): File = file.delete(ignoreIOExceptions = true)
     def ln(file1: File, file2: File): File = file1 linkTo file2
     def lns(file1: File, file2: File): File = file1 symLinkTo file2
     def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
     def touch(file: File): File = file.touch()
     def mkdir(file: File): File = file.mkdir()
+    def chown(owner: String, file: File): File = file.setOwner(owner)
+    def chgrp(group: String, file: File): File = file.setGroup(group)
+    def chmod_+(permission: PosixFilePermission, file: File): File = elease v2file.addPermissions(permission)
+    def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermissions(permission)
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

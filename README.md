@@ -112,9 +112,8 @@ Instead of `if-else`, more idiomatic powerful Scala pattern matching:
   case other if other.exists() =>   // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
   case _ =>                         // a file that does not exist
 }
-
-val Directory(docs) = (home/"Downloads"/"research.zip") unzipTo (home/"Documents")
-```
+// or as extractors on LHS:
+val Directory(researchDocs) = home/"Downloads"/"research"```
 
 ## Globbing
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
@@ -153,12 +152,17 @@ All the above can also be expressed using methods reminiscent of the command lin
 import better.files_, Cmds._
 cp(file1, file2)
 mv(file1, file2)
-rm(file*)
+rm(file)
 ln(file1, file2)    // hard link
 lns(file1, file2)   // soft link
-cat(file1*)
+cat(file1)
+cat(file1) >>: file
 touch(file)
 mkdir(file)
+chown(owner, file)
+chgrp(owner, file)
+chmod_+(permissions, files)
+chmod_-(permissions, files)
 ```
 
 ## File attributes
@@ -228,6 +232,8 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
+* ARM
+* Move implicit converters to a special import
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
