@@ -47,7 +47,7 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
-    def createIfNotExists(): File = if (file.exists()) this else Files.createFile(path)
+    def createIfNotExists(): File = if (file.exists()) this else {parent.mkdirs(); Files.createFile(path)}
 
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(file)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
@@ -56,6 +56,8 @@ package object files {
       val stream = in
       Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
     }
+
+    def mkdir(): File = {file.mkdirs(); this}
 
     def chars(implicit codec: Codec): Iterator[Char] = content(codec)
 
@@ -278,6 +280,17 @@ package object files {
   implicit class StringOps(str: String) {
     def toFile: File = File(str)
     def /(child: String): File = toFile/child
+  }
+
+  object Cmds {
+    def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
+    def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
+    def rm(files: File*): Unit = files.foreach(_.delete(ignoreIOExceptions = true))
+    def ln(file1: File, file2: File): File = file1 linkTo file2
+    def lns(file1: File, file2: File): File = file1 symLinkTo file2
+    def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
+    def touch(file: File): File = file.touch()
+    def mkdir(file: File): File = file.mkdir()
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

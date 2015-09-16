@@ -10,6 +10,7 @@ that can be **interchangeably used with Java classes** via automatic bi-directio
 1. [Pattern matching](#pattern-matching)
 1. [Globbing](#globbing)
 1. [File system operations](#file-system-operations)
+1. [UNIX DSL](#unix-dsl)
 1. [File attributes](#file-attributes)
 1. [File comparison](#file-comparison)
 
@@ -146,6 +147,20 @@ Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
 Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
 
+## UNIX DSL
+All the above can also be expressed using methods reminiscent of the command line:
+```scala
+import better.files_, Cmds._
+cp(file1, file2)
+mv(file1, file2)
+rm(file*)
+ln(file1, file2)    // hard link
+lns(file1, file2)   // soft link
+cat(file1*)
+touch(file)
+mkdir(file)
+```
+
 ## File attributes
 Query various file attributes e.g.:
 ```scala
@@ -198,13 +213,14 @@ target.zip(file1, file2).create(password = Some("secret-sauce"))
 ---
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
-## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Bintray][bintrayImg]][bintrayLink]
+## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
 The library is compatible with both Scala 2.10.x and 2.11.x. In your `build.sbt`, add this:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
+Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 
 ## Future work
 * Zip APIs
@@ -212,15 +228,14 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 * Classpath resource APIs
 * CSV handling?
 * File converters/text extractors?
-* [UNIX DSL](https://lihaoyi.github.io/Ammonite/#Ammonite-Ops) e.g. `cp(file1, file2)`, `ln(src, target)` or `rm(file*)`
 
-[circleCiImg]: https://circleci.com/gh/pathikrit/better-files.svg?style=svg
+[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
-[codacyImg]: https://api.codacy.com/project/badge/0e2aeb7949bc49e6802afcc43a7a1aa1
+[codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
-[bintrayImg]: https://api.bintray.com/packages/pathikrit/maven/better-files/images/download.svg
-[bintrayLink]: https://bintray.com/pathikrit/maven/better-files/_latestVersion
+[bintrayImg]: https://img.shields.io/bintray/v/pathikrit/maven/better-files.svg
+[bintrayLink]: https://bintray.com/pathikrit/maven/better-files
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
-[gitterLink]: https://gitter.im/pathikrit/better-files?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitterLink]: https://gitter.im/pathikrit/better-files
