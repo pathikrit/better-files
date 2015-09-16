@@ -287,8 +287,10 @@ package object files {
     def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
     def rm(file: File): File = file.delete(ignoreIOExceptions = true)
     def ln(file1: File, file2: File): File = file1 linkTo file2
-    def lns(file1: File, file2: File): File = file1 symLinkTo file2
+    def ln_s(file1: File, file2: File): File = file1 symLinkTo file2
     def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
+    def ls(file: File): Files = file.list
+    def ls_r(file: File): Files = file.listRecursively()
     def touch(file: File): File = file.touch()
     def mkdir(file: File): File = file.mkdir()
     def chown(owner: String, file: File): File = file.setOwner(owner)
@@ -311,8 +313,25 @@ package object files {
       in.close()    //TODO: ARM?
       out.close()
     }
+
+    def buffered: BufferedInputStream = new BufferedInputStream(in)
+
+    def reader(implicit codec: Codec): InputStreamReader = new InputStreamReader(in, codec)
   }
 
+  implicit class OutputStreamOps(out: OutputStream) {
+    def buffered: BufferedOutputStream = new BufferedOutputStream(out)
+
+    def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
+  }
+
+  implicit class ReaderOps(reader: Reader) {
+    def buffered: BufferedReader = new BufferedReader(reader)
+  }
+
+  implicit class WriterOps(writer: Writer) {
+    def buffered: BufferedWriter = new BufferedWriter(writer)
+  }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
   implicit def pathToFile(path: Path): File = path.toFile

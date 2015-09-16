@@ -97,6 +97,13 @@ The library also adds some useful implicits to above classes e.g.:
 file1.reader > file2.writer       // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
 src.pipeTo(sink)                  // if you don't like symbols
+
+val _: BufferedInputStream       = inputstream.buffered  
+val _: BufferedOutputStream      = outputstream.buffered   
+val reader: InputStreamReader    = inputstream.reader
+val writer: OutputStreamWriter   = outputstream.writer
+val _: BufferedReader            = reader.buffered
+val _: BufferedWriter            = writer.buffered
 ```
  
 ## Pattern matching
@@ -150,9 +157,10 @@ All the above can also be expressed using methods reminiscent of the command lin
 import better.files_, Cmds._
 cp(file1, file2)
 mv(file1, file2)
-rm(file)
+rm(file) / del(file)
+ls(file) / dir(file)
 ln(file1, file2)    // hard link
-lns(file1, file2)   // soft link
+ln_s(file1, file2)   // soft link
 cat(file1)
 cat(file1) >>: file
 touch(file)
@@ -200,11 +208,12 @@ file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regul
 ## Zip APIs (WIP)
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
-val zipFile = file"path/to/research.zip"
 // Unzipping:
-val research: File = zipFile.unzipTo(home/"Documents"/"research")   
+val zipFile = file"path/to/research.zip"
+val research: File = zipFile unzipTo (home/"Documents"/"research")   
 // Zipping:
-val zipFile = File.newTempFile("research", suffix = ".zip").zip(file1, file2, file3).create()
+val target = File.newTempFile("research", suffix = ".zip")
+val zipFile = target.zip(file1, file2, file3).create()
 ````
 With passwords:
 ```scala
