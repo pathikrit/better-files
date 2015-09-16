@@ -19,8 +19,8 @@ that can be **interchangeably used with Java classes** via automatic bi-directio
 1. [Java interpolability](#java-interpolability)
 1. [Pattern matching](#pattern-matching)
 1. [Globbing](#globbing)
-1. [File system operations](##filesystem-operations)
-1. [File attributes](##file-attributes)
+1. [File system operations](#file-system-operations)
+1. [File attributes](#file-attributes)
 1. [File comparison](#file-comparison)
 
 <!--- 
@@ -43,8 +43,8 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-## Simple I/O
-Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+## Read/Write
+Dead simple R/W via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
