@@ -304,19 +304,20 @@ package object files {
   }
 
   implicit class InputStreamOps(in: InputStream) {
+    def >(out: OutputStream): Unit = pipeTo(out)
+
+    def pipeTo(out: OutputStream, bufferSize: Int = 1<<10): Unit = pipeTo(out, Array.ofDim[Byte](bufferSize))
+
     /**
-     * Pipe an input stream to an output stream
+     * Pipe an input stream to an output stream using a byte buffer
      */
-    def >(out: OutputStream): Unit = {
-      @tailrec def transfer(buffer: Array[Byte]): Unit = in.read(buffer) match {
-        case n if n > 0 =>
-          out.write(buffer, 0, n)
-          transfer(buffer)
-        case _ =>
-      }
-      transfer(Array.ofDim(1<<10))
-      in.close()
-      out.close()
+    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = in.read(buffer) match {
+      case n if n > 0 =>
+        out.write(buffer, 0, n)
+        pipeTo(out, buffer)
+      case _ =>
+        in.close()
+        out.close()
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
