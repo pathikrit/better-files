@@ -8,6 +8,7 @@ import java.time.Instant
 import java.util.stream.{Stream => JStream}
 import javax.xml.bind.DatatypeConverter
 
+import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.compat.java8.FunctionConverters._
 import scala.io.{BufferedSource, Codec, Source}
@@ -304,13 +305,14 @@ package object files {
      * Pipe an input stream to an output stream
      */
     def >(out: OutputStream): Unit = {
-      val buffer = Array.ofDim[Byte](1<<10)
-      var length: Int = in.read(buffer)
-      while(length > 0) {
-        out.write(buffer, 0, length)
-        length = in.read(buffer)
+      @tailrec def transfer(buffer: Array[Byte]): Unit = in.read(buffer) match {
+        case n if n > 0 =>
+          out.write(buffer, 0, n)
+          transfer(buffer)
+        case _ =>
       }
-      in.close()    //TODO: ARM?
+      transfer(Array.ofDim(1<<10))
+      in.close()
       out.close()
     }
 
@@ -331,6 +333,10 @@ package object files {
 
   implicit class WriterOps(writer: Writer) {
     def buffered: BufferedWriter = new BufferedWriter(writer)
+  }
+
+  type Closeable = {
+    def close(): Unit //TODO: ARM
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

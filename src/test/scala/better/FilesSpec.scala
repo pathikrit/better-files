@@ -200,7 +200,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
     cp(fb / "t3", fb / "t5")
     //(fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+  }
 
+  it should "support file in/out" in {
+    t1 < "hello world"
+    t1.in > t2.out
+    t2.contentAsString shouldEqual "hello world"
   }
 
   //TODO: Test above for all kinds of FileType
