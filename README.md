@@ -84,13 +84,14 @@ file.write("hello world")(codec = "US-ASCII")
 ## Java interoperability
 You can always access the Java I/O classes:
 ```scala
-val reader       : java.io.BufferedReader   = file.reader 
-val outputstream : java.io.OutputStream     = file.out 
-val writer       : java.io.BufferedWriter   = file.writer 
-val inputstream  : java.io.InputStream      = file.in
-val file         : java.io.File             = file        // implicit conversion
-val path         : java.nio.file.Path       = file.path
-val fs           : java.nio.file.FileSystem = file.fileSystem
+val reader       : java.io.BufferedReader       = file.reader 
+val outputstream : java.io.OutputStream         = file.out 
+val writer       : java.io.BufferedWriter       = file.writer 
+val inputstream  : java.io.InputStream          = file.in
+val file         : java.io.File                 = file        // implicit conversion
+val path         : java.nio.file.Path           = file.path
+val fs           : java.nio.file.FileSystem     = file.fileSystem
+val channel      : java.nio.channel.FileChannel = file.channel
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala

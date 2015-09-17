@@ -1,6 +1,7 @@
 package better
 
 import java.io.{File => JFile, _}
+import java.nio.channels.FileChannel
 import java.nio.file._, attribute._
 import java.nio.charset.Charset
 import java.security.MessageDigest
@@ -10,7 +11,7 @@ import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
-import scala.compat.java8.FunctionConverters._
+import scala.compat.java8.FunctionConverters._    //TODO: remove java8 dep and release for Scala 2.10
 import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
@@ -135,6 +136,8 @@ package object files {
 
     def fileSystem: FileSystem = path.getFileSystem
     def fs: FileSystem = fileSystem
+
+    def channel: FileChannel = FileChannel.open(path)
 
     /**
      * @return file size (for directories, return size of the directory) in bytes
