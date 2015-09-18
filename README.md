@@ -84,11 +84,11 @@ file.write("hello world")(codec = "US-ASCII")
 You can always access the Java I/O classes:
 ```scala
 val file: File = tmp / "hello.txt"
+val javaFile     : java.io.File                 = file.toJava
 val reader       : java.io.BufferedReader       = file.reader 
 val outputstream : java.io.OutputStream         = file.out 
 val writer       : java.io.BufferedWriter       = file.writer 
 val inputstream  : java.io.InputStream          = file.in
-val javaFile     : java.io.File                 = file.toJava
 val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
 val channel      : java.nio.channel.FileChannel = file.channel

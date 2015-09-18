@@ -27,7 +27,8 @@ package object files {
 
     def fullPath: String = path.toString
 
-    def name: String = file.getName     //TODO: alias as fileName
+    def name: String = file.getName
+    def fileName: String = name
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
@@ -52,7 +53,7 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
-    //def createChild(name: String): File = Files.createFile(mkdirs().path, name)
+    def createChild(child: String): File = (this / child).createIfNotExists()
 
     def createIfNotExists(): File = if (file.exists()) this else {parent.mkdirs(); Files.createFile(path)}
 
@@ -62,7 +63,7 @@ package object files {
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
     def bytes: Iterator[Byte] = {
-      val stream = in
+      val stream = in.buffered
       Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
     }
 
@@ -180,7 +181,7 @@ package object files {
 
     def owner: UserPrincipal = Files.getOwner(path)
 
-    //TODO: def groups: UserPrincipal = ???
+    def group: GroupPrincipal = posixAttributes.group()
 
     def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     val chown = setOwner _
