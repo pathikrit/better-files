@@ -49,7 +49,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val f1: File = file"/User/johndoe/Documents"
     val f2: File = root/"User"/"johndoe"/"Documents"
     val f3: File = home/"Documents"
-    val f4: File = new java.io.File("/User/johndoe/Documents")
+    val f4: File = new java.io.File("/User/johndoe/Documents").toScala
     val f5: File = "/User"/"johndoe"/"Documents"
     val f6: File = "/User/johndoe/Documents".toFile
     val f7: File = root/"User"/"johndoe"/"Documents"/"presentations" / `..`
@@ -65,14 +65,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
-      case other if other.exists() => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
+      case other if other.exists => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
       case _ =>                               //A file that does not exist
     }
     root/"dev"/"null" match {
       case SymbolicLink(to) => fail()
       case Directory(children) => fail()
       case RegularFile(contents) => fail()
-      case other if other.exists() =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
+      case other if other.exists =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
       case _ => fail()
     }
     root/"dev" match {
@@ -168,20 +168,20 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.checksum() should not equal t2.checksum()
     a[java.nio.file.FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
     t1.copyTo(t2, overwrite = true)
-    t1.exists() shouldBe true
+    t1.exists shouldBe true
     t1.checksum() shouldEqual t2.checksum()
     b2.contentAsString shouldEqual magicWord
     // rename
     t2.name shouldBe "t2.txt"
-    t2.exists() shouldBe true
+    t2.exists shouldBe true
     val t3 = t2 renameTo "t3.txt"
     t3.name shouldBe "t3.txt"
-    t2.exists() shouldBe false
-    t3.exists() shouldBe true
+    t2.exists shouldBe false
+    t3.exists shouldBe true
     // move
     t3 moveTo t2
-    t2.exists() shouldBe true
-    t3.exists() shouldBe false
+    t2.exists shouldBe true
+    t3.exists shouldBe false
   }
 
   it should "do I/O via streams/writers" in {

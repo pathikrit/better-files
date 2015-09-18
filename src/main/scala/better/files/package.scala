@@ -20,6 +20,9 @@ package object files {
    * Scala wrapper for java.io.File
    */
   case class File(file: JFile) {
+
+    def toJava: JFile = file
+
     def path: Path = file.toPath
 
     def fullPath: String = path.toString
@@ -43,13 +46,15 @@ package object files {
 
     def contentType: Option[String] = Option(Files.probeContentType(path))
 
-    def parent: File = file.getParentFile
+    def parent: File = file.getParentFile.toScala
 
-    def /(child: String): File = new JFile(file, child)
+    def /(child: String): File = new JFile(file, child).toScala
 
     def /(f: File => File): File = f(this)
 
     def createIfNotExists(): File = if (file.exists()) this else {parent.mkdirs(); Files.createFile(path)}
+
+    def exists: Boolean = file.exists()
 
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(file)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
@@ -59,7 +64,7 @@ package object files {
       Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
     }
 
-    def mkdir(): File = {file.mkdirs(); this}
+    def mkdirs(): File = {file.mkdirs(); this}
 
     def chars(implicit codec: Codec): Iterator[Char] = content(codec)
 
@@ -117,7 +122,7 @@ package object files {
     //def hide(): Boolean = ???
     //def unhide(): Boolean = ???
 
-    def list: Files = file.listFiles().toIterator map javaToFile
+    def list: Files = file.listFiles().toIterator.map(_.toScala)
     def children: Files = list
 
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
@@ -223,7 +228,7 @@ package object files {
     def sameFileAs(that: File): Boolean = Files.isSameFile(this.path, that.path)
 
     /**
-     * @return true if this file is exactly same as that file TODO: recursively for directories
+     * @return true if this file is exactly same as that file TODO: recursively for directories (or empty files?)
      */
     def contentSameAs(that: File): Boolean = this.bytes sameElements that.bytes
     val `===` = contentSameAs _
@@ -296,11 +301,15 @@ package object files {
     def ls(file: File): Files = file.list
     def ls_r(file: File): Files = file.listRecursively()
     def touch(file: File): File = file.touch()
-    def mkdir(file: File): File = file.mkdir()
+    def mkdir(file: File): File = file.mkdirs()
     def chown(owner: String, file: File): File = file.setOwner(owner)
     def chgrp(group: String, file: File): File = file.setGroup(group)
     def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermissions(permission)
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermissions(permission)
+  }
+
+  implicit class FileOps(file: JFile) {
+    def toScala: File = File(file)
   }
 
   implicit class InputStreamOps(in: InputStream) {
@@ -344,9 +353,8 @@ package object files {
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
-  implicit def pathToFile(path: Path): File = path.toFile
-  implicit def javaToFile(file: JFile): File = File(file)           //TODO: ISO micro-macros
-  implicit def toJavaFile(file: File): JFile = file.file            //TODO: Move implicit converters to a special import?
+
+  implicit def pathToFile(path: Path): File = path.toFile.toScala
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
