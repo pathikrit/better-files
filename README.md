@@ -1,7 +1,7 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-better-files is a [dependency-free](build.sbt) idiomatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around Java file APIs 
-that can be **interchangeably used with Java classes** via automatic bi-directional implicit conversions from/to Java.
+better-files is a [dependency-free](build.sbt) idiomatic [thin wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java))
+for simple, safe and intuitive file I/O in Scala
 
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
@@ -32,7 +32,7 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
 ## File Read/Write
-Dead simple I/O via [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+Dead simple I/O:
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
@@ -84,6 +84,7 @@ file.write("hello world")(codec = "US-ASCII")
 ## Java interoperability
 You can always access the Java I/O classes:
 ```scala
+val file: File = tmp / "hello.txt"
 val reader       : java.io.BufferedReader       = file.reader 
 val outputstream : java.io.OutputStream         = file.out 
 val writer       : java.io.BufferedWriter       = file.writer 
@@ -155,12 +156,12 @@ Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ## UNIX DSL
 All the above can also be expressed using methods reminiscent of the command line:
 ```scala
-import better.files_, Cmds._
+import better.files_, Cmds._   // must import Cmds._ to bring in these utils
 cp(file1, file2)
 mv(file1, file2)
 rm(file) / del(file)
 ls(file) / dir(file)
-ln(file1, file2)    // hard link
+ln(file1, file2)     // hard link
 ln_s(file1, file2)   // soft link
 cat(file1)
 cat(file1) >>: file
@@ -168,9 +169,10 @@ touch(file)
 mkdir(file)
 chown(owner, file)
 chgrp(owner, file)
-chmod_+(permissions, files)
-chmod_-(permissions, files)
+chmod_+(permission, files)  // add permission
+chmod_-(permission, files)  // remove permission
 unzip(file)
+zip(file*) >>: output
 ```
 
 ## File attributes
@@ -237,8 +239,9 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 ## Future work
 * File watchers using Akka actors
 * Classpath resource APIs
-* CSV handling?
-* File converters/text extractors?
+* Non-blocking APIs
+* CSV handling
+* File converters/text extractors
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
