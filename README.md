@@ -99,12 +99,12 @@ file1.reader > file2.writer       // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
 src.pipeTo(sink)                  // if you don't like symbols
 
-val bis: BufferedInputStream     = inputstream.buffered  
-val bos: BufferedOutputStream    = outputstream.buffered   
-val reader: InputStreamReader    = inputstream.reader
-val writer: OutputStreamWriter   = outputstream.writer
-val br: BufferedReader           = reader.buffered
-val bw: BufferedWriter           = writer.buffered
+val bis     : BufferedInputStream   = inputstream.buffered  
+val bos     : BufferedOutputStream  = outputstream.buffered   
+val reader  : InputStreamReader     = inputstream.reader
+val writer  : OutputStreamWriter    = outputstream.writer
+val br      : BufferedReader        = reader.buffered
+val bw      : BufferedWriter        = writer.buffered
 ```
  
 ## Pattern matching

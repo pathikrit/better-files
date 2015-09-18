@@ -1,7 +1,9 @@
 machine:
   java:
     version: oraclejdk8
-#test:
+test:
+  override:
+    - sbt +test
 #  post:
 #    - sbt coverageReport
 #    - sbt coverageAggregate

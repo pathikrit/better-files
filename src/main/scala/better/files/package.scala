@@ -27,7 +27,7 @@ package object files {
 
     def fullPath: String = path.toString
 
-    def name: String = file.getName
+    def name: String = path.getFileName.toString
     def fileName: String = name
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
@@ -47,7 +47,7 @@ package object files {
 
     def contentType: Option[String] = Option(Files.probeContentType(path))
 
-    def parent: File = file.getParentFile.toScala
+    def parent: File = path.getParent
 
     def /(child: String): File = new JFile(file, child).toScala
 
@@ -55,9 +55,9 @@ package object files {
 
     def createChild(child: String): File = (this / child).createIfNotExists()
 
-    def createIfNotExists(): File = if (file.exists()) this else {parent.mkdirs(); Files.createFile(path)}
+    def createIfNotExists(): File = if (exists) this else {parent.mkdirs(); Files.createFile(path)}
 
-    def exists: Boolean = file.exists()
+    def exists: Boolean = Files.exists(path)
 
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(file)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
@@ -125,7 +125,7 @@ package object files {
     //def hide(): Boolean = ???
     //def unhide(): Boolean = ???
 
-    def list: Files = file.listFiles().toIterator.map(_.toScala)
+    def list: Files = Files.newDirectoryStream(path).iterator() map pathToFile
     def children: Files = list
 
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
@@ -204,7 +204,7 @@ package object files {
       try {
         this match {
           case Directory(children) => children.foreach(_.delete(ignoreIOExceptions))
-          case _ => file.delete()
+          case _ => Files.delete(path)
         }
       } catch {
         case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
