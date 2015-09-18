@@ -1,7 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-better-files is a [dependency-free](build.sbt) idiomatic [thin wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java))
-for simple, safe and intuitive file I/O in Scala
+[dependency-free](build.sbt) thin [Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
@@ -228,7 +227,7 @@ target.zip(file1, file2).create(password = Some("secret-sauce"))
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
-The library is compatible with both Scala 2.10.x and 2.11.x. In your `build.sbt`, add this:
+The library is compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files). In your `build.sbt`, add this:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 

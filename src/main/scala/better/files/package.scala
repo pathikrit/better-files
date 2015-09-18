@@ -1,17 +1,17 @@
 package better
 
-import java.io.{File => JFile, _}
+import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.nio.channels.FileChannel
 import java.nio.file._, attribute._
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.time.Instant
+import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
-import scala.compat.java8.FunctionConverters._    //TODO: remove java8 dep and release for Scala 2.10
 import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
@@ -52,6 +52,8 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
+    //def createChild(name: String): File = Files.createFile(mkdirs().path, name)
+
     def createIfNotExists(): File = if (file.exists()) this else {parent.mkdirs(); Files.createFile(path)}
 
     def exists: Boolean = file.exists()
@@ -64,7 +66,7 @@ package object files {
       Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
     }
 
-    def mkdirs(): File = {file.mkdirs(); this}
+    def mkdirs(): File = Files.createDirectories(path)
 
     def chars(implicit codec: Codec): Iterator[Char] = content(codec)
 
@@ -136,7 +138,7 @@ package object files {
      */
     def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
       val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-      Files.walk(path).filter((matcher.matches _).asJava)
+      Files.walk(path).filter(new Predicate[Path] {override def test(path: Path) = matcher.matches(path)})
     }
 
     def fileSystem: FileSystem = path.getFileSystem

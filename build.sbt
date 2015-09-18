@@ -1,5 +1,5 @@
 name := "better-files"
-version := "2.2.0"
+version := "2.2.1"
 description := "Scala wrapper for Java files"
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 organization := "com.github.pathikrit"
@@ -13,7 +13,4 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
   "-language:implicitConversions", "-language:postfixOps"
 )
 
-libraryDependencies ++= Seq(
-  "org.scala-lang.modules"    %% "scala-java8-compat"   % "0.7.0",
-  "org.scalatest"             %% "scalatest"            % "2.2.5"   % Test
-)
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
