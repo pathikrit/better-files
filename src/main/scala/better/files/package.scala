@@ -18,15 +18,12 @@ import scala.util.Properties
 
 package object files {
   /**
-   * Scala wrapper for java.io.File
+   * Scala wrapper for java.nio.files.Path
    */
-  case class File(file: JFile) {
-
-    def toJava: JFile = file
-
-    def path: Path = file.toPath
-
+  implicit class File(val path: Path) {
     def fullPath: String = path.toString
+
+    def toJava: JFile = path.toFile
 
     def name: String = path.getFileName.toString
     def fileName: String = name
@@ -52,7 +49,7 @@ package object files {
 
     def parent: File = path.getParent
 
-    def /(child: String): File = new JFile(file, child).toScala
+    def /(child: String): File = path.resolve(child)
 
     def /(f: File => File): File = f(this)
 
@@ -62,7 +59,9 @@ package object files {
 
     def exists: Boolean = Files.exists(path)
 
-    def content(implicit codec: Codec): BufferedSource = Source.fromFile(file)(codec)
+    def notExists: Boolean = Files.notExists(path)
+
+    def content(implicit codec: Codec): BufferedSource = Source.fromFile(path.toFile)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
     def bytes: Iterator[Byte] = {
@@ -321,7 +320,7 @@ package object files {
   }
 
   implicit class FileOps(file: JFile) {
-    def toScala: File = File(file)
+    def toScala: File = File(file.getPath)
   }
 
   implicit class InputStreamOps(in: InputStream) {
@@ -342,19 +341,19 @@ package object files {
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
-    
+
     def gzip: GZIPInputStream = new GZIPInputStream(in)
 
     def reader(implicit codec: Codec): InputStreamReader = new InputStreamReader(in, codec)
-    
+
     def content(implicit codec: Codec): BufferedSource = Source.fromInputStream(in)(codec)
-    
+
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
   }
 
   implicit class OutputStreamOps(out: OutputStream) {
     def buffered: BufferedOutputStream = new BufferedOutputStream(out)
-    
+
     def gzip: GZIPOutputStream = new GZIPOutputStream(out)
 
     def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
@@ -374,7 +373,7 @@ package object files {
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
-  implicit def pathToFile(path: Path): File = path.toFile.toScala
+  private[this] def pathToFile(path: Path): File = path //TODO: Make all the API return Path?
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

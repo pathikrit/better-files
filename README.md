@@ -13,7 +13,7 @@
 1. [File attributes](#file-attributes)
 1. [File comparison](#file-comparison)
 1. [Zip/Unzip](#zip-apis)
-1. [Tests](#tests)
+1. [Tests](#tests-)
  
 ## Instantiation 
 The following are all equivalent:
