@@ -342,7 +342,7 @@ package object files {
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
 
-    def gzip: GZIPInputStream = new GZIPInputStream(in)
+    def gzipped: GZIPInputStream = new GZIPInputStream(in)
 
     def reader(implicit codec: Codec): InputStreamReader = new InputStreamReader(in, codec)
 
@@ -354,7 +354,7 @@ package object files {
   implicit class OutputStreamOps(out: OutputStream) {
     def buffered: BufferedOutputStream = new BufferedOutputStream(out)
 
-    def gzip: GZIPOutputStream = new GZIPOutputStream(out)
+    def gzipped: GZIPOutputStream = new GZIPOutputStream(out)
 
     def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
   }

@@ -225,9 +225,13 @@ You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](htt
 // Unzipping:
 val zipFile = file"path/to/research.zip"
 val research: File = zipFile unzipTo (home/"Documents"/"research")   
+
 // Zipping:
 val target = File.newTempFile("research", suffix = ".zip")
 val zipFile = target.zip(file1, file2, file3).create()
+
+// gzip handling:
+File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ````
 With passwords:
 ```scala
