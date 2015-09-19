@@ -3,8 +3,9 @@ machine:
     version: oraclejdk8
 test:
   override:
-    - sbt +test
-#  post:
+    - sbt +clean +coverage +test
+  post:
+    - pip install --user codecov && codecov
 #    - sbt coverageReport
 #    - sbt coverageAggregate
 #    - sbt codacyCoverage
