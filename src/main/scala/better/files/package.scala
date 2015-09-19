@@ -30,6 +30,8 @@ package object files {
     def name: String = path.getFileName.toString
     def fileName: String = name
 
+    def root: File = path.getRoot
+
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
     /**

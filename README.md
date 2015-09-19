@@ -1,4 +1,4 @@
-# better-files [![CircleCI][circleCiImg]][circleCiLink] [![codecov.io][codecovImg]][codecovLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 
@@ -13,6 +13,7 @@
 1. [File attributes](#file-attributes)
 1. [File comparison](#file-comparison)
 1. [Zip/Unzip](#zip-apis)
+1. [Tests](#tests)
  
 ## Instantiation 
 The following are all equivalent:
@@ -30,12 +31,12 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-Note: Rename the import if you think the usage of the word `File` may confuse your teammates:
+**Note**: Rename the import if you think the usage of the word `File` may confuse your teammates:
 ```scala
 import better.files.{File => BetterFile, _}
 import java.io.File
 ```
-I personally prefer renaming the Java crap:
+I personally prefer renaming the Java crap instead:
 ```scala
 import better.files._
 import java.io.{File => JFile}
@@ -234,8 +235,10 @@ zipFile.unzipTo(dir, password = Some("secret-sauce"))
 target.zip(file1, file2).create(password = Some("secret-sauce"))
 ```
 
+## Tests [![codecov][codecovImg]][codecovLink]
+For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala)
+
 ---
-For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala).
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
 The library is compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files). In your `build.sbt`, add this:
@@ -255,7 +258,7 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
-[codecovImg]: http://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
+[codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
