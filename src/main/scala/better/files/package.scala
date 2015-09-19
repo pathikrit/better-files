@@ -64,7 +64,13 @@ package object files {
 
     def bytes: Iterator[Byte] = {
       val stream = in.buffered
-      Iterator.continually(stream.read()).takeWhile(-1 !=).map(_.toByte)  //TODO: close the stream
+      def hasNext(data: Int) = if (data == -1) {
+        stream.close()
+        false
+      } else {
+        true
+      }
+      Iterator.continually(stream.read()).takeWhile(hasNext).map(_.toByte)
     }
 
     def mkdirs(): File = Files.createDirectories(path)

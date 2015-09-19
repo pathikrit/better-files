@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-[dependency-free](build.sbt) thin [Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+`better-files` is a [dependency-free](build.sbt) pragmatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
@@ -29,6 +29,17 @@ val f6: File = "/User/johndoe/Documents".toFile
 val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
+
+Note: You can rename the import if you think the usage of the word `File` may confuse readers of your code:
+```
+import better.files.{File => BetterFile, _}
+import java.io.File
+```
+I personally prefer renaming the Java crap:
+```
+import better.files._
+import java.io.{File => JFile}
+```
 
 ## File Read/Write
 Dead simple I/O:
