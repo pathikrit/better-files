@@ -61,19 +61,10 @@ package object files {
 
     def notExists: Boolean = Files.notExists(path)
 
-    def content(implicit codec: Codec): BufferedSource = Source.fromFile(path.toFile)(codec)
+    def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
-    def bytes: Iterator[Byte] = {
-      val stream = in.buffered
-      def hasNext(data: Int) = if (data == -1) {
-        stream.close()
-        false
-      } else {
-        true
-      }
-      Iterator.continually(stream.read()).takeWhile(hasNext).map(_.toByte)
-    }
+    def bytes: Iterator[Byte] = in.buffered.bytes
 
     def mkdirs(): File = Files.createDirectories(path)
 
@@ -349,6 +340,8 @@ package object files {
     def content(implicit codec: Codec): BufferedSource = Source.fromInputStream(in)(codec)
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
+
+    def bytes: Iterator[Byte] = Iterator.continually(in.read()).takeWhile(-1 !=).map(_.toByte)
   }
 
   implicit class OutputStreamOps(out: OutputStream) {

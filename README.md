@@ -111,6 +111,7 @@ file1.reader > file2.writer       // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
 src.pipeTo(sink)                  // if you don't like symbols
 
+val bytes   : Iterator[Byte]        = inputstream.bytes
 val bis     : BufferedInputStream   = inputstream.buffered  
 val bos     : BufferedOutputStream  = outputstream.buffered   
 val reader  : InputStreamReader     = inputstream.reader
@@ -184,6 +185,7 @@ chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
 unzip(file)
 zip(file*) >>: output
+gzip(src, target)
 ```
 
 ## File attributes
