@@ -1,6 +1,7 @@
 package better
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
+import java.net.URI
 import java.nio.channels.FileChannel
 import java.nio.file._, attribute._
 import java.nio.charset.Charset
@@ -18,7 +19,7 @@ import scala.util.Properties
 
 package object files {
   /**
-   * Scala wrapper for java.nio.files.Path
+   * Scala wrapper around java.nio.files.Path
    */
   implicit class File(val path: Path) {
     def fullPath: String = path.toString
@@ -29,6 +30,8 @@ package object files {
     def fileName: String = name
 
     def root: File = path.getRoot
+
+    def subpPath(start: Int, end: Int): Path = path.subpath(start, end)
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
@@ -146,6 +149,8 @@ package object files {
 
     def channel: FileChannel = FileChannel.open(path)
 
+    def uri: URI = path.toUri
+
     /**
      * @return file size (for directories, return size of the directory) in bytes
      */
@@ -242,7 +247,7 @@ package object files {
 
     override def hashCode = path.hashCode()
 
-    override def toString = path.toUri.toString
+    override def toString = uri.toString
   }
 
   object File {
