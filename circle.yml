@@ -5,7 +5,7 @@ test:
   override:
     - sbt +clean +coverage +test
   post:
-    - pip install --user codecov && codecov
-#    - sbt coverageReport
+    - bash <(curl -s https://codecov.io/bash)
+#    - sbt coverageReport?
 #    - sbt coverageAggregate
 #    - sbt codacyCoverage
