@@ -3,8 +3,9 @@ machine:
     version: oraclejdk8
 test:
   override:
-    - sbt +test
-#  post:
-#    - sbt coverageReport
+    - sbt +clean +coverage +test
+  post:
+    - bash <(curl -s https://codecov.io/bash)
+#    - sbt coverageReport?
 #    - sbt coverageAggregate
 #    - sbt codacyCoverage

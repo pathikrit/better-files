@@ -195,11 +195,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString(Codec.ISO8859) shouldEqual "Hello World"
   }
 
-  it should "support unix command line ops" in {
+  ignore should "support unix command line ops" in {
     import Cmds._
     (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
     cp(fb / "t3", fb / "t5")
-    //(fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+    (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
   }
 
   it should "support file in/out" in {

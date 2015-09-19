@@ -1,6 +1,6 @@
-# better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![codecov.io][codecovImg]][codecovLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) pragmatic [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
 
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
@@ -30,13 +30,13 @@ val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-Note: You can rename the import if you think the usage of the word `File` may confuse readers of your code:
-```
+Note: Rename the import if you think the usage of the word `File` may confuse your teammates:
+```scala
 import better.files.{File => BetterFile, _}
 import java.io.File
 ```
 I personally prefer renaming the Java crap:
-```
+```scala
 import better.files._
 import java.io.{File => JFile}
 ```
@@ -253,8 +253,10 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 * CSV handling
 * File converters/text extractors
 
-[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files.svg
+[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+[codecovImg]: http://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
+[codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
 [codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
