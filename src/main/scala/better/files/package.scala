@@ -8,6 +8,7 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
@@ -341,12 +342,20 @@ package object files {
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
+    
+    def gzip: GZIPInputStream = new GZIPInputStream(in)
 
     def reader(implicit codec: Codec): InputStreamReader = new InputStreamReader(in, codec)
+    
+    def content(implicit codec: Codec): BufferedSource = Source.fromInputStream(in)(codec)
+    
+    def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
   }
 
   implicit class OutputStreamOps(out: OutputStream) {
     def buffered: BufferedOutputStream = new BufferedOutputStream(out)
+    
+    def gzip: GZIPOutputStream = new GZIPOutputStream(out)
 
     def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
   }
