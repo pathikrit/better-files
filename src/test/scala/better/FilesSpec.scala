@@ -1,6 +1,6 @@
 package better
 
-import better.files._
+import better.files._, Cmds._
 
 import org.scalatest._
 
@@ -195,11 +195,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString(Codec.ISO8859) shouldEqual "Hello World"
   }
 
-  ignore should "support unix command line ops" in {
-    import Cmds._
+  it should "copy" in {
     (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+  }
+
+  ignore should "move" in {
+
   }
 
   it should "support file in/out" in {

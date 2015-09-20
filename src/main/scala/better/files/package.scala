@@ -222,7 +222,27 @@ package object files {
 
     def moveTo(destination: File, overwrite: Boolean = false): File = moveTo(destination.path, overwrite)
 
-    def copyTo(destination: File, overwrite: Boolean = false): File = Files.copy(path, destination.path, copyOptions(overwrite): _*)
+    def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) {
+      if (overwrite) {
+        destination.delete(ignoreIOExceptions = true)
+      }
+
+      def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
+
+      Files.walkFileTree(path, new SimpleFileVisitor[Path] {
+        override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
+          Files.createDirectories(newPath(dir))
+          super.preVisitDirectory(dir, attrs)
+        }
+
+        override def visitFile(file: Path, attrs: BasicFileAttributes) = {
+          Files.copy(file, newPath(file), copyOptions(overwrite): _*)
+          super.visitFile(file, attrs)
+        }
+      })
+    } else {
+      Files.copy(path, destination.path, copyOptions(overwrite): _*)
+    }
 
     private[this] def copyOptions(overwrite: Boolean): Seq[StandardCopyOption] = if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else Nil
 
