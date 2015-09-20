@@ -24,6 +24,9 @@ package object files {
   implicit class File(val path: Path) {
     def fullPath: String = path.toString
 
+    //def normalizedPath: File = path.normalize()
+    //def absolutePath: File = path.toAbsolutePath //TODO: use this?
+
     def toJava: JFile = path.toFile
 
     def name: String = path.getFileName.toString
@@ -31,14 +34,14 @@ package object files {
 
     def root: File = path.getRoot
 
-    def subpPath(start: Int, end: Int): Path = path.subpath(start, end)
+    def subPath(start: Int, end: Int): Path = path.subpath(start, end)
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
     /**
      * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
      */
-    def extension: Option[String] = when(hasExtension)(name substring (name indexOf "."))
+    def extension: Option[String] = when(hasExtension)(name.substring(name indexOf ".").toLowerCase)
 
     def hasExtension: Boolean = isRegularFile && (name contains ".")
 
@@ -59,6 +62,7 @@ package object files {
     def createChild(child: String): File = (this / child).createIfNotExists()
 
     def createIfNotExists(): File = if (exists) this else {parent.mkdirs(); Files.createFile(path)}
+    def ensureFile: File = createIfNotExists()
 
     def exists: Boolean = Files.exists(path)
 
@@ -70,6 +74,7 @@ package object files {
     def bytes: Iterator[Byte] = in.buffered.bytes
 
     def mkdirs(): File = Files.createDirectories(path)
+    def ensureDir: File = mkdirs()
 
     def chars(implicit codec: Codec): Iterator[Char] = content(codec)
 
@@ -160,9 +165,9 @@ package object files {
 
     def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
-    def addPermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions ++ permissions)
+    def addPermission(permission: PosixFilePermission): File = setPermissions(this.permissions + permission)
 
-    def removePermissions(permissions: PosixFilePermission*): File = setPermissions(this.permissions -- permissions)
+    def removePermission(permission: PosixFilePermission): File = setPermissions(this.permissions - permission)
 
     /**
      * test if file has this permission
@@ -226,7 +231,6 @@ package object files {
       if (overwrite) {
         destination.delete(ignoreIOExceptions = true)
       }
-
       def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
 
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
@@ -234,7 +238,6 @@ package object files {
           Files.createDirectories(newPath(dir))
           super.preVisitDirectory(dir, attrs)
         }
-
         override def visitFile(file: Path, attrs: BasicFileAttributes) = {
           Files.copy(file, newPath(file), copyOptions(overwrite): _*)
           super.visitFile(file, attrs)
@@ -331,8 +334,8 @@ package object files {
     def mkdir(file: File): File = file.mkdirs()
     def chown(owner: String, file: File): File = file.setOwner(owner)
     def chgrp(group: String, file: File): File = file.setGroup(group)
-    def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermissions(permission)
-    def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermissions(permission)
+    def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
+    def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
   }
 
   implicit class FileOps(file: JFile) {

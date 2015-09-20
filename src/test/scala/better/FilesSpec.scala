@@ -116,6 +116,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
     //t1.contentType shouldBe Some("txt")
+    //("src" / "test").toString shouldNot be
   }
 
   it must "have .size" in {
@@ -129,10 +130,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     import java.nio.file.attribute.PosixFilePermission
     t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
-    t1.addPermissions(PosixFilePermission.OWNER_EXECUTE)
+    t1.addPermission(PosixFilePermission.OWNER_EXECUTE)
     t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
 
-    t1.removePermissions(PosixFilePermission.OWNER_EXECUTE)
+    t1.removePermission(PosixFilePermission.OWNER_EXECUTE)
     t1.isOwnerExecutable shouldBe false
   }
 
