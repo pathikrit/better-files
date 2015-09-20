@@ -134,6 +134,7 @@ package object files {
 
     def list: Files = Files.newDirectoryStream(path).iterator() map pathToFile
     def children: Files = list
+    def entries: Files = list
 
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
 

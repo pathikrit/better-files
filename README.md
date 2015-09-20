@@ -206,12 +206,12 @@ file.posixAttributes / file.dosAttributes  // see file.attributes
 ```
 `chmod`:
 ```scala
-import java.nio.file.attribute.PosixFilePermission._
-file.addPermissions(OWNER_EXECUTE)      // chmod +X file
-file.removePermissions(OWNER_WRITE)     // chmod -w file
+import java.nio.file.attribute.PosixFilePermission
+file.addPermission(PosixFilePermission.OWNER_EXECUTE)      // chmod +X file
+file.removePermission(PosixFilePermission.OWNER_WRITE)     // chmod -w file
 // The following are all equivalent:
-assert(file.permissions contains OWNER_EXECUTE)
-assert(file(OWNER_EXECUTE))
+assert(file.permissions contains PosixFilePermission.OWNER_EXECUTE)
+assert(file(PosixFilePermission.OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
 ```
 
