@@ -200,10 +200,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+    (fb / "t3").exists shouldBe true
   }
 
-  ignore should "move" in {
-
+  it should "move" in {
+    (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
+    mv(fb / "t3", fb / "t5")
+    (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+    (fb / "t3").notExists shouldBe true
   }
 
   it should "support file in/out" in {
