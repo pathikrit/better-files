@@ -61,8 +61,7 @@ package object files {
 
     def createChild(child: String): File = (this / child).createIfNotExists()
 
-    def createIfNotExists(): File = if (exists) this else {parent.mkdirs(); Files.createFile(path)}
-    def ensureFile: File = createIfNotExists()
+    def createIfNotExists(): File = if (exists) this else {parent.createDirectories(); Files.createFile(path)}
 
     def exists: Boolean = Files.exists(path)
 
@@ -73,8 +72,9 @@ package object files {
 
     def bytes: Iterator[Byte] = in.buffered.bytes
 
-    def mkdirs(): File = Files.createDirectories(path)
-    def ensureDir: File = mkdirs()
+    def createDirectory(): File = Files.createDirectory(path)
+
+    def createDirectories(): File = Files.createDirectories(path)
 
     def chars(implicit codec: Codec): Iterator[Char] = content(codec)
 
@@ -332,7 +332,8 @@ package object files {
     def ls(file: File): Files = file.list
     def ls_r(file: File): Files = file.listRecursively()
     def touch(file: File): File = file.touch()
-    def mkdir(file: File): File = file.mkdirs()
+    def mkdir(file: File): File = file.createDirectory()
+    def mkdirs(file: File): File = file.createDirectories()
     def chown(owner: String, file: File): File = file.setOwner(owner)
     def chgrp(group: String, file: File): File = file.setGroup(group)
     def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)

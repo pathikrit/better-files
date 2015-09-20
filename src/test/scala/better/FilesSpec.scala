@@ -37,7 +37,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     fb = testRoot/"b"
     b1 = testRoot/"b"/"b1"
     b2 = testRoot/"b"/"b2.txt"
-    Seq(a1, a2, fb).foreach(_.mkdirs())
+    Seq(a1, a2, fb).foreach(mkdirs)
     t1.touch()
     t2.touch()
   }

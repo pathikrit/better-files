@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://en.wikipedia.org/wiki/Non-blocking_I/O_(Java)):
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html):
 
 1. [Instantiation](#instantiation)
 1. [Simple I/O](#file-readwrite)
@@ -180,6 +180,7 @@ cat(file1)
 cat(file1) >>: file
 touch(file)
 mkdir(file)
+mkdirs(file)         // mkdir -p
 chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
@@ -248,7 +249,7 @@ For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala
 ---
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
-The library is compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files). In your `build.sbt`, add this:
+In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
@@ -262,6 +263,7 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 * Non-blocking APIs
 * CSV handling
 * File converters/text extractors
+* Convert this into a [`tut`](https://github.com/tpolecat/tut) document
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
