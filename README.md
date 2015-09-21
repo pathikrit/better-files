@@ -186,8 +186,8 @@ chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
 unzip(file)
-zip(file*) >>: output
-gzip(src, target)
+// zip
+// gzip
 ```
 
 ## File attributes
@@ -234,7 +234,7 @@ val research: File = zipFile unzipTo (home/"Documents"/"research")
 val target = File.newTempFile("research", suffix = ".zip")
 val zipFile = target.zip(file1, file2, file3).create()
 
-// gzip handling:
+// Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ````
 With passwords:
@@ -265,15 +265,21 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 * File converters/text extractors
 * Convert this into a [`tut`](https://github.com/tpolecat/tut) document
 
+---
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
+
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
+
 [codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
+
 [bintrayImg]: https://img.shields.io/bintray/v/pathikrit/maven/better-files.svg
 [bintrayLink]: https://bintray.com/pathikrit/maven/better-files
+
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files

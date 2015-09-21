@@ -222,11 +222,9 @@ package object files {
       this
     }
 
-    def moveTo(destination: Path, overwrite: Boolean): File = Files.move(path, destination, copyOptions(overwrite): _*)
-
     def renameTo(newName: String): File = moveTo(path resolveSibling newName)
 
-    def moveTo(destination: File, overwrite: Boolean = false): File = moveTo(destination.path, overwrite)
+    def moveTo(destination: File, overwrite: Boolean = false): File = Files.move(path, destination.path, copyOptions(overwrite): _*)
 
     def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) {
       if (overwrite) {
