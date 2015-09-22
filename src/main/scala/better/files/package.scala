@@ -97,12 +97,16 @@ package object files {
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
 
     def reader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
+    def newBufferedReader(implicit codec: Codec): BufferedReader = reader(codec)
 
     def writer(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
+    def newBufferedWriter(implicit codec: Codec): BufferedWriter = writer(codec)
 
     def in: InputStream = Files.newInputStream(path)
+    def newInputStream: InputStream = in
 
     def out: OutputStream = Files.newOutputStream(path)
+    def newOutputStream: OutputStream = out
 
     /**
      * @return checksum of this file in hex format //TODO: make this work for directories too
@@ -154,6 +158,7 @@ package object files {
     def fs: FileSystem = fileSystem
 
     def channel: FileChannel = FileChannel.open(path)
+    def newFileChannel: FileChannel = channel
 
     def uri: URI = path.toUri
 
@@ -166,9 +171,9 @@ package object files {
 
     def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
-    def addPermission(permission: PosixFilePermission): File = setPermissions(this.permissions + permission)
+    def addPermission(permission: PosixFilePermission): File = setPermissions(permissions + permission)
 
-    def removePermission(permission: PosixFilePermission): File = setPermissions(this.permissions - permission)
+    def removePermission(permission: PosixFilePermission): File = setPermissions(permissions - permission)
 
     /**
      * test if file has this permission

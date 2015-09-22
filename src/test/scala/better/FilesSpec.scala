@@ -86,7 +86,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString shouldEqual "hello"
     t1.appendNewLine << "world"
     (t1!) shouldEqual "hello\nworld\n"
-    t1.chars.toStream should contain theSameElementsInOrderAs ("hello\nworld\n".toSeq)
+    t1.chars.toStream should contain theSameElementsInOrderAs "hello\nworld\n".toSeq
     //t1.contentType shouldBe Some("txt")
     "foo" `>:` t1
     "bar" >>: t1
