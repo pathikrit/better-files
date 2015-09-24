@@ -93,7 +93,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString shouldEqual "foobar\n"
     t1.appendLines("hello", "world")
     t1.contentAsString shouldEqual "foobar\nhello\nworld\n"
-    t2.write("hello").appendNewLine.append("world").contentAsString shouldEqual "hello\nworld\n"
+    t2.write("hello").append("world").contentAsString shouldEqual "helloworld"
 
     (testRoot/"diary")
       .createIfNotExists()

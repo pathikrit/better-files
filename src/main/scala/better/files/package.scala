@@ -84,10 +84,12 @@ package object files {
     def `!`(implicit codec: Codec): String = contentAsString(codec)
 
     def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-    def append(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def appendNewLine: File = appendLines("")
+
+    def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
+    private[this] def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
 
     def write(bytes: Iterator[Byte]): File = Files.write(path, bytes.toArray) //TODO: Large I/O?
 
