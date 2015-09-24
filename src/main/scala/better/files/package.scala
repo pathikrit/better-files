@@ -91,9 +91,9 @@ package object files {
     def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
     private[this] def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
 
-    def write(bytes: Iterator[Byte]): File = Files.write(path, bytes.toArray) //TODO: Large I/O?
+    def write(bytes: Array[Byte]): File = Files.write(path, bytes) //TODO: Large I/O using byte-buffers?
 
-    def write(text: String)(implicit codec: Codec): File = write(text.getBytes(codec).toIterator)
+    def write(text: String)(implicit codec: Codec): File = write(text.getBytes(codec))
     def overwrite(text: String)(implicit codec: Codec) = write(text)(codec)
     def <(text: String)(implicit codec: Codec) = write(text)(codec)
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
@@ -144,7 +144,7 @@ package object files {
 
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
 
-    //TODO: Add def walk(maxDepth: Int): Stream[Path] = that ignores I/O errors and excludes self
+    //TODO: Add def walk(maxDepth: Int): Stream[File] = that ignores I/O errors and excludes self
 
     /**
      * Util to glob from this file's path
@@ -401,8 +401,8 @@ package object files {
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
-  private[this] def pathToFile(path: Path): File = path //TODO: Make all the API return Path?
-
+  private[this] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
+
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 }
