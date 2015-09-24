@@ -15,8 +15,8 @@
 1. [Zip/Unzip](#zip-apis)
 1. [Tests](#tests-)
 1. [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
-1. [SBT](#sbt-)
-1. [TODO](#future-work)
+1. [sbt](#sbt-)
+1. [Future work](#future-work)
  
 ## Instantiation 
 The following are all equivalent:

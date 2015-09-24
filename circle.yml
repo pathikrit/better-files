@@ -1,3 +1,7 @@
+general:
+  branches:
+    ignore:
+      - gh-pages
 machine:
   java:
     version: oraclejdk8
@@ -7,6 +11,8 @@ test:
   post:
     - bash <(curl -s https://codecov.io/bash)
     - git config --global user.email "pathikritbhowmick@msn.com"
+    - git config --global user.name "circle-ci"
+    - git config --global push.default simple
     - sbt ghpages-push-site
 #    - sbt coverageReport?
 #    - sbt coverageAggregate
