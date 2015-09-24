@@ -15,6 +15,8 @@
 1. [Zip/Unzip](#zip-apis)
 1. [Tests](#tests-)
 1. [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
+1. [SBT](#sbt-)
+1. [TODO](#future-work)
  
 ## Instantiation 
 The following are all equivalent:
@@ -246,8 +248,6 @@ target.zip(file1, file2).create(password = Some("secret-sauce"))
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala)
-
----
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):

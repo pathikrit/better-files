@@ -6,6 +6,7 @@ test:
     - sbt +clean +coverage +test
   post:
     - bash <(curl -s https://codecov.io/bash)
+    - git config --global user.email "pathikritbhowmick@msn.com"
     - sbt ghpages-push-site
 #    - sbt coverageReport?
 #    - sbt coverageAggregate
