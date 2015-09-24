@@ -14,3 +14,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+
+site.settings
+ghpages.settings
+git.remoteRepo := "git@github.com:pathikrit/better-files.git"
+site.includeScaladoc()

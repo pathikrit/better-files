@@ -14,6 +14,7 @@
 1. [File comparison](#file-comparison)
 1. [Zip/Unzip](#zip-apis)
 1. [Tests](#tests-)
+1. [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
  
 ## Instantiation 
 The following are all equivalent:
