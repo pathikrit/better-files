@@ -3,8 +3,9 @@ package better
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
 import java.nio.channels.FileChannel
-import java.nio.file._, attribute._
 import java.nio.charset.Charset
+import java.nio.file._
+import java.nio.file.attribute._
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
@@ -15,7 +16,8 @@ import javax.xml.bind.DatatypeConverter
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.util.{Try, Properties}
+import scala.language.existentials
+import scala.util.{Properties, Try}
 
 package object files {
   /**
