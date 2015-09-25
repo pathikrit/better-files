@@ -218,49 +218,5 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t2.contentAsString shouldEqual "hello world"
   }
 
-  it should "zip and unzip" in {
-
-    case class TestFile(name: String, content: Option[String])
-
-    val files = Seq(
-      TestFile("file1.json", Some( """{"field1":"valueA","field2":"valueB"}""")),
-      TestFile("file2.json", Some( """{"field1":"valueA","field2":"valueB"}""")),
-      TestFile("subDir", None),
-      TestFile("subDir/file3.json", Some( """{"field1":"valueA","field2":"valueB"}""")),
-      TestFile("emptySubDir", None)
-    )
-
-    val zipDir = File.newTempDir("zip-files")
-
-    files.foreach {
-      case TestFile(name, Some(content)) =>
-        zipDir / name write content
-      case TestFile(name, None) =>
-        Cmds.mkdirs(zipDir / name)
-    }
-
-    zipDir.zip.map { zipFile =>
-      zipFile.unzip.map { outputDir =>
-
-        val extractedFiles = outputDir.listRecursively()
-          .filter(_.fullPath != outputDir.fullPath)
-          .collect {
-          case file if file.isRegularFile =>
-            val relativeName = outputDir.path.relativize(file.path).toString
-            val content = file.contentAsString
-            TestFile(relativeName, Some(content))
-
-          case file if file.isDirectory =>
-            val relativeName = outputDir.path.relativize(file.path).toString
-            TestFile(relativeName, None)
-        }.toSeq
-
-        extractedFiles.toSeq should contain theSameElementsAs files
-
-      }.getOrElse(fail("Failed to unzip"))
-    }.getOrElse(fail("Failed to zip"))
-
-  }
-
   //TODO: Test above for all kinds of FileType
 }
