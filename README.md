@@ -3,22 +3,21 @@
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html):
 
 ## Tutorial
-  1. [Instantiation](#instantiation)
-  1. [Simple I/O](#file-readwrite)
-  1. [Streams and Codecs](#streams-and-codecs)
-  1. [Java compatibility](#java-interoperability)
-  1. [Pattern matching](#pattern-matching)
-  1. [Globbing](#globbing)
-  1. [File system operations](#file-system-operations)
-  1. [UNIX DSL](#unix-dsl)
-  1. [File attributes](#file-attributes)
-  1. [File comparison](#file-comparison)
-  1. [Zip/Unzip](#zip-apis)
+  * [Instantiation](#instantiation)
+  * [Simple I/O](#file-readwrite)
+  * [Streams and Codecs](#streams-and-codecs)
+  * [Java compatibility](#java-interoperability)
+  * [Pattern matching](#pattern-matching)
+  * [Globbing](#globbing)
+  * [File system operations](#file-system-operations)
+  * [UNIX DSL](#unix-dsl)
+  * [File attributes](#file-attributes)
+  * [File comparison](#file-comparison)
+  * [Zip/Unzip](#zip-apis)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
-## Tests [![codecov][codecovImg]][codecovLink]
-For **more examples**, consult the [tests](src/test/scala/better/FilesSpec.scala)
+## [Tests](src/test/scala/better/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
@@ -29,8 +28,25 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
 Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 
----
- 
+[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
+[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+
+[codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
+[codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
+
+[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
+[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
+
+[codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
+[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
+
+[bintrayImg]: https://img.shields.io/bintray/v/pathikrit/maven/better-files.svg
+[bintrayLink]: https://bintray.com/pathikrit/maven/better-files
+
+[gitterImg]: https://badges.gitter.im/Join%20Chat.svg
+[gitterLink]: https://gitter.im/pathikrit/better-files
+
+--- 
 ### Instantiation 
 The following are all equivalent:
 ```scala
@@ -63,7 +79,7 @@ Dead simple I/O:
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
-file.append("world")
+file.appendNewLine().append("world")
 assert(file.contentAsString == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
@@ -258,22 +274,3 @@ With passwords:
 zipFile.unzipTo(dir, password = Some("secret-sauce"))
 target.zip(file1, file2).create(password = Some("secret-sauce"))
 ```
-
----
-[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
-[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
-
-[codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
-[codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
-
-[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
-[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
-
-[codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
-[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
-
-[bintrayImg]: https://img.shields.io/bintray/v/pathikrit/maven/better-files.svg
-[bintrayLink]: https://bintray.com/pathikrit/maven/better-files
-
-[gitterImg]: https://badges.gitter.im/Join%20Chat.svg
-[gitterLink]: https://gitter.im/pathikrit/better-files

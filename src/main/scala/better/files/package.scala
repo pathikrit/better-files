@@ -86,7 +86,7 @@ package object files {
     def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
-    def appendNewLine: File = appendLines("")
+    def appendNewLine(implicit codec: Codec): File = appendLines("")
 
     def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
     private[this] def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
