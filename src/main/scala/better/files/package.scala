@@ -3,19 +3,21 @@ package better
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
 import java.nio.channels.FileChannel
-import java.nio.file._, attribute._
 import java.nio.charset.Charset
+import java.nio.file._
+import java.nio.file.attribute._
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.util.Properties
+import scala.language.existentials
+import scala.util.{Properties, Try}
 
 package object files {
   /**
@@ -411,6 +413,79 @@ package object files {
 
   implicit class WriterOps(writer: Writer) {
     def buffered: BufferedWriter = new BufferedWriter(writer)
+  }
+
+  implicit class ZipOps(basePath: File) {
+
+    def zip: Try[File] = {
+      val zipFile = File.newTemp(basePath.nameWithoutExtension, ".zip")
+
+      val zipEntries = basePath match {
+        case directory if directory.isDirectory =>
+          directory.listRecursively()
+            .filter(_.fullPath != directory.fullPath)
+            .collect {
+            case file if file.isDirectory =>
+              val relativeDirPath = directory.path.relativize(file.path).toString
+              // make sure it ends with / for ZipEntry to consider it a directory
+              val cleanRelativeDirPath = relativeDirPath.stripPrefix("/").stripSuffix("/")
+              val zipRelativeDirPath = s"$cleanRelativeDirPath/"
+              (file, new ZipEntry(zipRelativeDirPath))
+
+            case file =>
+              (file, new ZipEntry(directory.path.relativize(file.path).toString))
+          }
+
+        case file =>
+          val relativePath = file.parent.path.relativize(file.path).toString
+          List((file, new ZipEntry(relativePath)))
+      }
+
+      Try {
+        val zipOutputStream = new ZipOutputStream(zipFile.out)
+        zipEntries.foreach {
+          case (file, entry) if file.isDirectory =>
+            zipOutputStream.putNextEntry(entry)
+            zipOutputStream.closeEntry()
+
+          case (file, entry) =>
+            zipOutputStream.putNextEntry(entry)
+            zipOutputStream.write(file.bytes.toArray)
+            zipOutputStream.closeEntry()
+        }
+
+        zipOutputStream.close()
+
+        zipFile
+      }
+    }
+
+    def unzip: Try[File] = {
+      val outputDir = File.newTempDir(basePath.nameWithoutExtension)
+
+      Try {
+        val zipArchive = new ZipFile(basePath.toJava)
+        val (directories, files) = enumerationAsScalaIterator(zipArchive.entries()).partition(_.isDirectory)
+
+        // process directories first to avoid failing file creation
+        directories.foreach { dir =>
+          Try {
+            Cmds.mkdirs(outputDir / dir.getName)
+          }
+        }
+
+        files.foreach { file =>
+          Try {
+            val fileStream = zipArchive.getInputStream(file)
+            val fileContent = fileStream.lines.mkString(Properties.lineSeparator)
+            outputDir / file.getName write fileContent
+          }
+        }
+
+        outputDir
+      }
+    }
+
   }
 
   type Closeable = {
