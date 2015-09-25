@@ -86,7 +86,8 @@ package object files {
     def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
     def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
     def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
-    def appendNewLine(implicit codec: Codec): File = appendLines("")
+    def appendNewLine()(implicit codec: Codec): File = appendLine("")
+    def appendLine(line: String)(implicit codec: Codec): File = appendLines(line)
 
     def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
     private[this] def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
@@ -114,6 +115,7 @@ package object files {
      * @return checksum of this file in hex format //TODO: make this work for directories too
      */
     def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes.toArray))
+    def md5: String = checksum("MD5")
 
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
@@ -329,19 +331,35 @@ package object files {
 
   object Cmds {
     def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
+
     def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
+
     def rm(file: File): File = file.delete(ignoreIOExceptions = true)
+    val del = rm _
+
     def ln(file1: File, file2: File): File = file1 linkTo file2
+
     def ln_s(file1: File, file2: File): File = file1 symLinkTo file2
+
     def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
+
     def ls(file: File): Files = file.list
+    val dir = ls _
+
     def ls_r(file: File): Files = file.listRecursively()
+
     def touch(file: File): File = file.touch()
+
     def mkdir(file: File): File = file.createDirectory()
+
     def mkdirs(file: File): File = file.createDirectories()
+
     def chown(owner: String, file: File): File = file.setOwner(owner)
+
     def chgrp(group: String, file: File): File = file.setGroup(group)
+
     def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
+
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
   }
 
@@ -401,7 +419,7 @@ package object files {
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
-  private[this] def pathToFile(path: Path): File = path
+  private[files] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
 
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

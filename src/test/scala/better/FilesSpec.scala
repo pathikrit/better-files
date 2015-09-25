@@ -97,7 +97,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     (testRoot/"diary")
       .createIfNotExists()
-      .appendNewLine
+      .appendNewLine()
       .appendLines("My name is", "Inigo Montoya")
       .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
   }
