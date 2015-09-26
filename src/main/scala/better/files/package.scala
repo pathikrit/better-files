@@ -9,7 +9,7 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{ZipEntry, ZipOutputStream, GZIPInputStream, GZIPOutputStream}
+import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
@@ -59,9 +59,16 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
-    def createChild(child: String): File = (this / child).createIfNotExists()
+    def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
-    def createIfNotExists(): File = if (exists) this else {parent.createDirectories(); Files.createFile(path)}
+    def createIfNotExists(asDirectory: Boolean = false): File = if (exists) {
+      this
+    } else if (asDirectory) {
+      createDirectories()
+    } else {
+      parent.createDirectories()
+      Files.createFile(path)
+    }
 
     def exists: Boolean = Files.exists(path)
 
@@ -283,18 +290,38 @@ package object files {
     /**
      * Zips this file (or directory)
      *
-     * @param destination The destination file; Creates this if it does not exist. If missing uses a temp file
+     * @param destination The destination file; Creates this if it does not exists
      * @return The destination zip file
      */
-    def zip(destination: File = File.newTemp(name, ".zip")): File = Cmds.zip(this)(destination)
+    def zipTo(destination: File): File = Cmds.zip(listRecursively(maxDepth = 1).toSeq : _*)(destination)
+
+    /**
+     * zip to a temp directory
+     * @return the target directory
+     */
+    def zip(): File = zipTo(destination = File.newTemp(name, ".zip"))
 
     /**
      * Unzips this zip file
      *
-     * @param destination destination folder; Creates this if it does not exist. If missing uses a temp directory
+     * @param destination destination folder; Creates this if it does not exist
      * @return The destination where contents are unzipped
      */
-    def unzip(destination: File = File.newTempDir(name)): File = Cmds.unzip(this)(destination)
+    def unzipTo(destination: File = File.newTempDir(name)): File = {
+      val zipFile = new ZipFile(toJava)
+      zipFile.entries foreach {entry =>
+        val file = destination.createChild(entry.getName, entry.isDirectory)
+        if(!entry.isDirectory) zipFile.getInputStream(entry) > file.out
+      }
+      zipFile.close()   //TODO: ARM
+      destination
+    }
+
+    /**
+     * unzip to a temporary zip file
+     * @return the zip file
+     */
+    def unzip(): File = unzipTo(destination = File.newTempDir(name))
   }
 
   object File {
@@ -378,6 +405,8 @@ package object files {
 
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
 
+    def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
+
     def zip(files: File*)(destination: File): File = {
       val out = new ZipOutputStream(destination.out)
       for {
@@ -388,8 +417,6 @@ package object files {
       out.close()     //TODO: ARM
       destination
     }
-
-    def unzip(zip: File)(destination: File): File = ???
   }
 
   implicit class FileOps(file: JFile) {
@@ -445,15 +472,10 @@ package object files {
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {
 
     def add(file: File, name: Option[String] = None): Unit = {
-      val entryName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
-      if (file.isDirectory) {
-        out.putNextEntry(new ZipEntry(s"$entryName/"))  // make sure to end directories in ZipEntry with "/"
-      } else {
-        out.putNextEntry(new ZipEntry(entryName))
-        if (file.isRegularFile) {
-          file.newInputStream.pipeTo(out, closeOutputStream = false)
-        }
-      }
+      val relativeName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
+      val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
+      out.putNextEntry(new ZipEntry(entryName))
+      if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
       out.closeEntry()
     }
   }

@@ -260,11 +260,15 @@ You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](htt
 ```scala
 // Unzipping:
 val zipFile = file"path/to/research.zip"
-val research: File = zipFile.unzip(destination = home/"Documents"/"research")
+val research: File = zipFile.unzipTo(destination = home/"Documents"/"research") 
 
 // Zipping:
 val target = File.newTempFile("research", suffix = ".zip")
-val zipFile = directory.zip(destination = target)
+val zipFile = directory.zipTo(destination = target)
+
+// Zipping/Unzipping to temporary files/directories:
+val someTempDir: File = zipFile.unzip()
+val someTempZipFile: File = directory.zip()
 
 // Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
