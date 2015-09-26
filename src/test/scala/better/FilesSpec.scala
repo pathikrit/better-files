@@ -241,6 +241,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     zipFile.name should endWith (".zip")
     val destination = zipFile.unzip()
     (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
+    destination.listRecursively().length shouldEqual testRoot.listRecursively().length  //TODO: Use ===
   }
 
   it should "zip/unzip single files" in {

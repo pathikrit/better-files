@@ -318,8 +318,8 @@ package object files {
      * @return The destination zip file
      */
     def zipTo(destination: File): File = {
-      val files = if (isDirectory) children else Seq(this)
-      Cmds.zip(files.toSeq: _*)(destination)
+      val files = if (isDirectory) children.toSeq else Seq(this)
+      Cmds.zip(files: _*)(destination)
     }
 
     /**
