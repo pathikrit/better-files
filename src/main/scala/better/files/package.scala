@@ -81,6 +81,9 @@ package object files {
 
     def bytes: Iterator[Byte] = in.buffered.bytes
 
+    def loadBytes: Array[Byte] = Files.readAllBytes(path)
+    def byteArray: Array[Byte] = loadBytes
+
     def createDirectory(): File = Files.createDirectory(path)
 
     def createDirectories(): File = Files.createDirectories(path)
@@ -89,7 +92,7 @@ package object files {
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
 
-    def contentAsString(implicit codec: Codec): String = new String(bytes.toArray, codec)
+    def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
     def `!`(implicit codec: Codec): String = contentAsString(codec)
 
     def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
@@ -99,7 +102,8 @@ package object files {
     def appendLine(line: String)(implicit codec: Codec): File = appendLines(line)
 
     def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
-    private[this] def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+
+    def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
 
     def write(bytes: Array[Byte]): File = Files.write(path, bytes) //TODO: Large I/O using byte-buffers?
 
@@ -123,7 +127,10 @@ package object files {
     /**
      * @return checksum of this file in hex format //TODO: make this work for directories too
      */
-    def checksum(algorithm: String = "MD5"): String = DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(bytes.toArray))
+    def checksum(algorithm: String = "MD5"): String = {
+      DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(loadBytes))
+    }
+
     def md5: String = checksum("MD5")
 
     /**
@@ -221,10 +228,10 @@ package object files {
     def groupName: String = group.getName
 
     def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
-    val chown = setOwner _
+    def chown(owner: String): File = setOwner(owner)
 
     def setGroup(group: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
-    val chgrp = setGroup _
+    def chgrp(group: String): File = setGroup(group)
 
     /**
      * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
@@ -290,10 +297,10 @@ package object files {
     /**
      * @return true if this file is exactly same as that file TODO: recursively for directories (or empty files?)
      */
-    def contentSameAs(that: File): Boolean = this.bytes sameElements that.bytes
-    val `===` = contentSameAs _
+    def sameContentAs(that: File): Boolean = this.bytes sameElements that.bytes
+    def `===`(that: File): Boolean = sameContentAs(that)
 
-    def =!=(that: File): Boolean = !contentSameAs(that)
+    def =!=(that: File): Boolean = !sameContentAs(that)
 
     override def equals(obj: Any) = obj match {
       case file: File => sameFileAs(file)
@@ -407,7 +414,7 @@ package object files {
     def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
 
     def rm(file: File): File = file.delete(ignoreIOExceptions = true)
-    val del = rm _
+    def del(file: File): File = rm(file)
 
     def ln(file1: File, file2: File): File = file1 linkTo file2
 
@@ -416,7 +423,7 @@ package object files {
     def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
 
     def ls(file: File): Files = file.list
-    val dir = ls _
+    def dir(file: File): Files = ls(file)
 
     def ls_r(file: File): Files = file.listRecursively
 

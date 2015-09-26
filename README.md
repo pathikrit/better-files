@@ -93,6 +93,7 @@ Or even, right-associatively:
 ```scala
 "hello" >: file
 "world" >>: file
+val bytes: Array[Byte] = file.loadBytes
 ```
 All operations are chainable e.g.
 ```scala
