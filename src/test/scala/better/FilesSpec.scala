@@ -82,6 +82,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "do basic I/O" in {
+    import scala.language.postfixOps
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
     t1.appendNewLine << "world"

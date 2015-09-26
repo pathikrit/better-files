@@ -276,8 +276,9 @@ File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ```
 
 ### Lightweight ARM
-Simple automatic resource management (auto-close Java closeables) (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
+Auto-close Java closeables (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
 ```scala
+import better.files._, arm._
 for {
   in <- managed(file1.newInputStream)
   out <- managed(file2.newOutputStream)

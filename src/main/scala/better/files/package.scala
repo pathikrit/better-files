@@ -15,7 +15,7 @@ import javax.xml.bind.DatatypeConverter
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.languageFeature.implicitConversions
+import scala.language.{implicitConversions, postfixOps}
 import scala.util.Properties
 
 package object files {
