@@ -122,12 +122,16 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
     (t1 < "hello world").changeExtensionTo(".txt").name shouldBe "t1.txt"
-    t1.contentType shouldBe None
+    t1.contentType shouldBe Some("text/plain")
     //t1.contentType shouldBe Some("txt")
     ("src" / "test").toString should include ("better-files")
     (t1 == t1.toString) shouldBe false
     (t1.contentAsString == t1.toString) shouldBe false
     (t1 == t1.contentAsString) shouldBe false
+  }
+
+  it should "hide/unhide" in {
+    t1.isHidden shouldBe false
   }
 
   it must "have .size" in {
@@ -237,10 +241,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "md5" in {
+    val h1 = t1.hashCode
     val actual = (t1 < "hello world").md5
+    val h2 = t1.hashCode
+    h1 shouldEqual h2
     import scala.sys.process._, scala.language.postfixOps
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
     expected.toUpperCase should include (actual)
+    actual should not equal h1
   }
 
   it should "support file in/out" in {
