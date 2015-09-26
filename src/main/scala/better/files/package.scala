@@ -283,6 +283,10 @@ package object files {
 
     def sameFileAs(that: File): Boolean = Files.isSameFile(this.path, that.path)
 
+    def listRelativePaths: Iterator[Path] = walk().map(relativize)
+
+    def relativize(destination: File): Path = path relativize destination.path
+
     /**
      * @return true if this file is exactly same as that file TODO: recursively for directories (or empty files?)
      */
@@ -437,7 +441,7 @@ package object files {
         out <- managed(new ZipOutputStream(destination.out))
         input <- files
         file <- input.walk()
-        name = input.parent.path relativize file.path
+        name = input.parent relativize file
       } out.add(file, name = Some(name.toString))
       destination
     }
