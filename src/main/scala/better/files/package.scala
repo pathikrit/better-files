@@ -15,9 +15,11 @@ import javax.xml.bind.DatatypeConverter
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
+import scala.languageFeature.implicitConversions
 import scala.util.Properties
 
 package object files {
+  import arm.managed
   /**
    * Scala wrapper around java.nio.files.Path
    */
@@ -476,32 +478,6 @@ package object files {
       out.putNextEntry(new ZipEntry(entryName))
       if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
       out.closeEntry()
-    }
-  }
-
-  type Closeable = {
-    def close(): Unit
-  }
-
-  /**
-   * Lightweight automatic resource management
-   * Closes the resource when done
-   * e.g.
-   * <pre>
-   * {@code
-   * for {
-   *   in <- managed(file.newInputStream)
-   * } in.write(bytes)
-   * // in is closed now
-   * </code>
-   * @param resource
-   * @return
-   */
-  def managed[A <: Closeable](resource: A): Traversable[A] = new Traversable[A] {
-    override def foreach[U](f: A => U) = try {
-      f(resource)
-    } finally {
-      resource.close()
     }
   }
 
