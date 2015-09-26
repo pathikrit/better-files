@@ -179,7 +179,7 @@ You can even use more advanced regex syntax instead of glob syntax:
 ```scala
 val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
-For simpler cases, you can always use `dir.list` or `dir.listRecursively(maxDepth: Int)`
+For simpler cases, you can always use `dir.list` or `dir.walk(maxDepth: Int)`
 
 ### File system operations
 Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch`, `cat` etc:

@@ -104,10 +104,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "glob" in {
     ("src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
-    ("src"/"test").listRecursively().filter(_.extension == Some(".scala")) should have length 1
+    ("src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
     ls("src"/"test") should have length 1
-    ("src"/"test").listRecursively(maxDepth = 1) should have length 2
-    ls_r("src"/"test") should have length 4
+    ("src"/"test").walk(maxDepth = 1) should have length 2
+    ("src"/"test").walk(maxDepth = 0) should have length 1
+    ("src"/"test").walk() should have length (("src"/"test").listRecursively.length + 1)
+    ls_r("src"/"test") should have length 3
   }
 
   it should "support names/extensions" in {
@@ -241,7 +243,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     zipFile.name should endWith (".zip")
     val destination = zipFile.unzip()
     (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
-    destination.listRecursively().length shouldEqual testRoot.listRecursively().length  //TODO: Use ===
+    destination.walk().length shouldEqual testRoot.walk().length  //TODO: Use ===
   }
 
   it should "zip/unzip single files" in {

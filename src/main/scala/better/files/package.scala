@@ -153,16 +153,14 @@ package object files {
     def children: Files = list
     def entries: Files = list
 
-    def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
+    def listRecursively: Files = walk().filterNot(samePathAs)
 
     /**
      * Walk the directory tree recursively upto maxDepth
      * @param maxDepth
-     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0
-     *
-    def walk(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)*/
-
-    //TODO: Add def walk(maxDepth: Int): Stream[File] = that ignores I/O errors and excludes self
+     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0)
+     */
+    def walk(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth) //TODO: that ignores I/O errors?
 
     /**
      * Util to glob from this file's path
@@ -185,7 +183,7 @@ package object files {
     /**
      * @return file size (for directories, return size of the directory) in bytes
      */
-    def size: Long = listRecursively().map(f => Files.size(f.path)).sum
+    def size: Long = walk().map(f => Files.size(f.path)).sum
 
     def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(path).toSet
 
@@ -416,7 +414,7 @@ package object files {
     def ls(file: File): Files = file.list
     val dir = ls _
 
-    def ls_r(file: File): Files = file.listRecursively()
+    def ls_r(file: File): Files = file.listRecursively
 
     def touch(file: File): File = file.touch()
 
@@ -438,7 +436,7 @@ package object files {
       for {
         out <- managed(new ZipOutputStream(destination.out))
         input <- files
-        file <- input.listRecursively()
+        file <- input.walk()
         name = input.parent.path relativize file.path
       } out.add(file, name = Some(name.toString))
       destination
