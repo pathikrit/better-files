@@ -306,7 +306,10 @@ package object files {
      * @param destination The destination file; Creates this if it does not exists
      * @return The destination zip file
      */
-    def zipTo(destination: File): File = Cmds.zip(listRecursively(maxDepth = 1).toSeq : _*)(destination)
+    def zipTo(destination: File): File = {
+      val files = if (isDirectory) children else Seq(this)
+      Cmds.zip(files.toSeq: _*)(destination)
+    }
 
     /**
      * zip to a temp directory
