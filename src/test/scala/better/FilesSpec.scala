@@ -208,6 +208,16 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (fb / "t3").notExists shouldBe true
   }
 
+  it should "touch" in {
+    (fb / "z1").exists shouldBe false
+    (fb / "z1").isEmpty shouldBe true
+    (fb / "z1").touch()
+    (fb / "z1").exists shouldBe true
+    (fb / "z1").isEmpty shouldBe true
+    Thread.sleep(1000)
+    (fb / "z1").lastModifiedTime.getEpochSecond should be < (fb / "z1").touch().lastModifiedTime.getEpochSecond
+  }
+
   it should "support file in/out" in {
     t1 < "hello world"
     t1.in > t2.out

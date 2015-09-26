@@ -157,12 +157,11 @@ val bw      : BufferedWriter        = writer.buffered
 ### Pattern matching
 Instead of `if-else`, more idiomatic powerful Scala pattern matching:
 ```scala
-"src"/"test"/"foo" match {
-  case SymbolicLink(to) =>          // this must be first case statement if you want to handle symlinks specially; else will follow link
-  case Directory(children) =>       
-  case RegularFile(source) =>       
-  case other if other.exists() =>   // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
-  case _ =>                         // a file that does not exist
+def isEmpty(file: File): Boolean = file match {
+  case SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
+  case Directory(children) => children.isEmpty
+  case RegularFile(source) => source.isEmpty
+  case _ => !file.exists                // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
 }
 // or as extractors on LHS:
 val Directory(researchDocs) = home/"Downloads"/"research"
@@ -244,6 +243,7 @@ file.isEmpty      // true if file has no content (or no children if directory) o
 import java.nio.file.attribute.PosixFilePermission
 file.addPermission(PosixFilePermission.OWNER_EXECUTE)      // chmod +X file
 file.removePermission(PosixFilePermission.OWNER_WRITE)     // chmod -w file
+
 // The following are all equivalent:
 assert(file.permissions contains PosixFilePermission.OWNER_EXECUTE)
 assert(file(PosixFilePermission.OWNER_EXECUTE))
@@ -251,7 +251,7 @@ assert(file.isOwnerExecutable)
 ```
 
 ### File comparison
-Use `==` to check for path-based equality and `===` for content-based equality
+Use `==` to check for path-based equality and `===` for content-based equality:
 ```scala
 file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
@@ -263,11 +263,11 @@ file1 =!= file2   // equivalent to `!file1.sameContentAs(file2)`
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 // Unzipping:
-val zipFile = file"path/to/research.zip"
+val zipFile: File = file"path/to/research.zip"
 val research: File = zipFile.unzipTo(destination = home/"Documents"/"research") 
 
 // Zipping:
-val zipFile = directory.zipTo(destination = home/"Desktop"/"toEmail.zip")
+val zipFile: File = directory.zipTo(destination = home/"Desktop"/"toEmail.zip")
 
 // Zipping/Unzipping to temporary files/directories:
 val someTempZipFile: File = directory.zip()
