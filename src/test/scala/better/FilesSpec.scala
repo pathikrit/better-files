@@ -4,6 +4,8 @@ import better.files._, Cmds._, Closeable._
 
 import org.scalatest._
 
+import scala.util.Try
+
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
@@ -52,6 +54,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val f5: File = "/User"/"johndoe"/"Documents"
     val f6: File = "/User/johndoe/Documents".toFile
     val f7: File = root/"User"/"johndoe"/"Documents"/"presentations" / `..`
+    val f8: File = root/"User"/"johndoe"/"Documents"/ `.`
 
     root.toString shouldEqual "file:///"
     home.toString.count(_ == '/') should be > 1
@@ -118,8 +121,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.name shouldBe "t1.txt"
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
+    (t1 < "hello world").changeExtensionTo(".txt").name shouldBe "t1.txt"
+    t1.contentType shouldBe None
     //t1.contentType shouldBe Some("txt")
     ("src" / "test").toString should include ("better-files")
+    (t1 == t1.toString) shouldBe false
+    (t1.contentAsString == t1.toString) shouldBe false
+    (t1 == t1.contentAsString) shouldBe false
   }
 
   it must "have .size" in {
@@ -231,8 +239,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "md5" in {
     val actual = (t1 < "hello world").md5
     import scala.sys.process._, scala.language.postfixOps
-    val expected = (s"md5 ${t1.path}" !!).toUpperCase
-    expected should include (actual)
+    val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
+    expected.toUpperCase should include (actual)
   }
 
   it should "support file in/out" in {
