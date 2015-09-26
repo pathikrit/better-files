@@ -378,7 +378,16 @@ package object files {
 
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
 
-    def zip(files: File*)(destination: File): File = ???
+    def zip(files: File*)(destination: File): File = {
+      val out = new ZipOutputStream(destination.out)
+      for {
+        input <- files
+        file <- input.listRecursively()
+        name = input.parent.path.relativize(file.path)
+      } out.add(file, name = Some(name.toString))
+      out.close()     //TODO: ARM
+      destination
+    }
 
     def unzip(zip: File)(destination: File): File = ???
   }
@@ -433,8 +442,24 @@ package object files {
     def buffered: BufferedWriter = new BufferedWriter(writer)
   }
 
+  implicit class ZipOutputStreamOps(out: ZipOutputStream) {
+
+    def add(file: File, name: Option[String] = None): Unit = {
+      val entryName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
+      if (file.isDirectory) {
+        out.putNextEntry(new ZipEntry(s"$entryName/"))  // make sure to end directories in ZipEntry with "/"
+      } else {
+        out.putNextEntry(new ZipEntry(entryName))
+        if (file.isRegularFile) {
+          file.newInputStream.pipeTo(out, closeOutputStream = false)
+        }
+      }
+      out.closeEntry()
+    }
+  }
+
   type Closeable = {
-    def close(): Unit //TODO: ARM
+    def close(): Unit
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

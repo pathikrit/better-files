@@ -217,7 +217,7 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
-unzip(file)(targetDir)
+unzip(zipFile)(targetDir)
 zip(file*)(zipFile)
 // gzip
 ```
