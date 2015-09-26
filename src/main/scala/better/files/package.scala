@@ -431,6 +431,8 @@ package object files {
 
     def mkdir(file: File): File = file.createDirectory()
 
+    def md5(file: File): String = file.md5
+
     def mkdirs(file: File): File = file.createDirectories()
 
     def chown(owner: String, file: File): File = file.setOwner(owner)

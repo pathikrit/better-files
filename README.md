@@ -192,7 +192,7 @@ file.moveTo(destination)
 file.copyTo(destination)
 file.linkTo(destination)                     // ln file destination
 file.symLinkTo(destination)                  // ln -s file destination
-file.checksum / file.md5
+file.checksum / file.md5       // also works for directories; used for fast equality of directories
 file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
@@ -218,6 +218,7 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
+md5(file)
 unzip(zipFile)(targetDir)
 zip(file*)(zipFile)
 ```
