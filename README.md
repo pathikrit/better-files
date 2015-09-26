@@ -217,8 +217,8 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
-unzip(file)
-// zip
+unzip(file)(targetDir)
+zip(file*)(zipFile)
 // gzip
 ```
 
@@ -255,22 +255,17 @@ file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
 ```
 
-### Zip APIs (WIP)
+### Zip APIs
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 // Unzipping:
 val zipFile = file"path/to/research.zip"
-val research: File = zipFile unzipTo (home/"Documents"/"research")   
+val research: File = zipFile.unzip(destination = home/"Documents"/"research")
 
 // Zipping:
 val target = File.newTempFile("research", suffix = ".zip")
-val zipFile = target.zip(file1, file2, file3).create()
+val zipFile = directory.zip(destination = target)
 
 // Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
-````
-With passwords:
-```scala
-zipFile.unzipTo(dir, password = Some("secret-sauce"))
-target.zip(file1, file2).create(password = Some("secret-sauce"))
 ```

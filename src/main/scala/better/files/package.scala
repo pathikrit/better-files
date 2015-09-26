@@ -9,7 +9,7 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip.{ZipEntry, ZipOutputStream, GZIPInputStream, GZIPOutputStream}
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
@@ -279,6 +279,22 @@ package object files {
     override def hashCode = path.hashCode()
 
     override def toString = uri.toString
+
+    /**
+     * Zips this file (or directory)
+     *
+     * @param destination The destination file; Creates this if it does not exist. If missing uses a temp file
+     * @return The destination zip file
+     */
+    def zip(destination: File = File.newTemp(name, ".zip")): File = Cmds.zip(this)(destination)
+
+    /**
+     * Unzips this zip file
+     *
+     * @param destination destination folder; Creates this if it does not exist. If missing uses a temp directory
+     * @return The destination where contents are unzipped
+     */
+    def unzip(destination: File = File.newTempDir(name)): File = Cmds.unzip(this)(destination)
   }
 
   object File {
@@ -361,6 +377,10 @@ package object files {
     def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
+
+    def zip(files: File*)(destination: File): File = ???
+
+    def unzip(zip: File)(destination: File): File = ???
   }
 
   implicit class FileOps(file: JFile) {
@@ -370,18 +390,18 @@ package object files {
   implicit class InputStreamOps(in: InputStream) {
     def >(out: OutputStream): Unit = pipeTo(out)
 
-    def pipeTo(out: OutputStream, bufferSize: Int = 1<<10): Unit = pipeTo(out, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
 
     /**
      * Pipe an input stream to an output stream using a byte buffer
      */
-    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = in.read(buffer) match {
+    @tailrec final def pipeTo(out: OutputStream, closeOutputStream: Boolean, buffer: Array[Byte]): Unit = in.read(buffer) match {
       case n if n > 0 =>
         out.write(buffer, 0, n)
-        pipeTo(out, buffer)
+        pipeTo(out, closeOutputStream, buffer)
       case _ =>
         in.close()
-        out.close()
+        if(closeOutputStream) out.close()
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
