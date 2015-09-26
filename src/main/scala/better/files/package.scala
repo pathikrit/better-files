@@ -9,15 +9,17 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
+import scala.language.{implicitConversions, postfixOps}
 import scala.util.Properties
 
 package object files {
+  import arm.managed
   /**
    * Scala wrapper around java.nio.files.Path
    */
@@ -59,9 +61,16 @@ package object files {
 
     def /(f: File => File): File = f(this)
 
-    def createChild(child: String): File = (this / child).createIfNotExists()
+    def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
-    def createIfNotExists(): File = if (exists) this else {parent.createDirectories(); Files.createFile(path)}
+    def createIfNotExists(asDirectory: Boolean = false): File = if (exists) {
+      this
+    } else if (asDirectory) {
+      createDirectories()
+    } else {
+      parent.createDirectories()
+      Files.createFile(path)
+    }
 
     def exists: Boolean = Files.exists(path)
 
@@ -279,6 +288,42 @@ package object files {
     override def hashCode = path.hashCode()
 
     override def toString = uri.toString
+
+    /**
+     * Zips this file (or directory)
+     *
+     * @param destination The destination file; Creates this if it does not exists
+     * @return The destination zip file
+     */
+    def zipTo(destination: File): File = Cmds.zip(listRecursively(maxDepth = 1).toSeq : _*)(destination)
+
+    /**
+     * zip to a temp directory
+     * @return the target directory
+     */
+    def zip(): File = zipTo(destination = File.newTemp(name, ".zip"))
+
+    /**
+     * Unzips this zip file
+     *
+     * @param destination destination folder; Creates this if it does not exist
+     * @return The destination where contents are unzipped
+     */
+    def unzipTo(destination: File = File.newTempDir(name)): File = {
+      for {
+        zipFile <- managed(new ZipFile(toJava))
+        entry <- zipFile.entries()
+        file = destination.createChild(entry.getName, entry.isDirectory)
+        if !entry.isDirectory
+      } zipFile.getInputStream(entry) > file.out
+      destination
+    }
+
+    /**
+     * unzip to a temporary zip file
+     * @return the zip file
+     */
+    def unzip(): File = unzipTo(destination = File.newTempDir(name))
   }
 
   object File {
@@ -361,6 +406,18 @@ package object files {
     def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 
     def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
+
+    def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
+
+    def zip(files: File*)(destination: File): File = {
+      for {
+        out <- managed(new ZipOutputStream(destination.out))
+        input <- files
+        file <- input.listRecursively()
+        name = input.parent.path.relativize(file.path)
+      } out.add(file, name = Some(name.toString))
+      destination
+    }
   }
 
   implicit class FileOps(file: JFile) {
@@ -370,18 +427,18 @@ package object files {
   implicit class InputStreamOps(in: InputStream) {
     def >(out: OutputStream): Unit = pipeTo(out)
 
-    def pipeTo(out: OutputStream, bufferSize: Int = 1<<10): Unit = pipeTo(out, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
 
     /**
      * Pipe an input stream to an output stream using a byte buffer
      */
-    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = in.read(buffer) match {
+    @tailrec final def pipeTo(out: OutputStream, closeOutputStream: Boolean, buffer: Array[Byte]): Unit = in.read(buffer) match {
       case n if n > 0 =>
         out.write(buffer, 0, n)
-        pipeTo(out, buffer)
+        pipeTo(out, closeOutputStream, buffer)
       case _ =>
         in.close()
-        out.close()
+        if(closeOutputStream) out.close()
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
@@ -413,8 +470,15 @@ package object files {
     def buffered: BufferedWriter = new BufferedWriter(writer)
   }
 
-  type Closeable = {
-    def close(): Unit //TODO: ARM
+  implicit class ZipOutputStreamOps(out: ZipOutputStream) {
+
+    def add(file: File, name: Option[String] = None): Unit = {
+      val relativeName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
+      val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
+      out.putNextEntry(new ZipEntry(entryName))
+      if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
+      out.closeEntry()
+    }
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

@@ -82,6 +82,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "do basic I/O" in {
+    import scala.language.postfixOps
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
     t1.appendNewLine << "world"
@@ -187,11 +188,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t3.exists shouldBe false
   }
 
-  it should "do I/O via streams/writers" in {
-    t1.reader
-    //t1.in > t2.out
-  }
-
   it should "support custom codec" in {
     import scala.io.Codec
     t1.write("Hello World")(codec = "ISO-8859-1")
@@ -218,5 +214,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t2.contentAsString shouldEqual "hello world"
   }
 
+  it should "support zip/unzip" in {
+    t1.write("hello world")
+    val zipFile = testRoot.zip()
+    zipFile.size should be > 100L
+    zipFile.name should endWith (".zip")
+    val destination = zipFile.unzip()
+    (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
+  }
   //TODO: Test above for all kinds of FileType
 }

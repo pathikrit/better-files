@@ -14,6 +14,7 @@
   * [File attributes](#file-attributes)
   * [File comparison](#file-comparison)
   * [Zip/Unzip](#zip-apis)
+  * [Automatic Resource Management](#lightweight-arm)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -217,8 +218,8 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
-unzip(file)
-// zip
+unzip(zipFile)(targetDir)
+zip(file*)(zipFile)
 // gzip
 ```
 
@@ -255,22 +256,32 @@ file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
 ```
 
-### Zip APIs (WIP)
+### Zip APIs
 You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 // Unzipping:
 val zipFile = file"path/to/research.zip"
-val research: File = zipFile unzipTo (home/"Documents"/"research")   
+val research: File = zipFile.unzipTo(destination = home/"Documents"/"research") 
 
 // Zipping:
 val target = File.newTempFile("research", suffix = ".zip")
-val zipFile = target.zip(file1, file2, file3).create()
+val zipFile = directory.zipTo(destination = target)
+
+// Zipping/Unzipping to temporary files/directories:
+val someTempDir: File = zipFile.unzip()
+val someTempZipFile: File = directory.zip()
 
 // Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
-````
-With passwords:
+```
+
+### Lightweight ARM
+Auto-close Java closeables (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
 ```scala
-zipFile.unzipTo(dir, password = Some("secret-sauce"))
-target.zip(file1, file2).create(password = Some("secret-sauce"))
+import better.files._, arm._
+for {
+  in <- managed(file1.newInputStream)
+  out <- managed(file2.newOutputStream)
+} in.pipeTo(out)
+//No need to close them after the for-each
 ```
