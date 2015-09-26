@@ -124,12 +124,20 @@ package object files {
     def out: OutputStream = Files.newOutputStream(path)
     def newOutputStream: OutputStream = out
 
-    /**
-     * @return checksum of this file in hex format //TODO: make this work for directories too
-     */
-    def checksum(algorithm: String = "MD5"): String = {
-      DatatypeConverter.printHexBinary(MessageDigest.getInstance(algorithm).digest(loadBytes))
+    def digest(algorithm: String): Array[Byte] = {
+      val digestor = MessageDigest.getInstance(algorithm)
+      listRelativePaths.toSeq.sorted foreach {relativePath =>
+        val file = path resolve relativePath
+        val bytes = if (Files.isDirectory(file)) relativePath.toString.getBytes else Files.readAllBytes(file)
+        digestor.update(bytes)
+      }
+      digestor.digest()
     }
+
+    /**
+     * @return checksum of this file (or directory) in hex format
+     */
+    def checksum(algorithm: String): String = DatatypeConverter.printHexBinary(digest(algorithm))
 
     def md5: String = checksum("MD5")
 
@@ -295,9 +303,11 @@ package object files {
     def relativize(destination: File): Path = path relativize destination.path
 
     /**
-     * @return true if this file is exactly same as that file TODO: recursively for directories (or empty files?)
+     * @return true if this file is exactly same as that file
+     *         For directories, it checks for equivalent directory structure
+     *         Note: Since it uses md5 underneath, there is a small chance of an md5 collision for different files
      */
-    def sameContentAs(that: File): Boolean = this.bytes sameElements that.bytes
+    def sameContentAs(that: File): Boolean = this.md5 == that.md5
     def `===`(that: File): Boolean = sameContentAs(that)
 
     def =!=(that: File): Boolean = !sameContentAs(that)

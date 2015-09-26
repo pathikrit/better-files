@@ -144,8 +144,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support equality" in {
     fa shouldEqual (testRoot/"a")
     fa shouldNot equal (testRoot/"b")
-    //val c1 = fa.checksum()
-    //fa.checksum() shouldEqual c1
+    //val c1 = fa.md5
+    //fa.md5 shouldEqual c1
     t1 < "hello"
     t2 < "hello"
     (t1 == t2) shouldBe false
@@ -153,7 +153,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t2 < "hello world"
     (t1 == t2) shouldBe false
     (t1 === t2) shouldBe false
-    //fa.checksum() should not equal c1
+    //fa.md5 should not equal c1
   }
 
   it should "support chown/chgrp" in {
@@ -175,11 +175,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (b1 / "t1.txt").contentAsString shouldEqual magicWord
     // copy
     b2.contentAsString shouldBe empty
-    t1.checksum() should not equal t2.checksum()
+    t1.md5 should not equal t2.md5
     a[java.nio.file.FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
     t1.copyTo(t2, overwrite = true)
     t1.exists shouldBe true
-    t1.checksum() shouldEqual t2.checksum()
+    t1.md5 shouldEqual t2.md5
     b2.contentAsString shouldEqual magicWord
     // rename
     t2.name shouldBe "t2.txt"
@@ -201,9 +201,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString(Codec.UTF8) shouldEqual "你好世界"
     val c1 = md5(t1)
     val c2 = t1.overwrite("你好世界")(Codec.ISO8859).md5
-    val c3 = t1.checksum()
     c1 should not equal c2
-    c2 shouldEqual c3
+    c2 shouldEqual t1.checksum("md5")
   }
 
   it should "copy" in {
@@ -243,7 +242,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     zipFile.name should endWith (".zip")
     val destination = zipFile.unzip()
     (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
-    destination.walk().length shouldEqual testRoot.walk().length  //TODO: Use ===
+    destination === testRoot shouldBe true
+    (destination/"a"/"a1"/"t1.txt").overwrite("hello")
+    destination =!= testRoot shouldBe true
   }
 
   it should "zip/unzip single files" in {

@@ -1,15 +1,17 @@
 general:
   branches:
-    ignore:
-      - gh-pages
+    only:
+      - master
+
 machine:
   java:
     version: oraclejdk8
+
 test:
   override:
     - sbt +clean +coverage +test
   post:
-#TODO: Do this only on master
+    - cp -r target/scala-2.11/ $CIRCLE_ARTIFACTS
     - bash <(curl -s https://codecov.io/bash)
     - git config --global user.email "pathikritbhowmick@msn.com"
     - git config --global user.name "circle-ci"
