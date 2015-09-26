@@ -308,12 +308,12 @@ package object files {
      * @return The destination where contents are unzipped
      */
     def unzipTo(destination: File = File.newTempDir(name)): File = {
-      val zipFile = new ZipFile(toJava)
-      zipFile.entries foreach {entry =>
-        val file = destination.createChild(entry.getName, entry.isDirectory)
-        if(!entry.isDirectory) zipFile.getInputStream(entry) > file.out
-      }
-      zipFile.close()   //TODO: ARM
+      for {
+        zipFile <- managed(new ZipFile(toJava))
+        entry <- zipFile.entries()
+        file = destination.createChild(entry.getName, entry.isDirectory)
+        if !entry.isDirectory
+      } zipFile.getInputStream(entry) > file.out
       destination
     }
 
@@ -408,13 +408,12 @@ package object files {
     def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
 
     def zip(files: File*)(destination: File): File = {
-      val out = new ZipOutputStream(destination.out)
       for {
+        out <- managed(new ZipOutputStream(destination.out))
         input <- files
         file <- input.listRecursively()
         name = input.parent.path.relativize(file.path)
       } out.add(file, name = Some(name.toString))
-      out.close()     //TODO: ARM
       destination
     }
   }
@@ -482,6 +481,28 @@ package object files {
 
   type Closeable = {
     def close(): Unit
+  }
+
+  /**
+   * Lightweight automatic resource management
+   * Closes the resource when done
+   * e.g.
+   * <pre>
+   * {@code
+   * for {
+   *   in <- managed(file.newInputStream)
+   * } in.write(bytes)
+   * // in is closed now
+   * </code>
+   * @param resource
+   * @return
+   */
+  def managed[A <: Closeable](resource: A): Traversable[A] = new Traversable[A] {
+    override def foreach[U](f: A => U) = try {
+      f(resource)
+    } finally {
+      resource.close()
+    }
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

@@ -10,7 +10,7 @@ crossVersion := CrossVersion.binary
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
-  "-language:implicitConversions", "-language:postfixOps"
+  "-language:implicitConversions", "-language:postfixOps", "-language:reflectiveCalls"
 )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test

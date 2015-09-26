@@ -14,6 +14,7 @@
   * [File attributes](#file-attributes)
   * [File comparison](#file-comparison)
   * [Zip/Unzip](#zip-apis)
+  * [Automatic Resource Management](#lightweight-arm)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -272,4 +273,14 @@ val someTempZipFile: File = directory.zip()
 
 // Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
+```
+
+### Lightweight ARM
+Simple automatic resource management (auto-close Java closeables) (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
+```scala
+for {
+  in <- managed(file1.newInputStream)
+  out <- managed(file2.newOutputStream)
+} in.pipeTo(out)
+//No need to close them after the for-each
 ```
