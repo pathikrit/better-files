@@ -155,6 +155,13 @@ package object files {
 
     def listRecursively(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)
 
+    /**
+     * Walk the directory tree recursively upto maxDepth
+     * @param maxDepth
+     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0
+     *
+    def walk(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth)*/
+
     //TODO: Add def walk(maxDepth: Int): Stream[File] = that ignores I/O errors and excludes self
 
     /**
@@ -209,7 +216,11 @@ package object files {
 
     def owner: UserPrincipal = Files.getOwner(path)
 
+    def ownerName: String = owner.getName
+
     def group: GroupPrincipal = posixAttributes.group()
+
+    def groupName: String = group.getName
 
     def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     val chown = setOwner _

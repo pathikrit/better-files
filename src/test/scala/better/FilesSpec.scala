@@ -155,8 +155,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support chown/chgrp" in {
-    fa.owner.getName should not be empty
-    fa.group.getName should not be empty
+    fa.ownerName should not be empty
+    fa.groupName should not be empty
+    a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chown("hitler", fa)
+    a[java.nio.file.FileSystemException] should be thrownBy chown("root", fa)
+    a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chgrp("cool", fa)
+    a[java.nio.file.FileSystemException] should be thrownBy chown("admin", fa)
     //fa.chown("nobody").chgrp("nobody")
   }
 
@@ -250,10 +254,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "gzip" in {
     for {
-      writer <- managed((testRoot / "test.gz").out.buffered.gzipped.writer)
+      writer <- managed((testRoot / "test.gz").out.buffered.gzipped.writer.buffered)
     } writer.write("Hello world")
 
-    (testRoot / "test.gz").in.gzipped.lines.toSeq shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").in.buffered.gzipped.buffered.lines.toSeq shouldEqual Seq("Hello world")
   }
   //TODO: Test above for all kinds of FileType
 }
