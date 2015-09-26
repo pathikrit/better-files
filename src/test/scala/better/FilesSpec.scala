@@ -5,7 +5,7 @@ import better.files._, Cmds._
 import org.scalatest._
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-  var testRoot: File = _
+  var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
   var a1: File = _
   var a2: File = _

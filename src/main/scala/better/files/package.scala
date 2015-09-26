@@ -280,9 +280,20 @@ package object files {
     def contentSameAs(that: File): Boolean = this.bytes sameElements that.bytes
     val `===` = contentSameAs _
 
+    def !==(that: File): Boolean = !contentSameAs(that)
+
     override def equals(obj: Any) = obj match {
       case file: File => sameFileAs(file)
       case _ => false
+    }
+
+    /**
+     * @return true if file is not present or empty directory or 0-bytes file
+     */
+    def isEmpty: Boolean = this match {
+      case Directory(children) => children.isEmpty
+      case RegularFile(contents) => contents.isEmpty
+      case _ => notExists
     }
 
     override def hashCode = path.hashCode()

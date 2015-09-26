@@ -237,6 +237,7 @@ file.hide() / file.unhide()
 file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
 file.posixAttributes / file.dosAttributes  // see file.attributes
+file.isEmpty      // true 0 bytes for regular files, no children for directories
 ```
 `chmod`:
 ```scala
@@ -254,6 +255,8 @@ Use `==` to check for path-based equality and `===` for content-based equality
 ```scala
 file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
+file1 != file2    // equivalent to `!file1.samePathAs(file2)`
+file1 === file2   // equivalent to `!file1.sameContentAs(file2)`
 ```
 
 ### Zip APIs
