@@ -159,9 +159,9 @@ Instead of `if-else`, more idiomatic powerful Scala pattern matching:
 ```scala
 def isEmpty(file: File): Boolean = file match {
   case SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
-  case Directory(children) => children.isEmpty
-  case RegularFile(source) => source.isEmpty
-  case _ => !file.exists                // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
+  case Directory(files) => files.isEmpty
+  case RegularFile(content) => content.isEmpty
+  case _ => !file.exists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
 }
 // or as extractors on LHS:
 val Directory(researchDocs) = home/"Downloads"/"research"

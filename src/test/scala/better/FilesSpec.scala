@@ -157,6 +157,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support chown/chgrp" in {
     fa.owner.getName should not be empty
+    fa.group.getName should not be empty
     //fa.chown("nobody").chgrp("nobody")
   }
 
@@ -190,8 +191,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support custom codec" in {
     import scala.io.Codec
-    t1.write("Hello World")(codec = "ISO-8859-1")
-    t1.contentAsString(Codec.ISO8859) shouldEqual "Hello World"
+    t1.write("你好世界")(codec = "UTF8")
+    t1.contentAsString(Codec.ISO8859) should not equal "你好世界"
+    t1.contentAsString(Codec.UTF8) shouldEqual "你好世界"
+    val c1 = t1.md5
+    val c2 = t1.overwrite("你好世界")(Codec.ISO8859).md5
+    val c3 = t1.checksum()
+    c2 shouldEqual c3
+    c1 should not equal c3
   }
 
   it should "copy" in {

@@ -292,7 +292,7 @@ package object files {
      */
     def isEmpty: Boolean = this match {
       case Directory(children) => children.isEmpty
-      case RegularFile(contents) => contents.isEmpty
+      case RegularFile(content) => content.isEmpty
       case _ => notExists
     }
 
