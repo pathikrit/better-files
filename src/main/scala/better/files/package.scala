@@ -19,7 +19,7 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.util.Properties
 
 package object files {
-  import arm.managed
+  import Closeable.managed
   /**
    * Scala wrapper around java.nio.files.Path
    */
@@ -489,6 +489,35 @@ package object files {
       out.putNextEntry(new ZipEntry(entryName))
       if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
       out.closeEntry()
+    }
+  }
+
+  type Closeable = {
+    def close(): Unit
+  }
+
+  object Closeable {
+    /**
+     * Lightweight automatic resource management
+     * Closes the resource when done
+     * e.g.
+     * <pre>
+     * {@code
+     * for {
+   *   in <- managed(file.newInputStream)
+   * } in.write(bytes)
+     * // in is closed now
+     * </code>
+     * @param resource
+     * @return
+     */
+    def managed[A <: Closeable](resource: A): Traversable[A] = new Traversable[A] {
+      override def foreach[U](f: A => U) = try {
+        f(resource)
+      } finally {
+        import scala.language.reflectiveCalls
+        resource.close()
+      }
     }
   }
 

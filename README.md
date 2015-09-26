@@ -256,7 +256,7 @@ Use `==` to check for path-based equality and `===` for content-based equality
 file1 == file2    // equivalent to `file1.samePathAs(file2)`
 file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
 file1 != file2    // equivalent to `!file1.samePathAs(file2)`
-file1 === file2   // equivalent to `!file1.sameContentAs(file2)`
+file1 !== file2   // equivalent to `!file1.sameContentAs(file2)`
 ```
 
 ### Zip APIs
@@ -271,8 +271,9 @@ val target = File.newTempFile("research", suffix = ".zip")
 val zipFile = directory.zipTo(destination = target)
 
 // Zipping/Unzipping to temporary files/directories:
-val someTempDir: File = zipFile.unzip()
 val someTempZipFile: File = directory.zip()
+val someTempDir: File = zipFile.unzip()
+assert(directory === someTempDir)
 
 // Gzip handling:
 File("countries.gz").in.gzipped.lines.take(10).foreach(println)
@@ -281,7 +282,7 @@ File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ### Lightweight ARM
 Auto-close Java closeables (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
 ```scala
-import better.files._, arm._
+import better.files._, Closeable.managed
 for {
   in <- managed(file1.newInputStream)
   out <- managed(file2.newOutputStream)
