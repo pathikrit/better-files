@@ -219,7 +219,6 @@ chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
 unzip(zipFile)(targetDir)
 zip(file*)(zipFile)
-// gzip
 ```
 
 ### File attributes

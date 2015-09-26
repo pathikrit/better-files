@@ -1,6 +1,6 @@
 package better
 
-import better.files._, Cmds._
+import better.files._, Cmds._, Closeable._
 
 import org.scalatest._
 
@@ -37,12 +37,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     fb = testRoot/"b"
     b1 = testRoot/"b"/"b1"
     b2 = testRoot/"b"/"b2.txt"
-    Seq(a1, a2, fb).foreach(mkdirs)
-    t1.touch()
-    t2.touch()
+    Seq(a1, a2, fb) foreach mkdirs
+    Seq(t1, t2) foreach touch
   }
 
-  override def afterEach() = testRoot.delete()
+  override def afterEach() = rm(testRoot)
 
   "files" can "be instantiated" in {
     val f = File("/User/johndoe/Documents")
@@ -106,9 +105,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "glob" in {
     ("src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
     ("src"/"test").listRecursively().filter(_.extension == Some(".scala")) should have length 1
-    ("src"/"test").list should have length 1
+    ls("src"/"test") should have length 1
     ("src"/"test").listRecursively(maxDepth = 1) should have length 2
-    ("src"/"test").listRecursively() should have length 4
+    ls_r("src"/"test") should have length 4
   }
 
   it should "support names/extensions" in {
@@ -133,10 +132,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     import java.nio.file.attribute.PosixFilePermission
     t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
-    t1.addPermission(PosixFilePermission.OWNER_EXECUTE)
+    chmod_+(PosixFilePermission.OWNER_EXECUTE, t1)
     t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
 
-    t1.removePermission(PosixFilePermission.OWNER_EXECUTE)
+    chmod_-(PosixFilePermission.OWNER_EXECUTE, t1)
     t1.isOwnerExecutable shouldBe false
   }
 
@@ -166,7 +165,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1 write magicWord
     // link
     b1.linkTo(a1, symbolic = true)
-    b2.symLinkTo(t2)
+    ln_s(b2, t2)
     (b1 / "t1.txt").contentAsString shouldEqual magicWord
     // copy
     b2.contentAsString shouldBe empty
@@ -247,6 +246,14 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     zipFile.name should endWith (".zip")
     val destination = zipFile.unzip()
     (destination/"t1.txt").contentAsString shouldEqual "hello world"
+  }
+
+  it should "gzip" in {
+    for {
+      writer <- managed((testRoot / "test.gz").out.buffered.gzipped.writer)
+    } writer.write("Hello world")
+
+    (testRoot / "test.gz").in.gzipped.lines.toSeq shouldEqual Seq("Hello world")
   }
   //TODO: Test above for all kinds of FileType
 }
