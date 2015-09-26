@@ -248,7 +248,7 @@ package object files {
       if (overwrite) {
         destination.delete(ignoreIOExceptions = true)
       }
-      def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
+      def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
 
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
         override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
@@ -280,7 +280,7 @@ package object files {
     def contentSameAs(that: File): Boolean = this.bytes sameElements that.bytes
     val `===` = contentSameAs _
 
-    def !==(that: File): Boolean = !contentSameAs(that)
+    def =!=(that: File): Boolean = !contentSameAs(that)
 
     override def equals(obj: Any) = obj match {
       case file: File => sameFileAs(file)
@@ -425,7 +425,7 @@ package object files {
         out <- managed(new ZipOutputStream(destination.out))
         input <- files
         file <- input.listRecursively()
-        name = input.parent.path.relativize(file.path)
+        name = input.parent.path relativize file.path
       } out.add(file, name = Some(name.toString))
       destination
     }
@@ -502,12 +502,13 @@ package object files {
      * Closes the resource when done
      * e.g.
      * <pre>
-     * {@code
+     * ``
      * for {
-   *   in <- managed(file.newInputStream)
-   * } in.write(bytes)
+     *   in <- managed(file.newInputStream)
+     * } in.write(bytes)
      * // in is closed now
-     * </code>
+     * ``
+     * </pre>
      * @param resource
      * @return
      */

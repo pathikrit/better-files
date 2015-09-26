@@ -214,13 +214,22 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t2.contentAsString shouldEqual "hello world"
   }
 
-  it should "support zip/unzip" in {
+  it should "zip/unzip directories" in {
     t1.write("hello world")
     val zipFile = testRoot.zip()
     zipFile.size should be > 100L
     zipFile.name should endWith (".zip")
     val destination = zipFile.unzip()
     (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
+  }
+
+  it should "zip/unzip single files" in {
+    t1.write("hello world")
+    val zipFile = t1.zip()
+    zipFile.size should be > 100L
+    zipFile.name should endWith (".zip")
+    val destination = zipFile.unzip()
+    (destination/"t1.txt").contentAsString shouldEqual "hello world"
   }
   //TODO: Test above for all kinds of FileType
 }
