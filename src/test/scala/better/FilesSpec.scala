@@ -87,7 +87,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.appendNewLine << "world"
     (t1!) shouldEqual "hello\nworld\n"
     t1.chars.toStream should contain theSameElementsInOrderAs "hello\nworld\n".toSeq
-    //t1.contentType shouldBe Some("txt")
     "foo" `>:` t1
     "bar" >>: t1
     t1.contentAsString shouldEqual "foobar\n"
@@ -120,7 +119,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
     //t1.contentType shouldBe Some("txt")
-    //("src" / "test").toString shouldNot be
+    ("src" / "test").toString should include ("better-files")
   }
 
   it must "have .size" in {
@@ -144,8 +143,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support equality" in {
     fa shouldEqual (testRoot/"a")
     fa shouldNot equal (testRoot/"b")
-    //val c1 = fa.md5
-    //fa.md5 shouldEqual c1
+    val c1 = fa.md5
+    fa.md5 shouldEqual c1
     t1 < "hello"
     t2 < "hello"
     (t1 == t2) shouldBe false
@@ -153,7 +152,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t2 < "hello world"
     (t1 == t2) shouldBe false
     (t1 === t2) shouldBe false
-    //fa.md5 should not equal c1
+    fa.md5 should not equal c1
   }
 
   it should "support chown/chgrp" in {
@@ -227,6 +226,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (fb / "z1").isEmpty shouldBe true
     Thread.sleep(1000)
     (fb / "z1").lastModifiedTime.getEpochSecond should be < (fb / "z1").touch().lastModifiedTime.getEpochSecond
+  }
+
+  it should "md5" in {
+    val actual = (t1 < "hello world").md5
+    import scala.sys.process._, scala.language.postfixOps
+    val expected = (s"md5 ${t1.path}" !!).toUpperCase
+    expected should include (actual)
   }
 
   it should "support file in/out" in {

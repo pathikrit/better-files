@@ -112,17 +112,17 @@ package object files {
     def <(text: String)(implicit codec: Codec) = write(text)(codec)
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
 
-    def reader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
-    def newBufferedReader(implicit codec: Codec): BufferedReader = reader(codec)
+    def newBufferedReader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
+    def reader(implicit codec: Codec): BufferedReader = newBufferedReader(codec)
 
-    def writer(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
-    def newBufferedWriter(implicit codec: Codec): BufferedWriter = writer(codec)
+    def newBufferedWriter(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
+    def writer(implicit codec: Codec): BufferedWriter = newBufferedWriter(codec)
 
-    def in: InputStream = Files.newInputStream(path)
-    def newInputStream: InputStream = in
+    def newInputStream: InputStream = Files.newInputStream(path)
+    def in: InputStream = newInputStream
 
-    def out: OutputStream = Files.newOutputStream(path)
-    def newOutputStream: OutputStream = out
+    def newOutputStream: OutputStream = Files.newOutputStream(path)
+    def out: OutputStream = newOutputStream
 
     def digest(algorithm: String): Array[Byte] = {
       val digestor = MessageDigest.getInstance(algorithm)
