@@ -581,22 +581,17 @@ package object files {
 
     def this(str: String) = this(new ByteArrayInputStream(str.getBytes))
 
-    private[this] val emptyTokenizer = new StringTokenizer("")
-    private[this] var tokenizer: StringTokenizer = emptyTokenizer
+    private[this] var tokenizer: Option[StringTokenizer] = None
 
-    @tailrec private[this] def nextTokenizer(): StringTokenizer = if (tokenizer.hasMoreTokens) {
-      tokenizer
-    } else {
-      Option(reader.readLine()) match {
-        case None => emptyTokenizer
-        case Some(line) =>
-          tokenizer = new StringTokenizer(line)
-          nextTokenizer()
+    private[this] def nextTokenizer(): Option[StringTokenizer] = tokenizer.find(_.hasMoreTokens) orElse {
+      Option(reader.readLine()) flatMap {line =>
+        tokenizer = Some(new StringTokenizer(line))
+        nextTokenizer()
       }
     }
 
     def nextLine(): String = {
-      tokenizer = emptyTokenizer
+      tokenizer = None
       reader.readLine()
     }
 
@@ -612,9 +607,9 @@ package object files {
       this
     }
 
-    override def hasNext: Boolean = nextTokenizer().hasMoreTokens
+    override def hasNext: Boolean = nextTokenizer().exists(_.hasMoreTokens)
 
-    override def next(): String = nextTokenizer().nextToken()
+    override def next(): String = nextTokenizer().get.nextToken()
 
     def nextInt(): Int = next().toInt
 
@@ -633,5 +628,5 @@ package object files {
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
 
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
-  private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (0 until n) map {i => f}
+  private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
 }
