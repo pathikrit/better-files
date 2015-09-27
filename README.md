@@ -294,9 +294,9 @@ for {
 ```
 
 ### Scanner
-Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html) has a feature-rich API,
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API,
 it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and unwieldy to use from Scala.
-`better-files` provides a faster idiomatic Scala replacement:
+`better-files` provides a [faster idiomatic Scala replacement](src/main/scala/better/files/Scanner.scala):
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
