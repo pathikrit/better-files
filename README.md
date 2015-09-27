@@ -296,7 +296,7 @@ for {
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html) has a feature-rich API,
 it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and unwieldy to use from Scala.
-`better-files` provides a fast and idiomatic Scala replacement:
+`better-files` provides a faster idiomatic Scala replacement:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") <<s"""
 | Stock Price   Buy
@@ -305,8 +305,7 @@ val data = (home / "Desktop" / "stocks.tsv") <<s"""
 | GOOGL 566.78  false
 | MSFT   39.10  true
 """.stripMargin
-val scanner: Scanner = data.newScanner
-scanner.skip(lines = 2)
+val scanner: Scanner = data.newScanner.skip(lines = 2)
 while(scanner.hasNext) {
   println(scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
 }

@@ -292,7 +292,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.write("hello world")
     for {
       buffer <- t1.byteBuffer()
-    } buffer.asCharBuffer().length shouldEqual 5
+    } buffer.remaining() shouldEqual t1.bytes.length
   }
 
   //TODO: Test above for all kinds of FileType

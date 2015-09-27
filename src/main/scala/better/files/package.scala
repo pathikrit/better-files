@@ -601,8 +601,15 @@ package object files {
       reader.readLine()
     }
 
-    def skip(lines: Int = 1): Scanner = {       //TODO: skipLines and skipTokens
-      repeat(lines)(nextLine())
+    /**
+     * Skip l lines and then skip t tokens
+     * @param lines
+     * @param tokens
+     * @return this
+     */
+    def skip(lines: Int = 1, tokens: Int = 0): Scanner = {
+      repeat(lines + 1)(nextLine())
+      repeat(tokens)(next())
       this
     }
 
@@ -627,5 +634,5 @@ package object files {
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
 
   private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
-  private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (0 to n) map {i => f}
+  private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (0 until n) map {i => f}
 }
