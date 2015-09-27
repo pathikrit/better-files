@@ -295,8 +295,8 @@ for {
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API,
-it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and unwieldy to use from Scala.
-`better-files` provides a [faster idiomatic Scala replacement](src/main/scala/better/files/Scanner.scala):
+it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and does un-Scala things like returns nulls and throws exceptions.
+`better-files` provides a faster, safer and more idiomatic [Scala replacement](src/main/scala/better/files/Scanner.scala) that supports additional operations like peeking and skipping:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
@@ -307,6 +307,16 @@ val data = (home / "Desktop" / "stocks.tsv") << s"""
 """.stripMargin
 
 val scanner: Scanner = data.newScanner.skip(lines = 2)
+
+assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
+assert(scanner.peek == Some("1"))
+assert(scanner.nextInt == Some(1))
+assert(scanner.peek == Some("AAPL"))
+assert(scanner.nextString() == Some("AAPL"))
+assert(scanner.nextInt() == None)
+assert(scanner.nextDouble() == Some(109.16))
+assert(scanner.nextBoolean() == Some(false))
+
 while(scanner.hasNext) {
   println(scanner.nextInt(), scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
 }

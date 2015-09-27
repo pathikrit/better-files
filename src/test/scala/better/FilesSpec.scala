@@ -306,14 +306,28 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     | 3   MSFT   39.10  true
     """.stripMargin
     val scanner: Scanner = data.newScanner.skip(lines = 2)
+
+    assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
+    assert(scanner.peek == Some("1"))
+    assert(scanner.nextInt == Some(1))
+    assert(scanner.peek == Some("AAPL"))
+    assert(scanner.nextString() == Some("AAPL"))
+    assert(scanner.nextInt() == None)
+    assert(scanner.nextDouble() == Some(109.16))
+    assert(scanner.nextBoolean() == Some(false))
+
     var i = 0
     while(scanner.hasNext) {
-      println(scanner.nextInt(), scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
+      println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
       i += 1
     }
-    i shouldEqual 3
+    i shouldEqual 2
     scanner.hasNext shouldBe false
-    Option(scanner.nextLine()) shouldBe None
+    scanner.nextLine() shouldBe None
+    scanner.peek shouldBe None
+    scanner.nextString() shouldBe None
+    scanner.peekLine shouldBe None
+    scanner.nextInt() shouldBe None
     Try(scanner.next()).toOption shouldBe None
   }
 
@@ -321,6 +335,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val data = for {
       scanner <- managed(new Scanner("10 false"))
     } yield scanner.nextLong() -> scanner.nextBoolean()
-    data shouldBe Seq(10L -> false)
+    data shouldBe Seq(Some(10L) -> Some(false))
   }
 }
