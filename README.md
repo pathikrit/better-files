@@ -139,6 +139,7 @@ val inputstream  : java.io.InputStream          = file.in
 val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
 val channel      : java.nio.channel.FileChannel = file.channel
+val ram          : java.io.RandomAccessFile     = file.randomAccess
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala

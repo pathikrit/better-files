@@ -79,6 +79,12 @@ package object files {
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
+    /*def byteBuffer = {
+      for {
+        channel <- managed(newRandomAccess().getChannel)
+      } yield channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+    }*/
+
     def bytes: Iterator[Byte] = in.buffered.bytes
 
     def loadBytes: Array[Byte] = Files.readAllBytes(path)
@@ -105,12 +111,20 @@ package object files {
 
     def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
 
-    def write(bytes: Array[Byte]): File = Files.write(path, bytes) //TODO: Large I/O using byte-buffers?
+    /**
+     * Write byte array to file. For large files, piping in streams is recommended
+     * @param bytes
+     * @return this
+     */
+    def write(bytes: Array[Byte]): File = Files.write(path, bytes)
 
     def write(text: String)(implicit codec: Codec): File = write(text.getBytes(codec))
     def overwrite(text: String)(implicit codec: Codec) = write(text)(codec)
     def <(text: String)(implicit codec: Codec) = write(text)(codec)
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
+
+    def newRandomAccess(mode: String = "r"): RandomAccessFile = new RandomAccessFile(toJava, mode)
+    def randomAccess(mode: String = "r"): RandomAccessFile = newRandomAccess(mode)
 
     def newBufferedReader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
     def reader(implicit codec: Codec): BufferedReader = newBufferedReader(codec)
@@ -305,7 +319,7 @@ package object files {
     /**
      * @return true if this file is exactly same as that file
      *         For directories, it checks for equivalent directory structure
-     *         Note: Since it uses md5 underneath, there is a small chance of an md5 collision for different files
+     *         Note: Since it uses md5 underneath, there is a small chance of an md5 collision for different files (TODO)
      */
     def sameContentAs(that: File): Boolean = this.md5 == that.md5
     def `===`(that: File): Boolean = sameContentAs(that)
@@ -353,7 +367,7 @@ package object files {
      * @param destination destination folder; Creates this if it does not exist
      * @return The destination where contents are unzipped
      */
-    def unzipTo(destination: File = File.newTempDir(name)): File = {
+    def unzipTo(destination: File): File = {
       for {
         zipFile <- managed(new ZipFile(toJava))
         entry <- zipFile.entries()
