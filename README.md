@@ -114,6 +114,7 @@ val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.lines
 val source : scala.io.BufferedSource   = file.content 
+val buffer : java.nio.ByteBuffer       = file.byteBuffer
 ```
 You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala

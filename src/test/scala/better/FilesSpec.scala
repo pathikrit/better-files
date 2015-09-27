@@ -285,5 +285,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     (testRoot / "test.gz").in.buffered.gzipped.buffered.lines.toSeq shouldEqual Seq("Hello world")
   }
+
+  it should "read bytebuffers" in {
+    t1.write("hello world")
+    for {
+      buffer <- t1.byteBuffer()
+    } buffer.asCharBuffer().length shouldEqual 5
+  }
   //TODO: Test above for all kinds of FileType
 }

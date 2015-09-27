@@ -79,11 +79,9 @@ package object files {
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
-    /*def byteBuffer = {
-      for {
-        channel <- managed(newRandomAccess().getChannel)
-      } yield channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-    }*/
+    def byteBuffer(bufferSize: Int = 1<<10) = for {
+      channel <- managed(newRandomAccess().getChannel)
+    } yield channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
 
     def bytes: Iterator[Byte] = in.buffered.bytes
 
@@ -511,7 +509,7 @@ package object files {
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
 
-    def bytes: Iterator[Byte] = Iterator.continually(in.read()).takeWhile(-1 !=).map(_.toByte)
+    def bytes: Iterator[Byte] = Iterator.continually(in.read()).takeWhile(-1 !=).map(_.toByte) //TODO: close this when done
   }
 
   implicit class OutputStreamOps(out: OutputStream) {
