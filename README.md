@@ -310,7 +310,7 @@ val scanner: Scanner = data.newScanner.skip(lines = 2)
 
 assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
 assert(scanner.peek == Some("1"))
-assert(scanner.nextInt == Some(1))
+assert(scanner.nextPattern("\\d+") == Some("1"))
 assert(scanner.peek == Some("AAPL"))
 assert(scanner.nextString() == Some("AAPL"))
 assert(scanner.nextInt() == None)
@@ -320,4 +320,10 @@ assert(scanner.nextBoolean() == Some(false))
 while(scanner.hasNext) {
   println(scanner.nextInt(), scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
 }
+```
+Custom scanning:
+```scala
+scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
+scanner.next[A](f: String => Option[A])       // returns Some(x) if f(next) == Some(x)
+scanner.nextTry[A](f: String => A)            // returns Some(x) if f(next) == Success(x)
 ```

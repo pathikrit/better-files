@@ -309,7 +309,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
     assert(scanner.peek == Some("1"))
-    assert(scanner.nextInt == Some(1))
+    assert(scanner.nextPattern("\\d+") == Some("1"))
     assert(scanner.peek == Some("AAPL"))
     assert(scanner.nextString() == Some("AAPL"))
     assert(scanner.nextInt() == None)

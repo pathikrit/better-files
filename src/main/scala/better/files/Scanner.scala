@@ -38,7 +38,7 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
    * @param tokens
    * @return this
    */
-  def skip(lines: Int = 1, tokens: Int = 0): Scanner = {
+  def skip(lines: Int, tokens: Int = 0): Scanner = {
     repeat(lines + 1)(nextLine())
     repeat(tokens)(next())
     this
@@ -52,19 +52,25 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
 
   def peekLine: Option[String] = _nextLine
 
-  def nextInt(): Option[Int]= next(_.toInt)
+  def nextInt(): Option[Int]= nextTry(_.toInt)
 
-  def nextLong(): Option[Long] = next(_.toLong)
+  def nextLong(): Option[Long] = nextTry(_.toLong)
 
-  def nextDouble(): Option[Double] = next(_.toDouble)
+  def nextDouble(): Option[Double] = nextTry(_.toDouble)
 
-  def nextBoolean(): Option[Boolean] = next(_.toBoolean)
+  def nextBoolean(): Option[Boolean] = nextTry(_.toBoolean)
 
   def nextString(): Option[String] = when(hasNext)(next())
 
-  def next[A](f: String => A): Option[A] = for {
+  def nextPattern(pattern: String): Option[String] = nextMatch(_.matches(pattern))
+
+  def nextTry[A](f: String => A): Option[A] = next {x => Try(f(x)).toOption}
+
+  def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
+
+  def next[A](f: String => Option[A]): Option[A] = for {
     token <- peek
-    result <- Try(f(token)).toOption
+    result <- f(token)
   } yield {
     next()
     result
