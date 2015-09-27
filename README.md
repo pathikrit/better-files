@@ -295,8 +295,8 @@ for {
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API,
-it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and does un-Scala things like returns nulls and throws exceptions.
-`better-files` provides a faster, safer and more idiomatic [Scala replacement](src/main/scala/better/files/Scanner.scala) that supports additional operations like peeking and skipping:
+it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
+`better-files` provides a faster, safer and more idiomatic [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) that [does not use regexes](src/main/scala/better/files/Scanner.scala):
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
@@ -316,15 +316,16 @@ assert(scanner.nextString() == Some("AAPL"))
 assert(scanner.nextInt() == None)
 assert(scanner.nextDouble() == Some(109.16))
 assert(scanner.nextBoolean() == Some(false))
+assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
 
 while(scanner.hasNext) {
-  println(scanner.nextInt(), scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
+  println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
 }
 ```
 Custom scanning:
 ```scala
-scanner.next[A](f: String => Option[A])       // returns Some(x) if f(next) == Some(x)
+scanner.next[A](f: String => Option[A])       // returns Some(a) if f(next) == Some(a)
 scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
-scanner.nextSuccess[A](f: String => Try[A])   // returns Some(x) if f(next) == Success(x)
+scanner.nextSuccess[A](f: String => Try[A])   // returns Some(a) if f(next) == Success(a)
 scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
 ```

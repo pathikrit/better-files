@@ -315,13 +315,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.nextInt() == None)
     assert(scanner.nextDouble() == Some(109.16))
     assert(scanner.nextBoolean() == Some(false))
+    assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
+    assert(scanner.nextBigDecimal() == Some(566.78))
+    assert(scanner.nextByte() == None)
 
-    var i = 0
     while(scanner.hasNext) {
-      println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
-      i += 1
+      println(scanner.next())
     }
-    i shouldEqual 2
     scanner.hasNext shouldBe false
     scanner.nextLine() shouldBe None
     scanner.peek shouldBe None

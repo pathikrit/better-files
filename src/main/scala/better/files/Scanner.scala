@@ -10,7 +10,7 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: BufferedReader) extends Iterator[String] {
+class Scanner(reader: BufferedReader, val delimiter: String = Scanner.defaultDelimiter, val includeDelimiters: Boolean = false) extends Iterator[String] {
   //TODO: Set, reset, delims - see scanner APIs
 
   def this(inputStreamReader: InputStreamReader) = this(inputStreamReader.buffered)
@@ -27,10 +27,10 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
   private[this] def tokenizer(): Option[PeekableStringTokenizer] = _tokenizer.find(_.hasMoreTokens) orElse nextLine().flatMap(_ => tokenizer())
 
   def nextLine(): Option[String] = {
-    val next = _nextLine
+    val line = _nextLine
     _nextLine = Option(reader.readLine())
-    _tokenizer = _nextLine map {line => new PeekableStringTokenizer(line)}
-    next
+    _tokenizer = _nextLine map {line => new PeekableStringTokenizer(line, delimiter, includeDelimiters)}
+    line
   }
 
   /**
@@ -45,6 +45,11 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
     this
   }
 
+  def skip(pattern: String): Scanner = {
+    nextPattern(pattern)
+    this
+  }
+
   override def hasNext: Boolean = tokenizer().exists(_.hasMoreTokens)
 
   override def next(): String = tokenizer().get.nextToken()
@@ -53,25 +58,35 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
 
   def peekLine: Option[String] = _nextLine
 
+  def nextByte(): Option[Byte] = nextTry(_.toByte)
+
   def nextInt(): Option[Int]= nextTry(_.toInt)
 
   def nextLong(): Option[Long] = nextTry(_.toLong)
 
   def nextDouble(): Option[Double] = nextTry(_.toDouble)
 
+  def nextFloat(): Option[Float] = nextTry(_.toFloat)
+
+  def nextShort(): Option[Short] = nextTry(_.toShort)
+
   def nextBoolean(): Option[Boolean] = nextTry(_.toBoolean)
 
   def nextString(): Option[String] = when(hasNext)(next())
 
+  def nextBigInt(): Option[BigInt] = nextTry(BigInt(_))
+
+  def nextBigDecimal(): Option[BigDecimal] = nextTry(BigDecimal(_))
+
   def nextPattern(pattern: String): Option[String] = nextMatch(_.matches(pattern))
 
-  def nextTry[A](f: String => A): Option[A] = nextSuccess {x => Try(f(x))}
+  @inline def nextTry[A](f: String => A): Option[A] = nextSuccess {x => Try(f(x))}
 
-  def nextSuccess[A](f: String => Try[A]): Option[A] = next {x => f(x).toOption}
+  @inline def nextSuccess[A](f: String => Try[A]): Option[A] = next {x => f(x).toOption}
 
-  def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
+  @inline def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
 
-  def next[A](f: String => Option[A]): Option[A] = for {
+  @inline def next[A](f: String => Option[A]): Option[A] = for {
     token <- peek
     result <- f(token)
   } yield {
@@ -82,7 +97,7 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
   def close(): Unit = reader.close()
 }
 
-class PeekableStringTokenizer(str: String, delims: String = " \t\n\r\f", returnDelims: Boolean = false) extends StringTokenizer(str, delims, returnDelims) {
+class PeekableStringTokenizer(str: String, delim: String = Scanner.defaultDelimiter, returnDelims: Boolean = false) extends StringTokenizer(str, delim, returnDelims) {
   private[this] var current: Option[String] = None
   nextToken()
 
@@ -95,4 +110,8 @@ class PeekableStringTokenizer(str: String, delims: String = " \t\n\r\f", returnD
     current = when(super.hasMoreTokens)(super.nextToken())
     prev.orNull
   }
+}
+
+object Scanner {
+  val defaultDelimiter = " \t\n\r\f"
 }
