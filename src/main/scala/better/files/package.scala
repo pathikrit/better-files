@@ -134,7 +134,8 @@ package object files {
     def newInputStream: InputStream = Files.newInputStream(path)
     def in: InputStream = newInputStream
 
-    def scanner(implicit codec: Codec): Scanner = new Scanner(this)(codec)
+    def newScanner(implicit codec: Codec): Scanner = new Scanner(this)(codec)
+    def scanner(implicit codec: Codec): Scanner = newScanner(codec)
 
     def newOutputStream: OutputStream = Files.newOutputStream(path)
     def out: OutputStream = newOutputStream
@@ -597,14 +598,14 @@ package object files {
 
     def nextLine(): String = {
       tokenizer = emptyTokenizer
-      reader.readLine() //nulls if closed
+      reader.readLine()
     }
 
     override def hasNext: Boolean = nextTokenizer().hasMoreTokens
 
     override def next(): String = nextTokenizer().nextToken()
 
-    def nextInt(): Int = next().toInt     //TODO: Make these return Option[Int]
+    def nextInt(): Int = next().toInt
     def nextLong(): Long = next().toLong
     def nextDouble(): Double = next().toDouble
 

@@ -308,5 +308,5 @@ while(scanner.hasNext) {
   println(scanner.next(), scanner.nextDouble())
 }
 // Implements Iterable[String]
-data.newScanner.foreach(println)
+new Scanner(data) foreach println
 ```

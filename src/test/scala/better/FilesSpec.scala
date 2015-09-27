@@ -299,14 +299,16 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     | GOOGL 566.78
     | MSFT   39.10
     """.stripMargin
-    val scanner: Scanner = data.scanner
+    val scanner: Scanner = data.newScanner
     var lines = 0
     while(scanner.hasNext) {
       println(scanner.next(), scanner.nextDouble())
       lines += 1
     }
     lines shouldEqual 3
+    scanner.hasNext shouldBe false
     Option(scanner.nextLine()) shouldBe None
+    Try(scanner.next()).toOption shouldBe None
   }
   //TODO: Test above for all kinds of FileType
 }
