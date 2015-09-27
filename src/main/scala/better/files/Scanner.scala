@@ -57,25 +57,25 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def peekLine: Option[String] = _nextLine
 
-  def nextByte(): Option[Byte] = nextTry(_.toByte)
+  def nextBoolean(): Option[Boolean] = nextTry(_.toBoolean)
 
-  def nextInt(): Option[Int]= nextTry(_.toInt)  //TODO: radix support
+  def nextByte(radix: Int = 10): Option[Byte] = nextTry(java.lang.Byte.parseByte(_, radix))
 
-  def nextLong(): Option[Long] = nextTry(_.toLong)
+  def nextShort(radix: Int = 10): Option[Short] = nextTry(java.lang.Short.parseShort(_, radix))
 
-  def nextDouble(): Option[Double] = nextTry(_.toDouble)
+  def nextInt(radix: Int = 10): Option[Int]= nextTry(java.lang.Integer.parseInt(_, radix))
+
+  def nextLong(radix: Int = 10): Option[Long] = nextTry(java.lang.Long.parseLong(_, radix))
+
+  def nextBigInt(radix: Int = 10): Option[BigInt] = nextTry(BigInt(_, radix))
 
   def nextFloat(): Option[Float] = nextTry(_.toFloat)
 
-  def nextShort(): Option[Short] = nextTry(_.toShort)
-
-  def nextBoolean(): Option[Boolean] = nextTry(_.toBoolean)
-
-  def nextString(): Option[String] = when(hasNext)(next())
-
-  def nextBigInt(): Option[BigInt] = nextTry(BigInt(_))
+  def nextDouble(): Option[Double] = nextTry(_.toDouble)
 
   def nextBigDecimal(): Option[BigDecimal] = nextTry(BigDecimal(_))
+
+  def nextString(): Option[String] = when(hasNext)(next())
 
   def nextPattern(pattern: String): Option[String] = nextMatch(_.matches(pattern))
 
@@ -96,18 +96,18 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
   def close(): Unit = reader.close()
 }
 
-class PeekableStringTokenizer(str: String, delim: String = Scanner.defaultDelimiter, returnDelims: Boolean = false) extends StringTokenizer(str, delim, returnDelims) {
-  private[this] var current: Option[String] = None
+class PeekableStringTokenizer(s: String, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false) extends StringTokenizer(s, delimiter, includeDelimiters) {
+  private[this] var next: Option[String] = None
   nextToken()
 
-  def peek: Option[String] = current
+  def peek: Option[String] = next
 
-  override def hasMoreTokens = current.nonEmpty
+  override def hasMoreTokens = next.nonEmpty
 
   override def nextToken() = {
-    val prev = current
-    current = when(super.hasMoreTokens)(super.nextToken())
-    prev.orNull
+    val token = next
+    next = when(super.hasMoreTokens)(super.nextToken())
+    token.orNull
   }
 }
 
