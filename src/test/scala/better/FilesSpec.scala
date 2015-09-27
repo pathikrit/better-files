@@ -316,7 +316,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.nextDouble() == Some(109.16))
     assert(scanner.nextBoolean() == Some(false))
     assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
-    assert(scanner.nextBigDecimal() == Some(566.78))
+    assert(scanner.nextBigDecimal().nonEmpty)
     assert(scanner.nextByte() == None)
 
     while(scanner.hasNext) {
@@ -333,7 +333,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "parse longs/booleans" in {
     val data = for {
-      scanner <- managed(new Scanner("10 false"))
+      scanner <- managed(new Scanner("10 false", Scanner.defaultDelimiter, includeDelimiters = false))
     } yield scanner.nextLong() -> scanner.nextBoolean()
     data shouldBe Seq(Some(10L) -> Some(false))
   }

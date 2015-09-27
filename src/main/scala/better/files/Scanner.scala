@@ -10,16 +10,15 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: BufferedReader, val delimiter: String = Scanner.defaultDelimiter, val includeDelimiters: Boolean = false) extends Iterator[String] {
-  //TODO: Set, reset, delims - see scanner APIs
+class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) extends Iterator[String] {
 
-  def this(inputStreamReader: InputStreamReader) = this(inputStreamReader.buffered)
+  def this(inputStreamReader: InputStreamReader, delimiter: String, includeDelimiters: Boolean) = this(inputStreamReader.buffered, delimiter, includeDelimiters)
 
-  def this(inputStream: InputStream)(implicit codec: Codec) = this(inputStream.reader(codec))
+  def this(inputStream: InputStream, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec) = this(inputStream.reader(codec), delimiter, includeDelimiters)
 
-  def this(file: File)(implicit codec: Codec) = this(file.reader(codec))
+  def this(file: File, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec) = this(file.reader(codec), delimiter, includeDelimiters)
 
-  def this(str: String) = this(new ByteArrayInputStream(str.getBytes))
+  def this(str: String, delimiter: String, includeDelimiters: Boolean) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   private[this] var _tokenizer: Option[PeekableStringTokenizer] = None
   private[this] var _nextLine: Option[String] = nextLine()
@@ -60,7 +59,7 @@ class Scanner(reader: BufferedReader, val delimiter: String = Scanner.defaultDel
 
   def nextByte(): Option[Byte] = nextTry(_.toByte)
 
-  def nextInt(): Option[Int]= nextTry(_.toInt)
+  def nextInt(): Option[Int]= nextTry(_.toInt)  //TODO: radix support
 
   def nextLong(): Option[Long] = nextTry(_.toLong)
 
