@@ -16,9 +16,9 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def this(inputStream: InputStream, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec) = this(inputStream.reader(codec), delimiter, includeDelimiters)
 
-  def this(file: File, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec) = this(file.reader(codec), delimiter, includeDelimiters)
+  def this(file: File, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec) = this(file.reader(codec), delimiter, includeDelimiters)
 
-  def this(str: String, delimiter: String, includeDelimiters: Boolean) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
+  def this(str: String, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   private[this] var _tokenizer: Option[PeekableStringTokenizer] = None
   private[this] var _nextLine: Option[String] = nextLine()

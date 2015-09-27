@@ -131,8 +131,8 @@ package object files {
     def newInputStream: InputStream = Files.newInputStream(path)
     def in: InputStream = newInputStream
 
-    def newScanner(implicit codec: Codec): Scanner = new Scanner(this)(codec)
-    def scanner(implicit codec: Codec): Scanner = newScanner(codec)
+    def newScanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
+    //TODO: alias - def scanner(implicit codec: Codec): Scanner = newScanner(codec)
 
     def newOutputStream: OutputStream = Files.newOutputStream(path)
     def out: OutputStream = newOutputStream

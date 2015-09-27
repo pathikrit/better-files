@@ -296,7 +296,8 @@ for {
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API,
 it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
-`better-files` provides a faster, richer, adsafer and more idiomatic [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
+
+`better-files` provides a faster, richer, safer and more idiomatic [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
 that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking and returns `Option`s whenever possible:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
@@ -307,7 +308,7 @@ val data = (home / "Desktop" / "stocks.tsv") << s"""
 | 3   MSFT   39.10  true
 """.stripMargin
 
-val scanner: Scanner = data.newScanner.skip(lines = 2)
+val scanner: Scanner = data.newScanner().skip(lines = 2)
 
 assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
 assert(scanner.peek == Some("1"))

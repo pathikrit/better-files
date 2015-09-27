@@ -305,7 +305,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     | 2   GOOGL 566.78  false
     | 3   MSFT   39.10  true
     """.stripMargin
-    val scanner: Scanner = data.newScanner.skip(lines = 2)
+    val scanner: Scanner = data.newScanner().skip(lines = 2)
 
     assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
     assert(scanner.peek == Some("1"))
@@ -333,7 +333,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "parse longs/booleans" in {
     val data = for {
-      scanner <- managed(new Scanner("10 false", Scanner.defaultDelimiter, includeDelimiters = false))
+      scanner <- managed(new Scanner("10 false"))
     } yield scanner.nextLong() -> scanner.nextBoolean()
     data shouldBe Seq(Some(10L) -> Some(false))
   }
