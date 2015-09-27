@@ -128,6 +128,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (t1 == t1.toString) shouldBe false
     (t1.contentAsString == t1.toString) shouldBe false
     (t1 == t1.contentAsString) shouldBe false
+    t1.root shouldEqual fa.root
   }
 
   it should "hide/unhide" in {
@@ -135,6 +136,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it must "have .size" in {
+    fb.isEmpty shouldBe true
     t1.size shouldBe 0
     t1.write("Hello World")
     t1.size should be > 0L
@@ -293,7 +295,9 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     } buffer.asCharBuffer().length shouldEqual 5
   }
 
-  it should "support scanner" in {
+  //TODO: Test above for all kinds of FileType
+
+  "scanner" should "parse files" in {
     val data = t1 << s"""
     | AAPL  109.16
     | GOOGL 566.78
@@ -310,5 +314,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     Option(scanner.nextLine()) shouldBe None
     Try(scanner.next()).toOption shouldBe None
   }
-  //TODO: Test above for all kinds of FileType
+
+  it should "parse longs/booleans" in {
+    val data = for {
+      scanner <- managed(new Scanner("10 false"))
+    } yield scanner.nextLong() -> scanner.nextBoolean()
+    data shouldBe Seq(10L -> false)
+  }
 }

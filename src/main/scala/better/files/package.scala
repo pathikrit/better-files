@@ -606,8 +606,12 @@ package object files {
     override def next(): String = nextTokenizer().nextToken()
 
     def nextInt(): Int = next().toInt
+
     def nextLong(): Long = next().toLong
+
     def nextDouble(): Double = next().toDouble
+
+    def nextBoolean(): Boolean = next().toBoolean
 
     def close(): Unit = reader.close()
   }
