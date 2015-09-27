@@ -33,11 +33,8 @@ package object files {
     def toJava: JFile = path.toFile
 
     def name: String = path.getFileName.toString
-    def fileName: String = name
 
     def root: File = path.getRoot
-
-    def subPath(start: Int, end: Int): Path = path.subpath(start, end)
 
     def nameWithoutExtension: String = if (hasExtension) name.substring(0, name lastIndexOf ".") else name
 
@@ -206,8 +203,8 @@ package object files {
     def fileSystem: FileSystem = path.getFileSystem
     def fs: FileSystem = fileSystem
 
-    def channel: FileChannel = FileChannel.open(path)
-    def newFileChannel: FileChannel = channel
+    def newFileChannel: FileChannel = FileChannel.open(path)
+    def channel: FileChannel = newFileChannel
 
     def uri: URI = path.toUri
 
@@ -252,10 +249,8 @@ package object files {
     def groupName: String = group.getName
 
     def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
-    def chown(owner: String): File = setOwner(owner)
 
     def setGroup(group: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
-    def chgrp(group: String): File = setGroup(group)
 
     /**
      * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
@@ -576,10 +571,14 @@ package object files {
    * Scala implementation of a faster java.util.Scanner
    * See: http://codeforces.com/blog/entry/7018
    */
-  class Scanner(reader: BufferedReader) extends Iterator[String] {
+  class Scanner(reader: BufferedReader) extends Iterator[String] { //TODO: Implement hasNextBoolean etc. see java.io.Scanner methods
+
     def this(inputStreamReader: InputStreamReader) = this(inputStreamReader.buffered)
+
     def this(inputStream: InputStream)(implicit codec: Codec) = this(inputStream.reader(codec))
+
     def this(file: File)(implicit codec: Codec) = this(file.reader(codec))
+
     def this(str: String) = this(new ByteArrayInputStream(str.getBytes))
 
     private[this] val emptyTokenizer = new StringTokenizer("")

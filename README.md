@@ -298,15 +298,16 @@ Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/uti
 it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and unwieldy to use from Scala.
 `better-files` provides a faster idiomatic Scala replacement:
 ```scala
-val data = (home / "Desktop" / "stocks.tsv") <<s"""
-| Stock Price   Buy
-| -------------------
-| AAPL  109.16  false
-| GOOGL 566.78  false
-| MSFT   39.10  true
+val data = (home / "Desktop" / "stocks.tsv") << s"""
+| id  Stock Price   Buy
+| ---------------------
+| 1   AAPL  109.16  false
+| 2   GOOGL 566.78  false
+| 3   MSFT   39.10  true
 """.stripMargin
+
 val scanner: Scanner = data.newScanner.skip(lines = 2)
 while(scanner.hasNext) {
-  println(scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
+  println(scanner.nextInt(), scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
 }
 ```
