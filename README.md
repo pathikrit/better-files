@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html):
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html)
 
 ## Tutorial
   * [Instantiation](#instantiation)
@@ -294,19 +294,20 @@ for {
 ```
 
 ### Scanner
-Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html) has a nice API,
-it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and does un-Scala thing like returns nulls and throws exceptions.
-`better-files` proves a fast and idiomatic Scala replacement:
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html) has a feature-rich API,
+it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and unwieldy to use from Scala.
+`better-files` provides a fast and idiomatic Scala replacement:
 ```scala
-val data = (home / "Desktop" / "stocks.tsv") << s"""
-AAPL  109.16
-GOOGL 566.78
-MSFT   39.10 
-"""
+val data = (home / "Desktop" / "stocks.tsv") <<s"""
+| Stock Price   Buy
+| -------------------
+| AAPL  109.16  false
+| GOOGL 566.78  false
+| MSFT   39.10  true
+""".stripMargin
 val scanner: Scanner = data.newScanner
+scanner.skip(lines = 2)
 while(scanner.hasNext) {
-  println(scanner.next(), scanner.nextDouble())
+  println(scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
 }
-// Implements Iterable[String]
-new Scanner(data) foreach println
 ```

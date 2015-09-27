@@ -299,17 +299,19 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   "scanner" should "parse files" in {
     val data = t1 << s"""
-    | AAPL  109.16
-    | GOOGL 566.78
-    | MSFT   39.10
+    | Stock Price   Buy
+    | ------------------
+    | AAPL  109.16  false
+    | GOOGL 566.78  false
+    | MSFT   39.10  true
     """.stripMargin
-    val scanner: Scanner = data.newScanner
-    var lines = 0
+    val scanner: Scanner = data.newScanner.skip(lines = 2)
+    var i = 0
     while(scanner.hasNext) {
-      println(scanner.next(), scanner.nextDouble())
-      lines += 1
+      println(scanner.next(), scanner.nextDouble(), scanner.nextBoolean())
+      i += 1
     }
-    lines shouldEqual 3
+    i shouldEqual 3
     scanner.hasNext shouldBe false
     Option(scanner.nextLine()) shouldBe None
     Try(scanner.next()).toOption shouldBe None
