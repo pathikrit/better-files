@@ -15,6 +15,7 @@
   * [File comparison](#file-comparison)
   * [Zip/Unzip](#zip-apis)
   * [Automatic Resource Management](#lightweight-arm)
+  * [Scanner] (#scanner)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -290,4 +291,22 @@ for {
   out <- managed(file2.newOutputStream)
 } in.pipeTo(out)
 //No need to close them after the for-each
+```
+
+### Scanner
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html) has a nice API,
+it is [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) and does un-Scala thing like returns nulls and throws exceptions.
+`better-files` proves a fast and idiomatic Scala replacement:
+```scala
+val data = (home / "Desktop" / "stocks.tsv") << s"""
+AAPL  109.16
+GOOGL 566.78
+MSFT   39.10 
+"""
+val scanner: Scanner = data.newScanner
+while(scanner.hasNext) {
+  println(scanner.next(), scanner.nextDouble())
+}
+// Implements Iterable[String]
+data.newScanner.foreach(println)
 ```

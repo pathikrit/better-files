@@ -7,6 +7,7 @@ import java.nio.file._, attribute._
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.time.Instant
+import java.util.StringTokenizer
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
@@ -132,6 +133,8 @@ package object files {
 
     def newInputStream: InputStream = Files.newInputStream(path)
     def in: InputStream = newInputStream
+
+    def scanner(implicit codec: Codec): Scanner = new Scanner(this)(codec)
 
     def newOutputStream: OutputStream = Files.newOutputStream(path)
     def out: OutputStream = newOutputStream
@@ -281,16 +284,15 @@ package object files {
     def moveTo(destination: File, overwrite: Boolean = false): File = Files.move(path, destination.path, copyOptions(overwrite): _*)
 
     def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) {
-      if (overwrite) {
-        destination.delete(ignoreIOExceptions = true)
-      }
-      def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
-
+      if (overwrite) destination.delete(ignoreIOExceptions = true)
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
+        def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
+
         override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
           Files.createDirectories(newPath(dir))
           super.preVisitDirectory(dir, attrs)
         }
+
         override def visitFile(file: Path, attrs: BasicFileAttributes) = {
           Files.copy(file, newPath(file), copyOptions(overwrite): _*)
           super.visitFile(file, attrs)
@@ -567,6 +569,46 @@ package object files {
         resource.close()
       }
     }
+  }
+
+  /**
+   * Scala implementation of a faster java.util.Scanner
+   * See: http://codeforces.com/blog/entry/7018
+   */
+  class Scanner(reader: BufferedReader) extends Iterator[String] {
+    def this(inputStreamReader: InputStreamReader) = this(inputStreamReader.buffered)
+    def this(inputStream: InputStream)(implicit codec: Codec) = this(inputStream.reader(codec))
+    def this(file: File)(implicit codec: Codec) = this(file.reader(codec))
+    def this(str: String) = this(new ByteArrayInputStream(str.getBytes))
+
+    private[this] val emptyTokenizer = new StringTokenizer("")
+    private[this] var tokenizer: StringTokenizer = emptyTokenizer
+
+    @tailrec private[this] def nextTokenizer(): StringTokenizer = if (tokenizer.hasMoreTokens) {
+      tokenizer
+    } else {
+      Option(reader.readLine()) match {
+        case None => emptyTokenizer
+        case Some(line) =>
+          tokenizer = new StringTokenizer(line)
+          nextTokenizer()
+      }
+    }
+
+    def nextLine(): String = {
+      tokenizer = emptyTokenizer
+      reader.readLine() //nulls if closed
+    }
+
+    override def hasNext: Boolean = nextTokenizer().hasMoreTokens
+
+    override def next(): String = nextTokenizer().nextToken()
+
+    def nextInt(): Int = next().toInt     //TODO: Make these return Option[Int]
+    def nextLong(): Long = next().toLong
+    def nextDouble(): Double = next().toDouble
+
+    def close(): Unit = reader.close()
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet

@@ -292,5 +292,21 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       buffer <- t1.byteBuffer()
     } buffer.asCharBuffer().length shouldEqual 5
   }
+
+  it should "support scanner" in {
+    val data = t1 << s"""
+    | AAPL  109.16
+    | GOOGL 566.78
+    | MSFT   39.10
+    """.stripMargin
+    val scanner: Scanner = data.scanner
+    var lines = 0
+    while(scanner.hasNext) {
+      println(scanner.next(), scanner.nextDouble())
+      lines += 1
+    }
+    lines shouldEqual 3
+    Option(scanner.nextLine()) shouldBe None
+  }
   //TODO: Test above for all kinds of FileType
 }
