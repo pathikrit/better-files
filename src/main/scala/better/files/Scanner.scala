@@ -11,6 +11,7 @@ import scala.util.Try
  * See: http://codeforces.com/blog/entry/7018
  */
 class Scanner(reader: BufferedReader) extends Iterator[String] {
+  //TODO: Set, reset, delims - see scanner APIs
 
   def this(inputStreamReader: InputStreamReader) = this(inputStreamReader.buffered)
 
@@ -64,7 +65,9 @@ class Scanner(reader: BufferedReader) extends Iterator[String] {
 
   def nextPattern(pattern: String): Option[String] = nextMatch(_.matches(pattern))
 
-  def nextTry[A](f: String => A): Option[A] = next {x => Try(f(x)).toOption}
+  def nextTry[A](f: String => A): Option[A] = nextSuccess {x => Try(f(x))}
+
+  def nextSuccess[A](f: String => Try[A]): Option[A] = next {x => f(x).toOption}
 
   def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
 

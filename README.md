@@ -323,7 +323,8 @@ while(scanner.hasNext) {
 ```
 Custom scanning:
 ```scala
-scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
 scanner.next[A](f: String => Option[A])       // returns Some(x) if f(next) == Some(x)
-scanner.nextTry[A](f: String => A)            // returns Some(x) if f(next) == Success(x)
+scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
+scanner.nextSuccess[A](f: String => Try[A])   // returns Some(x) if f(next) == Success(x)
+scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
 ```
