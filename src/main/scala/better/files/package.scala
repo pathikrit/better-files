@@ -132,7 +132,7 @@ package object files {
     def in: InputStream = newInputStream
 
     def newScanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
-    //TODO: alias - def scanner(implicit codec: Codec): Scanner = newScanner(codec)
+    def scanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = newScanner(delimiter, includeDelimiters)(codec)
 
     def newOutputStream: OutputStream = Files.newOutputStream(path)
     def out: OutputStream = newOutputStream

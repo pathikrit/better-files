@@ -32,14 +32,12 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
     line
   }
 
-  /**
-   * Skip l lines and then skip t tokens
-   * @param lines
-   * @param tokens
-   * @return this
-   */
-  def skip(lines: Int, tokens: Int = 0): Scanner = {
-    repeat(lines + 1)(nextLine())
+  def skipLines(lines: Int = 0, startAtBeginningOfNextLine: Boolean = true): Scanner = {
+    repeat(lines + (if (startAtBeginningOfNextLine) 1 else 0))(nextLine())
+    this
+  }
+
+  def skip(tokens: Int): Scanner = {
     repeat(tokens)(next())
     this
   }
