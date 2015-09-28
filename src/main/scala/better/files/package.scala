@@ -7,7 +7,6 @@ import java.nio.file._, attribute._
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.StringTokenizer
 import java.util.function.Predicate
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
@@ -263,7 +262,7 @@ package object files {
      * Deletes this file or directory
      * @param ignoreIOExceptions If this is set to true, an exception is thrown when delete fails (else it is swallowed)
      */
-    def delete(ignoreIOExceptions: Boolean = false): File = {
+    def delete(ignoreIOExceptions: Boolean = false): File = returning(this) {
       try {
         this match {
           case Directory(children) => children.foreach(_.delete(ignoreIOExceptions))
@@ -272,7 +271,6 @@ package object files {
       } catch {
         case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
       }
-      this
     }
 
     def renameTo(newName: String): File = moveTo(path resolveSibling newName)
@@ -363,14 +361,13 @@ package object files {
      * @param destination destination folder; Creates this if it does not exist
      * @return The destination where contents are unzipped
      */
-    def unzipTo(destination: File): File = {
+    def unzipTo(destination: File): File = returning(destination) {
       for {
         zipFile <- managed(new ZipFile(toJava))
         entry <- zipFile.entries()
         file = destination.createChild(entry.getName, entry.isDirectory)
         if !entry.isDirectory
       } zipFile.getInputStream(entry) > file.out
-      destination
     }
 
     /**
@@ -465,14 +462,13 @@ package object files {
 
     def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
 
-    def zip(files: File*)(destination: File): File = {
+    def zip(files: File*)(destination: File): File = returning(destination) {
       for {
         out <- managed(new ZipOutputStream(destination.out))
         input <- files
         file <- input.walk()
         name = input.parent relativize file
       } out.add(file, name = Some(name.toString))
-      destination
     }
   }
 
@@ -528,7 +524,7 @@ package object files {
 
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {
 
-    def add(file: File, name: Option[String] = None): Unit = {
+    def add(file: File, name: Option[String] = None): ZipOutputStream = returning(out) {
       val relativeName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
       val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
@@ -571,7 +567,8 @@ package object files {
 
   private[files] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
-
-  private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
-  private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
+  // Some utils:
+  @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
+  @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
+  @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
 }

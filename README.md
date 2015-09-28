@@ -308,7 +308,7 @@ val data = (home / "Desktop" / "stocks.tsv") << s"""
 | 3   MSFT   39.10  true
 """.stripMargin
 
-val scanner: Scanner = data.newScanner().skipLines(lines = 2, startAtBeginningOfNextLine = true)
+val scanner: Scanner = data.newScanner().skipLines(lines = 2)
 
 assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
 assert(scanner.peek == Some("1"))
@@ -320,7 +320,7 @@ assert(scanner.nextDouble() == Some(109.16))
 assert(scanner.nextBoolean() == Some(false))
 assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
 
-scanner.skipLines(startAtBeginningOfNextLine = true)
+scanner.skipLine()
 while(scanner.hasNext) {
   println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
 }

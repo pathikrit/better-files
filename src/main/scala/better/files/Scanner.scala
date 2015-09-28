@@ -32,20 +32,15 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
     line
   }
 
-  def skipLines(lines: Int = 0, startAtBeginningOfNextLine: Boolean = true): Scanner = {
+  def skipLines(lines: Int, startAtBeginningOfNextLine: Boolean = true): Scanner = returning(this) {
     repeat(lines + (if (startAtBeginningOfNextLine) 1 else 0))(nextLine())
-    this
   }
 
-  def skip(tokens: Int): Scanner = {
-    repeat(tokens)(next())
-    this
-  }
+  def skipLine(): Scanner = skipLines(lines = 0, startAtBeginningOfNextLine = true)
 
-  def skip(pattern: String): Scanner = {
-    nextPattern(pattern)
-    this
-  }
+  def skip(tokens: Int): Scanner = returning(this)(repeat(tokens)(next()))
+
+  def skip(pattern: String): Scanner = returning(this)(nextPattern(pattern))
 
   override def hasNext: Boolean = tokenizer().exists(_.hasMoreTokens)
 
