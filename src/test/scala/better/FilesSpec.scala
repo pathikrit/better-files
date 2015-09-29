@@ -110,7 +110,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     ls("src"/"test") should have length 1
     ("src"/"test").walk(maxDepth = 1) should have length 2
     ("src"/"test").walk(maxDepth = 0) should have length 1
-    ("src"/"test").walk() should have length (("src"/"test").listRecursively.length + 1)
+    ("src"/"test").walk() should have length (("src"/"test").listRecursively.length + 1L)
     ls_r("src"/"test") should have length 3
   }
 
@@ -319,7 +319,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     scanner.skipLine()
     while(scanner.hasNext) {
-      println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
+      println((scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean()))
     }
 
     scanner.hasNext shouldBe false
