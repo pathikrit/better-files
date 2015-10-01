@@ -15,7 +15,6 @@ import javax.xml.bind.DatatypeConverter
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.language.{implicitConversions, postfixOps}
 import scala.util.Properties
 
 package object files {
@@ -507,7 +506,17 @@ package object files {
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
 
-    def bytes: Iterator[Byte] = Iterator.continually(in.read()).takeWhile(-1 !=).map(_.toByte) //TODO: close this when done
+    def bytes: Iterator[Byte] = {
+      var isClosed = false
+      def hasMore(byte: Int) = {
+        if(!isClosed && byte == -1) {
+          in.close()
+          isClosed = true
+        }
+        !isClosed
+      }
+      Iterator.continually(in.read()).takeWhile(hasMore).map(_.toByte)
+    }
   }
 
   implicit class OutputStreamOps(out: OutputStream) {
