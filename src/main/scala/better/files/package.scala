@@ -136,6 +136,10 @@ package object files {
     def newOutputStream: OutputStream = Files.newOutputStream(path)
     def out: OutputStream = newOutputStream
 
+    def newWatchService: WatchService = fileSystem.newWatchService()
+
+    def newWatchKey(events: WatchEvent.Kind[_]*): WatchKey = path.register(newWatchService, events.toArray)
+
     def digest(algorithm: String): Array[Byte] = {
       val digestor = MessageDigest.getInstance(algorithm)
       listRelativePaths.toSeq.sorted foreach {relativePath =>

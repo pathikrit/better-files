@@ -295,6 +295,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     } buffer.remaining() shouldEqual t1.bytes.length
   }
 
+  it should "support java watchers" in {
+    val file = fa
+    import java.nio.file.{WatchService, WatchKey, StandardWatchEventKinds => WatchEvents}
+    val service: WatchService = file.newWatchService
+    val watcher: WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
+  }
+
   //TODO: Test above for all kinds of FileType
 
   "scanner" should "parse files" in {

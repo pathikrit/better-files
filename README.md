@@ -16,6 +16,7 @@
   * [Zip/Unzip](#zip-apis)
   * [Automatic Resource Management](#lightweight-arm)
   * [Scanner] (#scanner)
+  * [File Watchers](#file-watchers)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -332,3 +333,25 @@ scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) i
 scanner.nextSuccess[A](f: String => Try[A])   // returns Some(a) if f(next) == Success(a)
 scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
 ```
+
+### File Watchers (WIP):
+Vanilla Java watchers:
+```scala
+import java.nio.file.{WatchService, WatchKey, StandardWatchEventKinds => WatchEvents}
+val service: WatchService = file.newWatchService
+val watcher: WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
+```
+The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html) (involves a lot of type-casting and null-checking),
+are based on a blocking [poll-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) and and does not allow recursive directory watching.
+
+`better-files` provides an idiomatic, asynchronous, file watcher API based on type-safe Akka actors:
+ ```scala
+import akka.actor.ActorSystem
+val fileWatcher = dir.newWatcher(ActorSystem("actorSystem"), concurrency = 2, recursive = true)
+fileWatcher.when(event = WatchEvents.ENTRY_CREATE, WatchEvents.MODIFY) { (file, event) =>
+  println(s"$event happened on $file")
+}
+fileWatcher.when(event = WatchEvents.ENTRY_DELETE) { (file, event) =>
+  println(s"$file got deleted")
+}
+ ```
