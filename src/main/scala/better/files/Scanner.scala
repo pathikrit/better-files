@@ -62,7 +62,7 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def nextBigInt(radix: Int = 10): Option[BigInt] = nextTry(BigInt(_, radix))
 
-  def nextFloat(): Option[Float] = nextTry(_.toFloat)
+  def nextFloat(): Option[Float] = nextTry(_.toFloat)     //TODO: next[Float] ?
 
   def nextDouble(): Option[Double] = nextTry(_.toDouble)
 
@@ -78,11 +78,13 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   @inline def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
 
-  @inline def next[A](f: String => Option[A]): Option[A] = for {
+  @inline def next[A](f: String => Option[A]): Option[A] = apply(f, isPeek = false)
+
+  @inline private[this] def apply[A](f: String => Option[A], isPeek: Boolean): Option[A] = for {
     token <- peek
     result <- f(token)
   } yield {
-    next()
+    if (!isPeek) next()
     result
   }
 

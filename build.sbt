@@ -26,7 +26,7 @@ scalacOptions ++= Seq(  //copied from https://tpolecat.github.io/2014/04/11/scal
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka"   %% "akka-actor"    % "2.4.0",
+  "com.typesafe.akka"   %% "akka-actor"    % "2.3.14",
   "org.scalatest"       %% "scalatest"     % "2.2.5"    % Test
 )
 

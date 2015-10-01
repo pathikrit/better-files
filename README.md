@@ -337,9 +337,9 @@ scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f
 ### File Watchers (WIP)
 Vanilla Java watchers:
 ```scala
-import java.nio.file.{WatchService, WatchKey, StandardWatchEventKinds => WatchEvents}
-val service: WatchService = file.newWatchService
-val watcher: WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
+import java.nio.file.{StandardWatchEventKinds => WatchEvents}
+val service: java.nio.file.WatchService = file.newWatchService
+val watcher: java.nio.file.WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
