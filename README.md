@@ -334,7 +334,7 @@ scanner.nextSuccess[A](f: String => Try[A])   // returns Some(a) if f(next) == S
 scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
 ```
 
-### File Watchers (WIP):
+### File Watchers (WIP)
 Vanilla Java watchers:
 ```scala
 import java.nio.file.{WatchService, WatchKey, StandardWatchEventKinds => WatchEvents}
@@ -342,16 +342,21 @@ val service: WatchService = file.newWatchService
 val watcher: WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html) (involves a lot of type-casting and null-checking),
-are based on a blocking [poll-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) and and does not allow recursive directory watching.
+are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
+and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java).
 
-`better-files` provides an idiomatic, asynchronous, file watcher API based on type-safe Akka actors:
+`better-files` provides a concise, type-safe and reactive file watcher API based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html):
  ```scala
 import akka.actor.ActorSystem
-val fileWatcher = dir.newWatcher(ActorSystem("actorSystem"), concurrency = 2, recursive = true)
-fileWatcher.when(event = WatchEvents.ENTRY_CREATE, WatchEvents.MODIFY) { (file, event) =>
-  println(s"$event happened on $file")
+implicit val actorSystem = ActorSystem("actorSystem")
+val fileWatcher = dir.newWatcher(recursive = true, concurrency = 2)
+
+fileWatcher.when(event = WatchEvents.ENTRY_CREATE, WatchEvents.MODIFY) {
+  case (WatchEvents.ENTRY_CREATE, file) => println(s"Created: $file")
+  case (WatchEvents.ENTRY_MODIFY, file) => println(s"Modified: $file")
 }
+
 fileWatcher.when(event = WatchEvents.ENTRY_DELETE) { (file, event) =>
   println(s"$file got deleted")
 }
- ```
+```

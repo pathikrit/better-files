@@ -25,7 +25,10 @@ scalacOptions ++= Seq(  //copied from https://tpolecat.github.io/2014/04/11/scal
   "-Xfuture"
 )
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+libraryDependencies ++= Seq(
+  "com.typesafe.akka"   %% "akka-actor"    % "2.4.0",
+  "org.scalatest"       %% "scalatest"     % "2.2.5"    % Test
+)
 
 site.settings
 ghpages.settings
