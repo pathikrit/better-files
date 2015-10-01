@@ -54,15 +54,16 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 The following are all equivalent:
 ```scala
 import better.files._
+import java.io.{File => JFile}
 
-val f = File("/User/johndoe/Documents")
-val f1: File = file"/User/johndoe/Documents"
-val f2: File = root/"User"/"johndoe"/"Documents"
-val f3: File = home/"Documents"
-val f4: File = new java.io.File("/User/johndoe/Documents").toScala
-val f5: File = "/User"/"johndoe"/"Documents"
-val f6: File = "/User/johndoe/Documents".toFile
-val f7: File = root/"User"/"johndoe"/"Documents"/"presentations"/`..`
+val f = File("/User/johndoe/Documents")                      // using constructor
+val f1: File = file"/User/johndoe/Documents"                 // using string interpolator
+val f2: File = "/User/johndoe/Documents".toFile              // convert a string path to a file
+val f3: File = new JFile("/User/johndoe/Documents").toScala  // convert a Java file to Scala
+val f4: File = root/"User"/"johndoe"/"Documents"             // using root helper to start from root
+val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
+val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
+val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
@@ -118,6 +119,7 @@ val lines  : Iterator[String]          = file.lines
 val source : scala.io.BufferedSource   = file.content 
 val buffer : java.nio.ByteBuffer       = file.byteBuffer
 ```
+
 You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
 val content: String = file.contentAsString  // default codec

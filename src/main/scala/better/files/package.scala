@@ -413,6 +413,7 @@ package object files {
 
   def root: File = FileSystems.getDefault.getRootDirectories.head
   def home: File = Properties.userHome.toFile
+  def   ~ : File = home
   def  tmp: File = Properties.tmpDir.toFile
   val `..`: File => File = _.parent
   val  `.`: File => File = identity
