@@ -57,7 +57,6 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def peek[A: Scannable]: Option[A] = scan[A](moveToNextToken = false)
 
-  /*TODO:
   def nextTry[A](f: String => A): Option[A] = next[A]()(Scannable(f))
 
   def peekTry[A](f: String => A): Option[A] = peek[A](Scannable(f))
@@ -66,9 +65,11 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def peekSuccess[A](f: String => Try[A]): Option[A] = peek[A](Scannable.fromTry(f))
 
-  def nextMatch(f: String => Boolean): Option[String] = next[String] {x => when(f(x))(x)}
+  def nextDefined[A](f: String => Option[A]): Option[A] = next[A]()(Scannable.from(f))
 
-  def nextSome[A](f: String => Option[A]): Option[A] = apply(f, isPeek = false)*/
+  def peekDefined[A](f: String => Option[A]): Option[A] = next[A]()(Scannable.from(f))
+
+  def nextMatch(f: String => Boolean): Option[String] = nextDefined[String] {x => when(f(x))(x)}
 
   def scan[A: Scannable](moveToNextToken: Boolean): Option[A] = for {
     token <- peekToken
