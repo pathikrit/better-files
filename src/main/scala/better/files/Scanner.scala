@@ -10,7 +10,7 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) {
+class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) {self =>
 
   def this(inputStreamReader: InputStreamReader, delimiter: String, includeDelimiters: Boolean) = this(inputStreamReader.buffered, delimiter, includeDelimiters)
 
@@ -21,7 +21,8 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
   def this(str: String, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   private[this] var _tokenizer: Option[PeekableStringTokenizer] = None
-  private[this] var _nextLine: Option[String] = nextLine()
+  private[this] var _nextLine: Option[String] = None
+  nextLine()
 
   private[this] def tokenizer(): Option[PeekableStringTokenizer] = _tokenizer.find(_.hasMoreTokens) orElse nextLine().flatMap(_ => tokenizer())
 
@@ -73,7 +74,10 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
     result
   }
 
-  def iterator[A: Scannable]: Iterator[A] = ???
+  def iterator[A: Scannable]: Iterator[A] = new Iterator[A] {
+    override def hasNext = peek[A].nonEmpty
+    override def next() = self.next[A]().get
+  }
 
   def close(): Unit = reader.close()
 }

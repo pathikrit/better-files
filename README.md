@@ -331,12 +331,26 @@ while(scanner.hasNext) {
   println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
 }
 ```
-Custom scanning:
+Generic scanning:
 ```scala
 scanner.next[A](f: String => Option[A])       // returns Some(a) if f(next) == Some(a)
 scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
 scanner.nextSuccess[A](f: String => Try[A])   // returns Some(a) if f(next) == Success(a)
 scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
+```
+Custom scanners:
+```scala
+sealed trait Animal
+case class Dog(name: String) extends Animal
+case class Cat(name: String) extends Animal
+
+implicit val animalParser: Scannable[Animal] = new Scannable[Animal] {
+  override def scan(token: String)(implicit context: Scanner) = for {
+    name <- context.peek[String]
+  } yield if (name == "Garfield") Cat(name) else Dog(name)
+}
+
+val pets = file.newScanner().iterator[Animal]
 ```
 
 ### File Watchers (WIP)

@@ -347,4 +347,25 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     } yield scanner.next[Long]() -> scanner.next[Boolean]()
     data shouldBe Seq(Some(10L) -> Some(false))
   }
+
+  it should "parse custom parsers" in {
+    val file = t1 < """
+      |Garfield
+      |Woofer
+    """.stripMargin
+
+    sealed trait Animal
+    case class Dog(name: String) extends Animal
+    case class Cat(name: String) extends Animal
+
+    implicit val animalParser = new Scannable[Animal] {
+      override def scan(token: String)(implicit context: Scanner) = for {
+        name <- context.peek[String]
+      } yield if (name == "Garfield") Cat(name) else Dog(name)
+    }
+
+    val pets = file.newScanner().iterator[Animal].toSeq
+    assert(pets(0) == Cat("Garfield"))
+    assert(pets(1) == Dog("Woofer"))
+  }
 }
