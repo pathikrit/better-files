@@ -328,11 +328,11 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
 
     scanner.skipLine()
-    while(scanner.hasNext) {
+    while(scanner.hasMoreTokens) {
       println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
     }
 
-    scanner.hasNext shouldBe false
+    scanner.hasMoreTokens shouldBe false
     scanner.nextLine() shouldBe None
     scanner.peekToken shouldBe None
     scanner.next[String]() shouldBe None
@@ -360,12 +360,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     implicit val animalParser = new Scannable[Animal] {
       override def scan(token: String)(implicit context: Scanner) = for {
-        name <- context.peek[String]
+        name <- context.peek[String]            //TODO: Implement peakAhead
       } yield if (name == "Garfield") Cat(name) else Dog(name)
     }
 
-    val pets = file.newScanner().iterator[Animal].toSeq
-    assert(pets(0) == Cat("Garfield"))
-    assert(pets(1) == Dog("Woofer"))
+    file.newScanner().iterator[Animal].toSeq should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
   }
 }

@@ -333,10 +333,10 @@ while(scanner.hasNext) {
 ```
 Generic scanning:
 ```scala
-scanner.next[A](f: String => Option[A])       // returns Some(a) if f(next) == Some(a)
-scanner.nextMatch(f: String => Boolean)       // returns Some(next) if f(next) is true
-scanner.nextSuccess[A](f: String => Try[A])   // returns Some(a) if f(next) == Success(a)
-scanner.nextTry[A](f: String => A)            // equivalent to nextSuccess(Try(f))
+scanner.nextDefined[A](f: String => Option[A])  // returns Some(a) if f(next) == Some(a)
+scanner.nextMatch(f: String => Boolean)         // returns Some(next) if f(next) is true
+scanner.nextSuccess[A](f: String => Try[A])     // returns Some(a) if f(next) == Success(a)
+scanner.nextTry[A](f: String => A)              // equivalent to nextSuccess(Try(f))
 ```
 Custom scanners:
 ```scala
