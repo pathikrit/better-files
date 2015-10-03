@@ -10,7 +10,7 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) extends Iterator[String] {
+class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) {
 
   def this(inputStreamReader: InputStreamReader, delimiter: String, includeDelimiters: Boolean) = this(inputStreamReader.buffered, delimiter, includeDelimiters)
 
@@ -38,55 +38,42 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def skipLine(): Scanner = skipLines(lines = 0, startAtBeginningOfNextLine = true)
 
-  def skip(tokens: Int): Scanner = returning(this)(repeat(tokens)(next()))
+  def skip(tokens: Int): Scanner = returning(this)(repeat(tokens)(nextToken()))
 
-  def skip(pattern: String): Scanner = returning(this)(nextPattern(pattern))
+  def skip(pattern: String): Scanner = returning(this)(next(pattern))
 
-  override def hasNext: Boolean = tokenizer().exists(_.hasMoreTokens)
-
-  override def next(): String = tokenizer().get.nextToken()
-
-  def peek: Option[String] = tokenizer().flatMap(_.peek)
+  def peekToken: Option[String] = tokenizer().flatMap(_.peek)
 
   def peekLine: Option[String] = _nextLine
 
-  def nextBoolean(): Option[Boolean] = nextTry(_.toBoolean)
+  def hasNext: Boolean = tokenizer().exists(_.hasMoreTokens)
 
-  def nextByte(radix: Int = 10): Option[Byte] = nextTry(java.lang.Byte.parseByte(_, radix))
+  def nextToken(): String = tokenizer().get.nextToken()
 
-  def nextShort(radix: Int = 10): Option[Short] = nextTry(java.lang.Short.parseShort(_, radix))
+  def next(pattern: String)(): Option[String] = next[String]()(Scannable.fromPattern(pattern))
 
-  def nextInt(radix: Int = 10): Option[Int]= nextTry(java.lang.Integer.parseInt(_, radix))
+  def next[A: Scannable](): Option[A] = scan[A](moveToNextToken = true)
 
-  def nextLong(radix: Int = 10): Option[Long] = nextTry(java.lang.Long.parseLong(_, radix))
+  def peek[A: Scannable]: Option[A] = scan[A](moveToNextToken = false)
 
-  def nextBigInt(radix: Int = 10): Option[BigInt] = nextTry(BigInt(_, radix))
+  /*def nextTry[A](f: String => A): Option[A] = nextSuccess {x => Try(f(x))}
 
-  def nextFloat(): Option[Float] = nextTry(_.toFloat)     //TODO: next[Float] ?
+  def nextSuccess[A](f: String => Try[A]): Option[A] = next {x => f(x).toOption}
 
-  def nextDouble(): Option[Double] = nextTry(_.toDouble)
+  def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
 
-  def nextBigDecimal(): Option[BigDecimal] = nextTry(BigDecimal(_))
+  def nextSome[A](f: String => Option[A]): Option[A] = apply(f, isPeek = false)*/
 
-  def nextString(): Option[String] = when(hasNext)(next())
-
-  def nextPattern(pattern: String): Option[String] = nextMatch(_.matches(pattern))
-
-  @inline def nextTry[A](f: String => A): Option[A] = nextSuccess {x => Try(f(x))}
-
-  @inline def nextSuccess[A](f: String => Try[A]): Option[A] = next {x => f(x).toOption}
-
-  @inline def nextMatch(f: String => Boolean): Option[String] = next {x => when(f(x))(x)}
-
-  @inline def next[A](f: String => Option[A]): Option[A] = apply(f, isPeek = false)
-
-  @inline private[this] def apply[A](f: String => Option[A], isPeek: Boolean): Option[A] = for {
-    token <- peek
-    result <- f(token)
+  def scan[A: Scannable](moveToNextToken: Boolean): Option[A] = for {
+    token <- peekToken
+    scanner = implicitly[Scannable[A]]
+    result <- scanner.scan(token)(this)
   } yield {
-    if (!isPeek) next()
+    if (moveToNextToken) nextToken()
     result
   }
+
+  def iterator[A: Scannable]: Iterator[A] = ???
 
   def close(): Unit = reader.close()
 }
@@ -108,4 +95,43 @@ class PeekableStringTokenizer(s: String, delimiter: String = Scanner.defaultDeli
 
 object Scanner {
   val defaultDelimiter = " \t\n\r\f"
+}
+
+/**
+ * Implement this trait to make thing scannable
+ */
+trait Scannable[A] {
+  def scan(token: String)(implicit context: Scanner): Option[A]
+}
+
+object Scannable {
+  def apply[A](f: String => A): Scannable[A] = fromTry((x: String) => Try(f(x)))
+
+  def fromTry[A](f: String => Try[A]): Scannable[A] = from((x: String) => f(x).toOption)
+
+  def from[A](f: String => Option[A]): Scannable[A] = new Scannable[A] {
+    override def scan(token: String)(implicit context: Scanner) = f(token)
+  }
+
+  implicit val scanBool: Scannable[Boolean] = Scannable(_.toBoolean)
+
+  implicit val scanByte: Scannable[Byte] = Scannable(_.toByte)
+
+  implicit val scanShort: Scannable[Short] = Scannable(_.toShort)
+
+  implicit val scanInt: Scannable[Int]= Scannable(_.toInt)
+
+  implicit val scanLong: Scannable[Long] = Scannable(_.toLong)
+
+  implicit val scanBigInt: Scannable[BigInt] = Scannable(BigInt(_))
+
+  implicit val scanFloat: Scannable[Float] = Scannable(_.toFloat)
+
+  implicit val scanDouble: Scannable[Double] = Scannable(_.toDouble)
+
+  implicit val scanBigDecimal: Scannable[BigDecimal] = Scannable(BigDecimal(_))
+
+  implicit val scanString: Scannable[String] = Scannable(identity)
+
+  def fromPattern(pattern: String) = Scannable.from((x: String) => when(x matches pattern)(x))
 }

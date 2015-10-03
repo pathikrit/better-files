@@ -317,33 +317,34 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val scanner: Scanner = data.newScanner().skipLines(lines = 2)
 
     assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
-    assert(scanner.peek == Some("1"))
-    assert(scanner.nextPattern("\\d+") == Some("1"))
-    assert(scanner.peek == Some("AAPL"))
-    assert(scanner.nextString() == Some("AAPL"))
-    assert(scanner.nextInt() == None)
-    assert(scanner.nextDouble() == Some(109.16))
-    assert(scanner.nextBoolean() == Some(false))
-    assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
+    assert(scanner.peekToken == Some("1"))
+    assert(scanner.next(pattern = "\\d+") == Some("1"))
+    assert(scanner.peek[String] == Some("AAPL"))
+    assert(scanner.next[String]() == Some("AAPL"))
+    assert(scanner.next[Int]() == None)
+    assert(scanner.peek[Double] == Some(109.16))
+    assert(scanner.next[Double]() == Some(109.16))
+    assert(scanner.next[Boolean]() == Some(false))
+    assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
 
     scanner.skipLine()
     while(scanner.hasNext) {
-      println((scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean()))
+      println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
     }
 
     scanner.hasNext shouldBe false
     scanner.nextLine() shouldBe None
-    scanner.peek shouldBe None
-    scanner.nextString() shouldBe None
+    scanner.peekToken shouldBe None
+    scanner.next[String]() shouldBe None
     scanner.peekLine shouldBe None
-    scanner.nextInt() shouldBe None
-    Try(scanner.next()).toOption shouldBe None
+    scanner.next[Int]() shouldBe None
+    Try(scanner.nextToken()).toOption shouldBe None
   }
 
   it should "parse longs/booleans" in {
     val data = for {
       scanner <- managed(new Scanner("10 false"))
-    } yield scanner.nextLong() -> scanner.nextBoolean()
+    } yield scanner.next[Long]() -> scanner.next[Boolean]()
     data shouldBe Seq(Some(10L) -> Some(false))
   }
 }

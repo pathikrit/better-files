@@ -119,6 +119,8 @@ val lines  : Iterator[String]          = file.lines
 val source : scala.io.BufferedSource   = file.content 
 val buffer : java.nio.ByteBuffer       = file.byteBuffer
 ```
+Note: The above APIs can be traversed atmost once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
+To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
 
 You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
@@ -168,7 +170,7 @@ def isEmpty(file: File): Boolean = file match {
   case SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
   case Directory(files) => files.isEmpty
   case RegularFile(content) => content.isEmpty
-  case _ => !file.exists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
+  case _ => file.notExists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
 }
 // or as extractors on LHS:
 val Directory(researchDocs) = home/"Downloads"/"research"
@@ -314,18 +316,19 @@ val data = (home / "Desktop" / "stocks.tsv") << s"""
 val scanner: Scanner = data.newScanner().skipLines(lines = 2)
 
 assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
-assert(scanner.peek == Some("1"))
-assert(scanner.nextPattern("\\d+") == Some("1"))
-assert(scanner.peek == Some("AAPL"))
-assert(scanner.nextString() == Some("AAPL"))
-assert(scanner.nextInt() == None)
-assert(scanner.nextDouble() == Some(109.16))
-assert(scanner.nextBoolean() == Some(false))
-assert(scanner.skip(pattern = "\\d+").nextString() == Some("GOOGL"))
+assert(scanner.peekToken == Some("1"))
+assert(scanner.next(pattern = "\\d+") == Some("1"))
+assert(scanner.peek[String] == Some("AAPL"))
+assert(scanner.next[String]() == Some("AAPL"))
+assert(scanner.next[Int]() == None)
+assert(scanner.peek[Double] == Some(109.16))
+assert(scanner.next[Double]() == Some(109.16))
+assert(scanner.next[Boolean]() == Some(false))
+assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
 
 scanner.skipLine()
 while(scanner.hasNext) {
-  println(scanner.nextInt(), scanner.nextString(), scanner.nextDouble(), scanner.nextBoolean())
+  println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
 }
 ```
 Custom scanning:
@@ -343,7 +346,7 @@ import java.nio.file.{StandardWatchEventKinds => WatchEvents}
 val service: java.nio.file.WatchService = file.newWatchService
 val watcher: java.nio.file.WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
 ```
-The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html) (involves a lot of type-casting and null-checking),
+The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
 and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java).
 
