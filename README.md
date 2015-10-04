@@ -299,11 +299,11 @@ for {
 ```
 
 ### Scanner
-Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it is only suitable for only parsing primitives. 
-It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives 
+ans is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
-`better-files` provides a faster, richer, safer and more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
-that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking and returns `Option`s whenever possible:
+`better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
+that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy

@@ -267,10 +267,8 @@ package object files {
      */
     def delete(ignoreIOExceptions: Boolean = false): File = returning(this) {
       try {
-        this match {
-          case Directory(children) => children.foreach(_.delete(ignoreIOExceptions))
-          case _ => Files.delete(path)
-        }
+        if (isDirectory) list.foreach(_.delete(ignoreIOExceptions))
+        Files.delete(path)
       } catch {
         case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
       }

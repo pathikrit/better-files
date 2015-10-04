@@ -234,6 +234,12 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (fb / "t3").notExists shouldBe true
   }
 
+  it should "delete" in {
+    fb.exists shouldBe true
+    fb.delete()
+    fb.exists shouldBe false
+  }
+
   it should "touch" in {
     (fb / "z1").exists shouldBe false
     (fb / "z1").isEmpty shouldBe true
