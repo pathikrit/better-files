@@ -32,9 +32,10 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
     }
 
     def process(key: WatchKey) = {
+      val root = key.watchable().asInstanceOf[Path]
       key.pollEvents() foreach {event =>
-        val file: File = event.context().asInstanceOf[Path]
-        self ! (file -> event.kind())
+        val relativePath = event.context().asInstanceOf[Path]
+        self ! (event.kind() -> File(root resolve relativePath))
       }
       key.reset()
     }
@@ -49,13 +50,13 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
   }
 
   override def receive = {
-    case (file: File, event: FileWatcher.Event) => callbacks(file -> event).foreach(_.apply(file -> event))
+    case (event: FileWatcher.Event, file: File) => callbacks(event -> file) foreach {f => f(event -> file)}
 
     case FileWatcher.RegisterCallback(events, callback) if file.isDirectory =>  for {
       subDirectory <- file.walk(maxDepth) if subDirectory.isDirectory && subDirectory.exists
       _ = subDirectory.path.register(service, events : _*)
       event <- events
-      fileEvent = (subDirectory, event)
+      fileEvent = event -> subDirectory
     } callbacks(fileEvent) = callbacks(fileEvent) + callback
 
     //TODO: handle watching files
@@ -70,7 +71,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
 
 object FileWatcher {
   type Event = WatchEvent.Kind[_]
-  type FileEvent = (File, Event)
+  type FileEvent = (Event, File)
   type Callback = PartialFunction[FileEvent, Unit]
 
   case class RegisterCallback(events: Seq[Event], callback: Callback)

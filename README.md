@@ -363,21 +363,24 @@ val watcher: java.nio.file.WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE,
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
 and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
-or [watching non-directories](http://stackoverflow.com/questions/16251273/)
+nor [watching non-directories](http://stackoverflow.com/questions/16251273/)
 
 `better-files` provides a concise, type-safe and reactive [file watcher](src/main/scala/better/files/FileWatcher.scala) 
-based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that can watch both single files and directories:
+based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html):
  ```scala
-import akka.actor.ActorSystem
-implicit val actorSystem = ActorSystem("actorSystem")
-val fileWatcher = dir.newWatcher(recursive = true, concurrency = 2)
+import java.nio.file.{StandardWatchEventKinds => Events}
+import akka.actor.{ActorRef, ActorSystem}
 
-fileWatcher.when(event = WatchEvents.ENTRY_CREATE, WatchEvents.MODIFY) {
-  case (WatchEvents.ENTRY_CREATE, file) => println(s"Created: $file")
-  case (WatchEvents.ENTRY_MODIFY, file) => println(s"Modified: $file")
+implicit val system = ActorSystem("mySystem")
+
+val watcher: ActorRef = dir.newWatcher(recursive = true)
+
+watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
+  case (Events.ENTRY_CREATE, file) => println(s"$file got created")
+  case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 
-fileWatcher.when(event = WatchEvents.ENTRY_DELETE) { (file, event) =>
-  println(s"$file got deleted")
+watcher ! when(Events.ENTRY_DELETE) {
+  case (_, file) => println(s"$file got deleted")
 }
 ```

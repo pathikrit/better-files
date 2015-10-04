@@ -374,24 +374,30 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   "file watcher" should "watch files" in {
-    val dir = testRoot
-    t1.write("hello world")
+    val dir = File.newTempDir("file-watcher")
 
     import java.nio.file.{StandardWatchEventKinds => Events}
-
     import akka.actor.{ActorRef, ActorSystem}
 
     implicit val system = ActorSystem("mySystem")
 
     val watcher: ActorRef = dir.newWatcher(recursive = true)
-    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_DELETE) {
-      case (file, event) => s"$event happened on $file"
+
+    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
+      case (Events.ENTRY_CREATE, file) => println(s"$file got created")
+      case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
+    }
+
+    watcher ! when(Events.ENTRY_DELETE) {
+      case (_, file) => println(s"$file got deleted")
     }
 
     Thread.sleep(5000)
 
-    fa.delete()
+    (dir / "a" / "b" / "c.txt").createIfNotExists()
+    (dir / "d").createDirectories()
 
     Thread.sleep(5000)
+    system.shutdown()
   }
 }
