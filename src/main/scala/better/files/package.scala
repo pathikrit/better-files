@@ -12,6 +12,8 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
+import akka.actor.{Props, ActorRef, ActorSystem}
+
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
@@ -138,6 +140,10 @@ package object files {
     def newWatchService: WatchService = fileSystem.newWatchService()
 
     def newWatchKey(events: WatchEvent.Kind[_]*): WatchKey = path.register(newWatchService, events.toArray)
+
+    def watcherProps(recursive: Boolean): Props = Props(new FileWatcher(this, recursive))
+
+    def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef = system.actorOf(watcherProps(recursive))
 
     def digest(algorithm: String): Array[Byte] = {
       val digestor = MessageDigest.getInstance(algorithm)
@@ -322,7 +328,7 @@ package object files {
     def =!=(that: File): Boolean = !sameContentAs(that)
 
     override def equals(obj: Any) = obj match {
-      case file: File => sameFileAs(file)
+      case file: File => samePathAs(file)
       case _ => false
     }
 
@@ -579,6 +585,9 @@ package object files {
 
   private[files] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
+
+  def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.RegisterCallback(events.distinct, callback)
+
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
   @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)

@@ -299,8 +299,8 @@ for {
 ```
 
 ### Scanner
-Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives 
-ans is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 
+It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
 `better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
 that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
@@ -362,9 +362,11 @@ val watcher: java.nio.file.WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE,
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
-and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java).
+and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
+or [watching non-directories](http://stackoverflow.com/questions/16251273/)
 
-`better-files` provides a concise, type-safe and reactive file watcher API based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html):
+`better-files` provides a concise, type-safe and reactive [file watcher](src/main/scala/better/files/FileWatcher.scala) 
+based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that can watch both single files and directories:
  ```scala
 import akka.actor.ActorSystem
 implicit val actorSystem = ActorSystem("actorSystem")

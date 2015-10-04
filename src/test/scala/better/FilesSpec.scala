@@ -372,4 +372,26 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     file.newScanner().iterator[Animal].toSeq should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
   }
+
+  "file watcher" should "watch files" in {
+    val dir = testRoot
+    t1.write("hello world")
+
+    import java.nio.file.{StandardWatchEventKinds => Events}
+
+    import akka.actor.{ActorRef, ActorSystem}
+
+    implicit val system = ActorSystem("mySystem")
+
+    val watcher: ActorRef = dir.newWatcher(recursive = true)
+    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_DELETE) {
+      case (file, event) => s"$event happened on $file"
+    }
+
+    Thread.sleep(5000)
+
+    fa.delete()
+
+    Thread.sleep(5000)
+  }
 }
