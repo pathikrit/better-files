@@ -530,6 +530,8 @@ package object files {
     def gzipped: GZIPOutputStream = new GZIPOutputStream(out)
 
     def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
+
+    def printer(autoFlush: Boolean = false): PrintWriter = new PrintWriter(out, autoFlush)
   }
 
   implicit class ReaderOps(reader: Reader) {

@@ -159,6 +159,7 @@ val bis     : BufferedInputStream   = inputstream.buffered
 val bos     : BufferedOutputStream  = outputstream.buffered   
 val reader  : InputStreamReader     = inputstream.reader
 val writer  : OutputStreamWriter    = outputstream.writer
+val printer : PrintWriter           = outputstream.printer
 val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
 ```
@@ -361,11 +362,11 @@ val service: java.nio.file.WatchService = file.newWatchService
 val watcher: java.nio.file.WatchKey = file.newWatchKey(WatchEvents.ENTRY_CREATE, WatchEvents.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
-are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html) 
-and does not easily [allow nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
-nor [watching non-directories](http://stackoverflow.com/questions/16251273/)
+are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),
+does not easily allow [nested directory watching](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
+and nor does it allow easily [watching non-directories](http://stackoverflow.com/questions/16251273/)
 
-`better-files` provides a concise, type-safe and reactive [file watcher](src/main/scala/better/files/FileWatcher.scala) 
+`better-files` provides a concise, type-safe and [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html):
  ```scala
 import java.nio.file.{StandardWatchEventKinds => Events}
