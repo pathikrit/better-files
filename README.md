@@ -3,20 +3,20 @@
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html)
 
 ## Tutorial
-  * [Instantiation](#instantiation)
-  * [Simple I/O](#file-readwrite)
-  * [Streams and Codecs](#streams-and-codecs)
-  * [Java compatibility](#java-interoperability)
-  * [Pattern matching](#pattern-matching)
-  * [Globbing](#globbing)
-  * [File system operations](#file-system-operations)
-  * [UNIX DSL](#unix-dsl)
-  * [File attributes](#file-attributes)
-  * [File comparison](#file-comparison)
-  * [Zip/Unzip](#zip-apis)
-  * [Automatic Resource Management](#lightweight-arm)
-  * [Scanner] (#scanner)
-  * [File Watchers](#file-watchers)
+  0. [Instantiation](#instantiation)
+  0. [Simple I/O](#file-readwrite)
+  0. [Streams and Codecs](#streams-and-codecs)
+  0. [Java compatibility](#java-interoperability)
+  0. [Pattern matching](#pattern-matching)
+  0. [Globbing](#globbing)
+  0. [File system operations](#file-system-operations)
+  0. [UNIX DSL](#unix-dsl)
+  0. [File attributes](#file-attributes)
+  0. [File comparison](#file-comparison)
+  0. [Zip/Unzip](#zip-apis)
+  0. [Automatic Resource Management](#lightweight-arm)
+  0. [Scanner] (#scanner)
+  0. [File Watchers](#file-watchers)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -376,12 +376,14 @@ implicit val system = ActorSystem("mySystem")
 
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
-watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   // watch for multiple events
-  case (Events.ENTRY_CREATE, file) => println(s"$file got created")
-  case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
+// register partial function for an event
+watcher ! on(Events.ENTRY_DELETE) {    
+  case file if file.isDirectory => println(s"$file got deleted") 
 }
 
-watcher ! on(Events.ENTRY_DELETE) {    // register partial function for single event
-  case file if file.isDirectory => println(s"$file got deleted") 
+// watch for multiple events
+watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   
+  case (Events.ENTRY_CREATE, file) => println(s"$file got created")
+  case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
