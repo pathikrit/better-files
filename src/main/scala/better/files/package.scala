@@ -74,6 +74,8 @@ package object files {
 
     def notExists: Boolean = Files.notExists(path)
 
+    //TODO: def isChildOf(parent: File): Boolean = ???
+
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
 
@@ -385,9 +387,9 @@ package object files {
   }
 
   object File {
-    def newTempDir(prefix: String): File = Files.createTempDirectory(prefix)
+    def newTempDir(prefix: String = ""): File = Files.createTempDirectory(prefix)
 
-    def newTemp(prefix: String, suffix: String = ""): File = Files.createTempFile(prefix, suffix)
+    def newTemp(prefix: String = "", suffix: String = ""): File = Files.createTempFile(prefix, suffix)
 
     def apply(path: String): File = Paths.get(path)
   }

@@ -4,6 +4,7 @@ import better.files._, Cmds._, Closeable._
 
 import org.scalatest._
 
+import scala.language.postfixOps
 import scala.util.Try
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
@@ -86,7 +87,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "do basic I/O" in {
-    import scala.language.postfixOps
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
     t1.appendNewLine << "world"
@@ -373,31 +373,50 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     file.newScanner().iterator[Animal].toSeq should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
   }
 
-  "file watcher" should "watch files" in {
-    val dir = File.newTempDir("file-watcher")
+  "file watcher" should "watch directories" in {
+    val dir = File.newTempDir()
+    (dir / "a" / "b" / "c.txt").createIfNotExists()
 
+    var log = List.empty[String]
+    def output(file: File, event: String) = synchronized {
+      val msg = s"${dir.path relativize file.path} got $event"
+      println(msg)
+      log = msg :: log
+    }
+    /***************************************************************************/
     import java.nio.file.{StandardWatchEventKinds => Events}
     import akka.actor.{ActorRef, ActorSystem}
-
-    implicit val system = ActorSystem("mySystem")
+    implicit val system = ActorSystem()
 
     val watcher: ActorRef = dir.newWatcher(recursive = true)
 
     watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
-      case (Events.ENTRY_CREATE, file) => println(s"$file got created")
-      case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
+      case (Events.ENTRY_CREATE, file) => output(file, "created")
+      case (Events.ENTRY_MODIFY, file) => output(file, "modified")
     }
 
     watcher ! when(Events.ENTRY_DELETE) {
-      case (_, file) => println(s"$file got deleted")
+      case (_, file) => output(file, "deleted")
     }
+    /***************************************************************************/
+    import scala.concurrent.duration._
+    def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
 
-    Thread.sleep(5000)
+    sleep(5 seconds)
+    (dir / "a" / "b" / "c.txt").write("Hello world"); sleep()
+    rm(dir / "a" / "b"); sleep()
+    mkdir(dir / "d"); sleep()
+    touch(dir / "d" / "e.txt"); sleep()
+    mkdirs(dir / "d" / "f" / "g"); sleep()
+    touch(dir / "d" / "f" / "g" / "e.txt"); sleep()
+    (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
+    sleep(20 seconds)
 
-    (dir / "a" / "b" / "c.txt").createIfNotExists()
-    (dir / "d").createDirectories()
-
-    Thread.sleep(5000)
+    log should contain theSameElementsAs  List("d/f got created", "d/e.txt got created", "a/e.txt got created", "d got modified", "a got modified", "a/b got deleted", "d got created", "a got modified")
     system.shutdown()
+  }
+
+  it should "watch single files" in {
+    //TODO
   }
 }

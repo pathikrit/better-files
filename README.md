@@ -374,7 +374,7 @@ import akka.actor.{ActorRef, ActorSystem}
 
 implicit val system = ActorSystem("mySystem")
 
-val watcher: ActorRef = dir.newWatcher(recursive = true)
+val watcher: ActorRef = (home/"Downloads).newWatcher(recursive = true)
 
 watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
   case (Events.ENTRY_CREATE, file) => println(s"$file got created")

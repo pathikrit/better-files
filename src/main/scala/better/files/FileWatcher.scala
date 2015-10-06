@@ -1,6 +1,6 @@
 package better.files
 
-import java.nio.file.{WatchKey, Path, WatchEvent}
+import java.nio.file.{StandardWatchEventKinds, WatchKey, Path, WatchEvent}
 
 import akka.actor.{Actor, ActorLogging}
 
@@ -20,11 +20,13 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
 
   protected[FileWatcher] val service = file.newWatchService
 
-  protected[FileWatcher] val callbacks = mutable.Map.empty[FileWatcher.FileEvent, Set[FileWatcher.Callback]] withDefaultValue Set.empty
+  protected[FileWatcher] val callbacks = mutable.Map.empty[FileWatcher.Event, Set[FileWatcher.Callback]] withDefaultValue Set.empty
+
+  protected[FileWatcher] def addCallback(event: FileWatcher.Event)(callback: FileWatcher.Callback) = callbacks(event) = callbacks(event) + callback
 
   private[FileWatcher] val watcher = new Runnable {
     override def run() = try {
-      while(!Thread.currentThread().isInterrupted){
+      while(!Thread.currentThread().isInterrupted) {
         process(service.take())
       }
     } catch {
@@ -45,21 +47,27 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
 
   override def preStart() = {
     super.preStart()
+    def watch(aFile: File) = {
+      val events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
+      if (aFile.isDirectory) {
+        for {
+          f <- aFile.walk(maxDepth) if f.isDirectory && f.exists
+        } f.path.register(service, events: _*)
+      } else if(aFile.exists) {   // There is no way to watch a regular file; so watch its parent instead
+        aFile.parent.path.register(service, events: _*)
+      }
+    }
+    addCallback(StandardWatchEventKinds.ENTRY_CREATE) {
+      case (_, newFile) => watch(newFile)
+    }
+    watch(file)
     thread.setDaemon(true)
     thread.start()
   }
 
   override def receive = {
-    case (event: FileWatcher.Event, file: File) => callbacks(event -> file) foreach {f => f(event -> file)}
-
-    case FileWatcher.RegisterCallback(events, callback) if file.isDirectory =>  for {
-      subDirectory <- file.walk(maxDepth) if subDirectory.isDirectory && subDirectory.exists
-      _ = subDirectory.path.register(service, events : _*)
-      event <- events
-      fileEvent = event -> subDirectory
-    } callbacks(fileEvent) = callbacks(fileEvent) + callback
-
-    //TODO: handle watching files
+    case (event: FileWatcher.Event, target: File) if file.isDirectory || (file samePathAs target) => callbacks(event) foreach {f => f(event -> target)}
+    case FileWatcher.RegisterCallback(events, callback) => events foreach {event => addCallback(event)(callback)}
   }
 
   override def postStop() = {
