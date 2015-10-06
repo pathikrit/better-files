@@ -604,6 +604,8 @@ package object files {
 
   def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.RegisterCallback(events.distinct, callback)
 
+  def on(event: FileWatcher.Event)(callback: (File => Unit)) = when(event){case (`event`, file) => callback(file)}
+
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
   @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)

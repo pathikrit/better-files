@@ -376,12 +376,12 @@ implicit val system = ActorSystem("mySystem")
 
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
-watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
+watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   // watch for multiple events
   case (Events.ENTRY_CREATE, file) => println(s"$file got created")
   case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 
-watcher ! when(Events.ENTRY_DELETE) {
-  case (_, file) => println(s"$file got deleted")
+watcher ! on(Events.ENTRY_DELETE) {    // register partial function for single event
+  case file if file.isDirectory => println(s"$file got deleted") 
 }
 ```

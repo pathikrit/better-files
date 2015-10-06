@@ -394,13 +394,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     val watcher: ActorRef = dir.newWatcher(recursive = true)
 
-    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {
+    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   // watch for multiple events
       case (Events.ENTRY_CREATE, file) => output(file, "created")
       case (Events.ENTRY_MODIFY, file) => output(file, "modified")
     }
 
-    watcher ! when(Events.ENTRY_DELETE) {
-      case (_, file) => output(file, "deleted")
+    watcher ! on(Events.ENTRY_DELETE) {    // register partial function for single event
+      case file => output(file, "deleted")
     }
     /***************************************************************************/
     sleep(5 seconds)
@@ -411,7 +411,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     mkdirs(dir / "d" / "f" / "g"); sleep()
     touch(dir / "d" / "f" / "g" / "e.txt"); sleep()
     (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
-    sleep(20 seconds)
+    sleep(10 seconds)
 
     log should contain theSameElementsAs List(
       "a/e.txt got created", "d/f/g/e.txt got deleted", "d/f/g/e.txt got modified", "d/f/g/e.txt got created", "d/f got created",
@@ -447,8 +447,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     file.delete(); sleep()
     sleep(10 seconds)
 
-    log should contain theSameElementsAs List(
-      List(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}")
+    log should contain theSameElementsAs List(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}",
+      s"ENTRY_MODIFY happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}"
     )
     system.shutdown()
   }
