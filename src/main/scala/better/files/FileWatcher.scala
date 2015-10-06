@@ -53,7 +53,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
         for {
           f <- aFile.walk(maxDepth) if f.isDirectory && f.exists
         } f.path.register(service, events: _*)
-      } else if(aFile.exists) {   // There is no way to watch a regular file; so watch its parent instead
+      } else if (aFile.exists) {   // There is no way to watch a regular file; so watch its parent instead
         aFile.parent.path.register(service, events: _*)
       }
     }

@@ -447,9 +447,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     file.delete(); sleep()
     sleep(10 seconds)
 
-    log should contain theSameElementsAs List(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}",
-      s"ENTRY_MODIFY happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}"
-    )
+    log should contain allOf(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}")
     system.shutdown()
   }
 }
