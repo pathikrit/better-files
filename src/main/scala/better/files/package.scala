@@ -343,6 +343,18 @@ package object files {
       case _ => notExists
     }
 
+    /**
+     * If this is a directory, remove all its children
+     * If its a file, empty the contents
+     * @return this
+     */
+    def clear(): File = returning(this) {
+      this match {
+        case Directory(children) => children.foreach(_.delete())
+        case _ => write(Array.ofDim[Byte](0))
+      }
+    }
+
     override def hashCode = path.hashCode()
 
     override def toString = uri.toString

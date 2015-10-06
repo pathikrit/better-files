@@ -4,10 +4,14 @@ import better.files._, Cmds._, Closeable._
 
 import org.scalatest._
 
+import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
+
+  def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
+
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
   var a1: File = _
@@ -399,9 +403,6 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       case (_, file) => output(file, "deleted")
     }
     /***************************************************************************/
-    import scala.concurrent.duration._
-    def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
-
     sleep(5 seconds)
     (dir / "a" / "b" / "c.txt").write("Hello world"); sleep()
     rm(dir / "a" / "b"); sleep()
@@ -412,11 +413,43 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
     sleep(20 seconds)
 
-    log should contain theSameElementsAs  List("d/f got created", "d/e.txt got created", "a/e.txt got created", "d got modified", "a got modified", "a/b got deleted", "d got created", "a got modified")
+    log should contain theSameElementsAs List(
+      "a/e.txt got created", "d/f/g/e.txt got deleted", "d/f/g/e.txt got modified", "d/f/g/e.txt got created", "d/f got created",
+      "d/e.txt got modified", "d/e.txt got created", "d got created", "a/b got deleted", "a/b/c.txt got deleted", "a/b/c.txt got modified"
+    )
     system.shutdown()
   }
 
   it should "watch single files" in {
-    //TODO
+    val file = File.newTemp(suffix = ".txt").write("Hello world")
+
+    var log = List.empty[String]
+    def output(target: File, event: String) = synchronized {
+      val msg = s"$event happened on ${target.name}"
+      println(msg)
+      log = msg :: log
+    }
+    /***************************************************************************/
+    import java.nio.file.{StandardWatchEventKinds => Events}
+    import akka.actor.{ActorRef, ActorSystem}
+    implicit val system = ActorSystem()
+
+    val watcher: ActorRef = file.newWatcher(recursive = true)
+
+    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY, Events.ENTRY_DELETE) {
+      case (event, target) => output(target, event.name())
+    }
+    /***************************************************************************/
+    sleep(5 seconds)
+    file.write("hello world"); sleep()
+    file.clear(); sleep()
+    file.write("howdy"); sleep()
+    file.delete(); sleep()
+    sleep(10 seconds)
+
+    log should contain theSameElementsAs List(
+      List(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}")
+    )
+    system.shutdown()
   }
 }
