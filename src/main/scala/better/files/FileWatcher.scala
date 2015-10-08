@@ -2,19 +2,21 @@ package better.files
 
 import java.nio.file.{StandardWatchEventKinds, WatchKey, Path, WatchEvent}
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.Actor
 
 import scala.collection.mutable
 import scala.collection.JavaConversions._
 import scala.language.existentials
+import scala.util.control.Exception
 
 /**
  * An actor that can watch a file or a directory
+ * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
  *
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging {
+class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
 
   def this(file: File, recursive: Boolean) = this(file, if (recursive) Int.MaxValue else 0)
 
@@ -25,12 +27,8 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor with ActorLogging
   protected[FileWatcher] def addCallback(event: FileWatcher.Event)(callback: FileWatcher.Callback) = callbacks(event) = callbacks(event) + callback
 
   private[FileWatcher] val watcher = new Runnable {
-    override def run() = try {
-      while(!Thread.currentThread().isInterrupted) {
-        process(service.take())
-      }
-    } catch {
-      case e: InterruptedException =>
+    override def run() = Exception.ignoring(classOf[InterruptedException]) {
+      Iterator.continually(service.take()) foreach process
     }
 
     def process(key: WatchKey) = {
@@ -83,4 +81,5 @@ object FileWatcher {
   type Callback = PartialFunction[FileEvent, Unit]
 
   case class RegisterCallback(events: Seq[Event], callback: Callback)
+  //TODO: DeRegisterCallback?
 }
