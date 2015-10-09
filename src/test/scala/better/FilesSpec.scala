@@ -141,6 +141,15 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.isHidden shouldBe false
   }
 
+  it should "support parent/child" in {
+    fa isChildOf testRoot shouldBe true
+    testRoot isChildOf root shouldBe true
+    root isChildOf root shouldBe true
+    fa isChildOf fa shouldBe true
+    b2 isChildOf b2 shouldBe false
+    b2 isChildOf b2.parent shouldBe true
+  }
+
   it must "have .size" in {
     fb.isEmpty shouldBe true
     t1.size shouldBe 0

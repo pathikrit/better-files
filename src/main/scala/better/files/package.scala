@@ -74,7 +74,15 @@ package object files {
 
     def notExists: Boolean = Files.notExists(path)
 
-    //TODO: def isChildOf(parent: File): Boolean = ???
+    def isChildOf(parent: File): Boolean = parent isParentOf this
+
+    /**
+     * Check if this directory contains this file
+     * @param file
+     * @return true if this is a directory and it contains this file
+     */
+    def contains(file: File): Boolean = isDirectory && (file.path startsWith path)
+    def isParentOf(child: File): Boolean = contains(child)
 
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
@@ -307,9 +315,9 @@ package object files {
 
     private[this] def copyOptions(overwrite: Boolean): Seq[StandardCopyOption] = if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else Nil
 
-    def symLinkTo(destination: File) = Files.createSymbolicLink(path, destination.path)
+    def symbolicLinkTo(destination: File) = Files.createSymbolicLink(path, destination.path)
 
-    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symLinkTo(destination) else Files.createLink(path, destination.path)
+    def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symbolicLinkTo(destination) else Files.createLink(path, destination.path)
 
     def samePathAs(that: File): Boolean = this.path == that.path
 
@@ -457,7 +465,7 @@ package object files {
 
     def ln(file1: File, file2: File): File = file1 linkTo file2
 
-    def ln_s(file1: File, file2: File): File = file1 symLinkTo file2
+    def ln_s(file1: File, file2: File): File = file1 symbolicLinkTo file2
 
     def cat(files: File*): Seq[Iterator[Byte]] = files.map(_.bytes)
 

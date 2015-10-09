@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html)
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
 ## Tutorial
   0. [Instantiation](#instantiation)
@@ -167,6 +167,9 @@ val bw      : BufferedWriter        = writer.buffered
 ### Pattern matching
 Instead of `if-else`, more idiomatic powerful Scala pattern matching:
 ```scala
+/**
+ * @return true if file is a directory with no children or a file with no contents
+ */
 def isEmpty(file: File): Boolean = file match {
   case SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
   case Directory(files) => files.isEmpty
@@ -200,7 +203,7 @@ file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)
 file.linkTo(destination)                     // ln file destination
-file.symLinkTo(destination)                  // ln -s file destination
+file.symbolicLinkTo(destination)             // ln -s file destination
 file.{checksum, md5, digest}   // also works for directories; used for fast equality of directories
 file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
