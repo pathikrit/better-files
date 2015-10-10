@@ -26,7 +26,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
 
   protected[FileWatcher] def addCallback(event: FileWatcher.Event)(callback: FileWatcher.Callback) = callbacks(event) = callbacks(event) + callback
 
-  protected[FileWatcher] val watcher = new Runnable { //TODO: just subclass thread
+  protected[FileWatcher] val watcher = new Thread {
     override def run() = Exception.ignoring(classOf[InterruptedException]) {
       Iterator.continually(service.take()) foreach process
     }
@@ -40,8 +40,6 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
       key.reset()
     }
   }
-
-  protected[FileWatcher] val thread = new Thread(watcher)
 
   override def preStart() = {
     super.preStart()
@@ -59,8 +57,8 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
       case (_, newFile) => watch(newFile)
     }
     watch(file)
-    thread.setDaemon(true)
-    thread.start()
+    watcher.setDaemon(true)
+    watcher.start()
   }
 
   override def receive = {
@@ -70,7 +68,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
 
   override def postStop() = {
     super.postStop()
-    thread.interrupt()
+    watcher.interrupt()
     service.close()
   }
 }

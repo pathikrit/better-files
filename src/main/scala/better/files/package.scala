@@ -84,10 +84,6 @@ package object files {
     def contains(file: File): Boolean = isDirectory && (file.path startsWith path)
     def isParentOf(child: File): Boolean = contains(child)
 
-    def newBufferedSource(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
-
-    def bufferedSource(implicit codec: Codec): ManagedResource[BufferedSource] = newBufferedSource(codec).autoClosed
-
     def bytes: Iterator[Byte] = newInputStream.buffered.bytes(autoClose = true)
 
     def loadBytes: Array[Byte] = Files.readAllBytes(path)
@@ -127,6 +123,10 @@ package object files {
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
 
     //TODO: @managed macro
+
+    def newBufferedSource(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
+
+    def bufferedSource(implicit codec: Codec): ManagedResource[BufferedSource] = newBufferedSource(codec).autoClosed
 
     def newRandomAccess(mode: String = "r"): RandomAccessFile = new RandomAccessFile(toJava, mode)
 
@@ -545,7 +545,7 @@ package object files {
   implicit class InputStreamOps(in: InputStream) {
     def >(out: OutputStream): Unit = pipeTo(out)
 
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))   //TODO: remove closeOutoutStream?
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
 
     /**
      * Pipe an input stream to an output stream using a byte buffer

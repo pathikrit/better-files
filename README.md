@@ -315,6 +315,7 @@ for {
  reader <- file.bufferedReader    // returns ManagedResource[BufferedReader]
 } foo(reader)
 ```
+Or simply: `file.bufferedReader.map(foo)`
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 
