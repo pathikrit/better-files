@@ -302,8 +302,7 @@ for {
 } in.pipeTo(out)
 // The input and output streams are auto-closed once out of scope
 ```
-`better-files` provides convenient managed versions of all the Java closeable instances too e.g.
-instead of writing:
+`better-files` provides convenient managed versions of all the Java closeables e.g. instead of writing:
 ```scala
 for {
  reader <- file.newBufferedReader.autoClosed

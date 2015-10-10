@@ -4,7 +4,6 @@ import java.nio.file.{StandardWatchEventKinds, WatchKey, Path, WatchEvent}
 
 import akka.actor.Actor
 
-import scala.collection.mutable
 import scala.collection.JavaConversions._
 import scala.language.existentials
 import scala.util.control.Exception
@@ -22,9 +21,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
 
   protected[FileWatcher] val service = file.newWatchService
 
-  protected[FileWatcher] val callbacks = mutable.Map.empty[FileWatcher.Event, Set[FileWatcher.Callback]] withDefaultValue Set.empty
-
-  protected[FileWatcher] def addCallback(event: FileWatcher.Event)(callback: FileWatcher.Callback) = callbacks(event) = callbacks(event) + callback
+  protected[FileWatcher] val callbacks = newMultiMap[FileWatcher.Event, FileWatcher.Callback]
 
   protected[FileWatcher] val watcher = new Thread {
     override def run() = Exception.ignoring(classOf[InterruptedException]) {
@@ -53,17 +50,17 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
         aFile.parent.path.register(service, events: _*)
       }
     }
-    addCallback(StandardWatchEventKinds.ENTRY_CREATE) {
+    callbacks.addBinding(StandardWatchEventKinds.ENTRY_CREATE, {      //TODO: self ! on(StandardWatchEventKinds.ENTRY_CREATE)(watch)
       case (_, newFile) => watch(newFile)
-    }
+    })
     watch(file)
     watcher.setDaemon(true)
     watcher.start()
   }
 
   override def receive = {
-    case (event: FileWatcher.Event, target: File) if file.isDirectory || (file isSamePathAs target) => callbacks(event) foreach { f => f(event -> target)}
-    case FileWatcher.RegisterCallback(events, callback) => events foreach {event => addCallback(event)(callback)}
+    case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) => callbacks(event) foreach {f => f(event -> target)}
+    case FileWatcher.RegisterCallback(events, callback) => events foreach callbacks.addBinding(_: FileWatcher.Event, callback)
   }
 
   override def postStop() = {

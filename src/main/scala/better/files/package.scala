@@ -17,6 +17,7 @@ import akka.actor.{Props, ActorRef, ActorSystem}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
@@ -664,4 +665,5 @@ package object files {
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
   @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
   @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
+  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 }
