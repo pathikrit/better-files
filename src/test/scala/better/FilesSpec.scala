@@ -423,10 +423,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
     sleep(10 seconds)
 
-    log should contain theSameElementsAs List(
+    val expectedEvents = List(
       "a/e.txt got created", "d/f/g/e.txt got deleted", "d/f/g/e.txt got modified", "d/f/g/e.txt got created", "d/f got created",
       "d/e.txt got modified", "d/e.txt got created", "d got created", "a/b got deleted", "a/b/c.txt got deleted", "a/b/c.txt got modified"
     )
+
+    expectedEvents diff log shouldBe empty
+
     system.shutdown()
   }
 

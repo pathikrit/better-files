@@ -53,6 +53,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
     case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
       callbacks(event) foreach {f => f(event -> target)}
     case FileWatcher.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
+    case FileWatcher.UnRegisterCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
 
   override def postStop() = {
@@ -69,8 +70,8 @@ object FileWatcher {
   type FileEvent = (Event, File)
   type Callback = PartialFunction[FileEvent, Unit]
 
-  //TODO: DeRegisterCallback/UnwatchEvent
   case class RegisterCallback(events: Seq[Event], callback: Callback)
+  case class UnRegisterCallback(event: Event, callback: Callback)
 
   private[FileWatcher] val allEvents = Seq(EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY, EventType.ENTRY_DELETE)
 }
