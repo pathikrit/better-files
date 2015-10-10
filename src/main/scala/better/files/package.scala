@@ -84,10 +84,11 @@ package object files {
     def contains(file: File): Boolean = isDirectory && (file.path startsWith path)
     def isParentOf(child: File): Boolean = contains(child)
 
-    def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
-    def source(implicit codec: Codec): BufferedSource = content(codec)
+    def newBufferedSource(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
 
-    def bytes: Iterator[Byte] = in.buffered.bytes
+    def bufferedSource(implicit codec: Codec): ManagedResource[BufferedSource] = newBufferedSource(codec).autoClosed
+
+    def bytes: Iterator[Byte] = newInputStream.buffered.bytes(autoClose = true)
 
     def loadBytes: Array[Byte] = Files.readAllBytes(path)
     def byteArray: Array[Byte] = loadBytes
@@ -96,9 +97,9 @@ package object files {
 
     def createDirectories(): File = Files.createDirectories(path)
 
-    def chars(implicit codec: Codec): Iterator[Char] = content(codec)
+    def chars(implicit codec: Codec): Iterator[Char] = newBufferedSource(codec)     //TODO: close when done
 
-    def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
+    def lines(implicit codec: Codec): Iterator[String] = newBufferedSource(codec).getLines()
 
     def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
     def `!`(implicit codec: Codec): String = contentAsString(codec)
@@ -125,28 +126,47 @@ package object files {
     def <(text: String)(implicit codec: Codec) = write(text)(codec)
     def `>:`(text: String)(implicit codec: Codec) = write(text)(codec)
 
+    //TODO: @managed macro
+
     def newRandomAccess(mode: String = "r"): RandomAccessFile = new RandomAccessFile(toJava, mode)
-    def randomAccess(mode: String = "r"): RandomAccessFile = newRandomAccess(mode)
+
+    def randomAccess(mode: String = "r"): ManagedResource[RandomAccessFile] = newRandomAccess(mode).autoClosed
 
     def newBufferedReader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
-    def reader(implicit codec: Codec): BufferedReader = newBufferedReader(codec)
+
+    def bufferedReader(implicit codec: Codec): ManagedResource[BufferedReader] = newBufferedReader(codec).autoClosed
 
     def newBufferedWriter(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
 
+    def bufferedWriter(implicit codec: Codec): ManagedResource[BufferedWriter] = newBufferedWriter(codec).autoClosed
+
     def newFileReader: FileReader = new FileReader(toJava)
+
+    def fileReader: ManagedResource[FileReader] = newFileReader.autoClosed
 
     def newFileWriter(append: Boolean = false): FileWriter = new FileWriter(toJava, append)
 
+    def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
+
     def newInputStream: InputStream = Files.newInputStream(path)
-    def in: InputStream = newInputStream
+
+    def inputStream: ManagedResource[InputStream] = newInputStream.autoClosed
 
     def newScanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
-    def scanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = newScanner(delimiter, includeDelimiters)(codec)
+
+    def scanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
     def newOutputStream: OutputStream = Files.newOutputStream(path)
-    def out: OutputStream = newOutputStream
+
+    def outputStream: ManagedResource[OutputStream] = newOutputStream.autoClosed
+
+    def newFileChannel: FileChannel = FileChannel.open(path)
+
+    def fileChannel: ManagedResource[FileChannel] = newFileChannel.autoClosed
 
     def newWatchService: WatchService = fileSystem.newWatchService()
+
+    def watchService: ManagedResource[WatchService] = newWatchService.autoClosed
 
     def newWatchKey(events: WatchEvent.Kind[_]*): WatchKey = path.register(newWatchService, events.toArray)
 
@@ -218,10 +238,6 @@ package object files {
     }
 
     def fileSystem: FileSystem = path.getFileSystem
-    def fs: FileSystem = fileSystem
-
-    def newFileChannel: FileChannel = FileChannel.open(path)
-    def channel: FileChannel = newFileChannel
 
     def uri: URI = path.toUri
 
@@ -416,7 +432,7 @@ package object files {
         entry <- zipFile.entries()
         file = destination.createChild(entry.getName, entry.isDirectory)
         if !entry.isDirectory
-      } zipFile.getInputStream(entry) > file.out
+      } zipFile.getInputStream(entry) > file.newOutputStream
     }
 
     /**
@@ -438,7 +454,7 @@ package object files {
     /**
      * @return contents of this file if it is a regular file
      */
-    def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.content)
+    def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.newBufferedSource)
   }
 
   object Directory {
@@ -514,7 +530,7 @@ package object files {
 
     def zip(files: File*)(destination: File): File = returning(destination) {
       for {
-        out <- new ZipOutputStream(destination.out).autoClosed
+        out <- new ZipOutputStream(destination.newOutputStream).autoClosed
         input <- files
         file <- input.walk()
         name = input.parent relativize file
@@ -529,7 +545,7 @@ package object files {
   implicit class InputStreamOps(in: InputStream) {
     def >(out: OutputStream): Unit = pipeTo(out)
 
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))   //TODO: remove closeOutoutStream?
 
     /**
      * Pipe an input stream to an output stream using a byte buffer
@@ -553,11 +569,16 @@ package object files {
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
 
-    def bytes: Iterator[Byte] = {
+    /**
+     *
+     * @param autoClose If this is set to true, close this inputstream when all bytes are consumed
+     * @return
+     */
+    def bytes(autoClose: Boolean = true): Iterator[Byte] = {
       var isClosed = false
       def hasMore(byte: Int) = {
         if(!isClosed && byte == -1) {
-          in.close()
+          if (autoClose) in.close()   //TODO: Use autoClosed?
           isClosed = true
         }
         !isClosed
@@ -605,6 +626,8 @@ package object files {
     def close(): Unit
   }
 
+  type ManagedResource[A <: Closeable] = Traversable[A]
+
   implicit class CloseableOps[A <: Closeable](resource: A) {
     /**
      * Lightweight automatic resource management
@@ -618,7 +641,7 @@ package object files {
      * </pre>
      * @return
      */
-    def autoClosed: Traversable[A] = new Traversable[A] {
+    def autoClosed: ManagedResource[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
         f(resource)
       } finally {

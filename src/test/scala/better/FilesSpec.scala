@@ -276,7 +276,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support file in/out" in {
     t1 < "hello world"
-    t1.in > t2.out
+    t1.newInputStream > t2.newOutputStream
     t2.contentAsString shouldEqual "hello world"
   }
 
@@ -303,10 +303,10 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "gzip" in {
     for {
-      writer <- (testRoot / "test.gz").out.buffered.gzipped.writer.buffered.autoClosed
+      writer <- (testRoot / "test.gz").newOutputStream.buffered.gzipped.writer.buffered.autoClosed
     } writer.write("Hello world")
 
-    (testRoot / "test.gz").in.buffered.gzipped.buffered.lines.toSeq shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").inputStream.flatMap(_.buffered.gzipped.buffered.lines.toSeq) shouldEqual Seq("Hello world")
   }
 
   it should "read bytebuffers" in {

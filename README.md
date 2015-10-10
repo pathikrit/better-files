@@ -302,6 +302,19 @@ for {
 } in.pipeTo(out)
 // The input and output streams are auto-closed once out of scope
 ```
+`better-files` provides convenient managed versions of all the Java closeable instances too e.g.
+instead of writing:
+```scala
+for {
+ reader <- file.newBufferedReader.autoClosed
+} foo(reader)
+```
+You can write:
+```scala
+for {
+ reader <- file.bufferedReader    // returns ManagedResource[BufferedReader]
+} foo(reader)
+```
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 
