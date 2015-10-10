@@ -26,7 +26,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
 
   protected[FileWatcher] def addCallback(event: FileWatcher.Event)(callback: FileWatcher.Callback) = callbacks(event) = callbacks(event) + callback
 
-  private[FileWatcher] val watcher = new Runnable {
+  protected[FileWatcher] val watcher = new Runnable {
     override def run() = Exception.ignoring(classOf[InterruptedException]) {
       Iterator.continually(service.take()) foreach process
     }

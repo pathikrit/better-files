@@ -173,7 +173,7 @@ package object files {
     /**
      * @return Some(target) if this is a symbolic link (to target) else None
      */
-    def symLink: Option[File] = when(isSymLink)(Files.readSymbolicLink(path))
+    def symbolicLink: Option[File] = when(isSymbolicLink)(Files.readSymbolicLink(path))
 
     /**
      * @return true if this file (or the file found by following symlink) is a directory
@@ -185,7 +185,7 @@ package object files {
      */
     def isRegularFile: Boolean = Files.isRegularFile(path)
 
-    def isSymLink: Boolean = Files.isSymbolicLink(path)
+    def isSymbolicLink: Boolean = Files.isSymbolicLink(path)
 
     def isHidden: Boolean = Files.isHidden(path)
 
@@ -443,7 +443,7 @@ package object files {
     /**
      * @return target of this symlink if file is a symlink
      */
-    def unapply(file: File): Option[File] = file.symLink
+    def unapply(file: File): Option[File] = file.symbolicLink
   }
 
   type Files = Iterator[File]
