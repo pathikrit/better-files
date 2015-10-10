@@ -198,7 +198,7 @@ package object files {
     def children: Files = list
     def entries: Files = list
 
-    def listRecursively: Files = walk().filterNot(samePathAs)
+    def listRecursively: Files = walk().filterNot(isSamePathAs)
 
     /**
      * Walk the directory tree recursively upto maxDepth
@@ -331,26 +331,34 @@ package object files {
 
     def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symbolicLinkTo(destination) else Files.createLink(path, destination.path)
 
-    def samePathAs(that: File): Boolean = this.path == that.path
-
-    def sameFileAs(that: File): Boolean = Files.isSameFile(this.path, that.path)
-
     def listRelativePaths: Iterator[Path] = walk().map(relativize)
 
     def relativize(destination: File): Path = path relativize destination.path
 
+    def isSamePathAs(that: File): Boolean = this.path == that.path
+
+    def isSameFileAs(that: File): Boolean = Files.isSameFile(this.path, that.path)
+
     /**
      * @return true if this file is exactly same as that file
      *         For directories, it checks for equivalent directory structure
-     *         Note: Since it uses md5 underneath, there is a small chance of an md5 collision for different files (TODO)
      */
-    def sameContentAs(that: File): Boolean = this.md5 == that.md5
-    def `===`(that: File): Boolean = sameContentAs(that)
+    def isSameContentAs(that: File): Boolean = isSimilarContentAs(that) //TODO: Do not depend on hashing
+    def `===`(that: File): Boolean = isSameContentAs(that)
 
-    def =!=(that: File): Boolean = !sameContentAs(that)
+    /**
+     * Almost same as isSameContentAs but uses faster md5 hashing to compare (and thus small chance of false positive)
+     * Also works for directories
+     *
+     * @param that
+     * @return
+     */
+    def isSimilarContentAs(that: File): Boolean = this.md5 == that.md5
+
+    def =!=(that: File): Boolean = !isSameContentAs(that)
 
     override def equals(obj: Any) = obj match {
-      case file: File => samePathAs(file)
+      case file: File => isSamePathAs(file)
       case _ => false
     }
 

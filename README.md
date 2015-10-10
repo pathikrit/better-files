@@ -268,10 +268,10 @@ assert(file.isOwnerExecutable)
 ### File comparison
 Use `==` to check for path-based equality and `===` for content-based equality:
 ```scala
-file1 == file2    // equivalent to `file1.samePathAs(file2)`
-file1 === file2   // equivalent to `file1.sameContentAs(file2)` (works for regular-files and directories)
-file1 != file2    // equivalent to `!file1.samePathAs(file2)`
-file1 =!= file2   // equivalent to `!file1.sameContentAs(file2)`
+file1 == file2    // equivalent to `file1.isSamePathAs(file2)`
+file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for regular-files and directories)
+file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
+file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
 
 ### Zip APIs
@@ -294,7 +294,7 @@ File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ```
 
 ### Lightweight ARM
-Auto-close Java closeables (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
+Auto-close Java closeables:
 ```scala
 for {
   in <- file1.newInputStream.autoClosed
