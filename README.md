@@ -138,14 +138,14 @@ You can always access the Java I/O classes:
 val file: File = tmp / "hello.txt"
 val javaFile     : java.io.File                 = file.toJava
 val uri          : java.net.uri                 = file.uri
-val reader       : java.io.BufferedReader       = file.reader 
-val outputstream : java.io.OutputStream         = file.out 
-val writer       : java.io.BufferedWriter       = file.writer 
-val inputstream  : java.io.InputStream          = file.in
+val reader       : java.io.BufferedReader       = file.newBufferedReader 
+val outputstream : java.io.OutputStream         = file.newOutputStream 
+val writer       : java.io.BufferedWriter       = file.newBufferedWriter 
+val inputstream  : java.io.InputStream          = file.newInputStream
 val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
-val channel      : java.nio.channel.FileChannel = file.channel
-val ram          : java.io.RandomAccessFile     = file.randomAccess
+val channel      : java.nio.channel.FileChannel = file.newFileChannel
+val ram          : java.io.RandomAccessFile     = file.newRandomAccess
 val fr           : java.io.FileReader           = file.newFileReader
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 ```
@@ -201,6 +201,7 @@ Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch`, `cat` etc:
 ```scala
 file.touch()
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
+file.clear()      // If directory, deletes all children; if file clears contents
 file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
@@ -290,7 +291,7 @@ val someTempDir: File = zipFile.unzip()
 assert(directory === someTempDir)
 
 // Gzip handling:
-File("countries.gz").in.gzipped.lines.take(10).foreach(println)
+File("countries.gz").newInputStream.gzipped.lines.take(10).foreach(println)
 ```
 
 ### Lightweight ARM
