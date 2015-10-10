@@ -147,6 +147,7 @@ val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
 val channel      : java.nio.channel.FileChannel = file.channel
 val ram          : java.io.RandomAccessFile     = file.randomAccess
+val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 ```
 The library also adds some useful implicits to above classes e.g.:
 ```scala
@@ -201,7 +202,7 @@ file.touch()
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
 file.renameTo(newName: String)
 file.moveTo(destination)
-file.copyTo(destination)
+file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
 file.linkTo(destination)                     // ln file destination
 file.symbolicLinkTo(destination)             // ln -s file destination
 file.{checksum, md5, digest}   // also works for directories; used for fast equality of directories

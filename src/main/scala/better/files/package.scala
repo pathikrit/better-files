@@ -136,7 +136,8 @@ package object files {
     def reader(implicit codec: Codec): BufferedReader = newBufferedReader(codec)
 
     def newBufferedWriter(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
-    def writer(implicit codec: Codec): BufferedWriter = newBufferedWriter(codec)
+
+    def newFileWriter(append: Boolean = false): FileWriter = new FileWriter(toJava, append)
 
     def newInputStream: InputStream = Files.newInputStream(path)
     def in: InputStream = newInputStream
@@ -292,8 +293,20 @@ package object files {
 
     def renameTo(newName: String): File = moveTo(path resolveSibling newName)
 
+    /**
+     *
+     * @param destination
+     * @param overwrite
+     * @return destination
+     */
     def moveTo(destination: File, overwrite: Boolean = false): File = Files.move(path, destination.path, copyOptions(overwrite): _*)
 
+    /**
+     *
+     * @param destination
+     * @param overwrite
+     * @return destination
+     */
     def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) {
       if (overwrite) destination.delete(ignoreIOExceptions = true)
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
@@ -309,6 +322,7 @@ package object files {
           super.visitFile(file, attrs)
         }
       })
+      destination
     } else {
       Files.copy(path, destination.path, copyOptions(overwrite): _*)
     }
