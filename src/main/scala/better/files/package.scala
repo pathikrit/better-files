@@ -133,6 +133,8 @@ package object files {
 
     def newBufferedWriter(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
 
+    def newFileReader: FileReader = new FileReader(toJava)
+
     def newFileWriter(append: Boolean = false): FileWriter = new FileWriter(toJava, append)
 
     def newInputStream: InputStream = Files.newInputStream(path)

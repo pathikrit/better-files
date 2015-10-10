@@ -146,6 +146,7 @@ val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
 val channel      : java.nio.channel.FileChannel = file.channel
 val ram          : java.io.RandomAccessFile     = file.randomAccess
+val fr           : java.io.FileReader           = file.newFileReader
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 ```
 The library also adds some useful implicits to above classes e.g.:
@@ -299,7 +300,7 @@ for {
   in <- file1.newInputStream.autoClosed
   out <- file2.newOutputStream.autoClosed
 } in.pipeTo(out)
-//No need to close them after the for-each
+// The input and output streams are auto-closed once out of scope
 ```
 
 ### Scanner
