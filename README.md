@@ -116,8 +116,7 @@ Various ways to slurp a file without loading the contents into memory:
 val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.lines
-val source : scala.io.BufferedSource   = file.content 
-val buffer : java.nio.ByteBuffer       = file.byteBuffer
+val source : scala.io.BufferedSource   = file.content
 ```
 Note: The above APIs can be traversed atmost once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
@@ -163,6 +162,7 @@ val writer  : OutputStreamWriter    = outputstream.writer
 val printer : PrintWriter           = outputstream.printer
 val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
+val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
  
 ### Pattern matching

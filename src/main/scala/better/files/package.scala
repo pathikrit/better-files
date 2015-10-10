@@ -2,6 +2,7 @@ package better
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
+import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file._, attribute._
 import java.nio.charset.Charset
@@ -86,10 +87,6 @@ package object files {
 
     def content(implicit codec: Codec): BufferedSource = Source.fromFile(toJava)(codec)
     def source(implicit codec: Codec): BufferedSource = content(codec)
-
-    def byteBuffer(bufferSize: Int = 1<<10) = for {
-      channel <- managed(newRandomAccess().getChannel)
-    } yield channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
 
     def bytes: Iterator[Byte] = in.buffered.bytes
 
@@ -576,6 +573,10 @@ package object files {
 
   implicit class WriterOps(writer: Writer) {
     def buffered: BufferedWriter = new BufferedWriter(writer)
+  }
+
+  implicit class FileChannelOps(fc: FileChannel) {
+    def toMappedByteBuffer: MappedByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size())
   }
 
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {

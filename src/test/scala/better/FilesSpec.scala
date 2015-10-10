@@ -312,7 +312,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "read bytebuffers" in {
     t1.write("hello world")
     for {
-      buffer <- t1.byteBuffer()
+      fileChannel <- managed(t1.newFileChannel)
+      buffer = fileChannel.toMappedByteBuffer
     } buffer.remaining() shouldEqual t1.bytes.length
   }
 
