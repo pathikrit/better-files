@@ -509,7 +509,7 @@ package object files {
         input <- files
         file <- input.walk()
         name = input.parent relativize file
-      } out.add(file, name = Some(name.toString))
+      } out.add(file, name.toString)
     }
   }
 
@@ -581,13 +581,15 @@ package object files {
 
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {
 
-    def add(file: File, name: Option[String] = None): ZipOutputStream = returning(out) {
-      val relativeName = (name getOrElse file.name).stripSuffix(file.fileSystem.getSeparator)
+    def add(file: File, name: String): ZipOutputStream = returning(out) {
+      val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
       val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
       if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
       out.closeEntry()
     }
+
+    def +=(file: File): ZipOutputStream = add(file, file.name)
   }
 
   type Closeable = {
