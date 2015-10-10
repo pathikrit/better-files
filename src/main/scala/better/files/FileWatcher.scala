@@ -59,8 +59,10 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends Actor {
   }
 
   override def receive = {
-    case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) => callbacks(event) foreach {f => f(event -> target)}
-    case FileWatcher.RegisterCallback(events, callback) => events foreach callbacks.addBinding(_: FileWatcher.Event, callback)
+    case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
+      callbacks(event) foreach {f => f(event -> target)}
+    case FileWatcher.RegisterCallback(events, callback) =>
+      events foreach {event => callbacks.addBinding(event, callback)}
   }
 
   override def postStop() = {
@@ -76,5 +78,5 @@ object FileWatcher {
   type Callback = PartialFunction[FileEvent, Unit]
 
   case class RegisterCallback(events: Seq[Event], callback: Callback)
-  //TODO: DeRegisterCallback?
+  //TODO: DeRegisterCallback/UnwatchEvent - typedActor?
 }
