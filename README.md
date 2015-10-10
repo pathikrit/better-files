@@ -295,10 +295,9 @@ File("countries.gz").in.gzipped.lines.take(10).foreach(println)
 ### Lightweight ARM
 Auto-close Java closeables (see [scala-arm](https://github.com/jsuereth/scala-arm/)):
 ```scala
-import better.files._, Closeable.managed
 for {
-  in <- managed(file1.newInputStream)
-  out <- managed(file2.newOutputStream)
+  in <- file1.newInputStream.autoClosed
+  out <- file2.newOutputStream.autoClosed
 } in.pipeTo(out)
 //No need to close them after the for-each
 ```

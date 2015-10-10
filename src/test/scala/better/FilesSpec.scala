@@ -1,6 +1,6 @@
 package better
 
-import better.files._, Cmds._, Closeable._
+import better.files._, Cmds._
 
 import org.scalatest._
 
@@ -303,7 +303,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "gzip" in {
     for {
-      writer <- managed((testRoot / "test.gz").out.buffered.gzipped.writer.buffered)
+      writer <- (testRoot / "test.gz").out.buffered.gzipped.writer.buffered.autoClosed
     } writer.write("Hello world")
 
     (testRoot / "test.gz").in.buffered.gzipped.buffered.lines.toSeq shouldEqual Seq("Hello world")
@@ -312,7 +312,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "read bytebuffers" in {
     t1.write("hello world")
     for {
-      fileChannel <- managed(t1.newFileChannel)
+      fileChannel <- t1.newFileChannel.autoClosed
       buffer = fileChannel.toMappedByteBuffer
     } buffer.remaining() shouldEqual t1.bytes.length
   }
@@ -363,7 +363,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "parse longs/booleans" in {
     val data = for {
-      scanner <- managed(new Scanner("10 false"))
+      scanner <- new Scanner("10 false").autoClosed
     } yield scanner.next[Long]() -> scanner.next[Boolean]()
     data shouldBe Seq(Some(10L) -> Some(false))
   }

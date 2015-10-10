@@ -21,7 +21,6 @@ import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
 package object files {
-  import Closeable.managed
   /**
    * Scala wrapper around java.nio.files.Path
    */
@@ -403,7 +402,7 @@ package object files {
      */
     def unzipTo(destination: File): File = returning(destination) {
       for {
-        zipFile <- managed(new ZipFile(toJava))
+        zipFile <- new ZipFile(toJava).autoClosed
         entry <- zipFile.entries()
         file = destination.createChild(entry.getName, entry.isDirectory)
         if !entry.isDirectory
@@ -505,7 +504,7 @@ package object files {
 
     def zip(files: File*)(destination: File): File = returning(destination) {
       for {
-        out <- managed(new ZipOutputStream(destination.out))
+        out <- new ZipOutputStream(destination.out).autoClosed
         input <- files
         file <- input.walk()
         name = input.parent relativize file
@@ -596,23 +595,20 @@ package object files {
     def close(): Unit
   }
 
-  object Closeable {
+  implicit class CloseableOps[A <: Closeable](resource: A) {
     /**
      * Lightweight automatic resource management
      * Closes the resource when done
      * e.g.
      * <pre>
-     * ``
      * for {
-     *   in <- managed(file.newInputStream)
+     *   in <- file.newInputStream.autoClosed
      * } in.write(bytes)
      * // in is closed now
-     * ``
      * </pre>
-     * @param resource
      * @return
      */
-    def managed[A <: Closeable](resource: A): Traversable[A] = new Traversable[A] {
+    def autoClosed: Traversable[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
         f(resource)
       } finally {
