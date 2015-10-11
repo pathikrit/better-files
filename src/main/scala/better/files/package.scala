@@ -84,7 +84,7 @@ package object files {
     def contains(file: File): Boolean = isDirectory && (file.path startsWith path)
     def isParentOf(child: File): Boolean = contains(child)
 
-    def bytes: Iterator[Byte] = newInputStream.buffered.bytes(autoClose = true)
+    def bytes: Iterator[Byte] = newInputStream.buffered.bytes
 
     def loadBytes: Array[Byte] = Files.readAllBytes(path)
     def byteArray: Array[Byte] = loadBytes
@@ -93,9 +93,9 @@ package object files {
 
     def createDirectories(): File = Files.createDirectories(path)
 
-    def chars(implicit codec: Codec): Iterator[Char] = newBufferedSource(codec)     //TODO: close when done
+    def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
 
-    def lines(implicit codec: Codec): Iterator[String] = newBufferedSource(codec).getLines()
+    def lines(implicit codec: Codec): Iterator[String] = newBufferedReader(codec).lineIterator //TODO: Use Files.lines
 
     def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
     def `!`(implicit codec: Codec): String = contentAsString(codec)
@@ -209,10 +209,6 @@ package object files {
     def isSymbolicLink: Boolean = Files.isSymbolicLink(path)
 
     def isHidden: Boolean = Files.isHidden(path)
-
-    // TODO:
-    //def hide(): Boolean = ???
-    //def unhide(): Boolean = ???
 
     def list: Files = Files.newDirectoryStream(path).iterator() map pathToFile
     def children: Files = list
@@ -567,22 +563,7 @@ package object files {
 
     def lines(implicit codec: Codec): Iterator[String] = content(codec).getLines()
 
-    /**
-     *
-     * @param autoClose If this is set to true, close this inputstream when all bytes are consumed
-     * @return
-     */
-    def bytes(autoClose: Boolean = true): Iterator[Byte] = {
-      var isClosed = false
-      def hasMore(byte: Int) = {
-        if(!isClosed && byte == -1) {
-          if (autoClose) in.close()   //TODO: Use autoClosed?
-          isClosed = true
-        }
-        !isClosed
-      }
-      Iterator.continually(in.read()).takeWhile(hasMore).map(_.toByte)
-    }
+    def bytes: Iterator[Byte] = in.autoClosedIterator(_.read())(_ != eof).map(_.toByte)
   }
 
   implicit class OutputStreamOps(out: OutputStream) {
@@ -597,6 +578,12 @@ package object files {
 
   implicit class ReaderOps(reader: Reader) {
     def buffered: BufferedReader = new BufferedReader(reader)
+  }
+
+  implicit class BufferedReaderOps(reader: BufferedReader) {
+    def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
+
+    def lineIterator: Iterator[String] = reader.autoClosedIterator(_.readLine())(_ != null)
   }
 
   implicit class WriterOps(writer: Writer) {
@@ -627,6 +614,7 @@ package object files {
   type ManagedResource[A <: Closeable] = Traversable[A]
 
   implicit class CloseableOps[A <: Closeable](resource: A) {
+    import scala.language.reflectiveCalls
     /**
      * Lightweight automatic resource management
      * Closes the resource when done
@@ -643,9 +631,32 @@ package object files {
       override def foreach[U](f: A => U) = try {
         f(resource)
       } finally {
-        import scala.language.reflectiveCalls
         resource.close()
       }
+    }
+
+    /**
+     * Utility to make a closeable an iterator (auto close when done)
+     * e.g.
+     * <pre>
+     * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
+     * </pre>
+     *
+     * @param next next element in this resource
+     * @param hasNext a function which tells if there is no more B left
+     * @tparam B
+     * @return An iterator that closes itself when done
+     */
+    def autoClosedIterator[B](next: A => B)(hasNext: B => Boolean): Iterator[B] = {
+      var isClosed = false
+      def isOpen(item: B) = {
+        if(!isClosed && !hasNext(item)) {
+          resource.close()
+          isClosed = true
+        }
+        !isClosed
+      }
+      Iterator.continually(next(resource)).takeWhile(isOpen)
     }
   }
 
@@ -665,4 +676,6 @@ package object files {
   @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
   @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
+
+  private[files] val eof = -1
 }
