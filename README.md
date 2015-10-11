@@ -393,9 +393,9 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [watching nested directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching non-directories](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L58):
+`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L59):
 ```scala
-val watcher = new FileMonitor(myDir) {
+val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File) = println(s"$file got created")
   override def onModify(file: File) = println(s"$file got modified")
   override def onDelete(file: File) = println(s"$file got deleted")

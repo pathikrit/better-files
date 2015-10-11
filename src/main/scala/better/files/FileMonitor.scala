@@ -39,9 +39,7 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
       case event: WatchEvent[Path] @unchecked =>
         val target = File(root resolve event.context())
         val react = if (file.isDirectory) {
-          if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-            watch(target, maxDepth)   //TODO: correct depth // auto-watch new files in a directory
-          }
+          if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) watch(target, maxDepth)   //TODO: correct depth // auto-watch new files in a directory
           true
         } else file isSamePathAs target  // if watching non-directory, don't react to siblings
         if (react) repeat(event.count())(dispatch(event.kind(), target))
