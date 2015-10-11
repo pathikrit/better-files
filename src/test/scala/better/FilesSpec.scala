@@ -437,32 +437,30 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val file = File.newTemp(suffix = ".txt").write("Hello world")
 
     var log = List.empty[String]
-    def output(target: File, event: String) = synchronized {
-      val msg = s"$event happened on ${target.name}"
+    def output(msg: String) = synchronized {
       println(msg)
       log = msg :: log
     }
     /***************************************************************************/
-    import java.nio.file.{StandardWatchEventKinds => Events}
-    import akka.actor.{ActorRef, ActorSystem}
-    implicit val system = ActorSystem()
-
-    val watcher: ActorRef = file.newWatcher(recursive = true)
-
-    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY, Events.ENTRY_DELETE) {
-      case (event, target) => output(target, event.name())
+    val watcher = new FileMonitor(file) {
+      override def onCreate(file: File) = output(s"$file got created")
+      override def onModify(file: File) = output(s"$file got modified")
+      override def onDelete(file: File) = output(s"$file got deleted")
     }
+    watcher.start()
     /***************************************************************************/
     sleep(5 seconds)
     file.write("hello world"); sleep()
     file.clear(); sleep()
     file.write("howdy"); sleep()
     file.delete(); sleep()
-    sleep(10 seconds)
+    sleep(5 seconds)
+    val sibling = (file.parent / "t1.txt").createIfNotExists(); sleep()
+    sibling.write("hello world"); sleep()
+    sleep(20 seconds)
 
-    //TODO: Test sibling is not watched
-
-    log should contain allOf(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}")
-    system.shutdown()
+    log.size should be >= 2
+    log.exists(_ contains sibling.name) shouldBe false
+    log.forall(_ contains file.name) shouldBe true
   }
 }

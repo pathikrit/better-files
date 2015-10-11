@@ -9,12 +9,12 @@ import akka.actor
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int = 0) extends actor.Actor {
+class FileWatcher(file: File, maxDepth: Int) extends actor.Actor {
 
   def this(file: File, recursive: Boolean) = this(file, if (recursive) Int.MaxValue else 0)
 
   protected[this] val watcher = new FileMonitor(file, maxDepth) {
-    override def onStandardEvent(event: FileWatcher.Event, file: File) = self ! (event -> file)
+    override def dispatch(event: FileWatcher.Event, file: File) = self ! (event -> file)
     override def onException(exception: Throwable) = self ! actor.Status.Failure(exception)
   }
 

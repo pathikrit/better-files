@@ -9,7 +9,10 @@ import java.nio.file._
  * @param file
  * @param maxDepth
  */
-abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Thread {
+abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
+
+  def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
+
   setDaemon(true)
   setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
     override def uncaughtException(thread: Thread, exception: Throwable) = onException(exception)
@@ -35,12 +38,13 @@ abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Th
     key.pollEvents() foreach {
       case event: WatchEvent[Path] @unchecked =>
         val target = File(root resolve event.context())
-        if (file.isDirectory || (file isSamePathAs target)) {
-          if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE) { // auto-watch new dirs
-            watch(file, maxDepth)   //TODO: correct depth
+        val react = if (file.isDirectory) {
+          if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+            watch(target, maxDepth)   //TODO: correct depth // auto-watch new files in a directory
           }
-          repeat(event.count())(onStandardEvent(event.kind(), target))
-        }
+          true
+        } else file isSamePathAs target  // if watching non-directory, don't react to siblings
+        if (react) repeat(event.count())(dispatch(event.kind(), target))
       case event => onUnknownEvent(event, root)
     }
     key.reset()
@@ -54,7 +58,7 @@ abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Th
     aFile.parent.path.register(service, FileMonitor.allEvents: _*)
   }
 
-  def onStandardEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
+  def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
     case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
     case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
     case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)

@@ -393,7 +393,7 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [watching nested directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching non-directories](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the ugliness above behind a [simple interface](src/main/scala/better/files/FileMonitor.scala):
+`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L58):
 ```scala
 val watcher = new FileMonitor(myDir) {
   override def onCreate(file: File) = println(s"$file got created")
@@ -402,7 +402,7 @@ val watcher = new FileMonitor(myDir) {
 }
 watcher.start()
 ```
-`better-files` also provides a powerful type-safe [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
+`better-files` also provides a powerful yet concise [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html):
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
