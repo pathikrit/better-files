@@ -2,6 +2,8 @@ package better.files
 
 import java.nio.file.{StandardWatchEventKinds => EventType, WatchKey, Path, WatchEvent}
 
+import akka.actor
+
 /**
  * An actor that can watch a file or a directory
  * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
@@ -9,7 +11,7 @@ import java.nio.file.{StandardWatchEventKinds => EventType, WatchKey, Path, Watc
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
+class FileWatcher(file: File, maxDepth: Int = 0) extends actor.Actor {
 
   def this(file: File, recursive: Boolean) = this(file, if (recursive) Int.MaxValue else 0)
 
@@ -25,12 +27,16 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
     def process(key: WatchKey) = {
       import scala.collection.JavaConversions._
       val root = key.watchable().asInstanceOf[Path]
-      key.pollEvents().filter(_ != EventType.OVERFLOW) foreach {event =>
+      key.pollEvents()/*.filter(_ != EventType.OVERFLOW)*/ foreach {event =>
         val relativePath = event.context().asInstanceOf[Path]
         self ! (event.kind() -> File(root resolve relativePath))
       }
       key.reset()
     }
+
+    setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
+      override def uncaughtException(thread: Thread, exception: Throwable) = self ! actor.Status.Failure(exception)
+    })
   }
 
   protected[this] def watch(aFile: File): Unit = if (aFile.isDirectory) {

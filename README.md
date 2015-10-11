@@ -314,6 +314,7 @@ You can write:
 for {
  reader <- file.bufferedReader    // returns ManagedResource[BufferedReader]
 } foo(reader)
+
 // or simply:
 file.bufferedReader.map(foo)
 ```
