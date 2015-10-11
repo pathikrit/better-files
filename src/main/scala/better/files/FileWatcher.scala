@@ -51,7 +51,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
 
   override def receive = {
     // TODO: handle the overflow event here?
-    case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
+    case (event: FileWatcher.Event @unchecked, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
       callbacks(event) foreach {f => f(event -> target)}
     case FileWatcher.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
     case FileWatcher.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)

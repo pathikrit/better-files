@@ -25,11 +25,10 @@ package object files {
   /**
    * Scala wrapper around java.nio.files.Path
    */
-  implicit class File(val path: Path) {
-    def fullPath: String = path.toString
+  implicit class File(private[this] val _path: Path) {
+    val path = _path.normalize.toAbsolutePath
 
-    //def normalizedPath: File = path.normalize()
-    //def absolutePath: File = path.toAbsolutePath //TODO: use this?
+    def fullPath: String = path.toString
 
     def toJava: JFile = path.toFile
 
