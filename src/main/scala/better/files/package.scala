@@ -663,11 +663,11 @@ package object files {
   private[files] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
 
-  def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.RegisterCallback(events.distinct, callback)
+  def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.Message.RegisterCallback(events.distinct, callback)
 
   def on(event: FileWatcher.Event)(callback: (File => Unit)) = when(event){case (`event`, file) => callback(file)}
 
-  def stop(event: FileWatcher.Event, callback: FileWatcher.Callback) = FileWatcher.RemoveCallback(event, callback)
+  def stop(event: FileWatcher.Event, callback: FileWatcher.Callback) = FileWatcher.Message.RemoveCallback(event, callback)
 
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

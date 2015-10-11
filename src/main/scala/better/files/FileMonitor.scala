@@ -43,7 +43,7 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
           true
         } else file isSamePathAs target  // if watching non-directory, don't react to siblings
         if (react) repeat(event.count())(dispatch(event.kind(), target))
-      case event => onUnknownEvent(event, root)
+      case event => if (file.isDirectory || (file isSamePathAs root)) onUnknownEvent(event, root)
     }
     key.reset()
   }

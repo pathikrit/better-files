@@ -385,8 +385,8 @@ val pets = file.newScanner().iterator[Animal]
 Vanilla Java watchers:
 ```scala
 import java.nio.file.{StandardWatchEventKinds => Events}
-val service: java.nio.file.WatchService = file.newWatchService
-val watcher: java.nio.file.WatchKey = file.newWatchKey(Events.ENTRY_CREATE, Events.ENTRY_DELETE)
+val service: java.nio.file.WatchService = myDir.newWatchService
+val watcher: java.nio.file.WatchKey = myDir.newWatchKey(Events.ENTRY_CREATE, Events.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),
