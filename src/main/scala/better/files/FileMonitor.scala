@@ -33,9 +33,14 @@ abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Th
     import scala.collection.JavaConversions._
     val root = key.watchable().asInstanceOf[Path]
     key.pollEvents() foreach {
-      case event: WatchEvent[Path] @unchecked => repeat(event.count()) {
-        onStandardEvent(event.kind(), File(root resolve event.context()))
-      }
+      case event: WatchEvent[Path] @unchecked =>
+        val target = File(root resolve event.context())
+        if (file.isDirectory || (file isSamePathAs target)) {
+          if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE) { // auto-watch new dirs
+            watch(file, maxDepth)   //TODO: correct depth
+          }
+          repeat(event.count())(onStandardEvent(event.kind(), target))
+        }
       case event => onUnknownEvent(event, root)
     }
     key.reset()
@@ -50,9 +55,7 @@ abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Th
   }
 
   def onStandardEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
-    case StandardWatchEventKinds.ENTRY_CREATE =>
-      watch(file, maxDepth)   //TODO: correct depth
-      onCreate(file)
+    case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
     case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
     case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
   }
@@ -63,7 +66,7 @@ abstract class FileMonitor(file: File, maxDepth: Int = Int.MaxValue ) extends Th
 
   def onDelete(file: File): Unit = {}
 
-  def onUnknownEvent(eventType: WatchEvent[_], root: File): Unit = {}
+  def onUnknownEvent(event: WatchEvent[_], root: File): Unit = {}
 
   def onException(exception: Throwable): Unit = {}
 }

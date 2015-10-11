@@ -14,35 +14,21 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends actor.Actor {
   def this(file: File, recursive: Boolean) = this(file, if (recursive) Int.MaxValue else 0)
 
   protected[this] val watcher = new FileMonitor(file, maxDepth) {
-    override def onStandardEvent(event: FileWatcher.Event, file: File) = {
-      super.onStandardEvent(event, file)
-      self ! (event -> file)
-    }
-
-    override def onException(exception: Throwable) = {
-      super.onException(exception)
-      self ! actor.Status.Failure(exception)
-    }
-  }
-
-  override def preStart() = {
-    super.preStart()
-    watcher.start()
+    override def onStandardEvent(event: FileWatcher.Event, file: File) = self ! (event -> file)
+    override def onException(exception: Throwable) = self ! actor.Status.Failure(exception)
   }
 
   protected[this] val callbacks = newMultiMap[FileWatcher.Event, FileWatcher.Callback]
 
+  override def preStart() = watcher.start()
+
   override def receive = {
-    case (event: FileWatcher.Event @unchecked, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
-      callbacks(event) foreach {f => f(event -> target)}
+    case (event: FileWatcher.Event @unchecked, target: File) if callbacks contains event => callbacks(event) foreach {f => f(event -> target)}
     case FileWatcher.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
     case FileWatcher.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
 
-  override def postStop() = {
-    super.postStop()
-    watcher.interrupt()
-  }
+  override def postStop() = watcher.interrupt()
 }
 
 object FileWatcher {

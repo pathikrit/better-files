@@ -460,6 +460,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     file.delete(); sleep()
     sleep(10 seconds)
 
+    //TODO: Test sibling is not watched
+
     log should contain allOf(s"ENTRY_DELETE happened on ${file.name}", s"ENTRY_MODIFY happened on ${file.name}")
     system.shutdown()
   }
