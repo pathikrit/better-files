@@ -235,7 +235,7 @@ package object files {
      */
     def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
       val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-      Files.walk(path).filter(new Predicate[Path] {override def test(path: Path) = matcher.matches(path)})
+      Files.walk(path).filter(new Predicate[Path] {override def test(path: Path) = matcher.matches(path)})  //TODO: Java 8 version?
     }
 
     def fileSystem: FileSystem = path.getFileSystem
@@ -360,7 +360,7 @@ package object files {
      * @return true if this file is exactly same as that file
      *         For directories, it checks for equivalent directory structure
      */
-    def isSameContentAs(that: File): Boolean = isSimilarContentAs(that) //TODO: Do not depend on hashing
+    def isSameContentAs(that: File): Boolean = isSimilarContentAs(that)
     def `===`(that: File): Boolean = isSameContentAs(that)
 
     /**
@@ -393,11 +393,9 @@ package object files {
      * If its a file, empty the contents
      * @return this
      */
-    def clear(): File = returning(this) {
-      this match {
-        case Directory(children) => children.foreach(_.delete())
-        case _ => write(Array.ofDim[Byte](0))
-      }
+    def clear(): File = this match {
+      case Directory(children) => children.foreach(_.delete()); this
+      case _ => write(Array.ofDim[Byte](0))
     }
 
     override def hashCode = path.hashCode()
@@ -660,6 +658,8 @@ package object files {
   def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.RegisterCallback(events.distinct, callback)
 
   def on(event: FileWatcher.Event)(callback: (File => Unit)) = when(event){case (`event`, file) => callback(file)}
+
+  def stop(event: FileWatcher.Event, callback: FileWatcher.Callback) = FileWatcher.RemoveCallback(event, callback)
 
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None

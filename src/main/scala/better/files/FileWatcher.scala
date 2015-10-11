@@ -50,10 +50,11 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
   }
 
   override def receive = {
+    // TODO: handle the overflow event here?
     case (event: FileWatcher.Event, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
       callbacks(event) foreach {f => f(event -> target)}
     case FileWatcher.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
-    case FileWatcher.UnRegisterCallback(event, callback) => callbacks.removeBinding(event, callback)
+    case FileWatcher.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
 
   override def postStop() = {
@@ -64,14 +65,12 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
 }
 
 object FileWatcher {
-  import scala.language.existentials
-
-  type Event = WatchEvent.Kind[_]
+  type Event = WatchEvent.Kind[Path]
   type FileEvent = (Event, File)
   type Callback = PartialFunction[FileEvent, Unit]
 
   case class RegisterCallback(events: Seq[Event], callback: Callback)
-  case class UnRegisterCallback(event: Event, callback: Callback)
+  case class RemoveCallback(event: Event, callback: Callback)
 
   private[FileWatcher] val allEvents = Seq(EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY, EventType.ENTRY_DELETE)
 }
