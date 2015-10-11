@@ -67,7 +67,7 @@ val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navi
 ```
 Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
 
-**Note**: Rename the import if you think the usage of the word `File` may confuse your teammates:
+**Note**: Rename the import if you think the usage of the class `File` may confuse your teammates:
 ```scala
 import better.files.{File => BetterFile, _}
 import java.io.File
@@ -116,7 +116,7 @@ Various ways to slurp a file without loading the contents into memory:
 val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.lines
-val source : scala.io.BufferedSource   = file.content
+val source : scala.io.BufferedSource   = file.newBufferedSource // needs to be closed, unlike the above APIs which auto closes when iterator ends
 ```
 Note: The above APIs can be traversed atmost once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
@@ -207,7 +207,7 @@ file.moveTo(destination)
 file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
 file.linkTo(destination)                     // ln file destination
 file.symbolicLinkTo(destination)             // ln -s file destination
-file.{checksum, md5, digest}   // also works for directories; used for fast equality of directories
+file.{checksum, md5, digest}   // also works for directories
 file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
@@ -220,8 +220,8 @@ All the above can also be expressed using [methods](http://pathikrit.github.io/b
 import better.files_, Cmds._   // must import Cmds._ to bring in these utils
 cp(file1, file2)
 mv(file1, file2)
-rm(file) / del(file)
-ls(file) / dir(file)
+rm(file) /*or*/ del(file)
+ls(file) /*or*/ dir(file)
 ln(file1, file2)     // hard link
 ln_s(file1, file2)   // soft link
 cat(file1)
@@ -323,6 +323,8 @@ One another [utility to convert any closeable to an iterator](http://pathikrit.g
 val eof = -1
 val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).map(_.toByte) 
 ```
+Note: The `autoClosedIterator` only closes the resource when `hasNext` i.e. `(_ != eof)` returns false. 
+If you only partially use the iterator e.g. `.take(5)`, it may leave the resource open. In those cases, use the managed `autoClosed` version instead.
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 

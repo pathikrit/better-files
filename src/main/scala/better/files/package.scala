@@ -95,7 +95,7 @@ package object files {
 
     def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
 
-    def lines(implicit codec: Codec): Iterator[String] = newBufferedReader(codec).lineIterator //TODO: Use Files.lines
+    def lines(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).iterator()
 
     def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
     def `!`(implicit codec: Codec): String = contentAsString(codec)
@@ -524,11 +524,11 @@ package object files {
 
     def zip(files: File*)(destination: File): File = returning(destination) {
       for {
-        out <- new ZipOutputStream(destination.newOutputStream).autoClosed
+        output <- new ZipOutputStream(destination.newOutputStream).autoClosed
         input <- files
         file <- input.walk()
         name = input.parent relativize file
-      } out.add(file, name.toString)
+      } output.add(file, name.toString)
     }
   }
 
@@ -582,8 +582,6 @@ package object files {
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
-
-    def lineIterator: Iterator[String] = reader.autoClosedIterator(_.readLine())(_ != null)
   }
 
   implicit class WriterOps(writer: Writer) {
