@@ -314,8 +314,9 @@ You can write:
 for {
  reader <- file.bufferedReader    // returns ManagedResource[BufferedReader]
 } foo(reader)
+// or simply:
+file.bufferedReader.map(foo)
 ```
-Or simply: `file.bufferedReader.map(foo)`
 One another [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$CloseableOps):
 ```scala
 val eof = -1

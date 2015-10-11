@@ -25,7 +25,7 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
     def process(key: WatchKey) = {
       import scala.collection.JavaConversions._
       val root = key.watchable().asInstanceOf[Path]
-      key.pollEvents() foreach {event =>
+      key.pollEvents().filter(_ != EventType.OVERFLOW) foreach {event =>
         val relativePath = event.context().asInstanceOf[Path]
         self ! (event.kind() -> File(root resolve relativePath))
       }
@@ -50,7 +50,6 @@ class FileWatcher(file: File, maxDepth: Int = 0) extends akka.actor.Actor {
   }
 
   override def receive = {
-    // TODO: handle the overflow event here?
     case (event: FileWatcher.Event @unchecked, target: File) if (callbacks contains event) && (file.isDirectory || (file isSamePathAs target)) =>
       callbacks(event) foreach {f => f(event -> target)}
     case FileWatcher.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
