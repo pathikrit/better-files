@@ -43,7 +43,7 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
         if (reactTo(target)) {
           if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
             val depth = (file relativize target).getNameCount
-            watch(target, (maxDepth - depth) min 0) // auto-watch new files in a directory
+            watch(target, (maxDepth - depth) max 0) // auto-watch new files in a directory
           }
           repeat(event.count())(dispatch(event.kind(), target))
         }
