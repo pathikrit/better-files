@@ -33,17 +33,21 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
   }
 
   protected[this] def process(key: WatchKey) = {
-    import scala.collection.JavaConversions._
     val root = key.watchable().asInstanceOf[Path]
+    def reactTo(target: File) = file.isDirectory || (file isSamePathAs target) // if watching non-directory, don't react to siblings
+
+    import scala.collection.JavaConversions._
     key.pollEvents() foreach {
       case event: WatchEvent[Path] @unchecked =>
         val target = File(root resolve event.context())
-        val react = if (file.isDirectory) {
-          if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) watch(target, maxDepth)   //TODO: correct depth // auto-watch new files in a directory
-          true
-        } else file isSamePathAs target  // if watching non-directory, don't react to siblings
-        if (react) repeat(event.count())(dispatch(event.kind(), target))
-      case event => if (file.isDirectory || (file isSamePathAs root)) onUnknownEvent(event, root)
+        if (reactTo(target)) {
+          if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+            val depth = (file relativize target).getNameCount
+            watch(target, (maxDepth - depth) min 0) // auto-watch new files in a directory
+          }
+          repeat(event.count())(dispatch(event.kind(), target))
+        }
+      case event => if (reactTo(root)) onUnknownEvent(event, root)
     }
     key.reset()
   }
@@ -56,6 +60,13 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
     aFile.parent.path.register(service, FileMonitor.allEvents: _*)
   }
 
+  /**
+   * Dispatch a StandardWatchEventKind to an appropriate callback
+   * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
+   *
+   * @param eventType
+   * @param file
+   */
   def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
     case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
     case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)

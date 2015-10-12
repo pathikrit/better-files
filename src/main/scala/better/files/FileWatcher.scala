@@ -11,10 +11,9 @@ import akka.actor
  */
 class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth) with actor.Actor {
   import FileWatcher._
-
   protected[this] val callbacks = newMultiMap[Event, Callback]
 
-  def this(file: File, recursive: Boolean) = this(file, if (recursive) Int.MaxValue else 0)
+  def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
   override def dispatch(event: Event, file: File) = self ! Message.NewEvent(event, file)
   override def onException(exception: Throwable) = self ! actor.Status.Failure(exception)
@@ -31,8 +30,10 @@ class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth)
 
 object FileWatcher {
   import java.nio.file.{Path, WatchEvent}
+
   type Event = WatchEvent.Kind[Path]
   type Callback = PartialFunction[(Event, File), Unit]
+
   sealed trait Message
   object Message {
     case class NewEvent(event: Event, file: File) extends Message

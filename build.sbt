@@ -1,5 +1,5 @@
 name := "better-files"
-version := "2.12.0-SNAPSHOT"
+version := "2.12.1-SNAPSHOT"
 description := "Scala wrapper for Java files"
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 organization := "com.github.pathikrit"
@@ -19,7 +19,7 @@ scalacOptions ++= Seq(  //copied from https://tpolecat.github.io/2014/04/11/scal
   "-Xlint",
   "-Yno-adapted-args",
   "-Ywarn-dead-code",
-  "-Ywarn-numeric-widen",
+  //"-Ywarn-numeric-widen",     // issue in 2.10
   //"-Ywarn-value-discard",
   //"-Ywarn-unused-import",     // 2.11 only
   "-Xfuture"
