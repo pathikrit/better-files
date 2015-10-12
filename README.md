@@ -390,8 +390,8 @@ val watcher: java.nio.file.WatchKey = myDir.newWatchKey(Events.ENTRY_CREATE, Eve
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),
-does not easily allow [watching nested directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
-and nor does it easily allow [watching non-directories](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
+does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
+and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
 `better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L70):
 ```scala
@@ -405,6 +405,7 @@ watcher.start()
 `better-files` also provides a powerful yet concise [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
+import java.nio.file.{StandardWatchEventKinds => Events}
 import akka.actor.{ActorRef, ActorSystem}
 implicit val system = ActorSystem("mySystem")
 
