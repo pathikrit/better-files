@@ -402,10 +402,21 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 watcher.start()
 ```
+Sometimes, instead of overwriting each of the 3 methods above, it is more convenient to override the dispatcher itself:
+```scala
+import java.nio.file.{StandardWatchEventKinds => Events}
+new FileMonitor(myDir, recursive = true) {
+  override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
+    case Events.ENTRY_CREATE => println(s"$file got created")
+    case Events.ENTRY_MODIFY => println(s"$file got modified")
+    case Events.ENTRY_DELETE => println(s"$file got deleted")
+  }
+}
+```
+
 `better-files` also provides a powerful yet concise [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
-import java.nio.file.{StandardWatchEventKinds => Events}
 import akka.actor.{ActorRef, ActorSystem}
 implicit val system = ActorSystem("mySystem")
 

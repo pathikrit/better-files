@@ -265,6 +265,15 @@ package object files {
     def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
     def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
 
+    /**
+     * This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
+     * @see isOwnerReadable
+     * @return
+     */
+    def isReadable: Boolean = toJava.canRead
+    def isWriteable: Boolean = toJava.canWrite
+    def isExecutable: Boolean = toJava.canExecute
+
     def attributes      : BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes])
     def posixAttributes : PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes])
     def dosAttributes   : DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes])
