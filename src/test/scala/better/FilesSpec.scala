@@ -464,7 +464,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     log.forall(_ contains file.name) shouldBe true
   }
 
-  ignore should "watch directories to configurable depth" in {
+  it should "watch directories to configurable depth" in {
     val dir = File.newTempDir()
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)
@@ -474,10 +474,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     }
     watcher.start()
 
+    sleep(5 seconds)
     (dir/"a"/"b"/"t1").touch().write("hello world"); sleep()
     (dir/"a"/"b"/"c"/"d"/"t1").touch().write("hello world"); sleep()
     sleep(10 seconds)
 
-    log.size shouldEqual 1
+    withClue(log) {
+      log.size shouldEqual 1
+    }
   }
 }

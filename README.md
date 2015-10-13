@@ -384,13 +384,13 @@ val pets = file.newScanner().iterator[Animal]
 ### File Watchers
 Vanilla Java watchers:
 ```scala
-import java.nio.file.{StandardWatchEventKinds => Events}
+import java.nio.file.{StandardWatchEventKinds => EventType}
 val service: java.nio.file.WatchService = myDir.newWatchService
-val watcher: java.nio.file.WatchKey = myDir.newWatchKey(Events.ENTRY_CREATE, Events.ENTRY_DELETE)
+val watcher: java.nio.file.WatchKey = myDir.newWatchKey(EventType.ENTRY_CREATE, EventType.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),
-does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
+does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
 `better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L70):
@@ -404,12 +404,13 @@ watcher.start()
 ```
 Sometimes, instead of overwriting each of the 3 methods above, it is more convenient to override the dispatcher itself:
 ```scala
-import java.nio.file.{StandardWatchEventKinds => Events}
-new FileMonitor(myDir, recursive = true) {
+import java.nio.file.{StandardWatchEventKinds => EventType, WatchEvent}
+
+val watcher = new FileMonitor(myDir, recursive = true) {
   override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
-    case Events.ENTRY_CREATE => println(s"$file got created")
-    case Events.ENTRY_MODIFY => println(s"$file got modified")
-    case Events.ENTRY_DELETE => println(s"$file got deleted")
+    case EventType.ENTRY_CREATE => println(s"$file got created")
+    case EventType.ENTRY_MODIFY => println(s"$file got modified")
+    case EventType.ENTRY_DELETE => println(s"$file got deleted")
   }
 }
 ```
@@ -423,13 +424,13 @@ implicit val system = ActorSystem("mySystem")
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
-watcher ! on(Events.ENTRY_DELETE) {    
+watcher ! on(EventType.ENTRY_DELETE) {    
   case file if file.isDirectory => println(s"$file got deleted") 
 }
 
 // watch for multiple events
-watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   
-  case (Events.ENTRY_CREATE, file) => println(s"$file got created")
-  case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
+watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {   
+  case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
+  case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
