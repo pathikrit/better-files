@@ -1,11 +1,12 @@
 package better
 
-import akka.actor._
+import akka.actor.{ActorRef, ActorSystem, Props}
 
-import better.files._
+import better.files.File
 
 package object files {
   import FileWatcher._
+
   implicit class FileWatcherOps(file: File) {
     def watcherProps(recursive: Boolean): Props = Props(new FileWatcher(file, recursive))
 

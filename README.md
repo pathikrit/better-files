@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
 ## Tutorial
   0. [Instantiation](#instantiation)

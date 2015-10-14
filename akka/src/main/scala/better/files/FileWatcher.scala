@@ -2,7 +2,7 @@ package better.files
 
 import akka.actor
 
-import better.files._
+import better.files.{File, FileMonitor}
 
 /**
  * An actor that can watch a file or a directory
@@ -11,7 +11,7 @@ import better.files._
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth) with actor.Actor {
+class FileWatcher(file: better.files.File, maxDepth: Int) extends FileMonitor(file, maxDepth) with actor.Actor {
   import FileWatcher._
   protected[this] val callbacks = newMultiMap[Event, Callback]
 
