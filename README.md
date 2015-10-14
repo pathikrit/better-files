@@ -1,4 +1,5 @@
-# better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
+# better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Scaladoc][scaladocImg]][scaladocLink]
+ [![Gitter][gitterImg]][gitterLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
@@ -18,12 +19,11 @@
   0. [Scanner] (#scanner)
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
+  0. [Test](#tests)
 
-## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
+## [Tests](core/src/test/scala/better/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
 
-## [Tests](src/test/scala/better/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
-
-## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
+## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
@@ -50,6 +50,10 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
+[scaladocImg]: http://img.shields.io/:docs-Scaladoc-orange.svg
+[scaladocLink]: http://pathikrit.github.io/better-files/latest/api
+
+[repoSizeImg]: https://reposs.herokuapp.com/?path=pathikrit/better-files
 --- 
 ### Instantiation 
 The following are all equivalent:
@@ -440,5 +444,8 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
 ```
 This is available as a stand-alone module that depends on akka:
 ```scala
-libraryDependencies += "com.github.pathikrit" %% "better-files-akka" % version
+libraryDependencies ++= Seq(
+  "com.github.pathikrit" %% "better-files-akka" % version,
+  "com.typesafe.akka" %% "akka-actor" % "2.3.14"
+)
 ```

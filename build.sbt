@@ -46,6 +46,7 @@ lazy val akka = (project in file("akka"))
   .dependsOn(core)
 
 site.settings
+SiteKeys.siteSourceDirectory := file("site")
 ghpages.settings
 git.remoteRepo := "git@github.com:pathikrit/better-files.git"
 site.includeScaladoc()
