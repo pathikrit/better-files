@@ -1,7 +1,8 @@
 package better.files
 
 import akka.actor
-import better.files.File
+
+import better.files._
 
 /**
  * An actor that can watch a file or a directory
@@ -33,7 +34,6 @@ object FileWatcher {
   import java.nio.file.{Path, WatchEvent}
   type Event = WatchEvent.Kind[Path]
   type Callback = PartialFunction[(Event, File), Unit]
-
   sealed trait Message
   object Message {
     case class NewEvent(event: Event, file: File) extends Message

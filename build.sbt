@@ -30,14 +30,14 @@ lazy val commonSettings = Seq(
 )
 
 lazy val core = (project in file("core"))
-  .settings(commonSettings : _*)
+  .settings(commonSettings: _*)
   .settings(
     name := "better-files",
     description := "Simple, safe and intuitive I/O in Scala"
   )
 
 lazy val akka = (project in file("akka"))
-  .settings(commonSettings : _*)
+  .settings(commonSettings: _*)
   .settings(
     name := "better-files-akka",
     description := "Reactive file watchers",

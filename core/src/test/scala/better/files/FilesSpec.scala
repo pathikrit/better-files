@@ -111,13 +111,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    ("src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
-    ("src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
-    ls("src"/"test") should have length 1
-    ("src"/"test").walk(maxDepth = 1) should have length 2
-    ("src"/"test").walk(maxDepth = 0) should have length 1
-    ("src"/"test").walk() should have length (("src"/"test").listRecursively.length + 1L)
-    ls_r("src"/"test") should have length 3
+    ("core"/"src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
+    ("core"/"src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
+    ls("core"/"src"/"test") should have length 1
+    ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
+    ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
+    ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
+    ls_r("core"/"src"/"test") should have length 4
   }
 
   it should "support names/extensions" in {
@@ -420,6 +420,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "watch directories to configurable depth" in {
     val dir = File.newTempDir()
+    (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)
 
