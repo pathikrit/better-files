@@ -16,7 +16,8 @@
   0. [Zip/Unzip](#zip-apis)
   0. [Automatic Resource Management](#lightweight-arm)
   0. [Scanner] (#scanner)
-  0. [File Watchers](#file-watchers)
+  0. [File Monitoring](#file-monitoring)
+  0. [Reactive File Watchers](#reactive-file-watchers)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -381,7 +382,7 @@ implicit val animalParser: Scannable[Animal] = new Scannable[Animal] {
 val pets = file.newScanner().iterator[Animal]
 ```
 
-### File Watchers
+### File Monitoring
 Vanilla Java watchers:
 ```scala
 import java.nio.file.{StandardWatchEventKinds => EventType}
@@ -415,7 +416,8 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 ```
 
-We can wrap the above to create a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/package.scala) 
+### Reactive File Watcher
+We can wrap the above to create a powerful yet concise [reactive file watchers](akka/src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
@@ -435,4 +437,8 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
   case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
+```
+This is available as a stand-alone module that depends on akka:
+```scala
+libraryDependencies += "com.github.pathikrit" %% "better-files-akka" % version
 ```
