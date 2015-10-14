@@ -9,8 +9,7 @@ import scala.language.postfixOps
 import scala.util.Try
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-
-  def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
+  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _

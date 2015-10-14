@@ -2,21 +2,16 @@ package better.files
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
-import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file._, attribute._
-import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
-import java.util.stream.{Stream => JStream}
-import java.util.zip._
+import java.util.zip.ZipFile
 import javax.xml.bind.DatatypeConverter
 
-import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.util.Properties
 
 /**
  * Scala wrapper around java.nio.files.Path

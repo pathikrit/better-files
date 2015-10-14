@@ -1,17 +1,12 @@
 package better
 
-import java.io.{File => JFile, FileSystem => JFileSystem, _}
-import java.net.URI
+import java.io.{File => JFile, _}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
-import java.nio.file._, attribute._
 import java.nio.charset.Charset
-import java.security.MessageDigest
-import java.time.Instant
-import java.util.function.Predicate
+import java.nio.file.{Path, FileSystems}
 import java.util.stream.{Stream => JStream}
-import java.util.zip._
-import javax.xml.bind.DatatypeConverter
+import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._

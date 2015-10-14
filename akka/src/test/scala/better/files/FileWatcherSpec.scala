@@ -5,9 +5,10 @@ import better.files._, Cmds._
 import org.scalatest._
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 class FileWatcherSpec extends FlatSpec with Matchers {
-  def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
+  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
   "file watcher" should "watch directories" in {
     val dir = File.newTempDir()
