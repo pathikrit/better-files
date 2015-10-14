@@ -415,10 +415,12 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 ```
 
-`better-files` also provides a powerful yet concise [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
+We can wrap the above to create a powerful yet concise [reactive file watcher](src/test/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
+import better.files.FileWatcher._
+
 implicit val system = ActorSystem("mySystem")
 
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)

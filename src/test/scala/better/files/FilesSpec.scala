@@ -1,6 +1,6 @@
-package better
+package better.files
 
-import better.files._, Cmds._
+import Cmds._
 
 import org.scalatest._
 
@@ -399,6 +399,8 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     }
     /***************************************************************************/
     import java.nio.file.{StandardWatchEventKinds => Events}
+    import FileWatcher._
+
     import akka.actor.{ActorRef, ActorSystem}
     implicit val system = ActorSystem()
 

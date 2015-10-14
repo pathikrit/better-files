@@ -13,11 +13,8 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
-import akka.actor.{Props, ActorRef, ActorSystem}
-
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
-import scala.collection.mutable
 import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
@@ -169,10 +166,6 @@ package object files {
     def watchService: ManagedResource[WatchService] = newWatchService.autoClosed
 
     def newWatchKey(events: WatchEvent.Kind[_]*): WatchKey = path.register(newWatchService, events.toArray)
-
-    def watcherProps(recursive: Boolean): Props = Props(new FileWatcher(this, recursive))
-
-    def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef = system.actorOf(watcherProps(recursive))
 
     def digest(algorithm: String): Array[Byte] = {
       val digestor = MessageDigest.getInstance(algorithm)
@@ -672,17 +665,10 @@ package object files {
   private[files] def pathToFile(path: Path): File = path
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
 
-  def when(events: FileWatcher.Event*)(callback: FileWatcher.Callback) = FileWatcher.Message.RegisterCallback(events.distinct, callback)
-
-  def on(event: FileWatcher.Event)(callback: (File => Unit)) = when(event){case (`event`, file) => callback(file)}
-
-  def stop(event: FileWatcher.Event, callback: FileWatcher.Callback) = FileWatcher.Message.RemoveCallback(event, callback)
-
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
   @inline private[files] def repeat[A](n: Int)(f: => A): Seq[A] = (1 to n).map(_ => f)
   @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
-  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
   private[files] val eof = -1
 }
