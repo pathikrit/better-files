@@ -11,6 +11,7 @@ test:
   override:
     - sbt +clean +coverage +test
   post:
+    #- cd core/
     - cp -r target/scala-2.10/ $CIRCLE_ARTIFACTS
     - bash <(curl -s https://codecov.io/bash)
     - git config --global user.email "pathikritbhowmick@msn.com"

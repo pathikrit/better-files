@@ -10,6 +10,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7"),
   crossVersion := CrossVersion.binary,
+  autoAPIMappings := true,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions ++= Seq(  //copied from https://tpolecat.github.io/2014/04/11/scalac-flags.html
     "-deprecation",
@@ -44,6 +45,11 @@ lazy val akka = (project in file("akka"))
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
   )
   .dependsOn(core)
+
+//lazy val root = (project in file("."))
+//  .settings(commonSettings: _*)
+//  .settings(unidocSettings: _*)
+//  .aggregate(core, akka)
 
 site.settings
 SiteKeys.siteSourceDirectory := file("site")
