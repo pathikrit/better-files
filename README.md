@@ -17,7 +17,7 @@
   0. [Automatic Resource Management](#lightweight-arm)
   0. [Scanner] (#scanner)
   0. [File Monitoring](#file-monitoring)
-  0. [Reactive File Watchers](#reactive-file-watchers)
+  0. [Reactive File Watcher](#akka-file-watcher)
 
 ## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
 
@@ -416,8 +416,8 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 ```
 
-### Reactive File Watcher
-We can wrap the above to create a powerful yet concise [reactive file watchers](akka/src/main/scala/better/files/FileWatcher.scala) 
+### Akka File Watcher
+`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}

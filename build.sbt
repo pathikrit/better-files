@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.12.2-SNAPSHOT",
+  version := "2.13.0-SNAPSHOT",
   licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
   organization := "com.github.pathikrit",
   homepage := Some(url("https://github.com/pathikrit/better-files")),

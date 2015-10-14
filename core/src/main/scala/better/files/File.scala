@@ -293,7 +293,7 @@ class File(private[this] val _path: Path) {
       if (isDirectory) list.foreach(_.delete(ignoreIOExceptions))
       Files.delete(path)
     } catch {
-      case e: IOException if ignoreIOExceptions => e.printStackTrace() //swallow
+      case e: IOException if ignoreIOExceptions => //e.printStackTrace() //swallow
     }
   }
 
