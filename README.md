@@ -1,6 +1,6 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
 ## Tutorial
   0. [Instantiation](#instantiation)
@@ -331,7 +331,7 @@ Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/uti
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
 `better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
-that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
+that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
@@ -393,7 +393,7 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L70):
+`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/FileMonitor.scala#L70):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File) = println(s"$file got created")
@@ -415,7 +415,7 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 ```
 
-We can wrap the above to create a powerful yet concise [reactive file watcher](src/test/scala/better/files/FileWatcher.scala) 
+We can wrap the above to create a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/package.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}

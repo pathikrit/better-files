@@ -26,10 +26,7 @@ lazy val commonSettings = Seq(
     //"-Ywarn-unused-import",     // 2.11 only
     "-Xfuture"
   ),
-  libraryDependencies ++= Seq(
-    "com.typesafe.akka"   %% "akka-actor"    % "2.3.14"   % Test,
-    "org.scalatest"       %% "scalatest"     % "2.2.5"    % Test
-  )
+  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
 
 lazy val core = (project in file("core"))
@@ -38,6 +35,15 @@ lazy val core = (project in file("core"))
     name := "better-files",
     description := "Simple, safe and intuitive I/O in Scala"
   )
+
+lazy val akka = (project in file("akka"))
+  .settings(commonSettings : _*)
+  .settings(
+    name := "better-files-akka",
+    description := "Reactive file watchers",
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
+  )
+  .dependsOn(core)
 
 site.settings
 ghpages.settings
