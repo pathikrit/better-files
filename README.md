@@ -19,7 +19,9 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## [Tests](core/src/test/scala/better/files/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
+## Tests [![codecov][codecovImg]][codecovLink]
+* [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
+* [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
@@ -48,8 +50,8 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
-[scaladocImg]: http://img.shields.io/:docs-ScalaDoc-green.svg
-[scaladocLink]: http://pathikrit.github.io/better-files/latest/api
+[scaladocImg]: http://img.shields.io/:docs-ScalaDoc-blue.svg
+[scaladocLink]: http://pathikrit.github.io/better-files/latest/api#better.files.File
 
 [repoSizeImg]: https://reposs.herokuapp.com/?path=pathikrit/better-files
 --- 
@@ -423,7 +425,7 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
-import better.files.FileWatcher._
+import better.files._, FileWatcher._
 
 implicit val system = ActorSystem("mySystem")
 
@@ -440,10 +442,10 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
-This is available as a stand-alone module that depends on akka:
+This is available as a stand-alone module that depends on [akka](http://akka.io/docs/):
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "better-files-akka" % version,
-  "com.typesafe.akka" %% "akka-actor" % "2.3.14"
+  "com.github.pathikrit"  %% "better-files-akka"  % version,
+  "com.typesafe.akka"     %% "akka-actor"         % "2.3.14"
 )
 ```

@@ -46,13 +46,15 @@ lazy val akka = (project in file("akka"))
   )
   .dependsOn(core)
 
-//lazy val root = (project in file("."))
-//  .settings(commonSettings: _*)
-//  .settings(unidocSettings: _*)
-//  .aggregate(core, akka)
+lazy val root = (project in file("."))
+  .settings(commonSettings: _*)
+  .settings(unidocSettings: _*)
+  .settings(site.settings ++ ghpages.settings: _*)
+  .settings(
+    SiteKeys.siteSourceDirectory := file("site"),
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    git.remoteRepo := "git@github.com:pathikrit/better-files.git"
+  )
+  .aggregate(core, akka)
 
-site.settings
-SiteKeys.siteSourceDirectory := file("site")
-ghpages.settings
-git.remoteRepo := "git@github.com:pathikrit/better-files.git"
-site.includeScaladoc()
+//site.includeScaladoc()

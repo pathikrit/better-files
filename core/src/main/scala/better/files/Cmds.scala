@@ -3,6 +3,9 @@ package better.files
 import java.nio.file.attribute.PosixFilePermission
 import java.util.zip.ZipOutputStream
 
+/**
+ * Do file ops using a UNIX command line DSL
+ */
 object Cmds {
   def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
 
