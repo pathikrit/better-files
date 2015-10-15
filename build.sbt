@@ -11,7 +11,7 @@ lazy val commonSettings = Seq(
     "-feature",
     "-language:implicitConversions",
     "-unchecked",
-    //"-Xfatal-warnings",
+    "-Xfatal-warnings",
     "-Xlint",
     "-Yinline-warnings",
     "-Yno-adapted-args",
@@ -22,12 +22,6 @@ lazy val commonSettings = Seq(
     "-Xfuture"
   ),
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
-)
-
-import ScoverageSbtPlugin._
-lazy val scoverageSettings = Seq(
-  ScoverageKeys.coverageMinimum := 75,
-  ScoverageKeys.coverageFailOnMinimum := true
 )
 
 lazy val core = (project in file("core"))
@@ -51,15 +45,15 @@ lazy val akka = (project in file("akka"))
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(scoverageSettings: _*)
-  .settings(unidocSettings: _*)
-  .settings(site.settings ++ ghpages.settings: _*)
-  .settings(
-    autoAPIMappings := true,
-    SiteKeys.siteSourceDirectory := file("site"),
-    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-    git.remoteRepo := "git@github.com:pathikrit/better-files.git"
-  )
+  .settings(docSettings: _*)
   .aggregate(core, akka)
+
+lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
+  autoAPIMappings := true,
+  SiteKeys.siteSourceDirectory := file("site"),
+  site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+  git.remoteRepo := "git@github.com:pathikrit/better-files.git"
+)
 
 lazy val publishSettings = Seq(
   homepage := Some(url("https://github.com/pathikrit/better-files")),
@@ -90,4 +84,10 @@ lazy val publishSettings = Seq(
     username <- sys.props.get("SONATYPE_USERNAME")
     password <- sys.props.get("SONATYPE_PASSWORD")
   } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+)
+
+import ScoverageSbtPlugin._
+lazy val scoverageSettings = Seq(
+  ScoverageKeys.coverageMinimum := 75,
+  ScoverageKeys.coverageFailOnMinimum := true
 )

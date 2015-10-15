@@ -110,7 +110,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    ("core"/"src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
+    ("core"/"src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FileSpec.scala")
     ("core"/"src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
     ls("core"/"src"/"test") should have length 1
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
