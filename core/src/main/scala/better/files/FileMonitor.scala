@@ -55,9 +55,9 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
   protected[this] def watch(aFile: File, depth: Int): Unit = if (aFile.isDirectory) {
     for {
       f <- aFile.walk(depth) if f.isDirectory && f.exists
-    } f.path.register(service, FileMonitor.allEvents: _*)
+    } f.path.register(service, Defaults.events: _*)
   } else if (aFile.exists) {   // There is no way to watch a regular file; so watch its parent instead
-    aFile.parent.path.register(service, FileMonitor.allEvents: _*)
+    aFile.parent.path.register(service, Defaults.events: _*)
   }
 
   /**
@@ -82,8 +82,4 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
   def onUnknownEvent(event: WatchEvent[_], root: File): Unit = {}
 
   def onException(exception: Throwable): Unit = {}
-}
-
-object FileMonitor {
-  private[FileMonitor] val allEvents = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
 }
