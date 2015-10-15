@@ -23,6 +23,8 @@ deployment:
       - git config --global user.name "circle-ci"
       - git config --global push.default simple
       - sbt ghpagesPushSite
-      #    - sbt coverageReport?
-      #    - sbt coverageAggregate
-      #    - sbt codacyCoverage
+      - sbt +publish
+      #sonatypeRelease
+      #- sbt coverageReport?
+      #- sbt coverageAggregate
+      #- sbt codacyCoverage

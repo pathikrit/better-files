@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.13.0-SNAPSHOT",
+  version := "2.13.0",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7"),
@@ -45,6 +45,11 @@ lazy val akka = (project in file("akka"))
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
+  .settings(
+    publish := (),
+    publishLocal := (),
+    publishArtifact := false
+  )
   .aggregate(core, akka)
 
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
@@ -63,6 +68,11 @@ lazy val publishSettings = Seq(
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishMavenStyle := true,
   publishArtifact in Test := false,
+  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
+  credentials ++= (for {
+    username <- sys.env.get("SONATYPE_USERNAME")
+    password <- sys.env.get("SONATYPE_PASSWORD")
+  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq,
   pomExtra :=
     <developers>
       <developer>
@@ -71,10 +81,4 @@ lazy val publishSettings = Seq(
         <url>http://github.com/pathikrit</url>
       </developer>
     </developers>
-  ,
-  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
-  credentials ++= (for {
-    username <- sys.env.get("SONATYPE_USERNAME")
-    password <- sys.env.get("SONATYPE_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
 )

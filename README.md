@@ -24,7 +24,10 @@ In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "better-files" % version
+libraryDependencies ++= Seq(
+  "com.github.pathikrit"  %% "better-files"       % version,
+  "com.github.pathikrit"  %% "better-files-akka"  % version   // only required for akka based file monitor
+)
 ```
 Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 
@@ -441,11 +444,4 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
   case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
-```
-This is available as a stand-alone module that depends on [akka](http://akka.io/docs/):
-```scala
-libraryDependencies ++= Seq(
-  "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.3.14"
-)
 ```
