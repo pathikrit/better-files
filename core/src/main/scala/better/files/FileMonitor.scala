@@ -39,7 +39,7 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
     import scala.collection.JavaConversions._
     key.pollEvents() foreach {
       case event: WatchEvent[Path] @unchecked =>
-        val target = File(root resolve event.context())
+        val target: File = root resolve event.context()
         if (reactTo(target)) {
           if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
             val depth = (file relativize target).getNameCount

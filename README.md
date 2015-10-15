@@ -1,8 +1,8 @@
 # better-files [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/package.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
-## Tutorial
+## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)
   0. [Streams and Codecs](#streams-and-codecs)
@@ -16,13 +16,12 @@
   0. [Zip/Unzip](#zip-apis)
   0. [Automatic Resource Management](#lightweight-arm)
   0. [Scanner] (#scanner)
-  0. [File Watchers](#file-watchers)
+  0. [File Monitoring](#file-monitoring)
+  0. [Reactive File Watcher](#akka-file-watcher)
 
-## [ScalaDoc](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$File)
+## [Tests](core/src/test/scala/better/files/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
 
-## [Tests](src/test/scala/better/FilesSpec.scala) [![codecov][codecovImg]][codecovLink]
-
-## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
+## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
@@ -49,6 +48,10 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
+[scaladocImg]: http://img.shields.io/:docs-ScalaDoc-green.svg
+[scaladocLink]: http://pathikrit.github.io/better-files/latest/api
+
+[repoSizeImg]: https://reposs.herokuapp.com/?path=pathikrit/better-files
 --- 
 ### Instantiation 
 The following are all equivalent:
@@ -331,7 +334,7 @@ Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/uti
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
 `better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
-that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
+that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
@@ -381,19 +384,19 @@ implicit val animalParser: Scannable[Animal] = new Scannable[Animal] {
 val pets = file.newScanner().iterator[Animal]
 ```
 
-### File Watchers
+### File Monitoring
 Vanilla Java watchers:
 ```scala
-import java.nio.file.{StandardWatchEventKinds => Events}
+import java.nio.file.{StandardWatchEventKinds => EventType}
 val service: java.nio.file.WatchService = myDir.newWatchService
-val watcher: java.nio.file.WatchKey = myDir.newWatchKey(Events.ENTRY_CREATE, Events.ENTRY_DELETE)
+val watcher: java.nio.file.WatchKey = myDir.newWatchKey(EventType.ENTRY_CREATE, EventType.ENTRY_DELETE)
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),
-does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
+does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/FileMonitor.scala#L70):
+`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/FileMonitor.scala#L70):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File) = println(s"$file got created")
@@ -404,32 +407,43 @@ watcher.start()
 ```
 Sometimes, instead of overwriting each of the 3 methods above, it is more convenient to override the dispatcher itself:
 ```scala
-import java.nio.file.{StandardWatchEventKinds => Events}
-new FileMonitor(myDir, recursive = true) {
+import java.nio.file.{StandardWatchEventKinds => EventType, WatchEvent}
+
+val watcher = new FileMonitor(myDir, recursive = true) {
   override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
-    case Events.ENTRY_CREATE => println(s"$file got created")
-    case Events.ENTRY_MODIFY => println(s"$file got modified")
-    case Events.ENTRY_DELETE => println(s"$file got deleted")
+    case EventType.ENTRY_CREATE => println(s"$file got created")
+    case EventType.ENTRY_MODIFY => println(s"$file got modified")
+    case EventType.ENTRY_DELETE => println(s"$file got deleted")
   }
 }
 ```
 
-`better-files` also provides a powerful yet concise [reactive file watcher](src/main/scala/better/files/FileWatcher.scala) 
+### Akka File Watcher
+`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
+import better.files.FileWatcher._
+
 implicit val system = ActorSystem("mySystem")
 
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
-watcher ! on(Events.ENTRY_DELETE) {    
+watcher ! on(EventType.ENTRY_DELETE) {    
   case file if file.isDirectory => println(s"$file got deleted") 
 }
 
 // watch for multiple events
-watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   
-  case (Events.ENTRY_CREATE, file) => println(s"$file got created")
-  case (Events.ENTRY_MODIFY, file) => println(s"$file got modified")
+watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {   
+  case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
+  case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
+```
+This is available as a stand-alone module that depends on akka:
+```scala
+libraryDependencies ++= Seq(
+  "com.github.pathikrit" %% "better-files-akka" % version,
+  "com.typesafe.akka" %% "akka-actor" % "2.3.14"
+)
 ```

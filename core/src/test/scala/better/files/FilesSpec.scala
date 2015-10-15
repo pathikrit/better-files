@@ -1,6 +1,6 @@
-package better
+package better.files
 
-import better.files._, Cmds._
+import Cmds._
 
 import org.scalatest._
 
@@ -9,8 +9,7 @@ import scala.language.postfixOps
 import scala.util.Try
 
 class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-
-  def sleep(t: FiniteDuration =  2.second) = Thread.sleep(t.toMillis)
+  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
@@ -111,13 +110,13 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    ("src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
-    ("src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
-    ls("src"/"test") should have length 1
-    ("src"/"test").walk(maxDepth = 1) should have length 2
-    ("src"/"test").walk(maxDepth = 0) should have length 1
-    ("src"/"test").walk() should have length (("src"/"test").listRecursively.length + 1L)
-    ls_r("src"/"test") should have length 3
+    ("core"/"src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FilesSpec.scala")
+    ("core"/"src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
+    ls("core"/"src"/"test") should have length 1
+    ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
+    ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
+    ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
+    ls_r("core"/"src"/"test") should have length 4
   }
 
   it should "support names/extensions" in {
@@ -387,53 +386,7 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     file.newScanner().iterator[Animal].toSeq should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
   }
 
-  "file watcher" should "watch directories" in {
-    val dir = File.newTempDir()
-    (dir / "a" / "b" / "c.txt").createIfNotExists()
-
-    var log = List.empty[String]
-    def output(file: File, event: String) = synchronized {
-      val msg = s"${dir.path relativize file.path} got $event"
-      println(msg)
-      log = msg :: log
-    }
-    /***************************************************************************/
-    import java.nio.file.{StandardWatchEventKinds => Events}
-    import akka.actor.{ActorRef, ActorSystem}
-    implicit val system = ActorSystem()
-
-    val watcher: ActorRef = dir.newWatcher(recursive = true)
-
-    watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   // watch for multiple events
-      case (Events.ENTRY_CREATE, file) => output(file, "created")
-      case (Events.ENTRY_MODIFY, file) => output(file, "modified")
-    }
-
-    watcher ! on(Events.ENTRY_DELETE) {    // register partial function for single event
-      case file => output(file, "deleted")
-    }
-    /***************************************************************************/
-    sleep(5 seconds)
-    (dir / "a" / "b" / "c.txt").write("Hello world"); sleep()
-    rm(dir / "a" / "b"); sleep()
-    mkdir(dir / "d"); sleep()
-    touch(dir / "d" / "e.txt"); sleep()
-    mkdirs(dir / "d" / "f" / "g"); sleep()
-    touch(dir / "d" / "f" / "g" / "e.txt"); sleep()
-    (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
-    sleep(10 seconds)
-
-    val expectedEvents = List(
-      "a/e.txt got created", "d/f/g/e.txt got deleted", "d/f/g/e.txt got modified", "d/f/g/e.txt got created", "d/f got created",
-      "d/e.txt got modified", "d/e.txt got created", "d got created", "a/b got deleted", "a/b/c.txt got deleted", "a/b/c.txt got modified"
-    )
-
-    expectedEvents diff log shouldBe empty
-
-    system.shutdown()
-  }
-
-  it should "watch single files" in {
+  "file watcher" should "watch single files" in {
     val file = File.newTemp(suffix = ".txt").write("Hello world")
 
     var log = List.empty[String]
@@ -466,18 +419,22 @@ class FilesSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   ignore should "watch directories to configurable depth" in {
     val dir = File.newTempDir()
+    (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)
 
     val watcher = new FileMonitor(dir, maxDepth = 2) {
-      override def dispatch(eventType: FileWatcher.Event, file: File) = output(s"$eventType happened on ${file.name}")
+      override def onCreate(file: File) = output(s"Create happened on ${file.name}")
     }
     watcher.start()
 
+    sleep(5 seconds)
     (dir/"a"/"b"/"t1").touch().write("hello world"); sleep()
     (dir/"a"/"b"/"c"/"d"/"t1").touch().write("hello world"); sleep()
     sleep(10 seconds)
 
-    log.size shouldEqual 1
+    withClue(log) {
+      log.size shouldEqual 1
+    }
   }
 }

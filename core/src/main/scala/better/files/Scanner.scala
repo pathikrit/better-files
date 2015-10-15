@@ -124,23 +124,14 @@ object Scannable {
   }
 
   implicit val scanBool: Scannable[Boolean] = Scannable(_.toBoolean)
-
   implicit val scanByte: Scannable[Byte] = Scannable(_.toByte)
-
   implicit val scanShort: Scannable[Short] = Scannable(_.toShort)
-
   implicit val scanInt: Scannable[Int]= Scannable(_.toInt)
-
   implicit val scanLong: Scannable[Long] = Scannable(_.toLong)
-
   implicit val scanBigInt: Scannable[BigInt] = Scannable(BigInt(_))
-
   implicit val scanFloat: Scannable[Float] = Scannable(_.toFloat)
-
   implicit val scanDouble: Scannable[Double] = Scannable(_.toDouble)
-
   implicit val scanBigDecimal: Scannable[BigDecimal] = Scannable(BigDecimal(_))
-
   implicit val scanString: Scannable[String] = Scannable(identity)
 
   def fromPattern(pattern: String) = Scannable.from((x: String) => when(x matches pattern)(x))

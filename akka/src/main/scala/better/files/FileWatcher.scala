@@ -1,6 +1,6 @@
 package better.files
 
-import akka.actor
+import akka.actor._
 
 /**
  * An actor that can watch a file or a directory
@@ -9,14 +9,14 @@ import akka.actor
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth) with actor.Actor {
+class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth) with Actor {
   import FileWatcher._
   protected[this] val callbacks = newMultiMap[Event, Callback]
 
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
   override def dispatch(event: Event, file: File) = self ! Message.NewEvent(event, file)
-  override def onException(exception: Throwable) = self ! actor.Status.Failure(exception)
+  override def onException(exception: Throwable) = self ! Status.Failure(exception)
 
   override def preStart() = super.start()
   override def postStop() = super.interrupt()
@@ -30,7 +30,6 @@ class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth)
 
 object FileWatcher {
   import java.nio.file.{Path, WatchEvent}
-
   type Event = WatchEvent.Kind[Path]
   type Callback = PartialFunction[(Event, File), Unit]
 
@@ -40,4 +39,19 @@ object FileWatcher {
     case class RegisterCallback(events: Seq[Event], callback: Callback) extends Message
     case class RemoveCallback(event: Event, callback: Callback) extends Message
   }
+
+  implicit class FileWatcherOps(file: File) {
+    def watcherProps(recursive: Boolean): Props = Props(new FileWatcher(file, recursive))
+
+    def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef = system.actorOf(watcherProps(recursive))
+  }
+
+  def when(events: Event*)(callback: Callback) = Message.RegisterCallback(events.distinct, callback)
+
+  def on(event: Event)(callback: File => Unit) = when(event){case (`event`, file) => callback(file)}
+
+  def stop(event: Event, callback: Callback) = Message.RemoveCallback(event, callback)
+
+  import scala.collection.mutable
+  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 }
