@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.13.0",
+  version := "2.13.0-SNAPSHOT",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7"),
@@ -44,7 +44,6 @@ lazy val akka = (project in file("akka"))
 
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
-  .settings(scoverageSettings: _*)
   .settings(docSettings: _*)
   .aggregate(core, akka)
 
@@ -73,21 +72,9 @@ lazy val publishSettings = Seq(
       </developer>
     </developers>
   ,
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("Snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("Releases" at nexus + "service/local/staging/deploy/maven2")
-  },
+  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
   credentials ++= (for {
-    username <- sys.props.get("SONATYPE_USERNAME")
-    password <- sys.props.get("SONATYPE_PASSWORD")
+    username <- sys.env.get("SONATYPE_USERNAME")
+    password <- sys.env.get("SONATYPE_PASSWORD")
   } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
-)
-
-import ScoverageSbtPlugin._
-lazy val scoverageSettings = Seq(
-  ScoverageKeys.coverageMinimum := 75,
-  ScoverageKeys.coverageFailOnMinimum := true
 )
