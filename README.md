@@ -220,7 +220,7 @@ Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
 ```
 
 ### UNIX DSL
-All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$Cmds$) reminiscent of the command line:
+All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/#better.files.Cmds$) reminiscent of the command line:
 ```scala
 import better.files_, Cmds._   // must import Cmds._ to bring in these utils
 cp(file1, file2)
