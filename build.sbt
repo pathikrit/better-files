@@ -30,6 +30,12 @@ lazy val commonSettings = Seq(
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
 
+import ScoverageSbtPlugin._
+lazy val scoverageSettings = Seq(
+  ScoverageKeys.coverageMinimum := 75,
+  ScoverageKeys.coverageFailOnMinimum := true
+)
+
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(
@@ -48,6 +54,7 @@ lazy val akka = (project in file("akka"))
 
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
+  .settings(scoverageSettings: _*)
   .settings(unidocSettings: _*)
   .settings(site.settings ++ ghpages.settings: _*)
   .settings(
@@ -56,5 +63,3 @@ lazy val root = (project in file("."))
     git.remoteRepo := "git@github.com:pathikrit/better-files.git"
   )
   .aggregate(core, akka)
-
-//site.includeScaladoc()

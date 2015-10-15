@@ -19,10 +19,6 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## Tests [![codecov][codecovImg]][codecovLink]
-* [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
-* [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
-
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
 ```scala
@@ -31,6 +27,10 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
 Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
+
+## Tests [![codecov][codecovImg]][codecovLink]
+* [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
+* [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
