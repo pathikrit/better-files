@@ -143,9 +143,9 @@ class File(private[this] val _path: Path) {
 
   def inputStream: ManagedResource[InputStream] = newInputStream.autoClosed
 
-  def newScanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
+  def newScanner(delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
 
-  def scanner(delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
+  def scanner(delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
   def newOutputStream: OutputStream = Files.newOutputStream(path)
 

@@ -18,7 +18,7 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
 
   def this(file: File, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec) = this(file.newBufferedReader(codec), delimiter, includeDelimiters)
 
-  def this(str: String, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
+  def this(str: String, delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   private[this] var _tokenizer: Option[PeekableStringTokenizer] = None
   private[this] var _nextLine: Option[String] = None
@@ -88,7 +88,7 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
   def close(): Unit = reader.close()
 }
 
-class PeekableStringTokenizer(s: String, delimiter: String = Scanner.defaultDelimiter, includeDelimiters: Boolean = false) extends StringTokenizer(s, delimiter, includeDelimiters) {
+class PeekableStringTokenizer(s: String, delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false) extends StringTokenizer(s, delimiter, includeDelimiters) {
   private[this] var next: Option[String] = None
   nextToken()
 
@@ -101,10 +101,6 @@ class PeekableStringTokenizer(s: String, delimiter: String = Scanner.defaultDeli
     next = when(super.hasMoreTokens)(super.nextToken())
     token.orNull
   }
-}
-
-object Scanner {
-  val defaultDelimiter = " \t\n\r\f"
 }
 
 /**

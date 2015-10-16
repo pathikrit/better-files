@@ -403,7 +403,7 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/FileMonitor.scala#L70):
+`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/FileMonitor.scala#L68):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File) = println(s"$file got created")
@@ -414,7 +414,7 @@ watcher.start()
 ```
 Sometimes, instead of overwriting each of the 3 methods above, it is more convenient to override the dispatcher itself:
 ```scala
-import java.nio.file.{StandardWatchEventKinds => EventType, WatchEvent}
+import java.nio.file.{Path, StandardWatchEventKinds => EventType, WatchEvent}
 
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
