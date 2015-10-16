@@ -55,10 +55,8 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
   protected[this] def watch(aFile: File, depth: Int): Unit = if (aFile.isDirectory) {
     for {
       f <- aFile.walk(depth) if f.isDirectory && f.exists
-    } f.path.register(service, Defaults.events: _*)
-  } else if (aFile.exists) {   // There is no way to watch a regular file; so watch its parent instead
-    aFile.parent.path.register(service, Defaults.events: _*)
-  }
+    } f.register(service)
+  } else if (aFile.exists) aFile.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
 
   /**
    * Dispatch a StandardWatchEventKind to an appropriate callback

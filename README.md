@@ -22,9 +22,13 @@
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)):
 ```scala
-libraryDependencies ++= Seq(
-  "com.github.pathikrit"  %% "better-files"       % version,
-  "com.github.pathikrit"  %% "better-files-akka"  % version   // only required for the akka based file monitor
+libraryDependencies += "com.github.pathikrit" %% "better-files" % version
+```
+To use the [Akka based file monitor](#akka-file-watcher), also add this:
+```scala
+libraryDependencies ++= Seq(  
+  "com.github.pathikrit"  %% "better-files-akka"  % version
+  "com.typesafe.akka"     %% "akka-actor"         % "2.3.14"
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
@@ -392,7 +396,7 @@ Vanilla Java watchers:
 ```scala
 import java.nio.file.{StandardWatchEventKinds => EventType}
 val service: java.nio.file.WatchService = myDir.newWatchService
-val watcher: java.nio.file.WatchKey = myDir.newWatchKey(EventType.ENTRY_CREATE, EventType.ENTRY_DELETE)
+myDir.register(service, events = Seq(EventType.ENTRY_CREATE, EventType.ENTRY_DELETE))
 ```
 The above APIs are [cumbersome to use](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#process) (involves a lot of type-casting and null-checking),
 are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/docs/api/java/nio/file/WatchKey.html),

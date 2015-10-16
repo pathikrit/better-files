@@ -159,7 +159,9 @@ class File(private[this] val _path: Path) {
 
   def watchService: ManagedResource[WatchService] = newWatchService.autoClosed
 
-  def newWatchKey(events: WatchEvent.Kind[_]*): WatchKey = path.register(newWatchService, events.toArray)
+  def register(service: WatchService, events: Seq[WatchEvent.Kind[_]] = Defaults.events): File = returning(this) {
+    path.register(service, events.toArray)
+  }
 
   def digest(algorithm: String): Array[Byte] = {
     val digestor = MessageDigest.getInstance(algorithm)
