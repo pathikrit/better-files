@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.13.0",
+  version := "2.13.0-SNAPSHOT",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.5", "2.11.7"),
@@ -37,7 +37,7 @@ lazy val akka = (project in file("akka"))
   .settings(publishSettings: _*)
   .settings(
     name := "better-files-akka",
-    description := "Reactive file watchers",
+    description := "Reactive file watcher using Akka actors",
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
   )
   .dependsOn(core)

@@ -20,16 +20,14 @@
   0. [Reactive File Watcher](#akka-file-watcher)
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
-In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://bintray.com/pathikrit/maven/better-files#files)):
+In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)):
 ```scala
-resolvers += Resolver.bintrayRepo("pathikrit", "maven")
-
 libraryDependencies ++= Seq(
   "com.github.pathikrit"  %% "better-files"       % version,
-  "com.github.pathikrit"  %% "better-files-akka"  % version   // only required for akka based file monitor
+  "com.github.pathikrit"  %% "better-files-akka"  % version   // only required for the akka based file monitor
 )
 ```
-Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
+Latest `version`: [![Maven][mavenImg]][mavenLink]
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
@@ -47,8 +45,8 @@ Latest `version`: [![Bintray][bintrayImg]][bintrayLink]
 [codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 
-[bintrayImg]: https://img.shields.io/bintray/v/pathikrit/maven/better-files.svg
-[bintrayLink]: https://bintray.com/pathikrit/maven/better-files
+[mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
+[mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
 
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files

@@ -24,7 +24,6 @@ deployment:
       - git config --global push.default simple
       - sbt ghpagesPushSite
       - sbt +publish
-      #sonatypeRelease
       #- sbt coverageReport?
       #- sbt coverageAggregate
       #- sbt codacyCoverage
