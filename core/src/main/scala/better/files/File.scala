@@ -19,7 +19,7 @@ import scala.io.{BufferedSource, Codec, Source}
 class File(private[this] val _path: Path) {
   val path = _path.normalize.toAbsolutePath
 
-  def fullPath: String = path.toString
+  def pathAsString: String = path.toString
 
   def toJava: JFile = path.toFile
 

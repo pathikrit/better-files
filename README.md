@@ -12,7 +12,7 @@
   0. [File system operations](#file-system-operations)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
-  0. [File comparison](#file-comparison)
+  0. [File equality and comparison](#file-comparison)
   0. [Zip/Unzip](#zip-apis)
   0. [Automatic Resource Management](#lightweight-arm)
   0. [Scanner] (#scanner)
