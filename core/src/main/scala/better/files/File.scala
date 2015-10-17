@@ -440,6 +440,11 @@ object File {
   def newTemp(prefix: String = "", suffix: String = ""): File = Files.createTempFile(prefix, suffix)
 
   def apply(path: String): File = Paths.get(path)
+
+  val orderBySize: Ordering[File] = Ordering.by(_.size)
+  val orderByName: Ordering[File] = Ordering.by(_.name)
+  val orderByDepth: Ordering[File] = Ordering.by(_.path.getNameCount)
+  val orderByDirectoriesFirst: Ordering[File] = Ordering.by{f: File => f.isDirectory}.reverse
 }
 
 object RegularFile {

@@ -149,6 +149,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     b2 isChildOf b2.parent shouldBe true
   }
 
+  it should "support sorting" in {
+    testRoot.list.toSeq.sorted(File.orderByName) should not be empty
+    testRoot.list.toSeq.max(File.orderBySize) should not be empty
+    testRoot.list.toSeq.min(File.orderByDepth) should not be empty
+    testRoot.list.toSeq.sorted(File.orderByDirectoriesFirst) should not be empty
+  }
+
   it must "have .size" in {
     fb.isEmpty shouldBe true
     t1.size shouldBe 0
