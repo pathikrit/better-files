@@ -36,6 +36,7 @@ Latest `version`: [![Maven][mavenImg]][mavenLink]
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
+* [Benchmarks](benchmarks/)
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files

@@ -57,8 +57,10 @@ lazy val benchmarks = (project in file("benchmarks"))
   )
   .dependsOn(core)
 
+import UnidocKeys._
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
   autoAPIMappings := true,
+  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
   SiteKeys.siteSourceDirectory := file("site"),
   site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
   git.remoteRepo := "git@github.com:pathikrit/better-files.git"

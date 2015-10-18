@@ -3,7 +3,7 @@ package better.files
 import java.io.BufferedReader
 
 object ScannerBenchmark extends App {
-  val file = (home / "Downloads" / "tmp.txt").createIfNotExists().clear()
+  val file = File.newTemp()
   val n = 1000
   repeat(n) {
     file.appendLine(-n to n mkString " ")
@@ -16,7 +16,7 @@ object ScannerBenchmark extends App {
     val ints = List.fill(2*n + 1)(scanner.nextInt())
     val line = scanner.nextLine()
     val words = IndexedSeq.fill(n)(scanner.next())
-    (ints, words)
+    (line, ints, words)
   }
 
   def profile[A](f: => A): (A, Long) = {
@@ -31,9 +31,9 @@ object ScannerBenchmark extends App {
     result
   }
 
-  val (r3, t3) = test(new JavaScanner(_))
   val (r1, t1) = test(new IterableScanner(_))
   val (r2, t2) = test(new IteratorScanner(_))
+  val (r3, t3) = test(new JavaScanner(_))
   //val (r4, t4) = test(new StreamingScanner(_))
 
   assert(r1 == r2)
@@ -42,10 +42,10 @@ object ScannerBenchmark extends App {
 
   println(s"""
     |File = $file
-    |Iterable  : $t1 ms
-    |Iterator  : $t2 ms
-    |Scanner   : $t3 ms
-    |Streamer  : t4 ms
+    |IterableScanner  : $t1 ms
+    |IteratorScanner  : $t2 ms
+    |JavaScanner      : $t3 ms
+    |StreamingScanner : t4 ms
    """.stripMargin
   )
 }

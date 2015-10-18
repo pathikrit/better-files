@@ -75,7 +75,6 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
 
 /**
  * Based on java.io.StreamTokenizer
- * @param reader
  */
 class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   import java.io.StreamTokenizer
