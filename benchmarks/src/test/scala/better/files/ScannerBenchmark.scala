@@ -11,11 +11,11 @@ object ScannerBenchmark extends App {
         .appendLine("world " * n)
   }
 
-  def run(scanner: AbstractScanner) = repeat(n) {
+  def run(scanner: AbstractScanner): Unit = repeat(n) {
     assert(scanner.hasNext)
     val ints = List.fill(2*n + 1)(scanner.nextInt())
-    val line = scanner.nextLine()
-    val words = IndexedSeq.fill(n)(scanner.next())
+    val line = "" //scanner.nextLine()
+    val words = IndexedSeq.fill(2*n)(scanner.next())
     (line, ints, words)
   }
 
@@ -24,28 +24,21 @@ object ScannerBenchmark extends App {
     (f, ((System.nanoTime() - t)/1e6).toLong)
   }
 
-  def test(f: BufferedReader => AbstractScanner) = {
-    val scanner = f(file.newBufferedReader)
-    val result = profile(run(scanner))
+  def test(scanner: AbstractScanner) = {
+    val (_, time) = profile(run(scanner))
     scanner.close()
-    result
+    println(s"${scanner.getClass.getSimpleName}\t\t\t: $time ms")
   }
 
-  val (r1, t1) = test(new IterableScanner(_))
-  val (r2, t2) = test(new IteratorScanner(_))
-  val (r3, t3) = test(new JavaScanner(_))
-  //val (r4, t4) = test(new StreamingScanner(_))
+  val r5 = test(new CharBufferScanner(file.newBufferedReader))
+  val r1 = test(new IterableScanner(file.newBufferedReader))
+  val r2 = test(new IteratorScanner(file.newBufferedReader))
+  val r3 = test(new JavaScanner(file.newBufferedReader))
+  val r4 = test(new StreamingScanner(file.newBufferedReader))
 
+  /*
   assert(r1 == r2)
   assert(r2 == r3)
-  //assert(r3 == r4)
-
-  println(s"""
-    |File = $file
-    |IterableScanner  : $t1 ms
-    |IteratorScanner  : $t2 ms
-    |JavaScanner      : $t3 ms
-    |StreamingScanner : t4 ms
-   """.stripMargin
-  )
+  assert(r3 == r4)
+  assert(r4 == r5)*/
 }

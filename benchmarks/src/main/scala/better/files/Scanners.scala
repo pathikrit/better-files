@@ -2,6 +2,8 @@ package better.files
 
 import java.io.BufferedReader
 
+import scala.annotation.tailrec
+
 /**
  * Base interface to test
  */
@@ -76,7 +78,7 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
 /**
  * Based on java.io.StreamTokenizer
  */
-class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.io.StreamTokenizer
   private[this] val in = new StreamTokenizer(reader)
 
@@ -85,10 +87,33 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) {
     in.nextToken()
     in.sval
   }
-  override def nextInt() = {
+  def nextDouble() = {
     in.nextToken()
-    in.nval.toInt
+    in.nval
   }
+  override def nextInt() = nextDouble().toInt
+  override def nextLine() = ???
+}
 
+/**
+ * Hand built custom scanner using a Char buffer
+ */
+class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+  private[this] var buffer = Array.ofDim[Char](1<<10)
+  override def hasNext = true
+  @tailrec final override def next() = {
+    var pos = 0
+    var c = reader.read().toChar
+    while(!c.isWhitespace) {
+      if (pos == buffer.length) {
+        buffer = java.util.Arrays.copyOf(buffer, 2*pos)
+      }
+      buffer(pos) = c
+      pos += 1
+      c = reader.read().toChar
+    }
+    if (pos == 0) next() else String.copyValueOf(buffer, 0, pos)
+  }
+  override def nextInt() = next().toInt
   override def nextLine() = ???
 }

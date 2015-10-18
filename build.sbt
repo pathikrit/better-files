@@ -53,6 +53,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(noPublishSettings: _*)
   .settings(
     name := "better-files-benchmarks",
+    javaOptions += "-Xmx2G",
     libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
   )
   .dependsOn(core)
