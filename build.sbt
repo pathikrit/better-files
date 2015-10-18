@@ -45,18 +45,29 @@ lazy val akka = (project in file("akka"))
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
-  .settings(
-    publish := (),
-    publishLocal := (),
-    publishArtifact := false
-  )
+  .settings(noPublishSettings: _*)
   .aggregate(core, akka)
+
+lazy val benchmarks = (project in file("benchmarks"))
+  .settings(commonSettings: _*)
+  .settings(noPublishSettings: _*)
+  .settings(
+    name := "better-files-benchmarks",
+    libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
+  )
+  .dependsOn(core)
 
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
   autoAPIMappings := true,
   SiteKeys.siteSourceDirectory := file("site"),
   site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
   git.remoteRepo := "git@github.com:pathikrit/better-files.git"
+)
+
+lazy val noPublishSettings = Seq(
+  publish := (),
+  publishLocal := (),
+  publishArtifact := false
 )
 
 lazy val publishSettings = Seq(
