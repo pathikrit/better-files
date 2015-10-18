@@ -334,7 +334,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     | 3   MSFT   39.10  true
     """.stripMargin
     val scanner: Scanner = data.newScanner().skipLines(lines = 2)
-
+    assert(scanner.lineNumber == 4)
     assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
     assert(scanner.peekToken == Some("1"))
     assert(scanner.next(pattern = "\\d+") == Some("1"))
@@ -345,12 +345,14 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.next[Double]() == Some(109.16))
     assert(scanner.next[Boolean]() == Some(false))
     assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
-
+    assert(scanner.lineNumber == 5)
     scanner.skipLine()
+    assert(scanner.lineNumber == 6)
     while(scanner.hasMoreTokens) {
       println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
     }
 
+    scanner.lineNumber shouldBe 7
     scanner.hasMoreTokens shouldBe false
     scanner.nextLine() shouldBe None
     scanner.peekToken shouldBe None

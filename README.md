@@ -348,7 +348,7 @@ Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/uti
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
 `better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
-that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, returns `Option`s whenever possible and lets the user mixin custom parsers:
+that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val data = (home / "Desktop" / "stocks.tsv") << s"""
 | id  Stock Price   Buy
@@ -359,7 +359,7 @@ val data = (home / "Desktop" / "stocks.tsv") << s"""
 """.stripMargin
 
 val scanner: Scanner = data.newScanner().skipLines(lines = 2)
-
+assert(scanner.lineNumber == 3)
 assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
 assert(scanner.peekToken == Some("1"))
 assert(scanner.next(pattern = "\\d+") == Some("1"))
@@ -370,8 +370,9 @@ assert(scanner.peek[Double] == Some(109.16))
 assert(scanner.next[Double]() == Some(109.16))
 assert(scanner.next[Boolean]() == Some(false))
 assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
-
+assert(scanner.lineNumber == 4)
 scanner.skipLine()
+assert(scanner.lineNumber == 5)
 while(scanner.hasNext) {
   println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
 }

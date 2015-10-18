@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{ByteArrayInputStream, InputStream, InputStreamReader, BufferedReader}
+import java.io.{ByteArrayInputStream, InputStream, InputStreamReader, BufferedReader, LineNumberReader}
 import java.util.StringTokenizer
 
 import scala.io.Codec
@@ -10,7 +10,8 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimiters: Boolean) {self =>
+class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimiters: Boolean) {self =>
+  def this(reader: BufferedReader, delimiter: String, includeDelimiters: Boolean) = this(new LineNumberReader(reader), delimiter, includeDelimiters)
 
   def this(inputStreamReader: InputStreamReader, delimiter: String, includeDelimiters: Boolean) = this(inputStreamReader.buffered, delimiter, includeDelimiters)
 
@@ -25,6 +26,8 @@ class Scanner(reader: BufferedReader, val delimiter: String, val includeDelimite
   nextLine()
 
   private[this] def tokenizer(): Option[PeekableStringTokenizer] = _tokenizer.find(_.hasMoreTokens) orElse nextLine().flatMap(_ => tokenizer())
+
+  def lineNumber = reader.getLineNumber
 
   def nextLine(): Option[String] = {
     val line = _nextLine
