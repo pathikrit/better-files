@@ -1,7 +1,5 @@
 package better.files
 
-import java.io.BufferedReader
-
 object ScannerBenchmark extends App {
   val file = File.newTemp()
   val n = 1000
@@ -35,10 +33,10 @@ object ScannerBenchmark extends App {
   val r2 = test(new IteratorScanner(file.newBufferedReader))
   val r3 = test(new JavaScanner(file.newBufferedReader))
   val r4 = test(new StreamingScanner(file.newBufferedReader))
-
   /*
   assert(r1 == r2)
   assert(r2 == r3)
   assert(r3 == r4)
-  assert(r4 == r5)*/
+  assert(r4 == r5)
+  */
 }

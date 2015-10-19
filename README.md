@@ -287,10 +287,11 @@ file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
 There are also various `Ordering[File]` included e.g.:
 ```scala
-myDir.list.toSeq.sorted(File.orderByName) 
-myDir.list.toSeq.max(File.orderBySize) 
-myDir.list.toSeq.min(File.orderByDepth) 
-myDir.list.toSeq.sorted(File.orderByDirectoriesFirst)
+myDir.list.toSeq.sorted(File.Order.byName) 
+myDir.list.toSeq.max(File.Order.bySize) 
+myDir.list.toSeq.min(File.Order.byDepth) 
+myDir.list.toSeq.max(File.Order.byModificationTime) 
+myDir.list.toSeq.sorted(File.Order.byDirectoriesFirst)
 ```
 
 ### Zip APIs

@@ -432,6 +432,8 @@ class File(private[this] val _path: Path) {
    * @return the zip file
    */
   def unzip(): File = unzipTo(destination = File.newTempDir(name))
+
+  //TODO: add features from https://github.com/sbt/io/blob/master/io/src/main/scala/sbt/io/IO.scala
 }
 
 object File {
@@ -441,10 +443,14 @@ object File {
 
   def apply(path: String): File = Paths.get(path)
 
-  val orderBySize: Ordering[File] = Ordering.by(_.size)
-  val orderByName: Ordering[File] = Ordering.by(_.name)
-  val orderByDepth: Ordering[File] = Ordering.by(_.path.getNameCount)
-  val orderByDirectoriesFirst: Ordering[File] = Ordering.by{f: File => f.isDirectory}.reverse
+  type Order = Ordering[File]
+  object Order {
+    val bySize: Order = Ordering.by(_.size)
+    val byName: Order = Ordering.by(_.name)
+    val byDepth: Order = Ordering.by(_.path.getNameCount)
+    val byModificationTime: Order = Ordering.by(_.lastModifiedTime)
+    val byDirectoriesFirst: Order = Ordering.by{f: File => f.isDirectory}.reverse
+  }
 }
 
 object RegularFile {
