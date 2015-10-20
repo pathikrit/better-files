@@ -233,6 +233,8 @@ class File(private[this] val _path: Path) {
 
   def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(path).toSet
 
+  def permissionsAsString: String = PosixFilePermissions.toString(permissions)
+
   def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
   def addPermission(permission: PosixFilePermission): File = setPermissions(permissions + permission)

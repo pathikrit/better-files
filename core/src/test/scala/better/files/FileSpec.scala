@@ -171,9 +171,11 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     chmod_+(PosixFilePermission.OWNER_EXECUTE, t1)
     t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
+    t1.permissionsAsString shouldBe "rwxr--r--"
 
     chmod_-(PosixFilePermission.OWNER_EXECUTE, t1)
     t1.isOwnerExecutable shouldBe false
+    t1.permissionsAsString shouldBe "rw-r--r--"
   }
 
   it should "support equality" in {

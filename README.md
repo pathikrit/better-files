@@ -270,6 +270,7 @@ file.isEmpty      // true if file has no content (or no children if directory) o
 import java.nio.file.attribute.PosixFilePermission
 file.addPermission(PosixFilePermission.OWNER_EXECUTE)      // chmod +X file
 file.removePermission(PosixFilePermission.OWNER_WRITE)     // chmod -w file
+assert(file.permissionsAsString == "rw-r--r--")
 
 // The following are all equivalent:
 assert(file.permissions contains PosixFilePermission.OWNER_EXECUTE)

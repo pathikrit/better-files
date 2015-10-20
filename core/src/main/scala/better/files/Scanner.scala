@@ -29,6 +29,14 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
 
   def lineNumber = reader.getLineNumber
 
+  /**
+   * This is different from Java's scanner.nextLine
+   * The Java one is a misnomer since it actually travels to end of current line and returns that
+   * This is a source of much confusion. See: http://stackoverflow.com/questions/5032356/using-scanner-nextline
+   * This one actually does return the next line
+   *
+   * @return returns the next line
+   */
   def nextLine(): Option[String] = {
     val line = _nextLine
     _nextLine = Option(reader.readLine())
