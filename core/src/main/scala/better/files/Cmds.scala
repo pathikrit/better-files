@@ -1,7 +1,9 @@
 package better.files
 
-import java.nio.file.attribute.PosixFilePermission
+import java.nio.file.attribute.{PosixFilePermissions, PosixFilePermission}
 import java.util.zip.ZipOutputStream
+
+import scala.collection.JavaConversions._
 
 /**
  * Do file ops using a UNIX command line DSL
@@ -36,6 +38,15 @@ object Cmds {
   def chown(owner: String, file: File): File = file.setOwner(owner)
 
   def chgrp(group: String, file: File): File = file.setGroup(group)
+
+  /**
+   * Update permission of this file
+   *
+   * @param permissions Must be 9 character POSIX permission representation e.g. "rwxr-x---"
+   * @param file
+   * @return file
+   */
+  def chmod(permissions: String, file: File) = file.setPermissions(PosixFilePermissions.fromString(permissions).toSet)
 
   def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 
