@@ -2,12 +2,10 @@ package better.files
 
 import java.io.BufferedReader
 
-import scala.annotation.tailrec
-
 /**
  * Base interface to test
  */
-abstract class AbstractScanner(reader: BufferedReader) {
+abstract class AbstractScanner(protected[this] val reader: BufferedReader) {
   def hasNext: Boolean
   def next(): String
   def nextInt(): Int
@@ -96,29 +94,6 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
 }
 
 /**
- * Hand built custom scanner using a Char buffer
- */
-class ArrayBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  private[this] var buffer = Array.ofDim[Char](1<<10)
-  override def hasNext = true
-  @tailrec final override def next() = {
-    var pos = 0
-    var c = reader.read().toChar
-    while(c != ' ' && c != '\n') {
-      if (pos == buffer.length) {
-        buffer = java.util.Arrays.copyOf(buffer, 2*pos)
-      }
-      buffer(pos) = c
-      pos += 1
-      c = reader.read().toChar
-    }
-    if (pos == 0) next() else String.copyValueOf(buffer, 0, pos)
-  }
-  override def nextInt() = next().toInt
-  override def nextLine() = ???
-}
-
-/**
  * Hand built custom scanner using a StringBuilder
  */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) {
@@ -133,5 +108,5 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
     buffer.toString()
   }
   override def nextInt() = next().toInt
-  override def nextLine() = ???
+  override def nextLine() = reader.readLine()
 }

@@ -28,10 +28,10 @@ object ScannerBenchmark extends App {
     println(s"${scanner.getClass.getSimpleName}\t: $time ms")
   }
 
+  val r5 = test(new ArrayBufferScanner(file.newBufferedReader))
   val r4 = test(new StreamingScanner(file.newBufferedReader))
   val r2 = test(new IteratorScanner(file.newBufferedReader))
   val r1 = test(new IterableScanner(file.newBufferedReader))
-  val r5 = test(new ArrayBufferScanner(file.newBufferedReader))
   val r6 = test(new StringBuilderScanner(file.newBufferedReader))
   val r3 = test(new JavaScanner(file.newBufferedReader))
   /*
