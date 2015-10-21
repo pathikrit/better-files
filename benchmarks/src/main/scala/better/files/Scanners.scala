@@ -98,13 +98,13 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
 /**
  * Hand built custom scanner using a Char buffer
  */
-class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+class ArrayBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] var buffer = Array.ofDim[Char](1<<10)
   override def hasNext = true
   @tailrec final override def next() = {
     var pos = 0
     var c = reader.read().toChar
-    while(!c.isWhitespace) {
+    while(c != ' ' && c != '\n') {
       if (pos == buffer.length) {
         buffer = java.util.Arrays.copyOf(buffer, 2*pos)
       }
@@ -113,6 +113,24 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
       c = reader.read().toChar
     }
     if (pos == 0) next() else String.copyValueOf(buffer, 0, pos)
+  }
+  override def nextInt() = next().toInt
+  override def nextLine() = ???
+}
+
+/**
+ * Hand built custom scanner using a StringBuilder
+ */
+class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+  private[this] val charIterator = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
+  private[this] val buffer = new StringBuilder()
+  override def hasNext = charIterator.hasNext
+  final override def next() = {
+    buffer.clear()
+    while(buffer.isEmpty && hasNext) {
+      charIterator.takeWhile(c => !c.isWhitespace).foreach(buffer += _)
+    }
+    buffer.toString()
   }
   override def nextInt() = next().toInt
   override def nextLine() = ???
