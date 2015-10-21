@@ -6,11 +6,15 @@ import org.scalatest._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Try
 
 class FileWatcherSpec extends FlatSpec with Matchers {
+  val isCI = Try(sys.env("CI").toBoolean) getOrElse false     //TODO: Move these to core test package
+
   def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
   "file watcher" should "watch directories" in {
+    assume(isCI)
     val dir = File.newTempDir()
     (dir / "a" / "b" / "c.txt").createIfNotExists()
 

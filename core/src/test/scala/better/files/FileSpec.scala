@@ -9,6 +9,8 @@ import scala.language.postfixOps
 import scala.util.Try
 
 class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
+  val isCI = Try(sys.env("CI").toBoolean) getOrElse false
+
   def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
   var testRoot: File = _    //TODO: Get rid of mutable test vars
@@ -120,6 +122,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support names/extensions" in {
+    assume(isCI)
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
     t1.extension shouldBe Some(".txt")
@@ -166,6 +169,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "set/unset permissions" in {
+    assume(isCI)
     import java.nio.file.attribute.PosixFilePermission
     t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
@@ -392,6 +396,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   "file watcher" should "watch single files" in {
+    assume(isCI)
     val file = File.newTemp(suffix = ".txt").write("Hello world")
 
     var log = List.empty[String]
@@ -423,6 +428,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   ignore should "watch directories to configurable depth" in {
+    assume(isCI)
     val dir = File.newTempDir()
     (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
     var log = List.empty[String]
