@@ -6,7 +6,7 @@ import java.io.UncheckedIOException;
 import java.util.Arrays;
 
 /**
- * Fastest scanner I can build
+ * Hand built using a char buffer
  */
 public class ArrayBufferScanner extends AbstractScanner {
   private char[] buffer = new char[20];
@@ -25,6 +25,7 @@ public class ArrayBufferScanner extends AbstractScanner {
   }
 
   private void loadBuffer() throws IOException {
+    pos = 0;
     while(true) {
       int i = reader.read();
       if (i == -1) {
@@ -32,27 +33,23 @@ public class ArrayBufferScanner extends AbstractScanner {
         break;
       }
       char c = (char) i;
-      if (c == ' ' || c == '\n') {
+      if (c != ' ' && c != '\n') {
+        if (pos == buffer.length) {
+          buffer = Arrays.copyOf(buffer, 2 * pos);
+        }
+        buffer[pos++] = c;
+      } else if (pos != 0) {
         break;
       }
-      if (pos == buffer.length) {
-        buffer = Arrays.copyOf(buffer, 2 * pos);
-      }
-      buffer[pos++] = c;
     }
   }
 
   @Override
   public String next() {
-    boolean found = false;
-    while(!found && hasNext()) {
-      pos = 0;
-      try {
-        loadBuffer();
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-      found = pos > 0;
+    try {
+      loadBuffer();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
     return String.copyValueOf(buffer, 0, pos);
   }

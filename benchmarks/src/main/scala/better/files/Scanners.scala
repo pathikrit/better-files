@@ -8,8 +8,8 @@ import java.io.BufferedReader
 abstract class AbstractScanner(protected[this] val reader: BufferedReader) {
   def hasNext: Boolean
   def next(): String
-  def nextInt(): Int
-  def nextLine(): String
+  def nextInt() = next().toInt
+  def nextLine() = reader.readLine()
   def close() = reader.close()
 }
 
@@ -32,8 +32,10 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
  * Based on StringTokenizer + resetting the iterator
  */
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
+  import scala.collection.JavaConversions._
+  private[this] val lineIterator: Iterator[String] = reader.lines().iterator()
   override def iterator = for {
-    line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
+    line <- lineIterator
     tokenizer = new java.util.StringTokenizer(line)
     tokens <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
   } yield tokens.nextToken()
@@ -65,9 +67,8 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
   }
   override def hasNext = tokenizer().exists(_.hasMoreTokens)
   override def next() = tokenizer().get.nextToken()
-  override def nextInt() = next().toInt
   override def nextLine() = {
-    val line = reader.readLine()
+    val line = super.nextLine()
     current = None
     line
   }
@@ -90,13 +91,12 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
     in.nval
   }
   override def nextInt() = nextDouble().toInt
-  override def nextLine() = ???
 }
 
 /**
- * Hand built custom scanner using a StringBuilder
+ * Based on a reusable StringBuilder
  */
-class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   private[this] val charIterator = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
   private[this] val buffer = new StringBuilder()
   override def hasNext = charIterator.hasNext
@@ -107,6 +107,4 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
     }
     buffer.toString()
   }
-  override def nextInt() = next().toInt
-  override def nextLine() = reader.readLine()
 }
