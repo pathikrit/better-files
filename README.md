@@ -113,7 +113,7 @@ All operations are chainable e.g.
 ```scala
  (root/"tmp"/"diary.txt")
   .createIfNotExists()  
-  .appendNewLine
+  .appendNewLine()
   .appendLines("My name is", "Inigo Montoya")
   .moveTo(home/"Documents")
   .renameTo("princess_diary.txt")

@@ -1,6 +1,6 @@
 package better
 
-import java.io.{File => JFile, _}
+import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
@@ -167,8 +167,6 @@ package object files {
 
   // Some utils:
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
-  @inline private[files] def repeat[A](n: Int)(f: => A): Unit = (1 to n).foreach(_ => f)
+  @inline private[files] def repeat(n: Int)(f: => Unit): Unit = (1 to n).foreach(_ => f)
   @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
-
-  private[files] val eof = -1
 }

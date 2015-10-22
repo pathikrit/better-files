@@ -451,7 +451,7 @@ object File {
     val byName: Order = Ordering.by(_.name)
     val byDepth: Order = Ordering.by(_.path.getNameCount)
     val byModificationTime: Order = Ordering.by(_.lastModifiedTime)
-    val byDirectoriesFirst: Order = Ordering.by{f: File => f.isDirectory}.reverse
+    val byDirectoriesFirst: Order = Ordering.by[File, Boolean](_.isDirectory).reverse
   }
 }
 
