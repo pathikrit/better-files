@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
-import java.nio.channels.FileChannel
+import java.nio.channels.{AsynchronousFileChannel, FileChannel}
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
@@ -154,6 +154,10 @@ class File(private[this] val _path: Path) {
   def newFileChannel: FileChannel = FileChannel.open(path)
 
   def fileChannel: ManagedResource[FileChannel] = newFileChannel.autoClosed
+
+  def newAsynchronousFileChannel: AsynchronousFileChannel = AsynchronousFileChannel.open(path)
+
+  def asynchronousFileChannel: ManagedResource[AsynchronousFileChannel] = AsynchronousFileChannel.open(path).autoClosed
 
   def newWatchService: WatchService = fileSystem.newWatchService()
 
@@ -451,7 +455,8 @@ object File {
     val byName: Order = Ordering.by(_.name)
     val byDepth: Order = Ordering.by(_.path.getNameCount)
     val byModificationTime: Order = Ordering.by(_.lastModifiedTime)
-    val byDirectoriesFirst: Order = Ordering.by[File, Boolean](_.isDirectory).reverse
+    val byDirectoriesLast: Order = Ordering.by(_.isDirectory)
+    val byDirectoriesFirst: Order = byDirectoriesLast.reverse
   }
 }
 
