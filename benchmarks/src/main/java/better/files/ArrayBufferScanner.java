@@ -65,6 +65,52 @@ public class ArrayBufferScanner extends AbstractScanner {
 
   @Override
   public int nextInt() {
-    return Integer.parseInt(next());
+    try {
+      loadBuffer();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    // SOURCE COPIED FROM Java's Integer.parseInt
+    int radix = 10;
+    int result = 0;
+    boolean negative = false;
+    int i = 0, len = pos;
+    int limit = -Integer.MAX_VALUE;
+    int multmin;
+    int digit;
+
+    if (len > 0) {
+      char firstChar = buffer[0];
+      if (firstChar < '0') { // Possible leading "+" or "-"
+        if (firstChar == '-') {
+          negative = true;
+          limit = Integer.MIN_VALUE;
+        } else if (firstChar != '+')
+          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+
+        if (len == 1) // Cannot have lone "+" or "-"
+          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+        i++;
+      }
+      multmin = limit / radix;
+      while (i < len) {
+        // Accumulating negatively avoids surprises near MAX_VALUE
+        digit = Character.digit(buffer[i++],radix);
+        if (digit < 0) {
+          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+        }
+        if (result < multmin) {
+          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+        }
+        result *= radix;
+        if (result < limit + digit) {
+          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+        }
+        result -= digit;
+      }
+    } else {
+      throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+    }
+    return negative ? result : -result;
   }
 }
