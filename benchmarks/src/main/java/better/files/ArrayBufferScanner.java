@@ -9,7 +9,7 @@ import java.util.Arrays;
  * Hand built using a char buffer
  */
 public class ArrayBufferScanner extends AbstractScanner {
-  private char[] buffer = new char[20];
+  private char[] buffer = new char[1<<4];
   private int pos = 0;
 
   private BufferedReader reader;
@@ -33,7 +33,7 @@ public class ArrayBufferScanner extends AbstractScanner {
         break;
       }
       char c = (char) i;
-      if (c != ' ' && c != '\n') {
+      if (c != ' ' && c != '\n' && c != '\t' && c != '\r' && c != '\f') {
         if (pos == buffer.length) {
           buffer = Arrays.copyOf(buffer, 2 * pos);
         }
