@@ -4,6 +4,7 @@ import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
+import java.nio.file.attribute.FileAttribute
 import java.nio.file.{Path, FileSystems}
 import java.util.stream.{Stream => JStream}
 import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
@@ -107,6 +108,8 @@ package object files {
     def +=(file: File): ZipOutputStream = add(file, file.name)
   }
 
+  type FileAttributes = Seq[FileAttribute[_]]
+
   type Closeable = {
     def close(): Unit
   }
@@ -161,6 +164,8 @@ package object files {
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
+
+  //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
 
   implicit def pathToFile(path: Path): File = new File(path)
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)

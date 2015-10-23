@@ -52,13 +52,13 @@ class File(private[this] val _path: Path) {
 
   def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
-  def createIfNotExists(asDirectory: Boolean = false): File = if (exists) {
+  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: FileAttributes = Defaults.attributes): File = if (exists) {
     this
   } else if (asDirectory) {
-    createDirectories()
+    createDirectories()(attributes)
   } else {
     parent.createDirectories()
-    Files.createFile(path)
+    Files.createFile(path, attributes: _*)
   }
 
   def exists: Boolean = Files.exists(path)
@@ -80,9 +80,9 @@ class File(private[this] val _path: Path) {
   def loadBytes: Array[Byte] = Files.readAllBytes(path)
   def byteArray: Array[Byte] = loadBytes
 
-  def createDirectory(): File = Files.createDirectory(path)
+  def createDirectory()(implicit attributes: FileAttributes = Defaults.attributes): File = Files.createDirectory(path, attributes: _*)
 
-  def createDirectories(): File = Files.createDirectories(path)
+  def createDirectories()(implicit attributes: FileAttributes = Defaults.attributes): File = Files.createDirectories(path, attributes: _*)
 
   def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
 
@@ -157,7 +157,7 @@ class File(private[this] val _path: Path) {
 
   def newAsynchronousFileChannel: AsynchronousFileChannel = AsynchronousFileChannel.open(path)
 
-  def asynchronousFileChannel: ManagedResource[AsynchronousFileChannel] = AsynchronousFileChannel.open(path).autoClosed
+  def asynchronousFileChannel: ManagedResource[AsynchronousFileChannel] = newAsynchronousFileChannel.autoClosed
 
   def newWatchService: WatchService = fileSystem.newWatchService()
 
