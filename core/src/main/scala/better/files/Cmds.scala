@@ -15,6 +15,16 @@ object Cmds {
 
   val  `.`: File => File = identity
 
+  implicit class FileDsl(file: File) {
+    /**
+     * Allows navigation up e.g. file / .. / ..
+     *
+     * @param f
+     * @return
+     */
+    def /(f: File => File): File = f(file)
+  }
+
   def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
 
   def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)

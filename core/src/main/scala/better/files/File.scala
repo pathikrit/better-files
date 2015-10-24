@@ -49,8 +49,6 @@ class File(private[this] val _path: Path) {
 
   def /(child: String): File = path.resolve(child)
 
-  def /(f: File => File): File = f(this)  //TODO: Move this to commands
-
   def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
   def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File = if (exists) {
