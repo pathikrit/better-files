@@ -12,6 +12,7 @@ import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
+import scala.util.Properties
 
 /**
  * Scala wrapper around java.nio.files.Path
@@ -48,7 +49,7 @@ class File(private[this] val _path: Path) {
 
   def /(child: String): File = path.resolve(child)
 
-  def /(f: File => File): File = f(this)
+  def /(f: File => File): File = f(this)  //TODO: Move this to commands
 
   def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
@@ -446,6 +447,12 @@ object File {
   def newTemp(prefix: String = "", suffix: String = ""): File = Files.createTempFile(prefix, suffix)
 
   def apply(path: String): File = Paths.get(path)
+
+  def root: File = FileSystems.getDefault.getRootDirectories.head
+
+  def home: File = Properties.userHome.toFile
+
+  def tmp: File = Properties.tmpDir.toFile
 
   type Attributes = Seq[FileAttribute[_]]
   object Attributes {

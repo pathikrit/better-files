@@ -4,7 +4,7 @@ import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
-import java.nio.file.{Path, FileSystems}
+import java.nio.file.Path
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
@@ -12,7 +12,6 @@ import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStre
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
-import scala.util.Properties
 
 /**
  * Container for various implicits

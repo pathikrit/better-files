@@ -9,6 +9,12 @@ import scala.collection.JavaConversions._
  * Do file ops using a UNIX command line DSL
  */
 object Cmds {
+  def ~ : File = File.home
+
+  val `..`: File => File = _.parent
+
+  val  `.`: File => File = identity
+
   def cp(file1: File, file2: File): File = file1.copyTo(file2, overwrite = true)
 
   def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)

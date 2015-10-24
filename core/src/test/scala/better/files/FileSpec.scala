@@ -1,5 +1,6 @@
 package better.files
 
+import File.{root, home}
 import Cmds._
 
 import org.scalatest._
