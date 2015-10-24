@@ -1,6 +1,7 @@
-branches:
-  ignore:
-    - gh-pages
+general:
+  branches:
+    ignore:
+      - gh-pages
 
 machine:
   java:

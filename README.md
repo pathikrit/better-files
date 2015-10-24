@@ -190,7 +190,7 @@ def isEmpty(file: File): Boolean = file match {
   case _ => file.notExists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
 }
 // or as extractors on LHS:
-val Directory(researchDocs) = home/"Downloads"/"research"
+val File.Type.Directory(researchDocs) = home/"Downloads"/"research"
 ```
 
 ### Globbing
