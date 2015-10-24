@@ -18,6 +18,8 @@ import scala.util.Properties
  * Scala wrapper around java.nio.files.Path
  */
 class File(private[this] val _path: Path) {
+  import FileTypes._
+
   val path = _path.normalize.toAbsolutePath
 
   def pathAsString: String = path.toString
@@ -492,25 +494,4 @@ object File {
     val byDirectoriesFirst  : Order = byDirectoriesLast.reverse
     val default             : Order = byDirectoriesFirst
   }
-}
-
-object RegularFile {
-  /**
-   * @return contents of this file if it is a regular file
-   */
-  def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.newBufferedSource)
-}
-
-object Directory {
-  /**
-   * @return children of this directory if file a directory
-   */
-  def unapply(file: File): Option[Files] = when(file.isDirectory)(file.children)
-}
-
-object SymbolicLink {
-  /**
-   * @return target of this symlink if file is a symlink
-   */
-  def unapply(file: File): Option[File] = file.symbolicLink
 }
