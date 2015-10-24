@@ -269,9 +269,9 @@ All the above APIs let's you specify the [`LinkOption`](http://docs.oracle.com/j
 ```scala
 file.isDirectory(LinkOption.NOFOLLOW_LINKS)
 ```
-Or using the [`FileOptions`](core/src/main/scala/better/files/FileOptions.scala) helper:
+Or using the [`File.Links`](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Links$) helper:
 ```scala
-file.isDirectory(FileOptions.noFollow)
+file.isDirectory(File.Links.noFollow)
 ```
 
 `chmod`:
