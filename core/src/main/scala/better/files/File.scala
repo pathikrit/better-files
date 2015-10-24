@@ -61,9 +61,9 @@ class File(private[this] val _path: Path) {
     Files.createFile(path, attributes: _*)
   }
 
-  def exists: Boolean = Files.exists(path)
+  def exists(implicit linkOptions: Seq[LinkOption] = Defaults.linkOptions): Boolean = Files.exists(path, linkOptions: _*)
 
-  def notExists: Boolean = Files.notExists(path)
+  def notExists(implicit linkOptions: Seq[LinkOption] = Defaults.linkOptions): Boolean = Files.notExists(path, linkOptions: _*)
 
   def isChildOf(parent: File): Boolean = parent isParentOf this
 
