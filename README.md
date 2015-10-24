@@ -265,6 +265,15 @@ file.size                 // for a directory, computes the directory size
 file.posixAttributes / file.dosAttributes  // see file.attributes
 file.isEmpty      // true if file has no content (or no children if directory) or does not exist
 ```
+All the above APIs let's you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
+```scala
+file.isDirectory(LinkOption.NOFOLLOW_LINKS)
+```
+Or using the [`FileOptions`](core/src/main/scala/better/files/FileOptions.scala) helper:
+```scala
+file.isDirectory(FileOptions.noFollow)
+```
+
 `chmod`:
 ```scala
 import java.nio.file.attribute.PosixFilePermission

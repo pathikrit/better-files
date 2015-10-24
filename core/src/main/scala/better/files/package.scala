@@ -4,7 +4,6 @@ import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
-import java.nio.file.attribute.FileAttribute
 import java.nio.file.{Path, FileSystems}
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
@@ -108,8 +107,6 @@ package object files {
 
     def +=(file: File): ZipOutputStream = add(file, file.name)
   }
-
-  type FileAttributes = Seq[FileAttribute[_]]
 
   type Closeable = {
     def close(): Unit

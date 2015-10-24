@@ -52,7 +52,7 @@ class File(private[this] val _path: Path) {
 
   def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
 
-  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: FileAttributes = Options.attributes): File = if (exists) {
+  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: FileOptions.Attributes = FileOptions.empty): File = if (exists) {
     this
   } else if (asDirectory) {
     createDirectories()(attributes)
@@ -61,9 +61,9 @@ class File(private[this] val _path: Path) {
     Files.createFile(path, attributes: _*)
   }
 
-  def exists(implicit linkOptions: Seq[LinkOption] = Options.linkOptions): Boolean = Files.exists(path, linkOptions: _*)
+  def exists(implicit linkOptions: Seq[LinkOption] = FileOptions.empty): Boolean = Files.exists(path, linkOptions: _*)
 
-  def notExists(implicit linkOptions: Seq[LinkOption] = Options.linkOptions): Boolean = Files.notExists(path, linkOptions: _*)
+  def notExists(implicit linkOptions: Seq[LinkOption] = FileOptions.empty): Boolean = Files.notExists(path, linkOptions: _*)
 
   def isChildOf(parent: File): Boolean = parent isParentOf this
 
@@ -80,9 +80,9 @@ class File(private[this] val _path: Path) {
   def loadBytes: Array[Byte] = Files.readAllBytes(path)
   def byteArray: Array[Byte] = loadBytes
 
-  def createDirectory()(implicit attributes: FileAttributes = Options.attributes): File = Files.createDirectory(path, attributes: _*)
+  def createDirectory()(implicit attributes: FileOptions.Attributes = FileOptions.empty): File = Files.createDirectory(path, attributes: _*)
 
-  def createDirectories()(implicit attributes: FileAttributes = Options.attributes): File = Files.createDirectories(path, attributes: _*)
+  def createDirectories()(implicit attributes: FileOptions.Attributes = FileOptions.empty): File = Files.createDirectories(path, attributes: _*)
 
   def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
 
@@ -143,9 +143,9 @@ class File(private[this] val _path: Path) {
 
   def inputStream: ManagedResource[InputStream] = newInputStream.autoClosed
 
-  def newScanner(delimiter: String = Options.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
+  def newScanner(delimiter: String = FileOptions.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
 
-  def scanner(delimiter: String = Options.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
+  def scanner(delimiter: String = FileOptions.delimiters, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
   def newOutputStream: OutputStream = Files.newOutputStream(path)
 
@@ -163,7 +163,7 @@ class File(private[this] val _path: Path) {
 
   def watchService: ManagedResource[WatchService] = newWatchService.autoClosed
 
-  def register(service: WatchService, events: Seq[WatchEvent.Kind[_]] = Options.events): File = returning(this) {
+  def register(service: WatchService, events: Seq[WatchEvent.Kind[_]] = FileOptions.events): File = returning(this) {
     path.register(service, events.toArray)
   }
 
@@ -192,7 +192,7 @@ class File(private[this] val _path: Path) {
   /**
    * @return true if this file (or the file found by following symlink) is a directory
    */
-  def isDirectory: Boolean = Files.isDirectory(path)
+  def isDirectory(implicit linkOptions: Seq[LinkOption] = FileOptions.empty): Boolean = Files.isDirectory(path, linkOptions: _*)
 
   /**
    * @return true if this file (or the file found by following symlink) is a regular file

@@ -19,7 +19,7 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
 
   def this(file: File, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec) = this(file.newBufferedReader(codec), delimiter, includeDelimiters)
 
-  def this(str: String, delimiter: String = Options.delimiters, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
+  def this(str: String, delimiter: String = FileOptions.delimiters, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   private[this] var _tokenizer: Option[PeekableIterator[String]] = None
   private[this] var _nextLine: Option[String] = None

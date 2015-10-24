@@ -6,12 +6,16 @@ import java.nio.file.attribute.FileAttribute
 /**
  * Container default settings for various options
  */
-object Options {
+object FileOptions {
+  type Attributes = Seq[FileAttribute[_]]
+  type Links = Seq[LinkOption]
+
+  def empty[A] = Seq.empty[A]
+
   val delimiters = " \t\n\r\f"
 
   val events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
 
-  val attributes: FileAttributes = Seq.empty[FileAttribute[_]]
-
-  val linkOptions: Seq[LinkOption] = Seq.empty[LinkOption]
+  val follow: Links = empty
+  val noFollow: Links = Seq(LinkOption.NOFOLLOW_LINKS)
 }
