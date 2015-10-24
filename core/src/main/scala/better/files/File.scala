@@ -18,8 +18,6 @@ import scala.util.Properties
  * Scala wrapper around java.nio.files.Path
  */
 class File(private[this] val _path: Path) {
-  import FileTypes._
-
   val path = _path.normalize.toAbsolutePath
 
   def pathAsString: String = path.toString
@@ -381,8 +379,8 @@ class File(private[this] val _path: Path) {
    * @return true if file is not present or empty directory or 0-bytes file
    */
   def isEmpty: Boolean = this match {
-    case Directory(children) => children.isEmpty
-    case RegularFile(content) => content.isEmpty
+    case File.Type.Directory(children) => children.isEmpty
+    case File.Type.RegularFile(content) => content.isEmpty
     case _ => notExists
   }
 
@@ -392,7 +390,7 @@ class File(private[this] val _path: Path) {
    * @return this
    */
   def clear(): File = this match {
-    case Directory(children) => children.foreach(_.delete()); this
+    case File.Type.Directory(children) => children.foreach(_.delete()); this
     case _ => write(Array.ofDim[Byte](0))
   }
 
@@ -493,5 +491,29 @@ object File {
     val byDirectoriesLast   : Order = Ordering.by(_.isDirectory)
     val byDirectoriesFirst  : Order = byDirectoriesLast.reverse
     val default             : Order = byDirectoriesFirst
+  }
+
+  sealed trait Type
+  object Type {
+    case object RegularFile extends Type {
+      /**
+       * @return contents of this file if it is a regular file
+       */
+      def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.newBufferedSource)
+    }
+
+    case object Directory extends Type {
+      /**
+       * @return children of this directory if file a directory
+       */
+      def unapply(file: File): Option[Files] = when(file.isDirectory)(file.children)
+    }
+
+    case object SymbolicLink extends Type {
+      /**
+       * @return target of this symlink if file is a symlink
+       */
+      def unapply(file: File): Option[File] = file.symbolicLink
+    }
   }
 }

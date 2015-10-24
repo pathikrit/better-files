@@ -160,7 +160,7 @@ val ram          : java.io.RandomAccessFile     = file.newRandomAccess
 val fr           : java.io.FileReader           = file.newFileReader
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 ```
-The library also adds some useful implicits to above classes e.g.:
+The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/#better.files.Implicits) to above classes e.g.:
 ```scala
 file1.reader > file2.writer       // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
@@ -178,15 +178,15 @@ val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
  
 ### Pattern matching
-Instead of `if-else`, more idiomatic powerful Scala pattern matching:
+Instead of `if-else`, more idiomatic powerful Scala [pattern matching](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Types$):
 ```scala
 /**
  * @return true if file is a directory with no children or a file with no contents
  */
 def isEmpty(file: File): Boolean = file match {
-  case SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
-  case Directory(files) => files.isEmpty
-  case RegularFile(content) => content.isEmpty
+  case File.Type.SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
+  case File.Type.Directory(files) => files.isEmpty
+  case File.Type.RegularFile(content) => content.isEmpty
   case _ => file.notExists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
 }
 // or as extractors on LHS:

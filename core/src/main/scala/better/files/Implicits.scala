@@ -16,7 +16,7 @@ import scala.io.{BufferedSource, Codec, Source}
 /**
  * Container for various implicits
  */
-private[files] trait Implicits {
+trait Implicits {
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File = value(args).toFile
     def resource(args: Any*): Source = Source.fromInputStream(getClass.getResourceAsStream(value(args)))

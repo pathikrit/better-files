@@ -1,7 +1,7 @@
 package better.files
 
 import File.{root, home}
-import FileTypes._
+import File.Type._
 import Cmds._
 
 import org.scalatest._
