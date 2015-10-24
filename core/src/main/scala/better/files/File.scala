@@ -313,7 +313,7 @@ class File(private[this] val _path: Path) {
    * @param overwrite
    * @return destination
    */
-  def moveTo(destination: File, overwrite: Boolean = false): File = Files.move(path, destination.path, copyOptions(overwrite): _*)
+  def moveTo(destination: File, overwrite: Boolean = false): File = Files.move(path, destination.path, File.CopyOptions(overwrite): _*)
 
   /**
    *
@@ -332,16 +332,14 @@ class File(private[this] val _path: Path) {
       }
 
       override def visitFile(file: Path, attrs: BasicFileAttributes) = {
-        Files.copy(file, newPath(file), copyOptions(overwrite): _*)
+        Files.copy(file, newPath(file), File.CopyOptions(overwrite): _*)
         super.visitFile(file, attrs)
       }
     })
     destination
   } else {
-    Files.copy(path, destination.path, copyOptions(overwrite): _*)
+    Files.copy(path, destination.path, File.CopyOptions(overwrite): _*)
   }
-
-  private[this] def copyOptions(overwrite: Boolean): Seq[StandardCopyOption] = if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else Nil
 
   def symbolicLinkTo(destination: File) = Files.createSymbolicLink(path, destination.path)
 
@@ -454,16 +452,22 @@ object File {
     val default   : Attributes = Seq.empty
   }
 
-  type Events = Seq[WatchEvent.Kind[_]]
-  object Events {
-    val all     : Events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
-    val default : Events = all
+  type CopyOptions = Seq[StandardCopyOption]
+  object CopyOptions {
+    def apply(overwrite: Boolean) : CopyOptions = if (overwrite) StandardCopyOption.REPLACE_EXISTING +: default else default
+    val default                   : CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
   }
 
   type Delimiters = String
   object Delimiters {
     val spaces  : Delimiters = " \t\n\r\f"
     val default : Delimiters = spaces
+  }
+
+  type Events = Seq[WatchEvent.Kind[_]]
+  object Events {
+    val all     : Events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
+    val default : Events = all
   }
 
   type Links = Seq[LinkOption]

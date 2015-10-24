@@ -80,7 +80,7 @@ Resources in the classpath can be accessed using resource interpolator e.g. `res
 
 **Note**: Rename the import if you think the usage of the class `File` may confuse your teammates:
 ```scala
-import better.files.{File => BetterFile, _}
+import better.files.{File => ScalaFile, _}
 import java.io.File
 ```
 I personally prefer renaming the Java crap instead:
@@ -295,7 +295,7 @@ file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for reg
 file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
 file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
-There are also various `Ordering[File]` included e.g.:
+There are also various [`Ordering[File]` included](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Order$) e.g.:
 ```scala
 myDir.list.toSeq.sorted(File.Order.byName) 
 myDir.list.toSeq.max(File.Order.bySize) 
