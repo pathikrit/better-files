@@ -21,11 +21,11 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
 
   def this(str: String, delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false) = this(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
-  private[this] var _tokenizer: Option[PeekableStringTokenizer] = None
+  private[this] var _tokenizer: Option[PeekableIterator[String]] = None
   private[this] var _nextLine: Option[String] = None
   nextLine()
 
-  private[this] def tokenizer(): Option[PeekableStringTokenizer] = _tokenizer.find(_.hasMoreTokens) orElse nextLine().flatMap(_ => tokenizer())
+  private[this] def tokenizer(): Option[PeekableIterator[String]] = _tokenizer.find(_.hasNext) orElse nextLine().flatMap(_ => tokenizer())
 
   def lineNumber = reader.getLineNumber
 
@@ -40,7 +40,7 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
   def nextLine(): Option[String] = {
     val line = _nextLine
     _nextLine = Option(reader.readLine())
-    _tokenizer = _nextLine map {line => new PeekableStringTokenizer(line, delimiter, includeDelimiters)}
+    _tokenizer = _nextLine map {line => new PeekableIterator(new StringTokenizer(line, delimiter, includeDelimiters))}
     line
   }
 
@@ -58,9 +58,9 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
 
   def peekLine: Option[String] = _nextLine
 
-  def hasMoreTokens: Boolean = tokenizer().exists(_.hasMoreTokens)
+  def hasMoreTokens: Boolean = tokenizer().exists(_.hasNext)
 
-  def nextToken(): String = tokenizer().get.nextToken()
+  def nextToken(): String = tokenizer().get.next()
 
   def next(pattern: String)(): Option[String] = next[String]()(Scannable.fromPattern(pattern))
 
@@ -97,21 +97,6 @@ class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimi
   }
 
   def close(): Unit = reader.close()
-}
-
-class PeekableStringTokenizer(s: String, delimiter: String = Defaults.delimiters, includeDelimiters: Boolean = false) extends StringTokenizer(s, delimiter, includeDelimiters) {
-  private[this] var next: Option[String] = None
-  nextToken()
-
-  def peek: Option[String] = next
-
-  override def hasMoreTokens = next.nonEmpty
-
-  override def nextToken() = {
-    val token = next
-    next = when(super.hasMoreTokens)(super.nextToken())
-    token.orNull
-  }
 }
 
 /**

@@ -6,6 +6,7 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.{Path, FileSystems}
+import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
@@ -161,6 +162,11 @@ package object files {
       }
       Iterator.continually(next(resource)).takeWhile(isOpen)
     }
+  }
+
+  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
+    override def hasNext = s.hasMoreTokens
+    override def next() = s.nextToken()
   }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
