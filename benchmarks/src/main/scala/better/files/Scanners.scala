@@ -25,7 +25,6 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
     scanner.nextLine()
     scanner.nextLine()
   }
-
   override def close() = scanner.close()
 }
 
@@ -33,16 +32,13 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
  * Based on StringTokenizer + resetting the iterator
  */
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
-  import scala.collection.JavaConversions._
-  val lines: Iterator[String] = reader.lines().iterator()
   override def iterator = for {
-    line <- lines
+    line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
     tokenizer = new java.util.StringTokenizer(line)
     _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
   } yield tokenizer.nextToken()
 
   private[this] var current = iterator
-
   override def hasNext = current.hasNext
   override def next() = current.next()
   override def nextLine() = {
@@ -56,13 +52,12 @@ class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
  */
 class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.util.StringTokenizer
+  private[this] val tokenizers = Iterator.continually(reader.readLine()).takeWhile(_ != null).map(new StringTokenizer(_)).filter(_.hasMoreTokens)
   private[this] var current: Option[StringTokenizer] = None
 
   @inline private[this] def tokenizer(): Option[StringTokenizer] = current.find(_.hasMoreTokens) orElse {
-    Option(reader.readLine()) flatMap {line =>
-      current = Some(new StringTokenizer(line))
-      tokenizer()
-    }
+    current = when(tokenizers.hasNext)(tokenizers.next())
+    current
   }
   override def hasNext = tokenizer().exists(_.hasMoreTokens)
   override def next() = tokenizer().get.nextToken()
