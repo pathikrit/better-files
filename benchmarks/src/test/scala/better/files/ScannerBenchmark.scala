@@ -55,7 +55,8 @@ object ScannerBenchmark extends App {
     assert(scanner.nextInt() == -23)
     assert(scanner.next() == "Hello")
     assert(scanner.next() == "World")
-    assert(scanner.nextLine == "Hello World")
+    val l = scanner.nextLine()
+    assert(l == "Hello World", l)
     assert(scanner.nextInt() == 19)
     //assert(!scanner.hasNext)
   }

@@ -56,10 +56,10 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
   private[this] var current: Option[StringTokenizer] = None
 
   @inline private[this] def tokenizer(): Option[StringTokenizer] = current.find(_.hasMoreTokens) orElse {
-    current = when(tokenizers.hasNext)(tokenizers.next())
+    current = if (tokenizers.hasNext) Some(tokenizers.next()) else None
     current
   }
-  override def hasNext = tokenizer().exists(_.hasMoreTokens)
+  override def hasNext = tokenizer().nonEmpty
   override def next() = tokenizer().get.nextToken()
   override def nextLine() = {
     current = None

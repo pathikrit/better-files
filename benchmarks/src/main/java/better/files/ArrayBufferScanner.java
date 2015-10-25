@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class ArrayBufferScanner extends AbstractScanner {
   private char[] buffer = new char[1 << 4];
-  private int pos = 0;
+  private int pos = 1;
 
   private BufferedReader reader;
 
@@ -21,38 +21,32 @@ public class ArrayBufferScanner extends AbstractScanner {
 
   @Override
   public boolean hasNext() {
-    return pos != -1;
+    return pos > 0;
   }
 
   private void loadBuffer() {
     pos = 0;
-    while (true) {
-      int i;
-      try {
-        i = reader.read();
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
+    try {
+      for (int i; (i = reader.read()) != -1;) {
+        char c = (char) i;
+        if (c != ' ' && c != '\n' && c != '\t' && c != '\r' && c != '\f') {
+          if (pos == buffer.length) buffer = Arrays.copyOf(buffer, 2 * pos);
+          buffer[pos++] = c;
+        } else if (pos != 0) break;
       }
-      if (i == -1) {
-        pos = -1;
-        break;
-      }
-      char c = (char) i;
-      if (c != ' ' && c != '\n' && c != '\t' && c != '\r' && c != '\f') {
-        if (pos == buffer.length) {
-          buffer = Arrays.copyOf(buffer, 2 * pos);
-        }
-        buffer[pos++] = c;
-      } else if (pos != 0) {
-        break;
-      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
+  }
+
+  public String current() {
+    return String.copyValueOf(buffer, 0, pos);
   }
 
   @Override
   public String next() {
     loadBuffer();
-    return String.copyValueOf(buffer, 0, pos);
+    return current();
   }
 
   @Override
@@ -79,6 +73,6 @@ public class ArrayBufferScanner extends AbstractScanner {
   }
 
   private void checkValidNumber(boolean condition) {
-    if(!condition) throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+    if(!condition) throw new NumberFormatException(current());
   }
 }
