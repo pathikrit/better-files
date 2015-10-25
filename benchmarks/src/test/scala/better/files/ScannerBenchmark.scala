@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{StringReader, BufferedReader}
+import java.io.{BufferedReader, StringReader}
 
 object ScannerBenchmark extends App {
   val file = File.newTemp()
@@ -9,6 +9,21 @@ object ScannerBenchmark extends App {
     file.appendLine(-n to n mkString " ")
       .appendLine("hello " * n)
       .appendLine("world " * n)
+  }
+  val scanners: Seq[BufferedReader => AbstractScanner] = Seq(
+    new JavaScanner(_),
+    new StreamingScanner(_),
+    new ArrayBufferScanner(_),
+    new CharBufferScanner(_),
+    new IteratorScanner(_),
+    new IterableScanner(_),
+    new StringBuilderScanner(_)
+  )
+
+  def test(scanner: AbstractScanner) = {
+    val (_, time) = profile(run(scanner))
+    scanner.close()
+    println(s"${scanner.getClass.getSimpleName}\t: $time ms")
   }
 
   def run(scanner: AbstractScanner): Unit = repeat(n) {
@@ -24,23 +39,8 @@ object ScannerBenchmark extends App {
     (f, ((System.nanoTime() - t) / 1e6).toLong)
   }
 
-  def test(scanner: AbstractScanner) = {
-    val (_, time) = profile(run(scanner))
-    scanner.close()
-    println(s"${scanner.getClass.getSimpleName}\t: $time ms")
-  }
-
-  val scanners: Seq[BufferedReader => AbstractScanner] = Seq(
-    new JavaScanner(_),
-    new StreamingScanner(_),
-    new ArrayBufferScanner(_),
-    new IterableScanner(_),
-    new IteratorScanner(_),
-    new StringBuilderScanner(_)
-  )
-
   println("Warming up ...")
-  scanners foreach {scannerBuilder =>
+  scanners foreach { scannerBuilder =>
     val canaryData =
       """
         |10 -23
@@ -61,5 +61,5 @@ object ScannerBenchmark extends App {
   }
 
   println("Running benchmark ...")
-  scanners foreach {scanner => test(scanner(file.newBufferedReader))}
+  scanners foreach { scanner => test(scanner(file.newBufferedReader)) }
 }

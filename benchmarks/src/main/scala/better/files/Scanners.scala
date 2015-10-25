@@ -25,6 +25,7 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
     scanner.nextLine()
     scanner.nextLine()
   }
+
   override def close() = scanner.close()
 }
 
@@ -33,22 +34,20 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
  */
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
   import scala.collection.JavaConversions._
-  private[this] val lineIterator: Iterator[String] = reader.lines().iterator()
+  val lines: Iterator[String] = reader.lines().iterator()
   override def iterator = for {
-    line <- lineIterator
+    line <- lines
     tokenizer = new java.util.StringTokenizer(line)
-    tokens <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
-  } yield tokens.nextToken()
+    _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
+  } yield tokenizer.nextToken()
 
   private[this] var current = iterator
 
   override def hasNext = current.hasNext
   override def next() = current.next()
-  override def nextInt() = next().toInt
   override def nextLine() = {
-    val line = reader.readLine()
     current = iterator
-    line
+    super.nextLine()
   }
 }
 
@@ -68,9 +67,8 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
   override def hasNext = tokenizer().exists(_.hasMoreTokens)
   override def next() = tokenizer().get.nextToken()
   override def nextLine() = {
-    val line = super.nextLine()
     current = None
-    line
+    super.nextLine()
   }
 }
 
@@ -86,25 +84,49 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
     in.nextToken()
     in.sval
   }
+  override def nextInt() = nextDouble().toInt
   def nextDouble() = {
     in.nextToken()
     in.nval
   }
-  override def nextInt() = nextDouble().toInt
 }
 
 /**
  * Based on a reusable StringBuilder
  */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  private[this] val charIterator = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
+  val chars = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
   private[this] val buffer = new StringBuilder()
-  override def hasNext = charIterator.hasNext
-  final override def next() = {
+
+  override def next() = {
     buffer.clear()
-    while(buffer.isEmpty && hasNext) {
-      charIterator.takeWhile(c => !c.isWhitespace).foreach(buffer += _)
+    while (buffer.isEmpty && hasNext) {
+      chars.takeWhile(c => !c.isWhitespace).foreach(buffer += _)
     }
     buffer.toString()
   }
+  override def hasNext = chars.hasNext
+}
+
+/**
+ * Scala version of the ArrayBufferScanner
+ */
+class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
+  val chars = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
+  private[this] var buffer = Array.ofDim[Char](1<<4)
+
+  override def next() = {
+    var pos = 0
+    while (pos == 0 && hasNext) {
+      for {
+        c <- chars.takeWhile(c => c != ' ' && c != '\n')
+      } {
+        if (pos == buffer.length) buffer = java.util.Arrays.copyOf(buffer, 2 * pos)
+        buffer(pos) = c
+        pos += 1
+      }
+    }
+    String.copyValueOf(buffer, 0, pos)
+  }
+  override def hasNext = chars.hasNext
 }
