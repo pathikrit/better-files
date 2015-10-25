@@ -9,7 +9,7 @@ import java.util.Arrays;
  * Hand built using a char buffer
  */
 public class ArrayBufferScanner extends AbstractScanner {
-  private char[] buffer = new char[1<<4];
+  private char[] buffer = new char[1 << 4];
   private int pos = 0;
 
   private BufferedReader reader;
@@ -24,10 +24,15 @@ public class ArrayBufferScanner extends AbstractScanner {
     return pos != -1;
   }
 
-  private void loadBuffer() throws IOException {
+  private void loadBuffer() {
     pos = 0;
-    while(true) {
-      int i = reader.read();
+    while (true) {
+      int i;
+      try {
+        i = reader.read();
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
       if (i == -1) {
         pos = -1;
         break;
@@ -46,11 +51,7 @@ public class ArrayBufferScanner extends AbstractScanner {
 
   @Override
   public String next() {
-    try {
-      loadBuffer();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    loadBuffer();
     return String.copyValueOf(buffer, 0, pos);
   }
 
@@ -65,52 +66,19 @@ public class ArrayBufferScanner extends AbstractScanner {
 
   @Override
   public int nextInt() {
-    try {
-      loadBuffer();
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-    // SOURCE COPIED FROM Java's Integer.parseInt
-    int radix = 10;
+    loadBuffer();
+    final int radix = 10;
     int result = 0;
-    boolean negative = false;
-    int i = 0, len = pos;
-    int limit = -Integer.MAX_VALUE;
-    int multmin;
-    int digit;
-
-    if (len > 0) {
-      char firstChar = buffer[0];
-      if (firstChar < '0') { // Possible leading "+" or "-"
-        if (firstChar == '-') {
-          negative = true;
-          limit = Integer.MIN_VALUE;
-        } else if (firstChar != '+')
-          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
-
-        if (len == 1) // Cannot have lone "+" or "-"
-          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
-        i++;
-      }
-      multmin = limit / radix;
-      while (i < len) {
-        // Accumulating negatively avoids surprises near MAX_VALUE
-        digit = Character.digit(buffer[i++],radix);
-        if (digit < 0) {
-          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
-        }
-        if (result < multmin) {
-          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
-        }
-        result *= radix;
-        if (result < limit + digit) {
-          throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
-        }
-        result -= digit;
-      }
-    } else {
-      throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
+    int i = buffer[0] == '-' || buffer[0] == '+' ? 1 : 0;
+    for (checkValidNumber(pos > i); i < pos; i++) {
+      int digit = buffer[i] - '0';
+      checkValidNumber(0 <= digit && digit <= 9);
+      result = result * radix + digit;
     }
-    return negative ? result : -result;
+    return buffer[0] == '-' ? -result : result;
+  }
+
+  private void checkValidNumber(boolean condition) {
+    if(!condition) throw new NumberFormatException(String.copyValueOf(buffer, 0, pos));
   }
 }
