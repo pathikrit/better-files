@@ -493,27 +493,25 @@ object File {
     val default             : Order = byDirectoriesFirst
   }
 
-  sealed trait Type
+  /**
+   * Denote various file types using this
+   *
+   * @tparam Content The type of underlying contents e.g. a directory has its children files as contents but a regular file may have bytes as contents
+   */
+  sealed trait Type[Content] {
+    def unapply(file: File): Option[Content]
+  }
   object Type {
-    case object RegularFile extends Type {
-      /**
-       * @return contents of this file if it is a regular file
-       */
-      def unapply(file: File): Option[BufferedSource] = when(file.isRegularFile)(file.newBufferedSource)
+    case object RegularFile extends Type[BufferedSource] {
+      override def unapply(file: File) = when(file.isRegularFile)(file.newBufferedSource)
     }
 
-    case object Directory extends Type {
-      /**
-       * @return children of this directory if file a directory
-       */
-      def unapply(file: File): Option[Files] = when(file.isDirectory)(file.children)
+    case object Directory extends Type[Files] {
+      def unapply(file: File) = when(file.isDirectory)(file.children)
     }
 
-    case object SymbolicLink extends Type {
-      /**
-       * @return target of this symlink if file is a symlink
-       */
-      def unapply(file: File): Option[File] = file.symbolicLink
+    case object SymbolicLink extends Type[File] {
+      def unapply(file: File) = file.symbolicLink
     }
   }
 }
