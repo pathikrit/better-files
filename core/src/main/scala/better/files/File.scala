@@ -33,7 +33,7 @@ class File(private[this] val _path: Path) {
   /**
    * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
    */
-  def extension: Option[String] = when(hasExtension)(name.substring(name indexOf ".").toLowerCase)
+  def extension: Option[String] = when(hasExtension)(name.substring(name lastIndexOf ".").toLowerCase)
 
   def hasExtension: Boolean = isRegularFile && (name contains ".")
 
