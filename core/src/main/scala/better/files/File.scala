@@ -3,7 +3,8 @@ package better.files
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
 import java.nio.channels.{AsynchronousFileChannel, FileChannel}
-import java.nio.file._, attribute._
+import java.nio.file._
+import java.nio.file.attribute._
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
@@ -410,16 +411,16 @@ class File(private[this] val _path: Path) {
    * @param destination The destination file; Creates this if it does not exists
    * @return The destination zip file
    */
-  def zipTo(destination: File): File = {
+  def zipTo(destination: File, compressionLevel: Int = 9): File = {
     val files = if (isDirectory) children.toSeq else Seq(this)
-    Cmds.zip(files: _*)(destination)
+    Cmds.zip(files: _*)(destination, compressionLevel)
   }
 
   /**
    * zip to a temp directory
    * @return the target directory
    */
-  def zip(): File = zipTo(destination = File.newTemp(name, ".zip"))
+  def zip(compressionLevel: Int = 9): File = zipTo(destination = File.newTemp(name, ".zip"), compressionLevel)
 
   /**
    * Unzips this zip file
