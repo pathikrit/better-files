@@ -64,6 +64,8 @@ class File(private[this] val _path: Path) {
 
   def notExists(implicit linkOptions: File.Links = File.Links.default): Boolean = Files.notExists(path, linkOptions: _*)
 
+  def sibling(name: String): File = path resolveSibling name
+
   def isChildOf(parent: File): Boolean = parent isParentOf this
 
   /**
