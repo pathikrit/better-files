@@ -66,6 +66,10 @@ class File(private[this] val _path: Path) {
 
   def sibling(name: String): File = path resolveSibling name
 
+  def isSiblingOf(sibling: File): Boolean = sibling isChildOf parent
+
+  def siblings: Files = parent.list.filterNot(_ == this)
+
   def isChildOf(parent: File): Boolean = parent isParentOf this
 
   /**

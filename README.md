@@ -264,6 +264,7 @@ file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
 file.posixAttributes / file.dosAttributes  // see file.attributes
 file.isEmpty      // true if file has no content (or no children if directory) or does not exist
+file.isParentOf / file.isChildOf / file.isSiblingOf / file.siblings
 ```
 All the above APIs let's you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
 ```scala
