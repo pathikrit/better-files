@@ -45,7 +45,14 @@ class File(private[this] val _path: Path) {
 
   def contentType: Option[String] = Option(Files.probeContentType(path))
 
-  def parent: File = path.getParent
+  /**
+   * Return parent of this file
+   * NOTE: This API returns null if this file is the root;
+   *       please wrap it in an Option if you expect to handle such behaviour
+   *
+   * @return
+   */
+  def parent: File = Option(path.getParent).map(pathToFile).orNull
 
   def /(child: String): File = path.resolve(child)
 

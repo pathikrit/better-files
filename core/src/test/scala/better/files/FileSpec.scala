@@ -153,6 +153,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     fa isChildOf fa shouldBe true
     b2 isChildOf b2 shouldBe false
     b2 isChildOf b2.parent shouldBe true
+    root.parent shouldBe null
   }
 
   it should "support siblings" in {

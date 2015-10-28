@@ -7,7 +7,7 @@ import java.nio.charset.Charset
 import java.nio.file.Path
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
+import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConversions._
@@ -99,7 +99,7 @@ trait Implicits {
      */
     def withCompressionLevel(level: Int) = returning(out) {
       out.setLevel(level)
-      if(level == 0) out.setMethod(ZipOutputStream.DEFLATED)
+      if(level == Deflater.NO_COMPRESSION) out.setMethod(ZipOutputStream.DEFLATED)
     }
 
     def add(file: File, name: String): ZipOutputStream = returning(out) {
