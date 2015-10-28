@@ -3,12 +3,11 @@ package better.files
 import java.io.{File => JFile, FileSystem => JFileSystem, _}
 import java.net.URI
 import java.nio.channels.{AsynchronousFileChannel, FileChannel}
-import java.nio.file._
-import java.nio.file.attribute._
+import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.Predicate
-import java.util.zip.ZipFile
+import java.util.zip.{Deflater, ZipFile}
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConversions._
@@ -411,7 +410,7 @@ class File(private[this] val _path: Path) {
    * @param destination The destination file; Creates this if it does not exists
    * @return The destination zip file
    */
-  def zipTo(destination: File, compressionLevel: Int = 9): File = {
+  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = {
     val files = if (isDirectory) children.toSeq else Seq(this)
     Cmds.zip(files: _*)(destination, compressionLevel)
   }
@@ -420,7 +419,7 @@ class File(private[this] val _path: Path) {
    * zip to a temp directory
    * @return the target directory
    */
-  def zip(compressionLevel: Int = 9): File = zipTo(destination = File.newTemp(name, ".zip"), compressionLevel)
+  def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = zipTo(destination = File.newTemp(name, ".zip"), compressionLevel)
 
   /**
    * Unzips this zip file

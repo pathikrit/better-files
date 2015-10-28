@@ -1,7 +1,7 @@
 package better.files
 
 import java.nio.file.attribute.{PosixFilePermissions, PosixFilePermission}
-import java.util.zip.ZipOutputStream
+import java.util.zip.{Deflater, ZipOutputStream}
 
 import scala.collection.JavaConversions._
 
@@ -70,19 +70,9 @@ object Cmds {
 
   def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = 9): File = returning(destination) {
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = returning(destination) {
     for {
-      output <- {
-        val out = new ZipOutputStream(destination.newOutputStream)
-
-        // ZipOutputStream API for compression has unexpected behaviour. Check http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
-
-        if(compressionLevel == 0) {
-          out.setMethod(ZipOutputStream.DEFLATED)
-        }
-        out.setLevel(compressionLevel)
-        out.autoClosed
-      }
+      output <- new ZipOutputStream(destination.newOutputStream).withCompressionLevel(compressionLevel).autoClosed
       input <- files
       file <- input.walk()
       name = input.parent relativize file

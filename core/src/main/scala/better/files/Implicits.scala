@@ -90,6 +90,18 @@ trait Implicits {
 
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {
 
+    /**
+     * Correctly set the compression level
+     * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
+     *
+     * @param level
+     * @return
+     */
+    def withCompressionLevel(level: Int) = returning(out) {
+      out.setLevel(level)
+      if(level == 0) out.setMethod(ZipOutputStream.DEFLATED)
+    }
+
     def add(file: File, name: String): ZipOutputStream = returning(out) {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
       val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
