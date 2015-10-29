@@ -56,7 +56,7 @@ class File(private[this] val _path: Path) {
 
   def /(child: String): File = path.resolve(child)
 
-  def createChild(child: String, asDirectory: Boolean = false): File = (this / child).createIfNotExists(asDirectory)
+  def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File = (this / child).createIfNotExists(asDirectory)(attributes)
 
   def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File = if (exists) {
     this
@@ -106,8 +106,8 @@ class File(private[this] val _path: Path) {
   def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
   def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
   def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
-  def appendNewLine()(implicit codec: Codec): File = appendLine("")
-  def appendLine(line: String)(implicit codec: Codec): File = appendLines(line)
+  def appendNewLine()(implicit codec: Codec): File = appendLine("")(codec)
+  def appendLine(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
 
   def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
 
@@ -139,9 +139,9 @@ class File(private[this] val _path: Path) {
 
   def bufferedReader(implicit codec: Codec): ManagedResource[BufferedReader] = newBufferedReader(codec).autoClosed
 
-  def newBufferedWriter(implicit codec: Codec): BufferedWriter = Files.newBufferedWriter(path, codec)
+  def newBufferedWriter(implicit codec: Codec, openOptions: File.OpenOptions = File.OpenOptions.default): BufferedWriter = Files.newBufferedWriter(path, codec, openOptions: _*)
 
-  def bufferedWriter(implicit codec: Codec): ManagedResource[BufferedWriter] = newBufferedWriter(codec).autoClosed
+  def bufferedWriter(implicit codec: Codec, openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[BufferedWriter] = newBufferedWriter(codec, openOptions).autoClosed
 
   def newFileReader: FileReader = new FileReader(toJava)
 
@@ -151,17 +151,17 @@ class File(private[this] val _path: Path) {
 
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
 
-  def newInputStream: InputStream = Files.newInputStream(path)
+  def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream = Files.newInputStream(path, openOptions: _*)
 
-  def inputStream: ManagedResource[InputStream] = newInputStream.autoClosed
+  def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] = newInputStream(openOptions).autoClosed
 
   def newScanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
 
   def scanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
-  def newOutputStream: OutputStream = Files.newOutputStream(path)
+  def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream = Files.newOutputStream(path, openOptions: _*)
 
-  def outputStream: ManagedResource[OutputStream] = newOutputStream.autoClosed
+  def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] = newOutputStream(openOptions).autoClosed
 
   def newFileChannel: FileChannel = FileChannel.open(path)
 
@@ -486,6 +486,12 @@ object File {
   object Events {
     val all     : Events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
     val default : Events = all
+  }
+
+  type OpenOptions = Seq[OpenOption]
+  object OpenOptions {
+    val append  : OpenOptions = Seq(StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    val default : OpenOptions = Seq.empty
   }
 
   type Links = Seq[LinkOption]
