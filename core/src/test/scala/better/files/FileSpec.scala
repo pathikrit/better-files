@@ -133,13 +133,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
     (t1 < "hello world").changeExtensionTo(".txt").name shouldBe "t1.txt"
     t1.contentType shouldBe Some("text/plain")
-    //t1.contentType shouldBe Some("txt")
     ("src" / "test").toString should include ("better-files")
     (t1 == t1.toString) shouldBe false
     (t1.contentAsString == t1.toString) shouldBe false
     (t1 == t1.contentAsString) shouldBe false
     t1.root shouldEqual fa.root
-    //TODO: #35 - file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo"
+    file"/tmp/foo.scala.html".extension shouldBe Some(".html")
+    file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo.scala"
   }
 
   it should "hide/unhide" in {

@@ -35,7 +35,7 @@ class File(private[this] val _path: Path) {
    */
   def extension: Option[String] = when(hasExtension)(name.substring(name lastIndexOf ".").toLowerCase)
 
-  def hasExtension: Boolean = isRegularFile && (name contains ".")
+  def hasExtension: Boolean = (isRegularFile || notExists) && (name contains ".")
 
   /**
    * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
