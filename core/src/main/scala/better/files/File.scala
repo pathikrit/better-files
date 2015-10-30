@@ -215,7 +215,7 @@ class File(private[this] val _path: Path) {
 
   def isHidden: Boolean = Files.isHidden(path)
 
-  def list: Files = Files.newDirectoryStream(path).iterator() map pathToFile
+  def list: Files = Files.list(path)
   def children: Files = list
   def entries: Files = list
 
