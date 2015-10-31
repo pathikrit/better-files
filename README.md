@@ -19,7 +19,7 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![VersionEye][versionEyeImg]][versionEyeLink] [![Repo Size][repoSizeImg]](http://github.com/pathikrit/better-files)
+## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
 In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)):
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
@@ -58,8 +58,6 @@ Latest `version`: [![Maven][mavenImg]][mavenLink]
 
 [scaladocImg]: http://img.shields.io/:docs-ScalaDoc-blue.svg
 [scaladocLink]: http://pathikrit.github.io/better-files/latest/api#better.files.File
-
-[repoSizeImg]: https://reposs.herokuapp.com/?path=pathikrit/better-files
 --- 
 ### Instantiation 
 The following are all equivalent:

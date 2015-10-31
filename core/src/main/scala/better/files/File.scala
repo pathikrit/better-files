@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{File => JFile, FileSystem => JFileSystem, _}
+import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
 import java.net.URI
 import java.nio.channels.{AsynchronousFileChannel, FileChannel}
 import java.nio.file._, attribute._
@@ -234,7 +234,8 @@ class File(private[this] val _path: Path) {
    */
   def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-    Files.walk(path).filter((path: Path) => matcher.matches(path))
+    //TODO: In Scala 2.11 SAM: Files.walk(path).filter(matcher.matches(_))
+    Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = matcher matches path})
   }
 
   def fileSystem: FileSystem = path.getFileSystem

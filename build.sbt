@@ -16,11 +16,11 @@ lazy val commonSettings = Seq(
     "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
-    //"-Ywarn-numeric-widen",     // issue in 2.10
+    //"-Ywarn-numeric-widen",     // bugs in 2.10
     //"-Ywarn-value-discard",
     //"-Ywarn-unused-import",     // 2.11 only
-    "-Xfuture",
-    "-Xexperimental"
+    //"-Xexperimental",           // 2.11 only
+    "-Xfuture"
   ),
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
