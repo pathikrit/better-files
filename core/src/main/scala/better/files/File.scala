@@ -6,7 +6,6 @@ import java.nio.channels.{AsynchronousFileChannel, FileChannel}
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.function.Predicate
 import java.util.zip.{Deflater, ZipFile}
 import javax.xml.bind.DatatypeConverter
 
@@ -235,7 +234,7 @@ class File(private[this] val _path: Path) {
    */
   def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-    Files.walk(path).filter(new Predicate[Path] {override def test(path: Path) = matcher.matches(path)})  //TODO: Java 8 version?
+    Files.walk(path).filter((path: Path) => matcher.matches(path))
   }
 
   def fileSystem: FileSystem = path.getFileSystem

@@ -19,7 +19,8 @@ lazy val commonSettings = Seq(
     //"-Ywarn-numeric-widen",     // issue in 2.10
     //"-Ywarn-value-discard",
     //"-Ywarn-unused-import",     // 2.11 only
-    "-Xfuture"
+    "-Xfuture",
+    "-Xexperimental"
   ),
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
 )
@@ -42,21 +43,20 @@ lazy val akka = (project in file("akka"))
   )
   .dependsOn(core)
 
-lazy val root = (project in file("."))
-  .settings(commonSettings: _*)
-  .settings(docSettings: _*)
-  .settings(noPublishSettings: _*)
-  .aggregate(core, akka)
-
 lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
     name := "better-files-benchmarks",
-    javaOptions += "-Xmx2G",
     libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
   )
   .dependsOn(core)
+
+lazy val root = (project in file("."))
+  .settings(commonSettings: _*)
+  .settings(docSettings: _*)
+  .settings(noPublishSettings: _*)
+  .aggregate(core, akka)
 
 import UnidocKeys._
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
