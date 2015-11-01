@@ -417,16 +417,16 @@ class File(private[this] val _path: Path) {
    * @param destination The destination file; Creates this if it does not exists
    * @return The destination zip file
    */
-  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = {
+  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = {
     val files = if (isDirectory) children.toSeq else Seq(this)
-    Cmds.zip(files: _*)(destination, compressionLevel)
+    Cmds.zip(files: _*)(destination, compressionLevel)(codec)
   }
 
   /**
    * zip to a temp directory
    * @return the target directory
    */
-  def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = zipTo(destination = File.newTemp(name, ".zip"), compressionLevel)
+  def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = zipTo(destination = File.newTemp(name, ".zip"), compressionLevel)(codec)
 
   /**
    * Unzips this zip file
@@ -434,9 +434,9 @@ class File(private[this] val _path: Path) {
    * @param destination destination folder; Creates this if it does not exist
    * @return The destination where contents are unzipped
    */
-  def unzipTo(destination: File): File = returning(destination) {
+  def unzipTo(destination: File)(implicit codec: Codec): File = returning(destination) {
     for {
-      zipFile <- new ZipFile(toJava).autoClosed
+      zipFile <- new ZipFile(toJava, codec).autoClosed
       entry <- zipFile.entries()
       file = destination.createChild(entry.getName, entry.isDirectory)
       if !entry.isDirectory
@@ -447,7 +447,7 @@ class File(private[this] val _path: Path) {
    * unzip to a temporary zip file
    * @return the zip file
    */
-  def unzip(): File = unzipTo(destination = File.newTempDir(name))
+  def unzip()(implicit codec: Codec): File = unzipTo(destination = File.newTempDir(name))(codec)
 
   //TODO: add features from https://github.com/sbt/io/blob/master/io/src/main/scala/sbt/io/IO.scala
 }

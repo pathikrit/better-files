@@ -4,6 +4,7 @@ import java.nio.file.attribute.{PosixFilePermissions, PosixFilePermission}
 import java.util.zip.{Deflater, ZipOutputStream}
 
 import scala.collection.JavaConversions._
+import scala.io.Codec
 
 /**
  * Do file ops using a UNIX command line DSL
@@ -68,11 +69,11 @@ object Cmds {
 
   def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
 
-  def unzip(zipFile: File)(destination: File): File = zipFile unzipTo destination
+  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): File = zipFile.unzipTo(destination)(codec)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION): File = returning(destination) {
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = returning(destination) {
     for {
-      output <- new ZipOutputStream(destination.newOutputStream).withCompressionLevel(compressionLevel).autoClosed
+      output <- new ZipOutputStream(destination.newOutputStream, codec).withCompressionLevel(compressionLevel).autoClosed
       input <- files
       file <- input.walk()
       name = input.parent relativize file
