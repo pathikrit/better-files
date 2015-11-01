@@ -281,17 +281,19 @@ class File(private[this] val _path: Path) {
   def isWriteable: Boolean = toJava.canWrite
   def isExecutable: Boolean = toJava.canExecute
 
-  def attributes      : BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes])
-  def posixAttributes : PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes])
-  def dosAttributes   : DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes])
+  def attributes(implicit linkOptions: File.Links = File.Links.default): BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes], linkOptions: _*)
 
-  def owner: UserPrincipal = Files.getOwner(path)
+  def posixAttributes(implicit linkOptions: File.Links = File.Links.default): PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes], linkOptions: _*)
 
-  def ownerName: String = owner.getName
+  def dosAttributes(implicit linkOptions: File.Links = File.Links.default): DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes], linkOptions: _*)
 
-  def group: GroupPrincipal = posixAttributes.group()
+  def owner(implicit linkOptions: File.Links = File.Links.default): UserPrincipal = Files.getOwner(path, linkOptions: _*)
 
-  def groupName: String = group.getName
+  def ownerName(implicit linkOptions: File.Links = File.Links.default): String = owner(linkOptions).getName
+
+  def group(implicit linkOptions: File.Links = File.Links.default): GroupPrincipal = posixAttributes(linkOptions).group()
+
+  def groupName(implicit linkOptions: File.Links = File.Links.default): String = group(linkOptions).getName
 
   def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
 
@@ -302,7 +304,7 @@ class File(private[this] val _path: Path) {
    */
   def touch(time: Instant = Instant.now()): File = Files.setLastModifiedTime(createIfNotExists().path, FileTime.from(time))
 
-  def lastModifiedTime: Instant = Files.getLastModifiedTime(path).toInstant
+  def lastModifiedTime(implicit linkOptions: File.Links = File.Links.default): Instant = Files.getLastModifiedTime(path, linkOptions: _*).toInstant
 
   /**
    * Deletes this file or directory
@@ -333,7 +335,7 @@ class File(private[this] val _path: Path) {
    * @param overwrite
    * @return destination
    */
-  def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) {
+  def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) { //TODO: maxDepth?
     if (overwrite) destination.delete(ignoreIOExceptions = true)
     Files.walkFileTree(path, new SimpleFileVisitor[Path] {
       def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
@@ -353,9 +355,10 @@ class File(private[this] val _path: Path) {
     Files.copy(path, destination.path, File.CopyOptions(overwrite): _*)
   }
 
-  def symbolicLinkTo(destination: File) = Files.createSymbolicLink(path, destination.path)
+  def symbolicLinkTo(destination: File)(implicit attributes: File.Attributes = File.Attributes.default) = Files.createSymbolicLink(path, destination.path, attributes: _*)
 
-  def linkTo(destination: File, symbolic: Boolean = false): File = if (symbolic) symbolicLinkTo(destination) else Files.createLink(path, destination.path)
+  def linkTo(destination: File, symbolic: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File =
+    if (symbolic) symbolicLinkTo(destination)(attributes) else Files.createLink(path, destination.path)
 
   def listRelativePaths: Iterator[Path] = walk().map(relativize)
 
