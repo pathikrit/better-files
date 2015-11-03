@@ -247,30 +247,38 @@ class File(private[this] val _path: Path) {
    */
   def size: Long = walk().map(f => Files.size(f.path)).sum
 
-  def permissions: Set[PosixFilePermission] = Files.getPosixFilePermissions(path).toSet
+  def permissions(implicit linkOptions: File.Links = File.Links.default): Set[PosixFilePermission] = Files.getPosixFilePermissions(path, linkOptions: _*).toSet
 
-  def permissionsAsString: String = PosixFilePermissions.toString(permissions)
+  def permissionsAsString(implicit linkOptions: File.Links = File.Links.default): String = PosixFilePermissions.toString(permissions(linkOptions))
 
   def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
-  def addPermission(permission: PosixFilePermission): File = setPermissions(permissions + permission)
+  def addPermission(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): File = setPermissions(permissions(linkOptions) + permission)
 
-  def removePermission(permission: PosixFilePermission): File = setPermissions(permissions - permission)
+  def removePermission(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): File = setPermissions(permissions(linkOptions) - permission)
 
   /**
    * test if file has this permission
    */
-  def apply(permission: PosixFilePermission): Boolean = permissions(permission)
+  def apply(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): Boolean = permissions(linkOptions)(permission)
 
-  def isOwnerReadable   : Boolean = this(PosixFilePermission.OWNER_READ)
-  def isOwnerWritable   : Boolean = this(PosixFilePermission.OWNER_WRITE)
-  def isOwnerExecutable : Boolean = this(PosixFilePermission.OWNER_EXECUTE)
-  def isGroupReadable   : Boolean = this(PosixFilePermission.GROUP_READ)
-  def isGroupWritable   : Boolean = this(PosixFilePermission.GROUP_WRITE)
-  def isGroupExecutable : Boolean = this(PosixFilePermission.GROUP_EXECUTE)
-  def isOtherReadable   : Boolean = this(PosixFilePermission.OTHERS_READ)
-  def isOtherWritable   : Boolean = this(PosixFilePermission.OTHERS_WRITE)
-  def isOtherExecutable : Boolean = this(PosixFilePermission.OTHERS_EXECUTE)
+  def isOwnerReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_READ)(linkOptions)
+
+  def isOwnerWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_WRITE)(linkOptions)
+
+  def isOwnerExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_EXECUTE)(linkOptions)
+
+  def isGroupReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_READ)(linkOptions)
+
+  def isGroupWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_WRITE)(linkOptions)
+
+  def isGroupExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
+
+  def isOtherReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_READ)(linkOptions)
+
+  def isOtherWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_WRITE)(linkOptions)
+
+  def isOtherExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
 
   /**
    * This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
@@ -302,7 +310,8 @@ class File(private[this] val _path: Path) {
   /**
    * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
    */
-  def touch(time: Instant = Instant.now()): File = Files.setLastModifiedTime(createIfNotExists().path, FileTime.from(time))
+  def touch(time: Instant = Instant.now())(implicit attributes: File.Attributes = File.Attributes.default): File =
+    Files.setLastModifiedTime(createIfNotExists()(attributes).path, FileTime.from(time))
 
   def lastModifiedTime(implicit linkOptions: File.Links = File.Links.default): Instant = Files.getLastModifiedTime(path, linkOptions: _*).toInstant
 

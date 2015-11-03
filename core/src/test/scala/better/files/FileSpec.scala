@@ -181,7 +181,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "set/unset permissions" in {
     assume(isCI)
     import java.nio.file.attribute.PosixFilePermission
-    t1.permissions(PosixFilePermission.OWNER_EXECUTE) shouldBe false
+    t1.permissions()(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
     chmod_+(PosixFilePermission.OWNER_EXECUTE, t1)
     t1(PosixFilePermission.OWNER_EXECUTE) shouldBe true
