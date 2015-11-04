@@ -132,7 +132,7 @@ class File(private[this] val _path: Path) {
 
   def newRandomAccess(mode: String = "r"): RandomAccessFile = new RandomAccessFile(toJava, mode)
 
-  def randomAccess(mode: String = "r"): ManagedResource[RandomAccessFile] = newRandomAccess(mode).autoClosed
+  def randomAccess(mode: String = "r"): ManagedResource[RandomAccessFile] = newRandomAccess(mode).autoClosed //TODO: Mode enum?
 
   def newBufferedReader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
 
@@ -162,13 +162,13 @@ class File(private[this] val _path: Path) {
 
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] = newOutputStream(openOptions).autoClosed
 
-  def newFileChannel: FileChannel = FileChannel.open(path)
+  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): FileChannel = FileChannel.open(path, openOptions: _*)
 
-  def fileChannel: ManagedResource[FileChannel] = newFileChannel.autoClosed
+  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[FileChannel] = newFileChannel(openOptions).autoClosed
 
-  def newAsynchronousFileChannel: AsynchronousFileChannel = AsynchronousFileChannel.open(path)
+  def newAsynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): AsynchronousFileChannel = AsynchronousFileChannel.open(path, openOptions: _*)
 
-  def asynchronousFileChannel: ManagedResource[AsynchronousFileChannel] = newAsynchronousFileChannel.autoClosed
+  def asynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[AsynchronousFileChannel] = newAsynchronousFileChannel(openOptions).autoClosed
 
   def newWatchService: WatchService = fileSystem.newWatchService()
 
