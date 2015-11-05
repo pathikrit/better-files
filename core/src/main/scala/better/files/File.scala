@@ -459,19 +459,27 @@ class File(private[this] val _path: Path) {
    * unzip to a temporary zip file
    * @return the zip file
    */
-  def unzip()(implicit codec: Codec): File = unzipTo(destination = File.newTempDir(name))(codec)
+  def unzip()(implicit codec: Codec): File = unzipTo(destination = File.newTempDirectory(name))(codec)
 
   //TODO: add features from https://github.com/sbt/io/blob/master/io/src/main/scala/sbt/io/IO.scala
 }
 
-object File {
-  def newTempDir(prefix: String = ""): File = Files.createTempDirectory(prefix)
+object File { //TODO: Document new/temp file/dir creation deletion
+  def newTempDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File =
+    parent match {
+      case Some(dir) => Files.createTempDirectory(dir.path, prefix, attributes: _*)
+      case _ => Files.createTempDirectory(prefix, attributes: _*)
+    }
 
-  def newTemp(prefix: String = "", suffix: String = ""): File = Files.createTempFile(prefix, suffix)
+  def newTemp(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File =
+    parent match {
+      case Some(dir) => Files.createTempFile(dir.path, prefix, suffix, attributes: _*)
+      case _ => Files.createTempFile(prefix, suffix, attributes: _*)
+    }
 
   def apply(path: String): File = Paths.get(path)
 
-  def root: File = FileSystems.getDefault.getRootDirectories.head
+  def root: File = FileSystems.getDefault.getRootDirectories.head   //TODO: Add def roots
 
   def home: File = Properties.userHome.toFile
 
