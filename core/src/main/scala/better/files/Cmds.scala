@@ -63,7 +63,7 @@ object Cmds {
    * @param file
    * @return file
    */
-  def chmod(permissions: String, file: File) = file.setPermissions(PosixFilePermissions.fromString(permissions).toSet)
+  def chmod(permissions: String, file: File): File = file.setPermissions(PosixFilePermissions.fromString(permissions).toSet)
 
   def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 

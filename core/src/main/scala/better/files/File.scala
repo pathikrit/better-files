@@ -162,9 +162,11 @@ class File(private[this] val _path: Path) {
 
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] = newOutputStream(openOptions).autoClosed
 
-  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): FileChannel = FileChannel.open(path, openOptions: _*)
+  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
+    FileChannel.open(path, openOptions.toSet, attributes: _*)
 
-  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[FileChannel] = newFileChannel(openOptions).autoClosed
+  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): ManagedResource[FileChannel] =
+    newFileChannel(openOptions, attributes).autoClosed
 
   def newAsynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): AsynchronousFileChannel = AsynchronousFileChannel.open(path, openOptions: _*)
 
