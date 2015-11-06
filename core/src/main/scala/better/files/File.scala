@@ -479,7 +479,9 @@ object File { //TODO: Document new/temp file/dir creation deletion
 
   def apply(path: String): File = Paths.get(path)
 
-  def root: File = FileSystems.getDefault.getRootDirectories.head   //TODO: Add def roots
+  def roots: Iterable[File] = FileSystems.getDefault.getRootDirectories.map(p => new File(p))
+
+  def root: File = roots.head
 
   def home: File = Properties.userHome.toFile
 
