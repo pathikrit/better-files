@@ -38,7 +38,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
    */
 
   override def beforeEach() = {
-    testRoot = File.newTempDirectory("better-files")
+    testRoot = File.newTemporaryDirectory("better-files")
     fa = testRoot/"a"
     a1 = testRoot/"a"/"a1"
     a2 = testRoot/"a"/"a2"
@@ -407,7 +407,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   "file watcher" should "watch single files" in {
     assume(isCI)
-    val file = File.newTemp(suffix = ".txt").write("Hello world")
+    val file = File.newTemporaryFile(suffix = ".txt").write("Hello world")
 
     var log = List.empty[String]
     def output(msg: String) = synchronized {
@@ -439,7 +439,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   ignore should "watch directories to configurable depth" in {
     assume(isCI)
-    val dir = File.newTempDirectory()
+    val dir = File.newTemporaryDirectory()
     (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)

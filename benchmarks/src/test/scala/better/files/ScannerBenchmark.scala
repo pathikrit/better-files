@@ -3,7 +3,7 @@ package better.files
 import java.io.{BufferedReader, StringReader}
 
 object ScannerBenchmark extends App {
-  val file = File.newTemp()
+  val file = File.newTemporaryFile()
   val n = 1000
   repeat(n) {
     file.appendLine(-n to n mkString " ")

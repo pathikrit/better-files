@@ -15,7 +15,7 @@ class FileWatcherSpec extends FlatSpec with Matchers {
 
   "file watcher" should "watch directories" in {
     assume(isCI)
-    val dir = File.newTempDirectory()
+    val dir = File.newTemporaryDirectory()
     (dir / "a" / "b" / "c.txt").createIfNotExists()
 
     var log = List.empty[String]

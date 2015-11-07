@@ -4,7 +4,7 @@
 
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
-  0. [Simple I/O](#file-readwrite)
+  0. [Simple I/O](#file-readwrite)  
   0. [Streams and Codecs](#streams-and-codecs)
   0. [Java compatibility](#java-interoperability)
   0. [Pattern matching](#pattern-matching)
@@ -103,7 +103,7 @@ assert(file! == "hello\nworld")
 ```
 Or even, right-associatively:
 ```scala
-"hello" >: file
+"hello" `>:` file
 "world" >>: file
 val bytes: Array[Byte] = file.loadBytes
 ```
@@ -221,6 +221,7 @@ file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
 Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
+File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 ```
 
 ### UNIX DSL
