@@ -479,7 +479,9 @@ object File {
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
 
-  def apply(path: String): File = Paths.get(path)
+  def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
+
+  def apply(uri: URI): File = Paths.get(uri)
 
   def roots: Iterable[File] = FileSystems.getDefault.getRootDirectories.map(p => new File(p))
 
