@@ -9,7 +9,7 @@ import java.nio.file._
  * @param file
  * @param maxDepth
  */
-abstract class FileMonitor(file: File, maxDepth: Int) extends Thread {
+abstract class FileMonitor(file: File, maxDepth: Int) extends Thread { //TODO: Maybe this should be File.Monitor?
 
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 

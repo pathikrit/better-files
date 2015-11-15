@@ -10,7 +10,7 @@ import scala.util.Try
  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
  * See: http://codeforces.com/blog/entry/7018
  */
-class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimiters: Boolean) {self =>
+class Scanner(reader: LineNumberReader, val delimiter: String, val includeDelimiters: Boolean) {self => //TODO: This API is too complex, work on Scanner v2
   def this(reader: BufferedReader, delimiter: String, includeDelimiters: Boolean) = this(new LineNumberReader(reader), delimiter, includeDelimiters)
 
   def this(inputStreamReader: InputStreamReader, delimiter: String, includeDelimiters: Boolean) = this(inputStreamReader.buffered, delimiter, includeDelimiters)
