@@ -20,7 +20,7 @@
   0. [Reactive File Watcher](#akka-file-watcher)
 
 ## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
-In your `build.sbt`, add this (compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)):
+In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
+Although, this library is compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)), it needs minimum JDK 8.
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
@@ -202,6 +203,10 @@ dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == S
 You can even use more advanced regex syntax instead of glob syntax:
 ```scala
 val matches = dir.glob("^\\w*$", syntax = "regex")
+```
+For custom cases:
+```scala
+dir.collectChildren(_.isSymbolicLink) // find all sym links in a directory
 ```
 For simpler cases, you can always use `dir.list` or `dir.walk(maxDepth: Int)`
 

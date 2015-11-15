@@ -236,9 +236,15 @@ class File(private[this] val _path: Path) {
    */
   def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-    //TODO: In Scala 2.11 SAM: Files.walk(path).filter(matcher.matches(_))
-    Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = matcher matches _path.relativize(path)})
+    collectChildren(child => matcher.matches(path relativize child.path))
   }
+
+  /**
+    * More Scala friendly way of doing Files.walk
+    * @param f
+    * @return
+    */
+  def collectChildren(f: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = f(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
 
   def fileSystem: FileSystem = path.getFileSystem
 
