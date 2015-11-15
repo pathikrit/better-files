@@ -12,6 +12,9 @@ import scala.io.Codec
 object Cmds {
   def ~ : File = File.home
 
+  def pwd: File = File.currentWorkingDirectory
+  def cwd: File = pwd
+
   val `..`: File => File = _.parent
 
   val  `.`: File => File = identity

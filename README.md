@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
+
 Although, this library is compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files)), it needs minimum JDK 8.
 
 ## Tests [![codecov][codecovImg]][codecovLink]
@@ -206,7 +207,7 @@ val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
 For custom cases:
 ```scala
-dir.collectChildren(_.isSymbolicLink) // find all sym links in a directory
+dir.collectChildren(_.isSymbolicLink) // collect all symlinks in a directory
 ```
 For simpler cases, you can always use `dir.list` or `dir.walk(maxDepth: Int)`
 
@@ -233,6 +234,7 @@ File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/#better.files.Cmds$) reminiscent of the command line:
 ```scala
 import better.files_, Cmds._   // must import Cmds._ to bring in these utils
+pwd / cwd     // current dir
 cp(file1, file2)
 mv(file1, file2)
 rm(file) /*or*/ del(file)

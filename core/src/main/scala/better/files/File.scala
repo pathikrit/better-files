@@ -495,7 +495,9 @@ object File {
 
   def home: File = Properties.userHome.toFile
 
-  def tmp: File = Properties.tmpDir.toFile
+  def temp: File = Properties.tmpDir.toFile
+
+  def currentWorkingDirectory: File = File("")
 
   type Attributes = Seq[FileAttribute[_]]
   object Attributes {
