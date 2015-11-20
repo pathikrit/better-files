@@ -429,7 +429,7 @@ class File(private[this] val _path: Path) {
 
   override def hashCode = path.hashCode()
 
-  override def toString = uri.toString
+  override def toString = path.toString
 
   /**
    * Zips this file (or directory)
