@@ -97,7 +97,16 @@ class File(private[this] val _path: Path) {
 
   def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
 
-  def lines(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).iterator()
+  /**
+    * Load all lines from this file
+    * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
+    *
+    * @param codec
+    * @return all lines in this file
+    */
+  def lines(implicit codec: Codec): Traversable[String] = Files.readAllLines(path, codec)
+
+  //TODO: def lineIterator(implicit codec: Codec) = Files.lines(path, codec).autoClosed.map(stream => asScalaIterator(stream.iterator()))
 
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
