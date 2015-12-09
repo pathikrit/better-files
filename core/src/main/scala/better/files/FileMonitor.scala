@@ -3,46 +3,12 @@ package better.files
 import java.nio.file._
 
 /**
-  * Implement this interface to monitor the root file
-  */
-trait FileMonitor { //TODO: Maybe this should be File.Monitor?
-  val root: File
-
-  def start(): Unit
-
-  def onCreate(file: File): Unit = {}
-
-  def onModify(file: File): Unit = {}
-
-  def onDelete(file: File): Unit = {}
-
-  /**
-    * Dispatch a StandardWatchEventKind to an appropriate callback
-    * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
-    *
-    * @param eventType
-    * @param file
-    */
-  def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
-    case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
-    case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
-    case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
-  }
-
-  def onUnknownEvent(event: WatchEvent[_]): Unit = {}
-
-  def onException(exception: Throwable): Unit = {}
-
-  def stop(): Unit
-}
-
-/**
  * A thread based implementation of the FileMonitor
  *
  * @param root
  * @param maxDepth
  */
-class ThreadedBasedFileMonitor(val root: File, maxDepth: Int) extends FileMonitor {
+class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
   private[this] val thread = new Thread {
