@@ -6,19 +6,19 @@ import java.nio.file._
  * A thread that can monitor a file (or a directory)
  * This class's onDelete, onCreate, onModify etc are available to be overridden
  *
- * @param file
+ * @param root
  * @param maxDepth
  */
-abstract class FileMonitor(file: File, maxDepth: Int) extends Thread { //TODO: Maybe this should be File.Monitor?
+abstract class FileMonitor(root: File, maxDepth: Int) extends Thread { //TODO: Maybe this should be File.Monitor?
 
-  def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
+  def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
   setDaemon(true)
   setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
     override def uncaughtException(thread: Thread, exception: Throwable) = onException(exception)
   })
 
-  protected[this] val service = file.newWatchService
+  protected[this] val service = root.newWatchService
 
   override def run() = Iterator.continually(service.take()) foreach process
 
@@ -28,35 +28,36 @@ abstract class FileMonitor(file: File, maxDepth: Int) extends Thread { //TODO: M
   }
 
   override def start() = {
-    watch(file, maxDepth)
+    watch(root, maxDepth)
     super.start()
   }
 
   protected[this] def process(key: WatchKey) = {
-    val root = key.watchable().asInstanceOf[Path]
-    def reactTo(target: File) = file.isDirectory || (file isSamePathAs target) // if watching non-directory, don't react to siblings
+    def reactTo(target: File) = root.isDirectory || (root isSamePathAs target) // if watching non-directory, don't react to siblings
+
+    val path = key.watchable().asInstanceOf[Path]
 
     import scala.collection.JavaConversions._
     key.pollEvents() foreach {
       case event: WatchEvent[Path] @unchecked =>
-        val target: File = root resolve event.context()
+        val target: File = path resolve event.context()
         if (reactTo(target)) {
           if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-            val depth = (file relativize target).getNameCount
+            val depth = (root relativize target).getNameCount
             watch(target, (maxDepth - depth) max 0) // auto-watch new files in a directory
           }
           repeat(event.count())(dispatch(event.kind(), target))
         }
-      case event => if (reactTo(root)) onUnknownEvent(event, root)
+      case event => if (reactTo(path)) onUnknownEvent(event, path)
     }
     key.reset()
   }
 
-  protected[this] def watch(aFile: File, depth: Int): Unit = if (aFile.isDirectory) {
+  protected[this] def watch(file: File, depth: Int): Unit = if (file.isDirectory) {
     for {
-      f <- aFile.walk(depth) if f.isDirectory && f.exists
+      f <- file.walk(depth) if f.isDirectory && f.exists
     } f.register(service)
-  } else if (aFile.exists) aFile.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
+  } else if (file.exists) file.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
 
   /**
    * Dispatch a StandardWatchEventKind to an appropriate callback

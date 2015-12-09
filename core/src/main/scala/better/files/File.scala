@@ -240,10 +240,9 @@ class File(private[this] val _path: Path) {
 
   /**
    * Util to glob from this file's path
-   * @param swallowIOExceptions when set to true, any file visit exceptions (e.g. a read or permission error) would be silently ignored
    * @return Set of files that matched
    */
-  def glob(pattern: String, syntax: String = "glob", swallowIOExceptions: Boolean = false): Files = {
+  def glob(pattern: String, syntax: String = "glob"): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
     collectChildren(child => matcher.matches(path relativize child.path))
   }
@@ -334,7 +333,7 @@ class File(private[this] val _path: Path) {
 
   /**
    * Deletes this file or directory
-   * @param swallowIOExceptions If this is set to true, any exception thrown is swallwed
+   * @param swallowIOExceptions If this is set to true, any exception thrown is swallowed
    */
   def delete(swallowIOExceptions: Boolean = false): File = returning(this) {
     try {
