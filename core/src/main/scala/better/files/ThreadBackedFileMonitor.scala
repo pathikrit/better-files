@@ -8,7 +8,7 @@ import java.nio.file._
  * @param root
  * @param maxDepth
  */
-class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
+abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
   private[this] val thread = new Thread {
@@ -35,7 +35,7 @@ class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monito
             val depth = (root relativize target).getNameCount
             watch(target, (maxDepth - depth) max 0) // auto-watch new files in a directory
           }
-          repeat(event.count())(dispatch(event.kind(), target))
+          repeat(event.count())(onEvent(event.kind(), target))
         }
       case event => if (reactTo(path)) onUnknownEvent(event)
     }
@@ -47,7 +47,6 @@ class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monito
       f <- file.walk(depth) if f.isDirectory && f.exists
     } f.register(service)
   } else if (file.exists) file.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
-
 
   override def start() = {
     watch(root, maxDepth)

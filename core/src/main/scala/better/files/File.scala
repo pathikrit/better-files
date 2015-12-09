@@ -598,7 +598,7 @@ object File {
       * @param eventType
       * @param file
       */
-    def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
+    def onEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
       case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
       case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
       case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)

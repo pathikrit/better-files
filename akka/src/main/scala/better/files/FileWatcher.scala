@@ -16,7 +16,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   protected[this] val callbacks = newMultiMap[Event, Callback]
 
   private[this] val monitor: File.Monitor = new ThreadBackedFileMonitor(file, maxDepth) {
-    override def dispatch(event: Event, file: File) = self ! Message.NewEvent(event, file)
+    override def onEvent(event: Event, file: File) = self ! Message.NewEvent(event, file)
     override def onException(exception: Throwable) = self ! Status.Failure(exception)
   }
 
