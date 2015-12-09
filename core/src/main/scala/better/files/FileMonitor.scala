@@ -3,34 +3,57 @@ package better.files
 import java.nio.file._
 
 /**
- * A thread that can monitor a file (or a directory)
- * This class's onDelete, onCreate, onModify etc are available to be overridden
+  * Implement this interface to monitor the root file
+  */
+trait FileMonitor { //TODO: Maybe this should be File.Monitor?
+  val root: File
+
+  def start(): Unit
+
+  def onCreate(file: File): Unit = {}
+
+  def onModify(file: File): Unit = {}
+
+  def onDelete(file: File): Unit = {}
+
+  /**
+    * Dispatch a StandardWatchEventKind to an appropriate callback
+    * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
+    *
+    * @param eventType
+    * @param file
+    */
+  def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
+    case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
+    case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
+    case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
+  }
+
+  def onUnknownEvent(event: WatchEvent[_]): Unit = {}
+
+  def onException(exception: Throwable): Unit = {}
+
+  def stop(): Unit
+}
+
+/**
+ * A thread based implementation of the FileMonitor
  *
  * @param root
  * @param maxDepth
  */
-abstract class FileMonitor(root: File, maxDepth: Int) extends Thread { //TODO: Maybe this should be File.Monitor?
+class ThreadedBasedFileMonitor(val root: File, maxDepth: Int) extends FileMonitor {
+  protected[this] val service = root.newWatchService
 
-  def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
-
-  setDaemon(true)
-  setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
+  private[this] val thread = new Thread {
+    override def run() = Iterator.continually(service.take()) foreach process
+  }
+  thread.setDaemon(true)
+  thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
     override def uncaughtException(thread: Thread, exception: Throwable) = onException(exception)
   })
 
-  protected[this] val service = root.newWatchService
-
-  override def run() = Iterator.continually(service.take()) foreach process
-
-  override def interrupt() = {
-    service.close()
-    super.interrupt()
-  }
-
-  override def start() = {
-    watch(root, maxDepth)
-    super.start()
-  }
+  def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
   protected[this] def process(key: WatchKey) = {
     def reactTo(target: File) = root.isDirectory || (root isSamePathAs target) // if watching non-directory, don't react to siblings
@@ -48,7 +71,7 @@ abstract class FileMonitor(root: File, maxDepth: Int) extends Thread { //TODO: M
           }
           repeat(event.count())(dispatch(event.kind(), target))
         }
-      case event => if (reactTo(path)) onUnknownEvent(event, path)
+      case event => if (reactTo(path)) onUnknownEvent(event)
     }
     key.reset()
   }
@@ -59,26 +82,14 @@ abstract class FileMonitor(root: File, maxDepth: Int) extends Thread { //TODO: M
     } f.register(service)
   } else if (file.exists) file.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
 
-  /**
-   * Dispatch a StandardWatchEventKind to an appropriate callback
-   * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
-   *
-   * @param eventType
-   * @param file
-   */
-  def dispatch(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
-    case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
-    case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
-    case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
+
+  override def start() = {
+    watch(root, maxDepth)
+    thread.start()
   }
 
-  def onCreate(file: File): Unit = {}
-
-  def onModify(file: File): Unit = {}
-
-  def onDelete(file: File): Unit = {}
-
-  def onUnknownEvent(event: WatchEvent[_], root: File): Unit = {}
-
-  def onException(exception: Throwable): Unit = {}
+  override def stop() = {
+    service.close()
+    thread.interrupt()
+  }
 }
