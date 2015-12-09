@@ -477,3 +477,5 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
+
+See this [Java Advent article](http://www.javaadvent.com/2015/12/reactive-file-system-monitoring-using-akka-actors.html) for design and construction of above.

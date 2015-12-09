@@ -33,7 +33,7 @@ object Cmds {
 
   def mv(file1: File, file2: File): File = file1.moveTo(file2, overwrite = true)
 
-  def rm(file: File): File = file.delete(ignoreIOExceptions = true)
+  def rm(file: File): File = file.delete(swallowIOExceptions = true)
   def del(file: File): File = rm(file)
 
   def ln(file1: File, file2: File): File = file1 linkTo file2

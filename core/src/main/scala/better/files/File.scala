@@ -240,10 +240,10 @@ class File(private[this] val _path: Path) {
 
   /**
    * Util to glob from this file's path
-   * @param ignoreIOExceptions when set to true, any file visit exceptions (e.g. a read or permission error) would be silently ignored
+   * @param swallowIOExceptions when set to true, any file visit exceptions (e.g. a read or permission error) would be silently ignored
    * @return Set of files that matched
    */
-  def glob(pattern: String, syntax: String = "glob", ignoreIOExceptions: Boolean = false): Files = {
+  def glob(pattern: String, syntax: String = "glob", swallowIOExceptions: Boolean = false): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
     collectChildren(child => matcher.matches(path relativize child.path))
   }
@@ -334,14 +334,14 @@ class File(private[this] val _path: Path) {
 
   /**
    * Deletes this file or directory
-   * @param ignoreIOExceptions If this is set to true, an exception is thrown when delete fails (else it is swallowed)
+   * @param swallowIOExceptions If this is set to true, any exception thrown is swallwed
    */
-  def delete(ignoreIOExceptions: Boolean = false): File = returning(this) {
+  def delete(swallowIOExceptions: Boolean = false): File = returning(this) {
     try {
-      if (isDirectory) list.foreach(_.delete(ignoreIOExceptions))
+      if (isDirectory) list.foreach(_.delete(swallowIOExceptions))
       Files.delete(path)
     } catch {
-      case e: IOException if ignoreIOExceptions => //e.printStackTrace() //swallow
+      case e: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
     }
   }
 
@@ -362,7 +362,7 @@ class File(private[this] val _path: Path) {
    * @return destination
    */
   def copyTo(destination: File, overwrite: Boolean = false): File = if(isDirectory) { //TODO: maxDepth?
-    if (overwrite) destination.delete(ignoreIOExceptions = true)
+    if (overwrite) destination.delete(swallowIOExceptions = true)
     Files.walkFileTree(path, new SimpleFileVisitor[Path] {
       def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
 
