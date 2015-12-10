@@ -415,7 +415,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       log = msg :: log
     }
     /***************************************************************************/
-    val watcher = new FileMonitor(file) {
+    val watcher = new ThreadBackedFileMonitor(file) {
       override def onCreate(file: File) = output(s"$file got created")
       override def onModify(file: File) = output(s"$file got modified")
       override def onDelete(file: File) = output(s"$file got deleted")
@@ -444,7 +444,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)
 
-    val watcher = new FileMonitor(dir, maxDepth = 2) {
+    val watcher = new ThreadBackedFileMonitor(dir, maxDepth = 2) {
       override def onCreate(file: File) = output(s"Create happened on ${file.name}")
     }
     watcher.start()

@@ -562,6 +562,7 @@ object File {
   sealed trait Type[Content] {
     def unapply(file: File): Option[Content]
   }
+
   object Type {
     case object RegularFile extends Type[BufferedSource] {
       override def unapply(file: File) = when(file.isRegularFile)(file.newBufferedSource)
@@ -574,5 +575,39 @@ object File {
     case object SymbolicLink extends Type[File] {
       def unapply(file: File) = file.symbolicLink
     }
+  }
+
+  /**
+    * Implement this interface to monitor the root file
+    */
+  trait Monitor {
+    val root: File
+
+    /**
+      * Dispatch a StandardWatchEventKind to an appropriate callback
+      * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
+      *
+      * @param eventType
+      * @param file
+      */
+    def onEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
+      case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
+      case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
+      case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
+    }
+
+    def start(): Unit
+
+    def onCreate(file: File): Unit
+
+    def onModify(file: File): Unit
+
+    def onDelete(file: File): Unit
+
+    def onUnknownEvent(event: WatchEvent[_]): Unit
+
+    def onException(exception: Throwable): Unit
+
+    def stop(): Unit
   }
 }

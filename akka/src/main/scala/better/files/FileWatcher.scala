@@ -9,23 +9,26 @@ import akka.actor._
  * @param file watch this file (or directory)
  * @param maxDepth In case of directories, how much depth should we watch
  */
-class FileWatcher(file: File, maxDepth: Int) extends FileMonitor(file, maxDepth) with Actor {
+class FileWatcher(file: File, maxDepth: Int) extends Actor {
   import FileWatcher._
-  protected[this] val callbacks = newMultiMap[Event, Callback]
-
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
-  override def dispatch(event: Event, file: File) = self ! Message.NewEvent(event, file)
-  override def onException(exception: Throwable) = self ! Status.Failure(exception)
+  protected[this] val callbacks = newMultiMap[Event, Callback]
 
-  override def preStart() = super.start()
-  override def postStop() = super.interrupt()
+  private[this] val monitor: File.Monitor = new ThreadBackedFileMonitor(file, maxDepth) {
+    override def onEvent(event: Event, file: File) = self ! Message.NewEvent(event, file)
+    override def onException(exception: Throwable) = self ! Status.Failure(exception)
+  }
+
+  override def preStart() = monitor.start()
 
   override def receive = {
     case Message.NewEvent(event, target) if callbacks contains event => callbacks(event) foreach {f => f(event -> target)}
     case Message.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
     case Message.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
+
+  override def postStop() = monitor.stop()
 }
 
 object FileWatcher {

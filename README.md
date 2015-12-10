@@ -433,9 +433,9 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/FileMonitor.scala#L68):
+`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/File.scala#L600):
 ```scala
-val watcher = new FileMonitor(myDir, recursive = true) {
+val watcher = new ThreadBackedFileMonitor(myDir, recursive = true) {
   override def onCreate(file: File) = println(s"$file got created")
   override def onModify(file: File) = println(s"$file got modified")
   override def onDelete(file: File) = println(s"$file got deleted")
@@ -446,7 +446,7 @@ Sometimes, instead of overwriting each of the 3 methods above, it is more conven
 ```scala
 import java.nio.file.{Path, StandardWatchEventKinds => EventType, WatchEvent}
 
-val watcher = new FileMonitor(myDir, recursive = true) {
+val watcher = new ThreadBackedFileMonitor(myDir, recursive = true) {
   override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
     case EventType.ENTRY_CREATE => println(s"$file got created")
     case EventType.ENTRY_MODIFY => println(s"$file got modified")
