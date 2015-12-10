@@ -583,14 +583,6 @@ object File {
   trait Monitor {
     val root: File
 
-    def start(): Unit
-
-    def onCreate(file: File): Unit = {}
-
-    def onModify(file: File): Unit = {}
-
-    def onDelete(file: File): Unit = {}
-
     /**
       * Dispatch a StandardWatchEventKind to an appropriate callback
       * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
@@ -604,9 +596,17 @@ object File {
       case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
     }
 
-    def onUnknownEvent(event: WatchEvent[_]): Unit = {}
+    def start(): Unit
 
-    def onException(exception: Throwable): Unit = {}
+    def onCreate(file: File): Unit
+
+    def onModify(file: File): Unit
+
+    def onDelete(file: File): Unit
+
+    def onUnknownEvent(event: WatchEvent[_]): Unit
+
+    def onException(exception: Throwable): Unit
 
     def stop(): Unit
   }

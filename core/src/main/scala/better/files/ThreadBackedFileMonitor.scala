@@ -57,4 +57,11 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     service.close()
     thread.interrupt()
   }
+
+  // Although we declare this class as abstract, we give empty implementations here so users can choose to implement a subset of these
+  override def onCreate(file: File) = {}
+  override def onModify(file: File) = {}
+  override def onDelete(file: File) = {}
+  override def onUnknownEvent(event: WatchEvent[_]) = {}
+  override def onException(exception: Throwable) = {}
 }
