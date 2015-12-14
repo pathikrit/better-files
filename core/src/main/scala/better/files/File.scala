@@ -86,7 +86,7 @@ class File(private[this] val _path: Path) {
   def contains(file: File): Boolean = isDirectory && (file.path startsWith path)
   def isParentOf(child: File): Boolean = contains(child)
 
-  def bytes: Iterator[Byte] = newInputStream.buffered.bytes
+  def bytes: Iterator[Byte] = newInputStream.buffered.bytes //TODO: ManagedResource here?
 
   def loadBytes: Array[Byte] = Files.readAllBytes(path)
   def byteArray: Array[Byte] = loadBytes
@@ -95,7 +95,7 @@ class File(private[this] val _path: Path) {
 
   def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default): File = Files.createDirectories(path, attributes: _*)
 
-  def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars
+  def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars //TODO: ManagedResource here?
 
   /**
     * Load all lines from this file
@@ -111,15 +111,21 @@ class File(private[this] val _path: Path) {
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
 
-  def appendLines(lines: String*)(implicit codec: Codec): File = Files.write(path, lines, codec, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-  def <<(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
-  def >>:(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
-  def appendNewLine()(implicit codec: Codec): File = appendLine("")(codec)
-  def appendLine(line: String)(implicit codec: Codec): File = appendLines(line)(codec)
+  def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File =
+    Files.write(path, lines, codec, openOptions: _*)
 
-  def append(text: String)(implicit codec: Codec): File = append(text.getBytes(codec))
+  def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
-  def append(bytes: Array[Byte]): File = Files.write(path, bytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+  def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
+
+  def appendNewLine()(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLine("")(openOptions, codec)
+
+  def appendLine(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
+
+  def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = append(text.getBytes(codec))(openOptions)
+
+  def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File =
+    Files.write(path, bytes, openOptions: _*)
 
   /**
    * Write byte array to file. For large files, piping in streams is recommended
@@ -437,7 +443,7 @@ class File(private[this] val _path: Path) {
 
   override def hashCode = path.hashCode()
 
-  override def toString = path.toString
+  override def toString = pathAsString
 
   /**
    * Zips this file (or directory)
