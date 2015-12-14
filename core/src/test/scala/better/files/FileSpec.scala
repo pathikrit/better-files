@@ -251,7 +251,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString(Codec.ISO8859) should not equal "你好世界"
     t1.contentAsString(Codec.UTF8) shouldEqual "你好世界"
     val c1 = md5(t1)
-    val c2 = t1.overwrite("你好世界")(Codec.ISO8859).md5
+    val c2 = t1.overwrite("你好世界")(File.OpenOptions.default, Codec.ISO8859).md5
     c1 should not equal c2
     c2 shouldEqual t1.checksum("md5")
   }
