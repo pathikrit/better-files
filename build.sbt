@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.14.0-SNAPSHOT",
+  version := "2.14.0",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.6", "2.11.7"),
@@ -75,7 +75,7 @@ lazy val noPublishSettings = Seq(
 
 lazy val publishSettings = Seq(
   homepage := Some(url("https://github.com/pathikrit/better-files")),
-  licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
+  licenses += "MIT" -> url("https://github.com/pathikrit/better-files/blob/master/LICENSE"),
   scmInfo := Some(ScmInfo(url("https://github.com/pathikrit/better-files"), "git@github.com:pathikrit/better-files.git")),
   apiURL := Some(url("https://pathikrit.github.io/better-files/latest/api/")),
   releaseCrossBuild := true,
