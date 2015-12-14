@@ -66,9 +66,9 @@ class File(private[this] val _path: Path) {
     Files.createFile(path, attributes: _*)
   }
 
-  def exists(implicit linkOptions: File.Links = File.Links.default): Boolean = Files.exists(path, linkOptions: _*)
+  def exists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = Files.exists(path, linkOptions: _*)
 
-  def notExists(implicit linkOptions: File.Links = File.Links.default): Boolean = Files.notExists(path, linkOptions: _*)
+  def notExists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = Files.notExists(path, linkOptions: _*)
 
   def sibling(name: String): File = path resolveSibling name
 
@@ -222,12 +222,12 @@ class File(private[this] val _path: Path) {
   /**
    * @return true if this file (or the file found by following symlink) is a directory
    */
-  def isDirectory(implicit linkOptions: File.Links = File.Links.default): Boolean = Files.isDirectory(path, linkOptions: _*)
+  def isDirectory(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = Files.isDirectory(path, linkOptions: _*)
 
   /**
    * @return true if this file (or the file found by following symlink) is a regular file
    */
-  def isRegularFile(implicit linkOptions: File.Links = File.Links.default): Boolean = Files.isRegularFile(path, linkOptions: _*)
+  def isRegularFile(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = Files.isRegularFile(path, linkOptions: _*)
 
   def isSymbolicLink: Boolean = Files.isSymbolicLink(path)
 
@@ -237,14 +237,14 @@ class File(private[this] val _path: Path) {
   def children: Files = list
   def entries: Files = list
 
-  def listRecursively: Files = walk().filterNot(isSamePathAs)
+  def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files = walk()(visitOptions).filterNot(isSamePathAs)
 
   /**
    * Walk the directory tree recursively upto maxDepth
    * @param maxDepth
    * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0)
    */
-  def walk(maxDepth: Int = Int.MaxValue): Files = Files.walk(path, maxDepth) //TODO: that ignores I/O errors?
+  def walk(maxDepth: Int = Int.MaxValue)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files = Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
   /**
    * Util to glob from this file's path
@@ -269,40 +269,40 @@ class File(private[this] val _path: Path) {
   /**
    * @return file size (for directories, return size of the directory) in bytes
    */
-  def size: Long = walk().map(f => Files.size(f.path)).sum
+  def size(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Long = walk()(visitOptions).map(f => Files.size(f.path)).sum
 
-  def permissions(implicit linkOptions: File.Links = File.Links.default): Set[PosixFilePermission] = Files.getPosixFilePermissions(path, linkOptions: _*).toSet
+  def permissions(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Set[PosixFilePermission] = Files.getPosixFilePermissions(path, linkOptions: _*).toSet
 
-  def permissionsAsString(implicit linkOptions: File.Links = File.Links.default): String = PosixFilePermissions.toString(permissions(linkOptions))
+  def permissionsAsString(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String = PosixFilePermissions.toString(permissions(linkOptions))
 
   def setPermissions(permissions: Set[PosixFilePermission]): File = Files.setPosixFilePermissions(path, permissions)
 
-  def addPermission(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): File = setPermissions(permissions(linkOptions) + permission)
+  def addPermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): File = setPermissions(permissions(linkOptions) + permission)
 
-  def removePermission(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): File = setPermissions(permissions(linkOptions) - permission)
+  def removePermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): File = setPermissions(permissions(linkOptions) - permission)
 
   /**
    * test if file has this permission
    */
-  def apply(permission: PosixFilePermission)(implicit linkOptions: File.Links = File.Links.default): Boolean = permissions(linkOptions)(permission)
+  def apply(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = permissions(linkOptions)(permission)
 
-  def isOwnerReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_READ)(linkOptions)
+  def isOwnerReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OWNER_READ)(linkOptions)
 
-  def isOwnerWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_WRITE)(linkOptions)
+  def isOwnerWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OWNER_WRITE)(linkOptions)
 
-  def isOwnerExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OWNER_EXECUTE)(linkOptions)
+  def isOwnerExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OWNER_EXECUTE)(linkOptions)
 
-  def isGroupReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_READ)(linkOptions)
+  def isGroupReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.GROUP_READ)(linkOptions)
 
-  def isGroupWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_WRITE)(linkOptions)
+  def isGroupWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.GROUP_WRITE)(linkOptions)
 
-  def isGroupExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
+  def isGroupExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
 
-  def isOtherReadable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_READ)(linkOptions)
+  def isOtherReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OTHERS_READ)(linkOptions)
 
-  def isOtherWritable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_WRITE)(linkOptions)
+  def isOtherWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OTHERS_WRITE)(linkOptions)
 
-  def isOtherExecutable(implicit linkOptions: File.Links = File.Links.default): Boolean = this(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
+  def isOtherExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = this(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
 
   /**
    * This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
@@ -313,19 +313,19 @@ class File(private[this] val _path: Path) {
   def isWriteable: Boolean = toJava.canWrite
   def isExecutable: Boolean = toJava.canExecute
 
-  def attributes(implicit linkOptions: File.Links = File.Links.default): BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes], linkOptions: _*)
+  def attributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes], linkOptions: _*)
 
-  def posixAttributes(implicit linkOptions: File.Links = File.Links.default): PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes], linkOptions: _*)
+  def posixAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): PosixFileAttributes = Files.readAttributes(path, classOf[PosixFileAttributes], linkOptions: _*)
 
-  def dosAttributes(implicit linkOptions: File.Links = File.Links.default): DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes], linkOptions: _*)
+  def dosAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): DosFileAttributes   = Files.readAttributes(path, classOf[DosFileAttributes], linkOptions: _*)
 
-  def owner(implicit linkOptions: File.Links = File.Links.default): UserPrincipal = Files.getOwner(path, linkOptions: _*)
+  def owner(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): UserPrincipal = Files.getOwner(path, linkOptions: _*)
 
-  def ownerName(implicit linkOptions: File.Links = File.Links.default): String = owner(linkOptions).getName
+  def ownerName(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String = owner(linkOptions).getName
 
-  def group(implicit linkOptions: File.Links = File.Links.default): GroupPrincipal = posixAttributes(linkOptions).group()
+  def group(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): GroupPrincipal = posixAttributes(linkOptions).group()
 
-  def groupName(implicit linkOptions: File.Links = File.Links.default): String = group(linkOptions).getName
+  def groupName(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String = group(linkOptions).getName
 
   def setOwner(owner: String): File = Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
 
@@ -337,7 +337,7 @@ class File(private[this] val _path: Path) {
   def touch(time: Instant = Instant.now())(implicit attributes: File.Attributes = File.Attributes.default): File =
     Files.setLastModifiedTime(createIfNotExists()(attributes).path, FileTime.from(time))
 
-  def lastModifiedTime(implicit linkOptions: File.Links = File.Links.default): Instant = Files.getLastModifiedTime(path, linkOptions: _*).toInstant
+  def lastModifiedTime(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Instant = Files.getLastModifiedTime(path, linkOptions: _*).toInstant
 
   /**
    * Deletes this file or directory
@@ -393,7 +393,7 @@ class File(private[this] val _path: Path) {
   def linkTo(destination: File, symbolic: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File =
     if (symbolic) symbolicLinkTo(destination)(attributes) else Files.createLink(path, destination.path)
 
-  def listRelativePaths: Iterator[Path] = walk().map(relativize)
+  def listRelativePaths(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[Path] = walk()(visitOptions).map(relativize)
 
   def relativize(destination: File): Path = path relativize destination.path
 
@@ -544,11 +544,17 @@ object File {
     val default : OpenOptions = Seq.empty
   }
 
-  type Links = Seq[LinkOption]
-  object Links {
-    val follow    : Links = Seq.empty
-    val noFollow  : Links = Seq(LinkOption.NOFOLLOW_LINKS)
-    val default   : Links = follow
+  type LinkOptions = Seq[LinkOption]
+  object LinkOptions {
+    val follow    : LinkOptions = Seq.empty
+    val noFollow  : LinkOptions = Seq(LinkOption.NOFOLLOW_LINKS)
+    val default   : LinkOptions = follow
+  }
+
+  type VisitOptions = Seq[FileVisitOption]
+  object VisitOptions {
+    val follow    : VisitOptions = Seq(FileVisitOption.FOLLOW_LINKS)
+    val default   : VisitOptions = Seq.empty
   }
 
   type Order = Ordering[File]
