@@ -116,8 +116,9 @@ trait Implicits {
   implicit class CloseableOps[A <: Closeable](resource: A) {
     import scala.language.reflectiveCalls
     /**
-     * Lightweight automatic resource management
-     * Closes the resource when done
+     * Overrides `foreach` such that it closes the resource
+     * when done, or if an exception occurs.
+		 *
      * e.g.
      * <pre>
      * for {
@@ -126,6 +127,8 @@ trait Implicits {
      * // in is closed now
      * </pre>
      * @return
+     * 
+     * FIXME: there is no reason to swallow all exceptions here.
      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
@@ -136,7 +139,9 @@ trait Implicits {
     }
 
     /**
-     * Utility to make a closeable an iterator (auto close when done)
+     * Provides and iterator that closes the underlying resource
+     * when done.
+     * 
      * e.g.
      * <pre>
      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
