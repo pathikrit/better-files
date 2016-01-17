@@ -17,7 +17,9 @@ object AutoClosingStream {
     def get: Option[File] = {
       streamIterator.hasNext match {
         case true => Some(new File(streamIterator.next))
-        case false => None
+        case false =>
+          jstream.close
+          None
       }
     }
     
