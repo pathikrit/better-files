@@ -1,6 +1,6 @@
 package better.files
 
-import java.nio.file.attribute.{PosixFilePermissions, PosixFilePermission}
+import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermissions, PosixFilePermission}
 import java.util.zip.{Deflater, ZipOutputStream}
 
 import scala.collection.JavaConversions._
@@ -71,6 +71,8 @@ object Cmds {
   def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 
   def chmod_-(permission: PosixFilePermission, file: File): File = file.removePermission(permission)
+
+  def stat(file: File): PosixFileAttributes = file.posixAttributes
 
   def unzip(zipFile: File)(destination: File)(implicit codec: Codec): File = zipFile.unzipTo(destination)(codec)
 
