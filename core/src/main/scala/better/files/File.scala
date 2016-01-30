@@ -233,7 +233,7 @@ class File(private[this] val _path: Path) {
 
   def isHidden: Boolean = Files.isHidden(path)
 
-  def list = AutoClosingStream(Files.list(path))
+  def list: Files = Files.list(path)
   def children = list
   def entries = list
 

@@ -10,7 +10,6 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
 
 /**
@@ -126,8 +125,9 @@ trait Implicits {
      * } in.write(bytes)
      * // in is closed now
      * </pre>
+ *
      * @return
-     * 
+     *
      * FIXME: there is no reason to swallow all exceptions here.
      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
@@ -141,7 +141,7 @@ trait Implicits {
     /**
      * Provides and iterator that closes the underlying resource
      * when done.
-     * 
+     *
      * e.g.
      * <pre>
      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
@@ -165,6 +165,19 @@ trait Implicits {
     }
   }
 
+  implicit class JStreamOps[A](stream: JStream[A]) {
+    /**
+     * Closes this stream when iteration is complete
+     * It will NOT close the stream if it is not depleted!
+     *
+     * @return
+     */
+    def toScalaIterator: Iterator[A] = {
+      val iterator = stream.iterator()
+      stream.autoClosedIterator[A](s => iterator.next())(s => iterator.hasNext)
+    }
+  }
+
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
     override def hasNext = s.hasMoreTokens
     override def next() = s.nextToken()
@@ -175,5 +188,6 @@ trait Implicits {
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
 
   implicit def pathToFile(path: Path): File = new File(path)
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
+
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toScalaIterator.map(pathToFile)
 }

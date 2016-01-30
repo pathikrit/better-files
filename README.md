@@ -40,8 +40,8 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](benchmarks/)
 
-[licenseImg]: https://img.shields.io/github/license/pathikrit/better-files.svg
-[licenseLink]: https://opensource.org/licenses/MIT
+[licenseImg]: https://img.shields.io/:license-mit-blue.svg
+[licenseLink]: LICENSE
 
 [circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
@@ -307,11 +307,12 @@ file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
 There are also various [`Ordering[File]` included](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Order$) e.g.:
 ```scala
-myDir.list.toSeq.sorted(File.Order.byName) 
-myDir.list.toSeq.max(File.Order.bySize) 
-myDir.list.toSeq.min(File.Order.byDepth) 
-myDir.list.toSeq.max(File.Order.byModificationTime) 
-myDir.list.toSeq.sorted(File.Order.byDirectoriesFirst)
+val files = myDir.list.toSeq
+files.sorted(File.Order.byName) 
+files.max(File.Order.bySize) 
+files.min(File.Order.byDepth) 
+files.max(File.Order.byModificationTime) 
+files.sorted(File.Order.byDirectoriesFirst)
 ```
 
 ### Zip APIs
