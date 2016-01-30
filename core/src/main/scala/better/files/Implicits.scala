@@ -11,6 +11,7 @@ import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIP
 
 import scala.annotation.tailrec
 import scala.io.{BufferedSource, Codec, Source}
+import scala.util.control.NonFatal
 
 /**
  * Container for various implicits
@@ -147,21 +148,32 @@ trait Implicits {
      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
      * </pre>
      *
-     * @param next next element in this resource
-     * @param hasNext a function which tells if there is no more B left
+     * @param generator next element from this resource
+     * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
      * @tparam B
      * @return An iterator that closes itself when done
      */
-    def autoClosedIterator[B](next: A => B)(hasNext: B => Boolean): Iterator[B] = {
+    def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
       var isClosed = false
       def isOpen(item: B) = {
-        if(!isClosed && !hasNext(item)) {
-          resource.close()
-          isClosed = true
-        }
+        if(!isClosed && !isValidElement(item)) close()
         !isClosed
       }
-      Iterator.continually(next(resource)).takeWhile(isOpen)
+
+      def close() = {
+        resource.close()
+        isClosed = true
+      }
+
+      def next() = try {
+        generator(resource)
+      } catch {
+        case NonFatal(e) =>
+          close()
+          throw e
+      }
+
+      Iterator.continually(next()).takeWhile(isOpen)
     }
   }
 
