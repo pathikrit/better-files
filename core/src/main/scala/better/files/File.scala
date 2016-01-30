@@ -106,7 +106,14 @@ class File(private[this] val _path: Path) {
     */
   def lines(implicit codec: Codec): Traversable[String] = Files.readAllLines(path, codec)
 
-  //TODO: def lineIterator(implicit codec: Codec) = Files.lines(path, codec).autoClosed.map(stream => asScalaIterator(stream.iterator()))
+  /**
+    * Iterate over lines in a file (auto-close stream on complete)
+    * NOTE: If the iteration is partial, it may leave a stream open
+    *       If you want partial iteration use @see lines()
+    * @param codec
+    * @return
+    */
+  def lineIterator(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).toAutoClosedIterator
 
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)

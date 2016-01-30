@@ -124,7 +124,6 @@ trait Implicits {
      * } in.write(bytes)
      * // in is closed now
      * </pre>
-     *
      * @return
      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
@@ -180,9 +179,22 @@ trait Implicits {
      *
      * @return
      */
-    def toScalaIterator: Iterator[A] = {
+    def toAutoClosedIterator: Iterator[A] = {
       val iterator = stream.iterator()
-      stream.autoClosedIterator[A](s => iterator.next())(s => iterator.hasNext)
+      var isClosed = false
+      new Iterator[A] {
+        override def hasNext = {
+          if (!isClosed && !iterator.hasNext) {
+            try {
+              stream.close()
+            } finally {
+              isClosed = true
+            }
+          }
+          !isClosed
+        }
+        override def next() = iterator.next()
+      }
     }
   }
 
@@ -196,6 +208,5 @@ trait Implicits {
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
 
   implicit def pathToFile(path: Path): File = new File(path)
-
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toScalaIterator.map(pathToFile)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toAutoClosedIterator.map(pathToFile)
 }
