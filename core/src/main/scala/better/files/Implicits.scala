@@ -10,8 +10,8 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Codec, Source}
+import scala.util.control.NonFatal
 
 /**
  * Container for various implicits
@@ -116,10 +116,8 @@ trait Implicits {
   implicit class CloseableOps[A <: Closeable](resource: A) {
     import scala.language.reflectiveCalls
     /**
-     * Overrides `foreach` such that it closes the resource
-     * when done, or if an exception occurs.
-		 *
-     * e.g.
+     * Lightweight automatic resource management
+     * Closes the resource when done e.g.
      * <pre>
      * for {
      *   in <- file.newInputStream.autoClosed
@@ -127,8 +125,6 @@ trait Implicits {
      * // in is closed now
      * </pre>
      * @return
-     * 
-     * FIXME: there is no reason to swallow all exceptions here.
      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
@@ -139,29 +135,66 @@ trait Implicits {
     }
 
     /**
-     * Provides and iterator that closes the underlying resource
-     * when done.
-     * 
+     * Provides an iterator that closes the underlying resource when done
+     *
      * e.g.
      * <pre>
      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
      * </pre>
      *
-     * @param next next element in this resource
-     * @param hasNext a function which tells if there is no more B left
+     * @param generator next element from this resource
+     * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
      * @tparam B
-     * @return An iterator that closes itself when done
+     * @return An iterator that closes the underlying resource when done
      */
-    def autoClosedIterator[B](next: A => B)(hasNext: B => Boolean): Iterator[B] = {
+    def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
       var isClosed = false
       def isOpen(item: B) = {
-        if(!isClosed && !hasNext(item)) {
-          resource.close()
-          isClosed = true
-        }
+        if(!isClosed && !isValidElement(item)) close()
         !isClosed
       }
-      Iterator.continually(next(resource)).takeWhile(isOpen)
+
+      def close() = try {
+        resource.close()
+      } finally {
+        isClosed = true
+      }
+
+      def next() = try {
+        generator(resource)
+      } catch {
+        case NonFatal(e) =>
+          close()
+          throw e
+      }
+
+      Iterator.continually(next()).takeWhile(isOpen)
+    }
+  }
+
+  implicit class JStreamOps[A](stream: JStream[A]) {
+    /**
+     * Closes this stream when iteration is complete
+     * It will NOT close the stream if it is not depleted!
+     *
+     * @return
+     */
+    def toAutoClosedIterator: Iterator[A] = {
+      val iterator = stream.iterator()
+      var isClosed = false
+      new Iterator[A] {
+        override def hasNext = {
+          if (!isClosed && !iterator.hasNext) {
+            try {
+              stream.close()
+            } finally {
+              isClosed = true
+            }
+          }
+          !isClosed
+        }
+        override def next() = iterator.next()
+      }
     }
   }
 
@@ -175,5 +208,5 @@ trait Implicits {
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
 
   implicit def pathToFile(path: Path): File = new File(path)
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.iterator().map(pathToFile)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toAutoClosedIterator.map(pathToFile)
 }
