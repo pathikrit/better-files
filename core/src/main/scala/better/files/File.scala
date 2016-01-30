@@ -234,8 +234,8 @@ class File(private[this] val _path: Path) {
   def isHidden: Boolean = Files.isHidden(path)
 
   def list: Files = Files.list(path)
-  def children = list
-  def entries = list
+  def children: Files = list
+  def entries: Files = list
 
   def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files = walk()(visitOptions).filterNot(isSamePathAs)
 
@@ -454,8 +454,8 @@ class File(private[this] val _path: Path) {
    * @return The destination zip file
    */
   def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = {
-    val files = if (isDirectory) children else Iterator(this)
-    Cmds.zip(files.toSeq: _*)(destination, compressionLevel)(codec)
+    val files = if (isDirectory) children.toSeq else Seq(this)
+    Cmds.zip(files: _*)(destination, compressionLevel)(codec)
   }
 
   /**

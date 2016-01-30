@@ -116,20 +116,16 @@ trait Implicits {
   implicit class CloseableOps[A <: Closeable](resource: A) {
     import scala.language.reflectiveCalls
     /**
-     * Overrides `foreach` such that it closes the resource
-     * when done, or if an exception occurs.
-		 *
-     * e.g.
+     * Lightweight automatic resource management
+     * Closes the resource when done e.g.
      * <pre>
      * for {
      *   in <- file.newInputStream.autoClosed
      * } in.write(bytes)
      * // in is closed now
      * </pre>
- *
-     * @return
      *
-     * FIXME: there is no reason to swallow all exceptions here.
+     * @return
      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
@@ -140,8 +136,7 @@ trait Implicits {
     }
 
     /**
-     * Provides and iterator that closes the underlying resource
-     * when done.
+     * Provides an iterator that closes the underlying resource when done
      *
      * e.g.
      * <pre>
@@ -151,7 +146,7 @@ trait Implicits {
      * @param generator next element from this resource
      * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
      * @tparam B
-     * @return An iterator that closes itself when done
+     * @return An iterator that closes the underlying resource when done
      */
     def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
       var isClosed = false
@@ -160,8 +155,9 @@ trait Implicits {
         !isClosed
       }
 
-      def close() = {
+      def close() = try {
         resource.close()
+      } finally {
         isClosed = true
       }
 
