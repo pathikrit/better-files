@@ -607,12 +607,12 @@ object File {
     }
   }
 
-  sealed abstract class PathMatcherSyntax(val name: String)
+  class PathMatcherSyntax private (val name: String)
   object PathMatcherSyntax {
-    case object Glob extends PathMatcherSyntax("glob")
-    case object Regex extends PathMatcherSyntax("regex")
-    def other(syntax: String) = new PathMatcherSyntax(syntax) {}
-    val default = Glob
+    val glob = new PathMatcherSyntax("glob")
+    val regex = new PathMatcherSyntax("regex")
+    val default = glob
+    def other(syntax: String) = new PathMatcherSyntax(syntax)
   }
 
   /**

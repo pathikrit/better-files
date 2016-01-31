@@ -213,7 +213,7 @@ dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == S
 ```
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
 ```scala
-val matches = dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.Regex)
+val matches = dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.regex)
 ```
 For custom cases:
 ```scala
