@@ -40,24 +40,31 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](benchmarks/)
 
+[licenseImgShield]: https://img.shields.io/github/license/pathikrit/better-files.svg
 [licenseImg]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
 
-[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
+[circleCiImgShield]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
+[circleCiImg]: https://circleci.com/gh/pathikrit/better-files/tree/master.svg?style=svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 
-[codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
+[codecovImgShield]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
+[codecovImg]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 
+[versionEyeImgShield]: https://img.shields.io/versioneye/d/pathikrit/better-files.svg
 [versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
 
-[codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
+[codacyImgShield]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
+[codacyImg]: https://api.codacy.com/project/badge/grade/0e2aeb7949bc49e6802afcc43a7a1aa1
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 
+[mavenImgShield]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
 [mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
 [mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
 
+[gitterImgShield]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
 [gitterImg]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
@@ -200,7 +207,7 @@ val File.Type.Directory(researchDocs) = home/"Downloads"/"research"
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src"/"test"
-val matches: Seq[File] = dir.glob("**/*.{java,scala}")
+val matches: Iterator[File] = dir.glob("**/*.{java,scala}")
 // above code is equivalent to:
 dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
 ```

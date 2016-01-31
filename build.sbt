@@ -22,7 +22,7 @@ lazy val commonSettings = Seq(
     //"-Xexperimental",           // 2.11 only
     "-Xfuture"
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % Test
+  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
 )
 
 lazy val core = (project in file("core"))
