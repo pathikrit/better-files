@@ -114,8 +114,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    ("core"/"src"/"test").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("FileSpec.scala")
-    ("core"/"src"/"test").listRecursively.filter(_.extension == Some(".scala")) should have length 1
+    testRoot.glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    val path = testRoot.path.toString
+    File(path).glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq shouldEqual Seq("ArrayBufferScanner.java", "Scanners.scala", "ScannerBenchmark.scala")
+    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
+    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
+    ("benchmarks"/"src").listRecursively.filter(_.extension == Some(".scala")).map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
     ls("core"/"src"/"test") should have length 1
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
