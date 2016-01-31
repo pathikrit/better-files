@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  version := "2.14.0",
+  version := "2.14.1",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.6", "2.11.7"),
