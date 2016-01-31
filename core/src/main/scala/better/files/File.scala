@@ -253,12 +253,14 @@ class File(private[this] val _path: Path) {
    */
   def walk(maxDepth: Int = Int.MaxValue)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files = Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
+  def pathMatcher(syntax: File.PathMatcherSyntax)(pattern: String): PathMatcher = fileSystem.getPathMatcher(s"${syntax.name}:$pattern")
+
   /**
    * Util to glob from this file's path
    * @return Set of files that matched
    */
-  def glob(pattern: String, syntax: String = "glob"): Files = {
-    val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
+  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default): Files = {
+    val matcher = pathMatcher(syntax)(pattern)
     collectChildren(child => matcher.matches(child.path))
   }
 
@@ -596,6 +598,14 @@ object File {
     case object SymbolicLink extends Type[File] {
       def unapply(file: File) = file.symbolicLink
     }
+  }
+
+  sealed abstract class PathMatcherSyntax(val name: String)
+  object PathMatcherSyntax {
+    case object Glob extends PathMatcherSyntax("glob")
+    case object Regex extends PathMatcherSyntax("regex")
+    def other(syntax: String) = new PathMatcherSyntax(syntax) {}
+    val default = Glob
   }
 
   /**
