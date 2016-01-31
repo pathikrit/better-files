@@ -259,7 +259,7 @@ class File(private[this] val _path: Path) {
    */
   def glob(pattern: String, syntax: String = "glob"): Files = {
     val matcher = fileSystem.getPathMatcher(s"$syntax:$pattern")
-    collectChildren(child => matcher.matches(path relativize child.path))
+    collectChildren(child => matcher.matches(child.path))
   }
 
   /**

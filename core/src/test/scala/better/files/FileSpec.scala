@@ -114,9 +114,11 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
+    a1.glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
     testRoot.glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
-    val path = testRoot.path.toString
-    File(path).glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
+    File(path).glob("**/*.{txt}").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
     ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq shouldEqual Seq("ArrayBufferScanner.java", "Scanners.scala", "ScannerBenchmark.scala")
     ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
     ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
@@ -220,6 +222,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chgrp("cool", fa)
     //a[java.nio.file.FileSystemException] should be thrownBy chown("admin", fa)
     //fa.chown("nobody").chgrp("nobody")
+    stat(t1).isInstanceOf[java.nio.file.attribute.PosixFileAttributes] shouldBe true // TODO: https://github.com/scalatest/scalatest/issues/835
   }
 
   it should "support ln/cp/mv" in {

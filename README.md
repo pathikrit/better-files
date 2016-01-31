@@ -211,7 +211,7 @@ val matches: Iterator[File] = dir.glob("**/*.{java,scala}")
 // above code is equivalent to:
 dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
 ```
-You can even use more advanced regex syntax instead of glob syntax:
+You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
 ```scala
 val matches = dir.glob("^\\w*$", syntax = "regex")
 ```
