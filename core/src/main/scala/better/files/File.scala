@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
 import java.net.URI
-import java.nio.channels.{AsynchronousFileChannel, FileChannel}
+import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel}
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
@@ -244,6 +244,24 @@ class File private (val path: Path) { //TODO: LinkOption?
   def isSymbolicLink: Boolean = Files.isSymbolicLink(path)
 
   def isHidden: Boolean = Files.isHidden(path)
+
+  def hasLock(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean = {
+    val channel = newRandomAccess(mode).getChannel
+    var lock = channel.lock(position, size, isShared)
+    try {
+      lock = channel.tryLock(position, size, isShared)
+      true
+    } catch {
+      case e: OverlappingFileLockException => false
+    } finally {
+      lock.release()
+      channel.close()
+    }
+  }
+
+  def hasReadLock(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = hasLock(File.RandomAccessMode.read, position, size, isShared)
+
+  def hasWriteLock(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = hasLock(File.RandomAccessMode.readWrite, position, size, isShared)
 
   def list: Files = Files.list(path)
   def children: Files = list
