@@ -16,8 +16,7 @@ import scala.util.Properties
 /**
  * Scala wrapper around java.nio.files.Path
  */
-class File(private[this] val _path: Path) {
-  val path = _path.normalize.toAbsolutePath
+class File private (val path: Path) {
 
   def pathAsString: String = path.toString
 
@@ -510,13 +509,13 @@ object File {
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
 
-  implicit def apply(path: Path): File = new File(path)
+  implicit def apply(path: Path): File = new File(path.normalize().toAbsolutePath)
 
   def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
 
   def apply(uri: URI): File = Paths.get(uri)
 
-  def roots: Iterable[File] = FileSystems.getDefault.getRootDirectories.map(p => new File(p))
+  def roots: Iterable[File] = FileSystems.getDefault.getRootDirectories.map(File.apply)
 
   def root: File = roots.head
 

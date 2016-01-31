@@ -179,24 +179,24 @@ trait Implicits {
      *
      * @return
      */
-    def toAutoClosedIterator: Iterator[A] = {
+    def toAutoClosedIterator: Iterator[A] = new Iterator[A] {
       val iterator = stream.iterator()
       var isClosed = false
-      new Iterator[A] {
-        override def hasNext = {
-          if (!isClosed && !iterator.hasNext) {
-            try {
-              stream.close()
-            } finally {
-              isClosed = true
-            }
+
+      override def hasNext = {
+        if (!isClosed && !iterator.hasNext) {
+          try {
+            stream.close()
+          } finally {
+            isClosed = true
           }
-          !isClosed
         }
-        override def next() = iterator.next()
+        !isClosed
       }
+      override def next() = iterator.next()
     }
   }
+
 
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
     override def hasNext = s.hasMoreTokens
