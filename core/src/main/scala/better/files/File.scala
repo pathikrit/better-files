@@ -159,9 +159,9 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def bufferedSource(implicit codec: Codec): ManagedResource[BufferedSource] = newBufferedSource(codec).autoClosed
 
-  def newRandomAccess(mode: String = "r"): RandomAccessFile = new RandomAccessFile(toJava, mode)
+  def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile = new RandomAccessFile(toJava, mode.value)
 
-  def randomAccess(mode: String = "r"): ManagedResource[RandomAccessFile] = newRandomAccess(mode).autoClosed //TODO: Mode enum?
+  def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): ManagedResource[RandomAccessFile] = newRandomAccess(mode).autoClosed //TODO: Mode enum?
 
   def newBufferedReader(implicit codec: Codec): BufferedReader = Files.newBufferedReader(path, codec)
 
@@ -613,6 +613,14 @@ object File {
     val regex = new PathMatcherSyntax("regex")
     val default = glob
     def other(syntax: String) = new PathMatcherSyntax(syntax)
+  }
+
+  class RandomAccessMode private(val value: String)
+  object RandomAccessMode {
+    val read = new RandomAccessMode("r")
+    val readWrite = new RandomAccessMode("rw")
+    val readWriteMetadataSynchronous = new RandomAccessMode("rws")
+    val readWriteContentSynchronous = new RandomAccessMode("rwd")
   }
 
   /**

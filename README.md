@@ -45,7 +45,7 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 [licenseLink]: LICENSE
 
 [circleCiImgShield]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
-[circleCiImg]: https://circleci.com/gh/pathikrit/better-files/tree/master.svg?style=svg
+[circleCiImg]: https://circleci.com/gh/pathikrit/better-files/tree/master.svg
 [circleCiLink]: https://circleci.com/gh/pathikrit/better-files
 
 [codecovImgShield]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
@@ -53,7 +53,7 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 
 [versionEyeImgShield]: https://img.shields.io/versioneye/d/pathikrit/better-files.svg
-[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg?style=flat
+[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
 
 [codacyImgShield]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
@@ -61,7 +61,7 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 
 [mavenImgShield]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
-[mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
+[mavenImg]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.11/badge.svg
 [mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
 
 [gitterImgShield]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
