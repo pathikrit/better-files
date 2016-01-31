@@ -16,7 +16,7 @@ import scala.util.Properties
 /**
  * Scala wrapper around java.nio.files.Path
  */
-class File private (val path: Path) {
+class File private (val path: Path) { //TODO: LinkOption?
 
   def pathAsString: String = path.toString
 
@@ -47,10 +47,16 @@ class File private (val path: Path) {
    * Return parent of this file
    * NOTE: This API returns null if this file is the root;
    *       please wrap it in an Option if you expect to handle such behaviour
-   *
+   * @see parentOption
    * @return
    */
-  def parent: File = Option(path.getParent).map(File.apply).orNull
+  def parent: File = parentOption.orNull
+
+  /**
+   *
+   * @return Some(parent) of this file or None if this is the root and thus has no parent
+   */
+  def parentOption: Option[File] = Option(path.getParent).map(File.apply)
 
   def /(child: String): File = path.resolve(child)
 

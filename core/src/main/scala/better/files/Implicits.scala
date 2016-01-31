@@ -181,17 +181,17 @@ trait Implicits {
      */
     def toAutoClosedIterator: Iterator[A] = new Iterator[A] {
       val iterator = stream.iterator()
-      var isClosed = false
+      var isOpen = true
 
       override def hasNext = {
-        if (!isClosed && !iterator.hasNext) {
+        if (isOpen && !iterator.hasNext) {
           try {
             stream.close()
           } finally {
-            isClosed = true
+            isOpen = false
           }
         }
-        !isClosed
+        isOpen
       }
       override def next() = iterator.next()
     }
