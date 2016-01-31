@@ -207,6 +207,5 @@ trait Implicits {
 
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
 
-  implicit def pathToFile(path: Path): File = new File(path)
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toAutoClosedIterator.map(pathToFile)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files = files.toAutoClosedIterator.map(File.apply)
 }

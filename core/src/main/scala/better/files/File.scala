@@ -51,7 +51,7 @@ class File(private[this] val _path: Path) {
    *
    * @return
    */
-  def parent: File = Option(path.getParent).map(pathToFile).orNull
+  def parent: File = Option(path.getParent).map(File.apply).orNull
 
   def /(child: String): File = path.resolve(child)
 
@@ -509,6 +509,8 @@ object File {
       case Some(dir) => Files.createTempFile(dir.path, prefix, suffix, attributes: _*)
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
+
+  implicit def apply(path: Path): File = new File(path)
 
   def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
 
