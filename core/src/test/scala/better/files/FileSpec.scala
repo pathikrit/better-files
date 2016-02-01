@@ -225,6 +225,17 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     stat(t1).isInstanceOf[java.nio.file.attribute.PosixFileAttributes] shouldBe true // TODO: https://github.com/scalatest/scalatest/issues/835
   }
 
+  it should "detect file locks" in {
+    val file = File.newTemporaryFile()
+    file.isWriteLocked() shouldBe false
+    val channel = file.newRandomAccess(File.RandomAccessMode.readWrite).getChannel
+    val lock = channel.tryLock()
+    file.isWriteLocked() shouldBe true
+    lock.release()
+    channel.close()
+    file.isWriteLocked() shouldBe false
+  }
+
   it should "support ln/cp/mv" in {
     val magicWord = "Hello World"
     t1 write magicWord

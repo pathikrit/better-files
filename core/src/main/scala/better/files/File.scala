@@ -245,23 +245,21 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def isHidden: Boolean = Files.isHidden(path)
 
-  def hasLock(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean = {
+  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean = {
     val channel = newRandomAccess(mode).getChannel
-    var lock = channel.lock(position, size, isShared)
     try {
-      lock = channel.tryLock(position, size, isShared)
-      true
+      channel.tryLock(position, size, isShared).release()
+      false
     } catch {
-      case e: OverlappingFileLockException => false
+      case e: OverlappingFileLockException => true
     } finally {
-      lock.release()
       channel.close()
     }
   }
 
-  def hasReadLock(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = hasLock(File.RandomAccessMode.read, position, size, isShared)
+  def isReadLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = isLocked(File.RandomAccessMode.read, position, size, isShared)
 
-  def hasWriteLock(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = hasLock(File.RandomAccessMode.readWrite, position, size, isShared)
+  def isWriteLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) = isLocked(File.RandomAccessMode.readWrite, position, size, isShared)
 
   def list: Files = Files.list(path)
   def children: Files = list

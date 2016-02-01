@@ -237,7 +237,7 @@ file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
 Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
-file.hasReadLock / file.hasWriteLock / file.hasLock
+file.isReadLocked / file.isWriteLocked / file.isLocked
 File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 ```
 
