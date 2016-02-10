@@ -120,6 +120,11 @@ class File private (val path: Path) { //TODO: LinkOption?
    */
   def lineIterator(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).toAutoClosedIterator
 
+  def tokens(implicit config: Scanner.Config = Scanner.Config.default, codec: Codec): Traversable[String] = for {
+    reader <- bufferedReader(codec)
+    token <- reader.tokens(config)
+  } yield token
+
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
 
@@ -183,14 +188,9 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] = newInputStream(openOptions).autoClosed
 
-  def newScanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = Scanner(this, delimiter, includeDelimiters)(codec)
+  def newScanner(implicit config: Scanner.Config = Scanner.Config.default): Scanner = Scanner(newBufferedReader(config.codec))(config)
 
-  def tokens(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Traversable[String] = for {
-    reader <- bufferedReader(codec)
-    token <- reader.tokens(delimiter, includeDelimiters)
-  } yield token
-
-  def scanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
+  def scanner(implicit config: Scanner.Config = Scanner.Config.default): ManagedResource[Scanner] = newScanner(config).autoClosed
 
   def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream = Files.newOutputStream(path, openOptions: _*)
 
@@ -561,12 +561,6 @@ object File {
   object CopyOptions {
     def apply(overwrite: Boolean) : CopyOptions = if (overwrite) StandardCopyOption.REPLACE_EXISTING +: default else default
     val default                   : CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
-  }
-
-  type Delimiters = String
-  object Delimiters {
-    val spaces  : Delimiters = " \t\n\r\f"
-    val default : Delimiters = spaces
   }
 
   type Events = Seq[WatchEvent.Kind[_]]

@@ -79,9 +79,9 @@ trait Implicits {
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
 
-    def tokens(delimiter: String, includeDelimiters: Boolean): Iterator[String] = for {
+    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = for {
       line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
-      token <- new StringTokenizer(line, delimiter, includeDelimiters)
+      token <- new StringTokenizer(line, config.delimiter, config.includeDelimiters)
     } yield token
   }
 

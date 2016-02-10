@@ -11,6 +11,8 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 
   def next[A: Scannable]: A = implicitly[Scannable[A]].apply(this)
 
+  //TODO: nextLine?
+
   override def hasNext = tokens.hasNext
   override def next() = tokens.next()
 }
@@ -20,22 +22,32 @@ trait Scanner extends Iterator[String] with AutoCloseable {
  * See: http://codeforces.com/blog/entry/7018
  */
 object Scanner {
+  /**
+   * Use this to configure your Scanner
+   *
+   * @param delimiter
+   * @param includeDelimiters
+   */
+  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
+  object Config {
+    val default = Config(delimiter = " \t\n\r\f", includeDelimiters = false)
+  }
 
-  def apply(str: String, delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false): Scanner = Scanner(new StringReader(str), delimiter, includeDelimiters)
+  def apply(str: String)(implicit config: Config = Config.default): Scanner = Scanner(new StringReader(str))(config)
 
-  def apply(reader: Reader, delimiter: String, includeDelimiters: Boolean): Scanner = Scanner(new BufferedReader(reader), delimiter, includeDelimiters)
+  def apply(reader: Reader)(implicit config: Config): Scanner = Scanner(new BufferedReader(reader))(config)
 
-  def apply(reader: BufferedReader, delimiter: String, includeDelimiters: Boolean): Scanner = Scanner(new LineNumberReader(reader), delimiter, includeDelimiters)
+  def apply(reader: BufferedReader)(implicit config: Config): Scanner = Scanner(new LineNumberReader(reader))(config)
 
-  def apply(inputStream: InputStream, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec): Scanner = Scanner(inputStream.reader(codec), delimiter, includeDelimiters)
+  def apply(inputStream: InputStream)(implicit config: Config): Scanner = Scanner(inputStream.reader(config.codec))(config)
 
-  def apply(file: File, delimiter: String, includeDelimiters: Boolean)(implicit codec: Codec): Scanner = Scanner(file.newBufferedReader(codec), delimiter, includeDelimiters)
-
-  def apply(reader: LineNumberReader, delimiter: String, includeDelimiters: Boolean) = new Scanner {
-    override val tokens = reader.tokens(delimiter, includeDelimiters)
+  def apply(reader: LineNumberReader)(implicit config: Config) = new Scanner {
+    override val tokens = reader.tokens(config)
     override def lineNumber() = reader.getLineNumber
     override def close() = reader.close()
   }
+
+  val console = Scanner(System.in)(Config.default)
 }
 
 /**
