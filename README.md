@@ -381,53 +381,19 @@ It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since 
 `better-files` provides a faster, richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
 that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
-val data = (home / "Desktop" / "stocks.tsv") << s"""
-| id  Stock Price   Buy
-| ---------------------
-| 1   AAPL  109.16  false
-| 2   GOOGL 566.78  false
-| 3   MSFT   39.10  true
+val data = t1 << s"""
+| Hello World
+| 1 2 3
 """.stripMargin
-
-val scanner: Scanner = data.newScanner().skipLines(lines = 2)
-assert(scanner.lineNumber == 3)
-assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
-assert(scanner.peekToken == Some("1"))
-assert(scanner.next(pattern = "\\d+") == Some("1"))
-assert(scanner.peek[String] == Some("AAPL"))
-assert(scanner.next[String]() == Some("AAPL"))
-assert(scanner.next[Int]() == None)
-assert(scanner.peek[Double] == Some(109.16))
-assert(scanner.next[Double]() == Some(109.16))
-assert(scanner.next[Boolean]() == Some(false))
-assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
-assert(scanner.lineNumber == 4)
-scanner.skipLine()
-assert(scanner.lineNumber == 5)
-while(scanner.hasNext) {
-  println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
-}
-```
-Generic scanning:
-```scala
-scanner.nextDefined[A](f: String => Option[A])  // returns Some(a) if f(next) == Some(a)
-scanner.nextMatch(f: String => Boolean)         // returns Some(next) if f(next) is true
-scanner.nextSuccess[A](f: String => Try[A])     // returns Some(a) if f(next) == Success(a)
-scanner.nextTry[A](f: String => A)              // equivalent to nextSuccess(Try(f))
-```
-You can also use the `peek` equivalents of above to create custom scanners:
-```scala
-sealed trait Animal
-case class Dog(name: String) extends Animal
-case class Cat(name: String) extends Animal
-
-implicit val animalParser: Scannable[Animal] = new Scannable[Animal] {
-  override def scan(token: String)(implicit context: Scanner) = for {
-    name <- context.peek[String]
-  } yield if (name == "Garfield") Cat(name) else Dog(name)
-}
-
-val pets = file.newScanner().iterator[Animal]
+val scanner: Scanner = data.newScanner()
+assert(scanner.next[String] == "Hello")
+assert(scanner.lineNumber == 1)
+assert(scanner.next[String] == "World")
+assert(scanner.next[Int] == 2)
+assert(scanner.next[Int] == 2)
+assert(scanner.lineNumber == 2)
+assert(scanner.next[Int] == 3)
+assert(!scanner.iterator.hasNext)
 ```
 
 ### File Monitoring

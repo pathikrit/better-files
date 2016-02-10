@@ -363,46 +363,19 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   "scanner" should "parse files" in {
     val data = t1 << s"""
-    | id  Stock Price   Buy
-    | ---------------------
-    | 1   AAPL  109.16  false
-    | 2   GOOGL 566.78  false
-    | 3   MSFT   39.10  true
+    | Hello World
+    | 1 2 3
     """.stripMargin
-    val scanner: Scanner = data.newScanner().skipLines(lines = 2)
-    assert(scanner.lineNumber == 4)
-    assert(scanner.peekLine == Some(" 1   AAPL  109.16  false"))
-    assert(scanner.peekToken == Some("1"))
-    assert(scanner.next(pattern = "\\d+") == Some("1"))
-    assert(scanner.peek[String] == Some("AAPL"))
-    assert(scanner.next[String]() == Some("AAPL"))
-    assert(scanner.next[Int]() == None)
-    assert(scanner.peek[Double] == Some(109.16))
-    assert(scanner.next[Double]() == Some(109.16))
-    assert(scanner.next[Boolean]() == Some(false))
-    assert(scanner.skip(pattern = "\\d+").next[String]() == Some("GOOGL"))
-    assert(scanner.lineNumber == 5)
-    scanner.skipLine()
-    assert(scanner.lineNumber == 6)
-    while(scanner.hasMoreTokens) {
-      println((scanner.next[Int](), scanner.next[String](), scanner.next[Double](), scanner.next[Boolean]()))
-    }
-
-    scanner.lineNumber shouldBe 7
-    scanner.hasMoreTokens shouldBe false
-    scanner.nextLine() shouldBe None
-    scanner.peekToken shouldBe None
-    scanner.next[String]() shouldBe None
-    scanner.peekLine shouldBe None
-    scanner.next[Int]() shouldBe None
-    Try(scanner.nextToken()).toOption shouldBe None
-  }
-
-  it should "parse longs/booleans" in {
-    val data = for {
-      scanner <- new Scanner("10 false").autoClosed
-    } yield scanner.next[Long]() -> scanner.next[Boolean]()
-    data shouldBe Seq(Some(10L) -> Some(false))
+    val scanner: Scanner = data.newScanner()
+    assert(scanner.lineNumber == 0)
+    assert(scanner.next[String] == "Hello")
+    assert(scanner.lineNumber == 2)
+    assert(scanner.next[String] == "World")
+    assert(scanner.next[Int] == 1)
+    assert(scanner.next[Int] == 2)
+    assert(scanner.lineNumber == 3)
+    assert(scanner.next[Int] == 3)
+    assert(!scanner.iterator.hasNext)
   }
 
   it should "parse custom parsers" in {
@@ -416,12 +389,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     case class Cat(name: String) extends Animal
 
     implicit val animalParser = new Scannable[Animal] {
-      override def scan(token: String)(implicit context: Scanner) = for {
-        name <- context.peek[String]            //TODO: Implement peakAhead
-      } yield if (name == "Garfield") Cat(name) else Dog(name)
+      override def apply(scanner: Scanner) = {
+        val name = scanner.next[String]
+        if (name == "Garfield") Cat(name) else Dog(name)
+      }
     }
-
-    file.newScanner().iterator[Animal].toSeq should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
+    val scanner = file.newScanner()
+    Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
   }
 
   "file watcher" should "watch single files" in {

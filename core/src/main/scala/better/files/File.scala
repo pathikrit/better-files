@@ -183,7 +183,7 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] = newInputStream(openOptions).autoClosed
 
-  def newScanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = new Scanner(this, delimiter, includeDelimiters)(codec)
+  def newScanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = Scanner(this, delimiter, includeDelimiters)(codec)
 
   def scanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
