@@ -78,6 +78,11 @@ trait Implicits {
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
+
+    def tokens(delimiter: String, includeDelimiters: Boolean): Iterator[String] = for {
+      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
+      token <- new StringTokenizer(line, delimiter, includeDelimiters)
+    } yield token
   }
 
   implicit class WriterOps(writer: Writer) {

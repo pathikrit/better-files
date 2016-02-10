@@ -27,13 +27,8 @@ object Scanner {
   def apply(str: String, delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false): Scanner = Scanner(new ByteArrayInputStream(str.getBytes), delimiter, includeDelimiters)
 
   def apply(reader: LineNumberReader, delimiter: String, includeDelimiters: Boolean) = new Scanner {
-    override val iterator = for {
-      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
-      token <- new java.util.StringTokenizer(line, delimiter, includeDelimiters)
-    } yield token
-
+    override val iterator = reader.tokens(delimiter, includeDelimiters )
     override def lineNumber = reader.getLineNumber
-
     override def close(): Unit = reader.close()
   }
 }

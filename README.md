@@ -52,8 +52,8 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 
-[versionEyeImg]: https://img.shields.io/versioneye/d/pathikrit/better-files.svg
-[versionEyeImg2]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg
+[versionEyeImg2]: https://img.shields.io/versioneye/d/pathikrit/better-files.svg
+[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg
 [versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
 
 [codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
@@ -395,6 +395,7 @@ assert(scanner.lineNumber == 2)
 assert(scanner.next[Int] == 3)
 assert(!scanner.iterator.hasNext)
 ```
+If you are simply interested in tokens, you can use `file.tokens(delimiter, includeDelims)`
 
 ### File Monitoring
 Vanilla Java watchers:

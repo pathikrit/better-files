@@ -185,6 +185,11 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def newScanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Scanner = Scanner(this, delimiter, includeDelimiters)(codec)
 
+  def tokens(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): Traversable[String] = for {
+    reader <- bufferedReader(codec)
+    token <- reader.tokens(delimiter, includeDelimiters)
+  } yield token
+
   def scanner(delimiter: String = File.Delimiters.default, includeDelimiters: Boolean = false)(implicit codec: Codec): ManagedResource[Scanner] = newScanner(delimiter, includeDelimiters)(codec).autoClosed
 
   def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream = Files.newOutputStream(path, openOptions: _*)
