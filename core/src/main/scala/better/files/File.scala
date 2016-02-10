@@ -103,21 +103,21 @@ class File private (val path: Path) { //TODO: LinkOption?
   def chars(implicit codec: Codec): Iterator[Char] = newBufferedReader(codec).chars //TODO: ManagedResource here?
 
   /**
-    * Load all lines from this file
-    * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
-    *
-    * @param codec
-    * @return all lines in this file
-    */
+   * Load all lines from this file
+   * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
+   *
+   * @param codec
+   * @return all lines in this file
+   */
   def lines(implicit codec: Codec): Traversable[String] = Files.readAllLines(path, codec)
 
   /**
-    * Iterate over lines in a file (auto-close stream on complete)
-    * NOTE: If the iteration is partial, it may leave a stream open
-    *       If you want partial iteration use @see lines()
-    * @param codec
-    * @return
-    */
+   * Iterate over lines in a file (auto-close stream on complete)
+   * NOTE: If the iteration is partial, it may leave a stream open
+   *       If you want partial iteration use @see lines()
+   * @param codec
+   * @return
+   */
   def lineIterator(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).toAutoClosedIterator
 
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
@@ -291,10 +291,10 @@ class File private (val path: Path) { //TODO: LinkOption?
   }
 
   /**
-    * More Scala friendly way of doing Files.walk
-    * @param f
-    * @return
-    */
+   * More Scala friendly way of doing Files.walk
+   * @param f
+   * @return
+   */
   def collectChildren(f: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = f(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
 
   def fileSystem: FileSystem = path.getFileSystem
@@ -645,18 +645,18 @@ object File {
   }
 
   /**
-    * Implement this interface to monitor the root file
-    */
+   * Implement this interface to monitor the root file
+   */
   trait Monitor {
     val root: File
 
     /**
-      * Dispatch a StandardWatchEventKind to an appropriate callback
-      * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
-      *
-      * @param eventType
-      * @param file
-      */
+     * Dispatch a StandardWatchEventKind to an appropriate callback
+     * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
+     *
+     * @param eventType
+     * @param file
+     */
     def onEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
       case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
       case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)

@@ -367,15 +367,15 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     | 1 2 3
     """.stripMargin
     val scanner: Scanner = data.newScanner()
-    assert(scanner.lineNumber == 0)
+    assert(scanner.lineNumber() == 0)
     assert(scanner.next[String] == "Hello")
-    assert(scanner.lineNumber == 2)
+    assert(scanner.lineNumber() == 2)
     assert(scanner.next[String] == "World")
     assert(scanner.next[Int] == 1)
     assert(scanner.next[Int] == 2)
-    assert(scanner.lineNumber == 3)
+    assert(scanner.lineNumber() == 3)
     assert(scanner.next[Int] == 3)
-    assert(!scanner.iterator.hasNext)
+    assert(!scanner.hasNext)
   }
 
   it should "parse custom parsers" in {

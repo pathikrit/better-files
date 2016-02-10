@@ -202,7 +202,6 @@ trait Implicits {
     }
   }
 
-
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
     override def hasNext = s.hasMoreTokens
     override def next() = s.nextToken()
