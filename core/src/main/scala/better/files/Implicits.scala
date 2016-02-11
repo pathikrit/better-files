@@ -79,10 +79,11 @@ trait Implicits {
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
 
-    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = for {
-      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
-      token <- new StringTokenizer(line, config.delimiter, config.includeDelimiters)
-    } yield token
+    private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) = for {
+      line <- reader.lines().toAutoClosedIterator
+    } yield new StringTokenizer(line, config.delimiter, config.includeDelimiters)
+
+    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = tokenizers(config).map(_.nextToken())
   }
 
   implicit class WriterOps(writer: Writer) {

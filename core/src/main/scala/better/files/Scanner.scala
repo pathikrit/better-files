@@ -5,16 +5,13 @@ import java.io.{InputStream, BufferedReader, LineNumberReader, Reader, StringRea
 import scala.io.Codec
 
 trait Scanner extends Iterator[String] with AutoCloseable {
-  val tokens: Iterator[String]
-
   def lineNumber(): Int
 
   def next[A: Scannable]: A = implicitly[Scannable[A]].apply(this)
 
-  //TODO: nextLine?
+  def tillDelimiter(delimiter: String): String
 
-  override def hasNext = tokens.hasNext
-  override def next() = tokens.next()
+  def tillEndOfLine() = tillDelimiter("\n\r")
 }
 
 /**
@@ -42,8 +39,15 @@ object Scanner {
   def apply(inputStream: InputStream)(implicit config: Config): Scanner = Scanner(inputStream.reader(config.codec))(config)
 
   def apply(reader: LineNumberReader)(implicit config: Config) = new Scanner {
-    override val tokens = reader.tokens(config)
+    private[this] val tokenizers = reader.tokenizers(config).buffered
+    private[this] def tokenizer() = {
+      while(tokenizers.nonEmpty && !tokenizers.head.hasMoreTokens) tokenizers.next()
+      when(tokenizers.nonEmpty)(tokenizers.head)
+    }
     override def lineNumber() = reader.getLineNumber
+    override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
+    override def next() = tokenizer().get.nextToken()
+    override def hasNext = tokenizer().nonEmpty
     override def close() = reader.close()
   }
 

@@ -389,11 +389,9 @@ val scanner: Scanner = data.newScanner()
 assert(scanner.next[String] == "Hello")
 assert(scanner.lineNumber == 1)
 assert(scanner.next[String] == "World")
-assert(scanner.next[Int] == 2)
-assert(scanner.next[Int] == 2)
-assert(scanner.lineNumber == 2)
-assert(scanner.next[Int] == 3)
-assert(!scanner.iterator.hasNext)
+assert(scanner.next[Int] == 1)
+assert(scanner.tillEndOfLine() == " 2 3")
+assert(!scanner.hasNext)
 ```
 If you are simply interested in tokens, you can use `file.tokens(delimiter, includeDelims)`
 

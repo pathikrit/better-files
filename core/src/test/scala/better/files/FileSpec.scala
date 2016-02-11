@@ -365,6 +365,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val data = t1 << s"""
     | Hello World
     | 1 2 3
+    | Ok 23 football
     """.stripMargin
     val scanner: Scanner = data.newScanner()
     assert(scanner.lineNumber() == 0)
@@ -375,7 +376,16 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.next[Int] == 2)
     assert(scanner.lineNumber() == 3)
     assert(scanner.next[Int] == 3)
+    assert(scanner.next[String] == "Ok")
+    assert(scanner.tillEndOfLine() == " 23 football")
     assert(!scanner.hasNext)
+  }
+
+  it should "parse longs/booleans" in {
+    val data = for {
+      scanner <- Scanner("10 false").autoClosed
+    } yield scanner.next[Long] -> scanner.next[Boolean]
+    data shouldBe Seq(10L -> false)
   }
 
   it should "parse custom parsers" in {
