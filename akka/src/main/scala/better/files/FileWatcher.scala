@@ -54,7 +54,4 @@ object FileWatcher {
   def on(event: Event)(callback: File => Unit): Message = when(event){case (`event`, file) => callback(file)}
 
   def stop(event: Event, callback: Callback): Message = Message.RemoveCallback(event, callback)
-
-  import scala.collection.mutable
-  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 }

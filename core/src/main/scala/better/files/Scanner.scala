@@ -19,16 +19,6 @@ trait Scanner extends Iterator[String] with AutoCloseable {
  * See: http://codeforces.com/blog/entry/7018
  */
 object Scanner {
-  /**
-   * Use this to configure your Scanner
-   *
-   * @param delimiter
-   * @param includeDelimiters
-   */
-  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
-  object Config {
-    val default = Config(delimiter = " \t\n\r\f", includeDelimiters = false)
-  }
 
   def apply(str: String)(implicit config: Config = Config.default): Scanner = Scanner(new StringReader(str))(config)
 
@@ -38,7 +28,7 @@ object Scanner {
 
   def apply(inputStream: InputStream)(implicit config: Config): Scanner = Scanner(inputStream.reader(config.codec))(config)
 
-  def apply(reader: LineNumberReader)(implicit config: Config) = new Scanner {
+  def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
     private[this] def tokenizer() = {
       while(tokenizers.nonEmpty && !tokenizers.head.hasMoreTokens) tokenizers.next()
@@ -51,7 +41,18 @@ object Scanner {
     override def close() = reader.close()
   }
 
-  val console = Scanner(System.in)(Config.default)
+  val stdIn = Scanner(System.in)(Config.default)
+
+  /**
+    * Use this to configure your Scanner
+    *
+    * @param delimiter
+    * @param includeDelimiters
+    */
+  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
+  object Config {
+    val default = Config(delimiter = " \t\n\r\f", includeDelimiters = false)
+  }
 }
 
 /**
