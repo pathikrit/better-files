@@ -1,5 +1,4 @@
 lazy val commonSettings = Seq(
-  version := "2.14.1",
   organization := "com.github.pathikrit",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.6", "2.11.7"),
@@ -67,6 +66,25 @@ lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Se
   git.remoteRepo := "git@github.com:pathikrit/better-files.git"
 )
 
+import ReleaseTransformations._
+lazy val releaseSettings = Seq(
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    //runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    publishArtifacts,
+    setNextVersion,
+    commitNextVersion,
+    ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
+    pushChanges
+  ),
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value
+)
+
 lazy val noPublishSettings = Seq(
   publish := (),
   publishLocal := (),
@@ -95,4 +113,4 @@ lazy val publishSettings = Seq(
         <url>http://github.com/pathikrit</url>
       </developer>
     </developers>
-)
+) ++ releaseSettings
