@@ -1,5 +1,8 @@
+val username = "pathikrit"
+val repo = "better-files"
+
 lazy val commonSettings = Seq(
-  organization := "com.github.pathikrit",
+  organization := s"com.github.$username",
   scalaVersion := "2.11.7",
   crossScalaVersions := Seq("2.10.6", "2.11.7"),
   crossVersion := CrossVersion.binary,
@@ -28,7 +31,7 @@ lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    name := "better-files",
+    name := repo,
     description := "Simple, safe and intuitive I/O in Scala"
   )
 
@@ -36,7 +39,7 @@ lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    name := "better-files-akka",
+    name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14"
   )
@@ -46,7 +49,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
-    name := "better-files-benchmarks",
+    name := s"$repo-benchmarks",
     libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
   )
   .dependsOn(core)
@@ -55,6 +58,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
+  .settings(releaseSettings: _*)
   .aggregate(core, akka)
 
 import UnidocKeys._
@@ -63,7 +67,7 @@ lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Se
   unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
   SiteKeys.siteSourceDirectory := file("site"),
   site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-  git.remoteRepo := "git@github.com:pathikrit/better-files.git"
+  git.remoteRepo := s"git@github.com:$username/$repo.git"
 )
 
 import ReleaseTransformations._
@@ -79,10 +83,9 @@ lazy val releaseSettings = Seq(
     publishArtifacts,
     setNextVersion,
     commitNextVersion,
-    ReleaseStep(action = Command.process("sonatypeReleaseAll", _), enableCrossBuild = true),
+    releaseStepCommand("sonatypeReleaseAll"),
     pushChanges
-  ),
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value
+  )
 )
 
 lazy val noPublishSettings = Seq(
@@ -92,10 +95,10 @@ lazy val noPublishSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
-  homepage := Some(url("https://github.com/pathikrit/better-files")),
-  licenses += "MIT" -> url("https://github.com/pathikrit/better-files/blob/master/LICENSE"),
-  scmInfo := Some(ScmInfo(url("https://github.com/pathikrit/better-files"), "git@github.com:pathikrit/better-files.git")),
-  apiURL := Some(url("https://pathikrit.github.io/better-files/latest/api/")),
+  homepage := Some(url(s"https://github.com/$username/$repo")),
+  licenses += "MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE"),
+  scmInfo := Some(ScmInfo(url(s"https://github.com/$username/$repo"), s"git@github.com:$username/$repo.git")),
+  apiURL := Some(url(s"https://$username.github.io/$repo/latest/api/")),
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishMavenStyle := true,
@@ -113,4 +116,4 @@ lazy val publishSettings = Seq(
         <url>http://github.com/pathikrit</url>
       </developer>
     </developers>
-) ++ releaseSettings
+)
