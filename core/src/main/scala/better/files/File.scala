@@ -638,6 +638,11 @@ object File {
     val readWriteContentSynchronous = new RandomAccessMode("rwd")
   }
 
+  def numberOfOpenFileDescriptors(): Long = java.lang.management.ManagementFactory.getOperatingSystemMXBean match {
+    case os: com.sun.management.UnixOperatingSystemMXBean => os.getMaxFileDescriptorCount
+    case os => throw new UnsupportedOperationException(s"Unsupported operating system: $os")
+  }
+
   /**
    * Implement this interface to monitor the root file
    */

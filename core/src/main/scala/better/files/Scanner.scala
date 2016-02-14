@@ -44,11 +44,11 @@ object Scanner {
   val stdIn = Scanner(System.in)(Config.default)
 
   /**
-    * Use this to configure your Scanner
-    *
-    * @param delimiter
-    * @param includeDelimiters
-    */
+   * Use this to configure your Scanner
+   *
+   * @param delimiter
+   * @param includeDelimiters
+   */
   case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
   object Config {
     val default = Config(delimiter = " \t\n\r\f", includeDelimiters = false)

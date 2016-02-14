@@ -222,7 +222,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chgrp("cool", fa)
     //a[java.nio.file.FileSystemException] should be thrownBy chown("admin", fa)
     //fa.chown("nobody").chgrp("nobody")
-    stat(t1).isInstanceOf[java.nio.file.attribute.PosixFileAttributes] shouldBe true // TODO: https://github.com/scalatest/scalatest/issues/835
+    stat(t1) shouldBe a[java.nio.file.attribute.PosixFileAttributes]
   }
 
   it should "detect file locks" in {

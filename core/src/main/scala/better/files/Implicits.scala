@@ -203,10 +203,7 @@ trait Implicits {
     }
   }
 
-  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
-    override def hasNext = s.hasMoreTokens
-    override def next() = s.nextToken()
-  }
+  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = Iterator.continually(s.nextToken()).takeWhile(_ => s.hasMoreTokens)
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
