@@ -4,7 +4,7 @@ import java.io.{InputStream, BufferedReader, LineNumberReader, Reader, StringRea
 
 import scala.io.Codec
 
-trait Scanner extends Iterator[String] with AutoCloseable {self =>
+trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
 
   def next[A: Scannable]: A = implicitly[Scannable[A]].apply(this)
@@ -13,10 +13,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {self =>
 
   def tillEndOfLine() = tillDelimiter("\n\r")
 
-  def nonEmptyLines: Iterator[String] = new Iterator[String] {
-    override def hasNext = self.hasNext
-    override def next() = tillEndOfLine()
-  }
+  def nonEmptyLines: Iterator[String] = produce(tillEndOfLine()).till(hasNext)
 }
 
 /**
@@ -27,7 +24,7 @@ object Scanner {
 
   def apply(str: String)(implicit config: Config = Config.default): Scanner = Scanner(new StringReader(str))(config)
 
-  def apply(reader: Reader)(implicit config: Config): Scanner = Scanner(new BufferedReader(reader))(config)
+  def apply(reader: Reader)(implicit config: Config): Scanner = Scanner(reader.buffered)(config)
 
   def apply(reader: BufferedReader)(implicit config: Config): Scanner = Scanner(new LineNumberReader(reader))(config)
 

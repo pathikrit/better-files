@@ -79,14 +79,10 @@ trait Implicits {
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] = reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
 
-    private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) = for {
-      line <- reader.lines().toAutoClosedIterator
-    } yield new StringTokenizer(line, config.delimiter, config.includeDelimiters)
+    private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) =
+      reader.lines().toAutoClosedIterator.map(line => new StringTokenizer(line, config.delimiter, config.includeDelimiters))
 
-    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = for {
-      tokenizer <- tokenizers(config)
-      token <- tokenizer
-    } yield token
+    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = tokenizers(config).flatMap(tokenizerToIterator)
   }
 
   implicit class WriterOps(writer: Writer) {
@@ -123,7 +119,6 @@ trait Implicits {
   }
 
   implicit class CloseableOps[A <: Closeable](resource: A) {
-    import scala.language.reflectiveCalls
     /**
      * Lightweight automatic resource management
      * Closes the resource when done e.g.
@@ -188,11 +183,10 @@ trait Implicits {
      *
      * @return
      */
-    def toAutoClosedIterator: Iterator[A] = new Iterator[A] {
+    def toAutoClosedIterator: Iterator[A] = {
       val iterator = stream.iterator()
       var isOpen = true
-
-      override def hasNext = {
+      produce(iterator.next()) till {
         if (isOpen && !iterator.hasNext) {
           try {
             stream.close()
@@ -202,14 +196,10 @@ trait Implicits {
         }
         isOpen
       }
-      override def next() = iterator.next()
     }
   }
 
-  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
-    override def hasNext = s.hasMoreTokens
-    override def next() = s.nextToken()
-  }
+  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = produce(s.nextToken()).till(s.hasMoreTokens)
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
