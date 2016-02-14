@@ -60,20 +60,21 @@ object Scanner {
  */
 trait Scannable[A] {
   def apply(scanner: Scanner): A
+  def map[B](f: A => B): Scannable[B] = Scannable(apply _ andThen f)
 }
 
 object Scannable {
-  def apply[A](f: String => A): Scannable[A] = new Scannable[A] {
-    override def apply(scanner: Scanner) = f(scanner.next())
+  def apply[A](f: Scanner => A): Scannable[A] = new Scannable[A] {
+    override def apply(scanner: Scanner) = f(scanner)
   }
-  implicit val boolScanner: Scannable[Boolean] = Scannable(_.toBoolean)
-  implicit val byteScanner: Scannable[Byte] = Scannable(_.toByte)
-  implicit val shortScanner: Scannable[Short] = Scannable(_.toShort)
-  implicit val intScanner: Scannable[Int]= Scannable(_.toInt)
-  implicit val longScanner: Scannable[Long] = Scannable(_.toLong)
-  implicit val bigIntScanner: Scannable[BigInt] = Scannable(BigInt(_))
-  implicit val floatScanner: Scannable[Float] = Scannable(_.toFloat)
-  implicit val doubleScanner: Scannable[Double] = Scannable(_.toDouble)
-  implicit val bigDecimalScanner: Scannable[BigDecimal] = Scannable(BigDecimal(_))
-  implicit val stringScanner: Scannable[String] = Scannable(identity)
+  implicit val stringScanner      : Scannable[String]     = Scannable(_.next())
+  implicit val boolScanner        : Scannable[Boolean]    = stringScanner.map(_.toBoolean)
+  implicit val byteScanner        : Scannable[Byte]       = stringScanner.map(_.toByte)
+  implicit val shortScanner       : Scannable[Short]      = stringScanner.map(_.toShort)
+  implicit val intScanner         : Scannable[Int]        = stringScanner.map(_.toInt)
+  implicit val longScanner        : Scannable[Long]       = stringScanner.map(_.toLong)
+  implicit val bigIntScanner      : Scannable[BigInt]     = stringScanner.map(BigInt(_))
+  implicit val floatScanner       : Scannable[Float]      = stringScanner.map(_.toFloat)
+  implicit val doubleScanner      : Scannable[Double]     = stringScanner.map(_.toDouble)
+  implicit val bigDecimalScanner  : Scannable[BigDecimal] = stringScanner.map(BigDecimal(_))
 }
