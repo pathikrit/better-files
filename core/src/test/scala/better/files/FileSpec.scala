@@ -379,6 +379,11 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     assert(scanner.next[String] == "Ok")
     assert(scanner.tillEndOfLine() == " 23 football")
     assert(!scanner.hasNext)
+    a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
+    a[NoSuchElementException] should be thrownBy scanner.next()
+    assert(!scanner.hasNext)
+    data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
+    data.tokens shouldEqual data.newScanner().toTraversable
   }
 
   it should "parse longs/booleans" in {

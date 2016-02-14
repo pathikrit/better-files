@@ -83,7 +83,10 @@ trait Implicits {
       line <- reader.lines().toAutoClosedIterator
     } yield new StringTokenizer(line, config.delimiter, config.includeDelimiters)
 
-    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = tokenizers(config).map(_.nextToken())
+    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] = for {
+      tokenizer <- tokenizers(config)
+      token <- tokenizer
+    } yield token
   }
 
   implicit class WriterOps(writer: Writer) {
@@ -203,7 +206,10 @@ trait Implicits {
     }
   }
 
-  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = Iterator.continually(s.nextToken()).takeWhile(_ => s.hasMoreTokens)
+  implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] = new Iterator[String] {
+    override def hasNext = s.hasMoreTokens
+    override def next() = s.nextToken()
+  }
 
   implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
 
