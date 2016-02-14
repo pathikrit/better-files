@@ -383,13 +383,13 @@ that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), all
 ```scala
 val data = t1 << s"""
   | Hello World
-  | 1 2 3
+  | 1 true 2 3
 """.stripMargin
 val scanner: Scanner = data.newScanner()
 assert(scanner.next[String] == "Hello")
 assert(scanner.lineNumber == 1)
 assert(scanner.next[String] == "World")
-assert(scanner.next[Int] == 1)
+assert(scanner.next[(Int, Boolean)] == (1, true))
 assert(scanner.tillEndOfLine() == " 2 3")
 assert(!scanner.hasNext)
 ```

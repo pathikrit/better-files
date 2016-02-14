@@ -80,4 +80,5 @@ object Scannable {
   implicit val floatScanner       : Scannable[Float]      = stringScanner.map(_.toFloat)
   implicit val doubleScanner      : Scannable[Double]     = stringScanner.map(_.toDouble)
   implicit val bigDecimalScanner  : Scannable[BigDecimal] = stringScanner.map(BigDecimal(_))
+  implicit def tuple2Scanner[T1: Scannable, T2: Scannable]: Scannable[(T1, T2)] = implicitly[Scannable[T1]] + implicitly[Scannable[T2]]
 }

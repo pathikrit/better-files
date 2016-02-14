@@ -389,7 +389,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "parse longs/booleans" in {
     val data = for {
       scanner <- Scanner("10 false").autoClosed
-    } yield scanner.next[Long] -> scanner.next[Boolean]
+    } yield scanner.next[(Long, Boolean)]
     data shouldBe Seq(10L -> false)
   }
 
