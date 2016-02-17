@@ -395,6 +395,21 @@ assert(!scanner.hasNext)
 ```
 If you are simply interested in tokens, you can use `file.tokens()`
 
+Writing your own custom scanners:
+```scala
+sealed trait Animal
+case class Dog(name: String) extends Animal
+case class Cat(name: String) extends Animal
+
+implicit val animalParser: Scannable[Animal] = Scannable {scanner =>
+  val name = scanner.next[String]
+  if (name == "Garfield") Cat(name) else Dog(name)
+}
+
+val scanner = file.newScanner()
+println(scanner.next[Animal])
+```
+
 ### File Monitoring
 Vanilla Java watchers:
 ```scala

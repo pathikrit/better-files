@@ -278,7 +278,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support hashing algos" in {
     t1.write("")
     assert(md5(t1) != sha1(t1))
-    assert(sha256(t1) == sha512(t1))
+    assert(sha256(t1) != sha512(t1))
   }
 
   it should "copy" in {
@@ -409,11 +409,9 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     case class Dog(name: String) extends Animal
     case class Cat(name: String) extends Animal
 
-    implicit val animalParser = new Scannable[Animal] {
-      override def apply(scanner: Scanner) = {
-        val name = scanner.next[String]
-        if (name == "Garfield") Cat(name) else Dog(name)
-      }
+    implicit val animalParser: Scannable[Animal] = Scannable {scanner =>
+      val name = scanner.next[String]
+      if (name == "Garfield") Cat(name) else Dog(name)
     }
     val scanner = file.newScanner()
     Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
