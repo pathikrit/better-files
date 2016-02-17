@@ -11,7 +11,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 
   def tillDelimiter(delimiter: String): String
 
-  def tillEndOfLine() = tillDelimiter("\n\r")
+  def tillEndOfLine() = tillDelimiter(Scanner.Config.Delimiters.lines)
 
   def nonEmptyLines: Iterator[String] = produce(tillEndOfLine()).till(hasNext)
 }
@@ -53,7 +53,11 @@ object Scanner {
    */
   case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
   object Config {
-    val default = Config(delimiter = " \t\n\r\f", includeDelimiters = false)
+    val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
+    object Delimiters {
+      val lines = "\n\r"
+      val whitespaces = " \t\f" + lines
+    }
   }
 }
 

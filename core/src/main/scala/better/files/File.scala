@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
 import java.net.URI
-import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel}
+import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
@@ -259,7 +259,7 @@ class File private (val path: Path) { //TODO: LinkOption?
       channel.tryLock(position, size, isShared).release()
       false
     } catch {
-      case e: OverlappingFileLockException => true
+      case _: OverlappingFileLockException | _: NonWritableChannelException | _: NonReadableChannelException => true
     } finally {
       channel.close()
     }

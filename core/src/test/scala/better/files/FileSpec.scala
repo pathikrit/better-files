@@ -11,7 +11,7 @@ import scala.language.postfixOps
 import scala.util.Try
 
 class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-  val isCI = Try(sys.env("CI").toBoolean) getOrElse false
+  val isCI = sys.env.get("CI").exists(_.toBoolean)
 
   def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
@@ -227,13 +227,15 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "detect file locks" in {
     val file = File.newTemporaryFile()
-    file.isWriteLocked() shouldBe false
+    def lockInfo() = file.isReadLocked() -> file.isWriteLocked()
+    // TODO: Why is file.isReadLocked() should be false?
+    lockInfo() shouldBe (true -> false)
     val channel = file.newRandomAccess(File.RandomAccessMode.readWrite).getChannel
     val lock = channel.tryLock()
-    file.isWriteLocked() shouldBe true
+    lockInfo() shouldBe (true -> true)
     lock.release()
     channel.close()
-    file.isWriteLocked() shouldBe false
+    lockInfo() shouldBe (true -> false)
   }
 
   it should "support ln/cp/mv" in {
