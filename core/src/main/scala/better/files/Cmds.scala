@@ -53,6 +53,12 @@ object Cmds {
 
   def md5(file: File): String = file.md5
 
+  def sha1(file: File): String = file.sha1
+
+  def sha256(file: File): String = file.sha256
+
+  def sha512(file: File): String = file.sha512
+
   def mkdirs(file: File): File = file.createDirectories()
 
   def chown(owner: String, file: File): File = file.setOwner(owner)

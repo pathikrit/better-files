@@ -275,6 +275,12 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     c2 shouldEqual t1.checksum("md5")
   }
 
+  it should "support hashing algos" in {
+    t1.write("")
+    assert(md5(t1) != sha1(t1))
+    assert(sha256(t1) == sha512(t1))
+  }
+
   it should "copy" in {
     (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
     cp(fb / "t3", fb / "t5")

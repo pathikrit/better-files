@@ -120,10 +120,7 @@ class File private (val path: Path) { //TODO: LinkOption?
    */
   def lineIterator(implicit codec: Codec): Iterator[String] = Files.lines(path, codec).toAutoClosedIterator
 
-  def tokens(implicit config: Scanner.Config = Scanner.Config.default, codec: Codec): Traversable[String] = for {
-    reader <- bufferedReader(codec)
-    token <- reader.tokens(config)
-  } yield token
+  def tokens(implicit config: Scanner.Config = Scanner.Config.default, codec: Codec): Traversable[String] = bufferedReader(codec).flatMap(_.tokens(config))
 
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
@@ -229,7 +226,13 @@ class File private (val path: Path) { //TODO: LinkOption?
    */
   def checksum(algorithm: String): String = DatatypeConverter.printHexBinary(digest(algorithm))
 
-  def md5: String = checksum("MD5")
+  def md5 = checksum("MD5")
+
+  def sha1 = checksum("SHA-1")
+
+  def sha256 = checksum("SHA-256")
+
+  def sha512 = checksum("SHA-512")
 
   /**
    * @return Some(target) if this is a symbolic link (to target) else None

@@ -232,7 +232,7 @@ file.moveTo(destination)
 file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
 file.linkTo(destination)                     // ln file destination
 file.symbolicLinkTo(destination)             // ln -s file destination
-file.{checksum, md5, digest}   // also works for directories
+file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
 file.setOwner(user: String)    // chown user file
 file.setGroup(group: String)   // chgrp group file
 Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
@@ -261,7 +261,7 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
-md5(file)
+md5(file) / sha1(file) / sha256(file) / sha512(file)
 unzip(zipFile)(targetDir)
 zip(file*)(zipFile)
 ```
@@ -393,7 +393,7 @@ assert(scanner.next[(Int, Boolean)] == (1, true))
 assert(scanner.tillEndOfLine() == " 2 3")
 assert(!scanner.hasNext)
 ```
-If you are simply interested in tokens, you can use `file.tokens(delimiter, includeDelims)`
+If you are simply interested in tokens, you can use `file.tokens()`
 
 ### File Monitoring
 Vanilla Java watchers:
