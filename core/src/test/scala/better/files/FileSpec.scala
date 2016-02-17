@@ -73,11 +73,12 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
     val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
     val f8: File = root/"User"/"johndoe"/"Documents"/ `.`
+    val f9: File = File(f.uri)
 
     root.toString shouldEqual "/"
     home.toString.count(_ == '/') should be > 1
     (root/"usr"/"johndoe"/"docs").toString shouldEqual "/usr/johndoe/docs"
-    Seq(f, f1, f2, f4, /*f5,*/ f6, f8).map(_.toString).toSet shouldBe Set(f.toString)
+    Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
   it can "be matched" in {
@@ -196,7 +197,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "set/unset permissions" in {
     assume(isCI)
     import java.nio.file.attribute.PosixFilePermission
-    an[UnsupportedOperationException] should be thrownBy t1.dosAttributes
+    //an[UnsupportedOperationException] should be thrownBy t1.dosAttributes
     t1.permissions()(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
     chmod_+(PosixFilePermission.OWNER_EXECUTE, t1)

@@ -193,11 +193,9 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] = newOutputStream(openOptions).autoClosed
 
-  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
-    FileChannel.open(path, openOptions.toSet, attributes: _*)
+  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel = FileChannel.open(path, openOptions.toSet, attributes: _*)
 
-  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): ManagedResource[FileChannel] =
-    newFileChannel(openOptions, attributes).autoClosed
+  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): ManagedResource[FileChannel] = newFileChannel(openOptions, attributes).autoClosed
 
   def newAsynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): AsynchronousFileChannel = AsynchronousFileChannel.open(path, openOptions: _*)
 
@@ -211,14 +209,14 @@ class File private (val path: Path) { //TODO: LinkOption?
     path.register(service, events.toArray)
   }
 
-  def digest(algorithm: String): Array[Byte] = {
-    val digestor = MessageDigest.getInstance(algorithm)
+  def digest(algorithmName: String): Array[Byte] = {
+    val algorithm = MessageDigest.getInstance(algorithmName)
     listRelativePaths.toSeq.sorted foreach {relativePath =>
-      val file = path resolve relativePath
-      val bytes = if (Files.isDirectory(file)) relativePath.toString.getBytes else Files.readAllBytes(file)
-      digestor.update(bytes)
+      val file: File = path resolve relativePath
+      val bytes = if (file.isDirectory) relativePath.toString.getBytes else file.loadBytes
+      algorithm.update(bytes)
     }
-    digestor.digest()
+    algorithm.digest()
   }
 
   /**
