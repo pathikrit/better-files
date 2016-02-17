@@ -53,6 +53,14 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   override def afterEach() = rm(testRoot)
 
+  override def withFixture(test: NoArgTest) = {
+    val before = File.numberOfOpenFileDescriptors()
+    val result = super.withFixture(test)
+    val after = File.numberOfOpenFileDescriptors()
+    assert(before == after, s"Resource leakage detected in $test")
+    result
+  }
+
   "files" can "be instantiated" in {
     import java.io.{File => JFile}
 
@@ -188,6 +196,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "set/unset permissions" in {
     assume(isCI)
     import java.nio.file.attribute.PosixFilePermission
+    an[UnsupportedOperationException] should be thrownBy t1.dosAttributes
     t1.permissions()(PosixFilePermission.OWNER_EXECUTE) shouldBe false
 
     chmod_+(PosixFilePermission.OWNER_EXECUTE, t1)
