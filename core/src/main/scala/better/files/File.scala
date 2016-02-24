@@ -31,7 +31,18 @@ class File private (val path: Path) { //TODO: LinkOption?
   /**
    * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
    */
-  def extension: Option[String] = when(hasExtension)(name.substring(name lastIndexOf ".").toLowerCase)
+  def extension: Option[String] = extension(includeDot = true, includeAll = false)
+
+  /**
+   * @param includeDot whether the dot should be included in the extension or not
+   * @param includeAll whether all extension tokens should be included, or just the last one
+   * @return extension of this file if it is a regular file and has an extension, else None
+   */
+  def extension(includeDot: Boolean = true, includeAll: Boolean = false): Option[String] = when(hasExtension){
+    val dot = if (includeAll) name indexOf "." else name lastIndexOf "."
+    val index = if (includeDot) dot else dot + 1
+    name.substring(index).toLowerCase
+  }
 
   def hasExtension: Boolean = (isRegularFile || notExists) && (name contains ".")
 

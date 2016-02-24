@@ -21,6 +21,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   var a2: File = _
   var t1: File = _
   var t2: File = _
+  var t3: File = _
   var fb: File = _
   var b1: File = _
   var b2: File = _
@@ -44,6 +45,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     a2 = testRoot/"a"/"a2"
     t1 = testRoot/"a"/"a1"/"t1.txt"
     t2 = testRoot/"a"/"a1"/"t2.txt"
+    t3 = testRoot/"a"/"a1"/"t3.scala.txt"
     fb = testRoot/"b"
     b1 = testRoot/"b"/"b1"
     b2 = testRoot/"b"/"b2.txt"
@@ -144,6 +146,10 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
     t1.extension shouldBe Some(".txt")
+    t1.extension(includeDot = false) shouldBe Some("txt")
+    t3.extension shouldBe Some(".txt")
+    t3.extension(includeAll = true) shouldBe Some(".scala.txt")
+    t3.extension(includeDot = false, includeAll = true) shouldBe Some("scala.txt")
     t1.name shouldBe "t1.txt"
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
