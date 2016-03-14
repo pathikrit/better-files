@@ -106,7 +106,7 @@ trait Implicits {
      * @param level
      * @return
      */
-    def withCompressionLevel(level: Int) = returning(out) {
+    def withCompressionLevel(level: Int): ZipOutputStream = returning(out) {
       out.setLevel(level)
       if(level == Deflater.NO_COMPRESSION) out.setMethod(ZipOutputStream.DEFLATED)
     }

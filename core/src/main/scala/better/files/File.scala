@@ -138,8 +138,7 @@ class File private (val path: Path) { //TODO: LinkOption?
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
 
-  def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File =
-    Files.write(path, lines, codec, openOptions: _*)
+  def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = Files.write(path, lines, codec, openOptions: _*)
 
   def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 

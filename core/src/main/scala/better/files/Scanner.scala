@@ -61,12 +61,31 @@ object Scanner {
   }
 }
 
+trait Read[A] {     // TODO: See https://github.com/typelevel/cats/issues/932
+  def apply(s: String): A
+}
+
+object Read {
+  def apply[A](f: String => A): Read[A] = new Read[A] {
+    override def apply(s: String) = f(s)
+  }
+  implicit val string     : Read[String]     = Read(identity)
+  implicit val boolean    : Read[Boolean]    = Read(_.toBoolean)
+  implicit val byte       : Read[Byte]       = Read(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
+  implicit val short      : Read[Short]      = Read(_.toShort)
+  implicit val int        : Read[Int]        = Read(_.toInt)
+  implicit val long       : Read[Long]       = Read(_.toLong)
+  implicit val bigInt     : Read[BigInt]     = Read(BigInt(_))
+  implicit val float      : Read[Float]      = Read(_.toFloat)
+  implicit val double     : Read[Double]     = Read(_.toDouble)
+  implicit val bigDecimal : Read[BigDecimal] = Read(BigDecimal(_))
+}
+
 /**
  * Implement this trait to make thing parseable
  */
 trait Scannable[A] {
   def apply(scanner: Scanner): A
-  def map[B](f: A => B): Scannable[B] = Scannable(apply _ andThen f)
   def +[B](that: Scannable[B]): Scannable[(A, B)] = Scannable(s => this(s) -> that(s))
 }
 
@@ -74,15 +93,6 @@ object Scannable {
   def apply[A](f: Scanner => A): Scannable[A] = new Scannable[A] {
     override def apply(scanner: Scanner) = f(scanner)
   }
-  implicit val stringScanner      : Scannable[String]     = Scannable(_.next())
-  implicit val boolScanner        : Scannable[Boolean]    = stringScanner.map(_.toBoolean)
-  implicit val byteScanner        : Scannable[Byte]       = stringScanner.map(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
-  implicit val shortScanner       : Scannable[Short]      = stringScanner.map(_.toShort)
-  implicit val intScanner         : Scannable[Int]        = stringScanner.map(_.toInt)
-  implicit val longScanner        : Scannable[Long]       = stringScanner.map(_.toLong)
-  implicit val bigIntScanner      : Scannable[BigInt]     = stringScanner.map(BigInt(_))
-  implicit val floatScanner       : Scannable[Float]      = stringScanner.map(_.toFloat)
-  implicit val doubleScanner      : Scannable[Double]     = stringScanner.map(_.toDouble)
-  implicit val bigDecimalScanner  : Scannable[BigDecimal] = stringScanner.map(BigDecimal(_))
-  implicit def tuple2Scanner[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] = t1 + t2
+  implicit def fromRead[A](implicit read: Read[A]): Scannable[A] = Scannable(s => read(s.next()))
+  implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] = t1 + t2
 }
