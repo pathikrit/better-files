@@ -22,7 +22,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
  */
 object Scanner {
 
-  def apply(str: String)(implicit config: Config = Config.default): Scanner = Scanner(new StringReader(str))(config)
+  def apply(str: String)(implicit config: Config): Scanner = Scanner(new StringReader(str))(config)
 
   def apply(reader: Reader)(implicit config: Config): Scanner = Scanner(reader.buffered)(config)
 
@@ -53,7 +53,7 @@ object Scanner {
    */
   case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
   object Config {
-    val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
+    implicit val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
     object Delimiters {
       val lines = "\n\r"
       val whitespaces = " \t\f" + lines
