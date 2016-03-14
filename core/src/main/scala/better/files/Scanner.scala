@@ -33,8 +33,8 @@ object Scanner {
   def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
     private[this] def tokenizer() = {
-      while(tokenizers.nonEmpty && !tokenizers.head.hasMoreTokens) tokenizers.next()
-      when(tokenizers.nonEmpty)(tokenizers.head)
+      while(tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
+      tokenizers.headOption
     }
     override def lineNumber() = reader.getLineNumber
     override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
@@ -76,7 +76,7 @@ object Scannable {
   }
   implicit val stringScanner      : Scannable[String]     = Scannable(_.next())
   implicit val boolScanner        : Scannable[Boolean]    = stringScanner.map(_.toBoolean)
-  implicit val byteScanner        : Scannable[Byte]       = stringScanner.map(_.toByte)
+  implicit val byteScanner        : Scannable[Byte]       = stringScanner.map(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
   implicit val shortScanner       : Scannable[Short]      = stringScanner.map(_.toShort)
   implicit val intScanner         : Scannable[Int]        = stringScanner.map(_.toInt)
   implicit val longScanner        : Scannable[Long]       = stringScanner.map(_.toLong)
@@ -84,5 +84,5 @@ object Scannable {
   implicit val floatScanner       : Scannable[Float]      = stringScanner.map(_.toFloat)
   implicit val doubleScanner      : Scannable[Double]     = stringScanner.map(_.toDouble)
   implicit val bigDecimalScanner  : Scannable[BigDecimal] = stringScanner.map(BigDecimal(_))
-  implicit def tuple2Scanner[T1: Scannable, T2: Scannable]: Scannable[(T1, T2)] = implicitly[Scannable[T1]] + implicitly[Scannable[T2]]
+  implicit def tuple2Scanner[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] = t1 + t2
 }
