@@ -19,7 +19,7 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink]
+## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink] [![UpdateImpact][updateImpactImg]][updateImpactLink]
 In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
