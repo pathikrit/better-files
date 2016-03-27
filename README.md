@@ -19,7 +19,7 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![VersionEye][versionEyeImg]][versionEyeLink]
+## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink]
 In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
@@ -70,6 +70,9 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 
 [scaladocImg]: http://img.shields.io/:docs-ScalaDoc-blue.svg
 [scaladocLink]: http://pathikrit.github.io/better-files/latest/api#better.files.File
+
+[updateImpactImg]: https://app.updateimpact.com/badge/704376701047672832/root.svg?config=compile
+[updateImpactLink]: https://app.updateimpact.com/latest/704376701047672832/root
 --- 
 ### Instantiation 
 The following are all equivalent:

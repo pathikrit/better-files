@@ -25,7 +25,8 @@ lazy val commonSettings = Seq(
     //"-Xexperimental",           // 2.11 only
     "-Xfuture"
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test
+  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test,
+  updateImpactOpenBrowser := false
 )
 
 lazy val core = (project in file("core"))

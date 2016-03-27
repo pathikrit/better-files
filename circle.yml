@@ -17,6 +17,7 @@ deployment:
     branch: master
     owner: pathikrit
     commands:
+      - sbt updateImpact
       - bash <(curl -s https://codecov.io/bash)
       - git config --global user.email "pathikritbhowmick@msn.com"
       - git config --global user.name "circle-ci"
