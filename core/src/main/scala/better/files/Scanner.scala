@@ -7,7 +7,7 @@ import scala.io.Codec
 trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
 
-  def next[A: Scannable]: A = implicitly[Scannable[A]].apply(this)
+  def next[A](implicit scan: Scannable[A]): A = scan(this)
 
   def tillDelimiter(delimiter: String): String
 
@@ -32,9 +32,8 @@ object Scanner {
 
   def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
-    private[this] def tokenizer() = {
+    private[this] def tokenizer() = returning(tokenizers.headOption) {
       while(tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
-      tokenizers.headOption
     }
     override def lineNumber() = reader.getLineNumber
     override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
@@ -61,7 +60,7 @@ object Scanner {
   }
 }
 
-trait Read[A] {     // TODO: See https://github.com/typelevel/cats/issues/932
+trait Read[A] {     // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
   def apply(s: String): A
 }
 

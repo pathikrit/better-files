@@ -16,10 +16,10 @@ package object files extends Implicits {
 
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
   @inline private[files] def repeat(n: Int)(f: => Unit): Unit = (1 to n).foreach(_ => f)
-  @inline private[files] def returning[A](obj: A)(f: => Unit): A = {f; obj}
+  @inline private[files] def returning[A](obj: => A)(f: => Unit): A = {f; obj}
 
   private[files] def produce[A](f: => A) = new {
-    def till(hasMore: => Boolean): Iterator[A] =  new Iterator[A] {
+    def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {
       override def hasNext = hasMore
       override def next() = f
     }
