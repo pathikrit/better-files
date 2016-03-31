@@ -447,7 +447,7 @@ val watcher = new ThreadBackedFileMonitor(myDir, recursive = true) {
 }
 ```
 
-### Akka File Watcher
+### [Akka File Watcher](akka)
 `better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
@@ -469,5 +469,3 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
-
-See [this Java Advent article](http://www.javaadvent.com/2015/12/reactive-file-system-monitoring-using-akka-actors.html) for design and construction of above.
