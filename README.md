@@ -27,7 +27,7 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 To use the [Akka based file monitor](#akka-file-watcher), also add this:
 ```scala
 libraryDependencies ++= Seq(  
-  "com.github.pathikrit"  %% "better-files-akka"  % version
+  "com.github.pathikrit"  %% "better-files-akka"  % version,
   "com.typesafe.akka"     %% "akka-actor"         % "2.3.14"
 )
 ```
