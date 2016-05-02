@@ -549,7 +549,7 @@ object File {
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
 
-  implicit def apply(path: Path): File = new File(path.normalize().toAbsolutePath)
+  implicit def apply(path: Path): File = new File(path.toAbsolutePath().normalize())
 
   def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
 
