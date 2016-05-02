@@ -76,6 +76,10 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
     val f8: File = root/"User"/"johndoe"/"Documents"/ `.`
     val f9: File = File(f.uri)
+    val f10: File = File("../a")                                 // using a relative path
+    List(f,f1,f2,f3,f4,/* f5,*/f6,f7,f8,f9,f10).foreach { f =>
+      f.pathAsString should not include("..")
+    }
 
     root.toString shouldEqual "/"
     home.toString.count(_ == '/') should be > 1
