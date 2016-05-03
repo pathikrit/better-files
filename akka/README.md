@@ -1,4 +1,4 @@
-Reproduction of [this Java Advent article](http://www.javaadvent.com/2015/12/reactive-file-system-monitoring-using-akka-actors.html):
+Reproduction of [this Java Advent article](http://www.javaadvent.com/2015/12/reactive-file-system-monitoring-using-akka-actors.html)
 
 In this article, we will discuss:
 
@@ -53,7 +53,7 @@ def watch(directory: Path): Unit = {
   val service: WatchService = directory.getFileSystem.newWatchService()
 
   // Register the service to the path and also specify which events we want to be notified about
-  directory.register(service,  ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+  directory.register(service, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
 
   while (true) {
     val key: WatchKey = service.take()  // Wait for this key to be signalled
@@ -363,7 +363,7 @@ watcher ! when(events = ENTRY_CREATE, ENTRY_MODIFY) {
 }
 ```
 
-Full source: [`FileWatcher.scala`][https://github.com/pathikrit/better-files/blob/2ea6bb694551f1fe6e9ce58dbd1b814391a02e5a/akka/src/main/scala/better/files/FileWatcher.scala]
+Full source: [`FileWatcher.scala`](https://github.com/pathikrit/better-files/blob/2ea6bb694551f1fe6e9ce58dbd1b814391a02e5a/akka/src/main/scala/better/files/FileWatcher.scala)
 
 -----
 

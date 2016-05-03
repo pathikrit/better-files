@@ -24,7 +24,7 @@ In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
-To use the [Akka based file monitor](#akka-file-watcher), also add this:
+To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(  
   "com.github.pathikrit"  %% "better-files-akka"  % version,
@@ -122,7 +122,7 @@ Or even, right-associatively:
 "world" >>: file
 val bytes: Array[Byte] = file.loadBytes
 ```
-All operations are chainable e.g.
+[Fluent Interface](https://en.wikipedia.org/wiki/Fluent_interface):
 ```scala
  (root/"tmp"/"diary.txt")
   .createIfNotExists()  
@@ -447,7 +447,7 @@ val watcher = new ThreadBackedFileMonitor(myDir, recursive = true) {
 }
 ```
 
-### [Akka File Watcher](akka)
+### Akka File Watcher
 `better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala) 
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
