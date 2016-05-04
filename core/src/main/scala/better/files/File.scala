@@ -73,14 +73,15 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def /(child: String): File = path.resolve(child)
 
-  def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File = (this / child).createIfNotExists(asDirectory)(attributes)
+  def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
+    (this / child).createIfNotExists(asDirectory)(attributes, linkOptions)
 
-  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): File = if (exists) {
+  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File = if (exists(linkOptions)) {
     this
   } else if (asDirectory) {
     createDirectories()(attributes)
   } else {
-    parent.createDirectories()
+    parent.createDirectories()(attributes)
     Files.createFile(path, attributes: _*)
   }
 
@@ -382,8 +383,8 @@ class File private (val path: Path) { //TODO: LinkOption?
   /**
    * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
    */
-  def touch(time: Instant = Instant.now())(implicit attributes: File.Attributes = File.Attributes.default): File =
-    Files.setLastModifiedTime(createIfNotExists()(attributes).path, FileTime.from(time))
+  def touch(time: Instant = Instant.now())(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
+    Files.setLastModifiedTime(createIfNotExists()(attributes, linkOptions).path, FileTime.from(time))
 
   def lastModifiedTime(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Instant = Files.getLastModifiedTime(path, linkOptions: _*).toInstant
 
