@@ -386,7 +386,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       buffer = fileChannel.toMappedByteBuffer
     } buffer.remaining() shouldEqual t1.bytes.length
 
-    (t2 writeBytes t1.bytes).contentAsString shouldEqual "hello world"
+    (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }
 
   //TODO: Test above for all kinds of FileType

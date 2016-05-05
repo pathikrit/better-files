@@ -170,7 +170,7 @@ class File private (val path: Path) { //TODO: LinkOption?
   def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File = Files.write(path, bytes, openOptions: _*)
 
   def writeBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): File = returning(this) {
-    outputStream(openOptions).map(_.buffered write bytes)
+    outputStream(openOptions).foreach(_.buffered write bytes)
   }
 
   def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): File = write(text.getBytes(codec))(openOptions)
@@ -207,9 +207,9 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
 
-  def newPrintWriter = new PrintWriter(toJava)
+  def newPrintWriter(implicit codec: Codec): PrintWriter = new PrintWriter(toJava, codec.name)
 
-  def printWriter = newPrintWriter.autoClosed
+  def printWriter(implicit codec: Codec): ManagedResource[PrintWriter] = newPrintWriter(codec).autoClosed
 
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream = Files.newInputStream(path, openOptions: _*)
 
