@@ -76,12 +76,21 @@ class File private (val path: Path) { //TODO: LinkOption?
   def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
     (this / child).createIfNotExists(asDirectory)(attributes, linkOptions)
 
-  def createIfNotExists(asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File = if (exists(linkOptions)) {
+  /**
+   * Create this file. If it exists, don't do anything
+   *
+   * @param asDirectory If you want this file to be created as a directory instead, set this to true (false by default)
+   * @param createParents If you also want all the parents to be created from root to this file (false by defailt)
+   * @param attributes
+   * @param linkOptions
+   * @return
+   */
+  def createIfNotExists(asDirectory: Boolean = false, createParents: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File = if (exists(linkOptions)) {
     this
   } else if (asDirectory) {
     createDirectories()(attributes)
   } else {
-    parent.createDirectories()(attributes)
+    if (createParents) parent.createDirectories()(attributes)
     Files.createFile(path, attributes: _*)
   }
 
@@ -489,7 +498,7 @@ class File private (val path: Path) { //TODO: LinkOption?
    */
   def clear(): File = this match {
     case File.Type.Directory(children) => children.foreach(_.delete()); this
-    case _ => write(Array.ofDim[Byte](0))(File.OpenOptions.default)
+    case _ => write(Array.emptyByteArray)(File.OpenOptions.default)
   }
 
   override def hashCode = path.hashCode()
