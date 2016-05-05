@@ -125,7 +125,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       .createIfNotExists()
       .appendLine()
       .appendLines("My name is", "Inigo Montoya")
-      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
+      .printLines(Iterator("x", 1))
+      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
   it should "glob" in {

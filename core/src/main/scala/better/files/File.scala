@@ -148,6 +148,21 @@ class File private (val path: Path) { //TODO: LinkOption?
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
 
+  def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): File = returning(this) {
+    for {
+      pw <- printWriter()(openOptions)
+      line <- lines
+    } pw println line
+  }
+
+  /**
+   * For large number of lines that may not fit in memory, use printLines
+   *
+   * @param lines
+   * @param openOptions
+   * @param codec
+   * @return
+   */
   def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = Files.write(path, lines, codec, openOptions: _*)
 
   def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
@@ -207,9 +222,11 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
 
-  def newPrintWriter(implicit codec: Codec): PrintWriter = new PrintWriter(toJava, codec.name)
+  def newPrintWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): PrintWriter =
+    new PrintWriter(newOutputStream(openOptions), autoFlush)
 
-  def printWriter(implicit codec: Codec): ManagedResource[PrintWriter] = newPrintWriter(codec).autoClosed
+  def printWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[PrintWriter] =
+    newPrintWriter(autoFlush)(openOptions).autoClosed
 
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream = Files.newInputStream(path, openOptions: _*)
 
