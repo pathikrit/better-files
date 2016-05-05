@@ -304,14 +304,14 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "copy" in {
-    (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").exists shouldBe true
   }
 
   it should "move" in {
-    (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
     mv(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").notExists shouldBe true
@@ -385,6 +385,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       fileChannel <- t1.newFileChannel.autoClosed
       buffer = fileChannel.toMappedByteBuffer
     } buffer.remaining() shouldEqual t1.bytes.length
+
+    (t2 writeBytes t1.bytes).contentAsString shouldEqual "hello world"
   }
 
   //TODO: Test above for all kinds of FileType

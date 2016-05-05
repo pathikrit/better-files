@@ -162,12 +162,18 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File = Files.write(path, bytes, openOptions: _*)
 
+  def appendBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): File = writeBytes(bytes)(openOptions)
+
   /**
-   * Write byte array to file. For large files, piping in streams is recommended
+   * Write byte array to file. For large contents consider using the writeBytes
    * @param bytes
    * @return this
    */
   def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File = Files.write(path, bytes, openOptions: _*)
+
+  def writeBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): File = returning(this) {
+    outputStream(openOptions).map(_.buffered write bytes)
+  }
 
   def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): File = write(text.getBytes(codec))(openOptions)
 
@@ -559,7 +565,7 @@ object File {
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
 
-  implicit def apply(path: Path): File = new File(path.toAbsolutePath().normalize())
+  implicit def apply(path: Path): File = new File(path.toAbsolutePath.normalize())
 
   def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
 
