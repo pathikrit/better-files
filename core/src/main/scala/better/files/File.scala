@@ -207,6 +207,10 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
 
+  def newPrintWriter = new PrintWriter(toJava)
+
+  def printWriter = newPrintWriter.autoClosed
+
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream = Files.newInputStream(path, openOptions: _*)
 
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] = newInputStream(openOptions).autoClosed
@@ -319,10 +323,10 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   /**
    * More Scala friendly way of doing Files.walk
-   * @param f
+   * @param filter
    * @return
    */
-  def collectChildren(f: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = f(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
+  def collectChildren(filter: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = filter(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
 
   def fileSystem: FileSystem = path.getFileSystem
 

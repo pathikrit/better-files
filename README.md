@@ -172,6 +172,7 @@ val channel      : java.nio.channel.FileChannel = file.newFileChannel
 val ram          : java.io.RandomAccessFile     = file.newRandomAccess
 val fr           : java.io.FileReader           = file.newFileReader
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
+val printer      : java.io.PrintWriter          = file.newPrintWriter
 ```
 The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/#better.files.Implicits) to above classes e.g.:
 ```scala
@@ -184,7 +185,7 @@ val bis     : BufferedInputStream   = inputstream.buffered
 val bos     : BufferedOutputStream  = outputstream.buffered   
 val reader  : InputStreamReader     = inputstream.reader
 val writer  : OutputStreamWriter    = outputstream.writer
-val printer : PrintWriter           = outputstream.printer
+val printer : PrintWriter           = outputstream.printWriter
 val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
