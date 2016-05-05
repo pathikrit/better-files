@@ -111,7 +111,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
-    t1.appendNewLine << "world"
+    t1.appendLine() << "world"
     (t1!) shouldEqual "hello\nworld\n"
     t1.chars.toStream should contain theSameElementsInOrderAs "hello\nworld\n".toSeq
     "foo" `>:` t1
@@ -123,9 +123,10 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     (testRoot/"diary")
       .createIfNotExists()
-      .appendNewLine()
+      .appendLine()
       .appendLines("My name is", "Inigo Montoya")
-      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
+      .printLines(Iterator("x", 1))
+      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
   it should "glob" in {
@@ -304,14 +305,14 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "copy" in {
-    (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").exists shouldBe true
   }
 
   it should "move" in {
-    (fb / "t3" / "t4.txt").createIfNotExists().write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
     mv(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").notExists shouldBe true
@@ -385,6 +386,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       fileChannel <- t1.newFileChannel.autoClosed
       buffer = fileChannel.toMappedByteBuffer
     } buffer.remaining() shouldEqual t1.bytes.length
+
+    (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }
 
   //TODO: Test above for all kinds of FileType

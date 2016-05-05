@@ -148,26 +148,45 @@ class File private (val path: Path) { //TODO: LinkOption?
   def contentAsString(implicit codec: Codec): String = new String(byteArray, codec)
   def `!`(implicit codec: Codec): String = contentAsString(codec)
 
+  def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): File = returning(this) {
+    for {
+      pw <- printWriter()(openOptions)
+      line <- lines
+    } pw println line
+  }
+
+  /**
+   * For large number of lines that may not fit in memory, use printLines
+   *
+   * @param lines
+   * @param openOptions
+   * @param codec
+   * @return
+   */
   def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = Files.write(path, lines, codec, openOptions: _*)
 
   def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
   def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
-  def appendNewLine()(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLine("")(openOptions, codec)
-
-  def appendLine(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
+  def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
   def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = append(text.getBytes(codec))(openOptions)
 
   def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File = Files.write(path, bytes, openOptions: _*)
 
+  def appendBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): File = writeBytes(bytes)(openOptions)
+
   /**
-   * Write byte array to file. For large files, piping in streams is recommended
+   * Write byte array to file. For large contents consider using the writeBytes
    * @param bytes
    * @return this
    */
   def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): File = Files.write(path, bytes, openOptions: _*)
+
+  def writeBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): File = returning(this) {
+    outputStream(openOptions).foreach(_.buffered write bytes)
+  }
 
   def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): File = write(text.getBytes(codec))(openOptions)
 
@@ -202,6 +221,12 @@ class File private (val path: Path) { //TODO: LinkOption?
   def newFileWriter(append: Boolean = false): FileWriter = new FileWriter(toJava, append)
 
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] = newFileWriter(append).autoClosed
+
+  def newPrintWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): PrintWriter =
+    new PrintWriter(newOutputStream(openOptions), autoFlush)
+
+  def printWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[PrintWriter] =
+    newPrintWriter(autoFlush)(openOptions).autoClosed
 
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream = Files.newInputStream(path, openOptions: _*)
 
@@ -315,10 +340,10 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   /**
    * More Scala friendly way of doing Files.walk
-   * @param f
+   * @param filter
    * @return
    */
-  def collectChildren(f: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = f(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
+  def collectChildren(filter: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = filter(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
 
   def fileSystem: FileSystem = path.getFileSystem
 
@@ -559,7 +584,7 @@ object File {
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
 
-  implicit def apply(path: Path): File = new File(path.toAbsolutePath().normalize())
+  implicit def apply(path: Path): File = new File(path.toAbsolutePath.normalize())
 
   def apply(path: String, fragments: String*): File = Paths.get(path, fragments: _*)
 

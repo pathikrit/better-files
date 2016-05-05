@@ -69,7 +69,12 @@ trait Implicits {
 
     def writer(implicit codec: Codec): OutputStreamWriter = new OutputStreamWriter(out, codec)
 
-    def printer(autoFlush: Boolean = false): PrintWriter = new PrintWriter(out, autoFlush)
+    def printWriter(autoFlush: Boolean = false): PrintWriter = new PrintWriter(out, autoFlush)
+
+    def write(bytes: Iterator[Byte], bufferSize: Int = 1<<10): OutputStream = returning(out) {
+      bytes grouped bufferSize foreach {buffer => out.write(buffer.toArray)}
+      out.flush()
+    }
   }
 
   implicit class ReaderOps(reader: Reader) {
