@@ -111,7 +111,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
-    t1.appendNewLine << "world"
+    t1.appendLine() << "world"
     (t1!) shouldEqual "hello\nworld\n"
     t1.chars.toStream should contain theSameElementsInOrderAs "hello\nworld\n".toSeq
     "foo" `>:` t1
@@ -123,7 +123,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
     (testRoot/"diary")
       .createIfNotExists()
-      .appendNewLine()
+      .appendLine()
       .appendLines("My name is", "Inigo Montoya")
       .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya")
   }

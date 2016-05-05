@@ -107,7 +107,7 @@ Dead simple I/O:
 ```scala
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
-file.appendNewLine().append("world")
+file.appendLine().append("world")
 assert(file.contentAsString == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
@@ -126,7 +126,7 @@ val bytes: Array[Byte] = file.loadBytes
 ```scala
  (root/"tmp"/"diary.txt")
   .createIfNotExists()  
-  .appendNewLine()
+  .appendLine()
   .appendLines("My name is", "Inigo Montoya")
   .moveTo(home/"Documents")
   .renameTo("princess_diary.txt")

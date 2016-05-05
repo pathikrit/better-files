@@ -154,9 +154,7 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
-  def appendNewLine()(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLine("")(openOptions, codec)
-
-  def appendLine(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
+  def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = appendLines(line)(openOptions, codec)
 
   def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): File = append(text.getBytes(codec))(openOptions)
 
