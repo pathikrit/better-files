@@ -145,6 +145,12 @@ val source : scala.io.BufferedSource   = file.newBufferedSource // needs to be c
 Note: The above APIs can be traversed atmost once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
 
+You can write an `Iterator[Byte]` or an `Iterator[String]` back to a file:
+```scala
+file.writeBytes(bytes)
+file.printLines(lines)
+```
+
 You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
 ```scala
 val content: String = file.contentAsString  // default codec

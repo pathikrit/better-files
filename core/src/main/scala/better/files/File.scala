@@ -22,7 +22,20 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   def toJava: JFile = path.toFile
 
-  def name: String = path.getFileName.toString
+  /**
+   * Name of file
+   * Certain files may not have a name e.g. root directory - returns empty string in that case
+   *
+   * @return
+   */
+  def name: String = nameOption getOrElse ""
+
+  /**
+   * Certain files may not have a name e.g. root directory - returns None in that case
+   *
+   * @return
+   */
+  def nameOption: Option[String] = Option(path.getFileName).map(_.toString)
 
   def root: File = path.getRoot
 
@@ -35,7 +48,7 @@ class File private (val path: Path) { //TODO: LinkOption?
 
   /**
    * @param includeDot whether the dot should be included in the extension or not
-   * @param includeAll whether all extension tokens should be included, or just the last one
+   * @param includeAll whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz
    * @param toLowerCase to lowercase the extension or not e.g. foo.HTML should have .html or .HTML
    * @return extension of this file if it is a regular file and has an extension, else None
    */
@@ -59,7 +72,7 @@ class File private (val path: Path) { //TODO: LinkOption?
   /**
    * Return parent of this file
    * NOTE: This API returns null if this file is the root;
-   *       please wrap it in an Option if you expect to handle such behaviour
+   *       please use parentOption if you expect to handle roots
    * @see parentOption
    * @return
    */
