@@ -28,7 +28,7 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(  
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.3.14"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.3.15"
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]

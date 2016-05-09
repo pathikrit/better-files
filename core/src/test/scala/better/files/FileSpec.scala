@@ -85,8 +85,6 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     home.toString.count(_ == '/') should be > 1
     (root/"usr"/"johndoe"/"docs").toString shouldEqual "/usr/johndoe/docs"
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
-
-    "/".toFile.name shouldBe ""
   }
 
   it can "be matched" in {
@@ -169,6 +167,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.root shouldEqual fa.root
     file"/tmp/foo.scala.html".extension shouldBe Some(".html")
     file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo.scala"
+    root.name shouldBe ""
   }
 
   it should "hide/unhide" in {
