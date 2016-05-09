@@ -365,7 +365,7 @@ watcher ! when(events = ENTRY_CREATE, ENTRY_MODIFY) {
 }
 ```
 
-Full source: [`FileWatcher.scala`](https://github.com/pathikrit/better-files/blob/2ea6bb694551f1fe6e9ce58dbd1b814391a02e5a/akka/src/main/scala/better/files/FileWatcher.scala)
+Full source: [`FileWatcher.scala`][FileWatcher.scala]
 
 -----
 
@@ -378,8 +378,8 @@ Full source: [`FileWatcher.scala`](https://github.com/pathikrit/better-files/blo
 [better-files-watcher]: https://github.com/pathikrit/better-files#akka-file-watcher
 [cheatsheet]: http://learnxinyminutes.com/docs/scala/
 [cheatsheet2]: http://techblog.realestate.com.au/java-to-scala-cheatsheet/
-[FileWatcher.scala]: https://github.com/pathikrit/better-files/blob/master/akka/src/main/scala/better/files/FileWatcher.scala
-[FileMonitor.scala]: https://github.com/pathikrit/better-files/blob/master/core/src/main/scala/better/files/FileMonitor.scala
+[FileWatcher.scala]: https://github.com/pathikrit/better-files/blob/2ea6bb694551f1fe6e9ce58dbd1b814391a02e5a/akka/src/main/scala/better/files/FileWatcher.scala
+[FileMonitor.scala]: https://github.com/pathikrit/better-files/blob/2ea6bb694551f1fe6e9ce58dbd1b814391a02e5a/core/src/main/scala/better/files/FileMonitor.scala
 [FindFirstChangeNotification]: https://msdn.microsoft.com/en-us/library/aa364417(VS.85).aspx
 [fsevents-wiki]: https://en.wikipedia.org/wiki/FSEvents
 [ionotify-wiki]: https://en.wikipedia.org/wiki/Inotify

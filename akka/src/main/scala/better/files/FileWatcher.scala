@@ -39,7 +39,7 @@ object FileWatcher {
   sealed trait Message
   object Message {
     case class NewEvent(event: Event, file: File) extends Message
-    case class RegisterCallback(events: Seq[Event], callback: Callback) extends Message
+    case class RegisterCallback(events: Traversable[Event], callback: Callback) extends Message
     case class RemoveCallback(event: Event, callback: Callback) extends Message
   }
 
@@ -49,7 +49,7 @@ object FileWatcher {
     def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef = system.actorOf(watcherProps(recursive))
   }
 
-  def when(events: Event*)(callback: Callback): Message = Message.RegisterCallback(events.distinct, callback)
+  def when(events: Event*)(callback: Callback): Message = Message.RegisterCallback(events, callback)
 
   def on(event: Event)(callback: File => Unit): Message = when(event){case (`event`, file) => callback(file)}
 
