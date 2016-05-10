@@ -346,17 +346,21 @@ class File private (val path: Path) { //TODO: LinkOption?
    * Util to glob from this file's path
    * @return Set of files that matched
    */
-  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default): Files = {
+  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
     val matcher = pathMatcher(syntax)(pattern)
-    collectChildren(child => matcher.matches(child.path))
+    collectChildren(child => matcher.matches(child.path))(visitOptions)
   }
 
   /**
    * More Scala friendly way of doing Files.walk
-   * @param filter
+ *
+   * @param matchFilter
    * @return
    */
-  def collectChildren(filter: File => Boolean): Files = Files.walk(path).filter(new java.util.function.Predicate[Path] {override def test(path: Path) = filter(path)}) //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
+  def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
+    walk()(visitOptions).filter(matchFilter(_))
+    //TODO: In Scala 2.11 SAM: Files.walk(path).filter(f(_))
+  }
 
   def fileSystem: FileSystem = path.getFileSystem
 
