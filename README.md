@@ -376,7 +376,7 @@ for {
 // or simply:
 file.bufferedReader.map(foo)
 ```
-One another [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$CloseableOps):
+Or use a [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$CloseableOps):
 ```scala
 val eof = -1
 val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).map(_.toByte) 
