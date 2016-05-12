@@ -420,6 +420,26 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
+The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module let's you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala) e.g.:
+```scala
+val in = Scanner("""
+  12 Bob True
+  13 Mary False
+  26 Rick True
+""")
+
+import shapeless._
+
+type Row = Int :: String :: Boolean :: HNil
+
+val out = Seq.fill(3)(in.next[Row])
+assert(out == Seq(
+  12 :: "Bob" :: true :: HNil,
+  13 :: "Mary" :: false :: HNil,
+  26 :: "Rick" :: true :: HNil
+))
+```
+
 ### File Monitoring
 Vanilla Java watchers:
 ```scala

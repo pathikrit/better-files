@@ -3,14 +3,15 @@ package better.files
 import akka.actor._
 
 /**
- * An actor that can watch a file or a directory
- * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
- *
- * @param file watch this file (or directory)
- * @param maxDepth In case of directories, how much depth should we watch
- */
+  * An actor that can watch a file or a directory
+  * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
+  *
+  * @param file     watch this file (or directory)
+  * @param maxDepth In case of directories, how much depth should we watch
+  */
 class FileWatcher(file: File, maxDepth: Int) extends Actor {
   import FileWatcher._
+
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
   protected[this] val callbacks = newMultiMap[Event, Callback]
@@ -23,8 +24,8 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   override def preStart() = monitor.start()
 
   override def receive = {
-    case Message.NewEvent(event, target) if callbacks contains event => callbacks(event) foreach {f => f(event -> target)}
-    case Message.RegisterCallback(events, callback) => events foreach {event => callbacks.addBinding(event, callback)}
+    case Message.NewEvent(event, target) if callbacks contains event => callbacks(event) foreach { f => f(event -> target) }
+    case Message.RegisterCallback(events, callback) => events foreach { event => callbacks.addBinding(event, callback) }
     case Message.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
 
@@ -33,6 +34,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
 
 object FileWatcher {
   import java.nio.file.{Path, WatchEvent}
+
   type Event = WatchEvent.Kind[Path]
   type Callback = PartialFunction[(Event, File), Unit]
 
@@ -51,7 +53,7 @@ object FileWatcher {
 
   def when(events: Event*)(callback: Callback): Message = Message.RegisterCallback(events, callback)
 
-  def on(event: Event)(callback: File => Unit): Message = when(event){case (`event`, file) => callback(file)}
+  def on(event: Event)(callback: File => Unit): Message = when(event) { case (`event`, file) => callback(file) }
 
   def stop(event: Event, callback: Callback): Message = Message.RemoveCallback(event, callback)
 }

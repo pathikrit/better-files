@@ -3,11 +3,11 @@ package better.files
 import java.nio.file._
 
 /**
- * A thread based implementation of the FileMonitor
- *
- * @param root
- * @param maxDepth
- */
+  * A thread based implementation of the FileMonitor
+  *
+  * @param root
+  * @param maxDepth
+  */
 abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
@@ -42,11 +42,15 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     key.reset()
   }
 
-  protected[this] def watch(file: File, depth: Int): Unit = if (file.isDirectory) {
-    for {
-      f <- file.walk(depth) if f.isDirectory && f.exists
-    } f.register(service)
-  } else if (file.exists) file.parent.register(service)   // There is no way to watch a regular file; so watch its parent instead
+  protected[this] def watch(file: File, depth: Int): Unit = {
+    if (file.isDirectory) {
+      for {
+        f <- file.walk(depth) if f.isDirectory && f.exists
+      } f.register(service)
+    } else if (file.exists) {
+      file.parent.register(service) // There is no way to watch a regular file; so watch its parent instead
+    }
+  }
 
   override def start() = {
     watch(root, maxDepth)

@@ -27,7 +27,7 @@ public class ArrayBufferScanner extends AbstractScanner {
   private void loadBuffer() {
     pos = 0;
     try {
-      for (int i; (i = reader.read()) != -1;) {
+      for (int i; (i = reader.read()) != -1; ) {
         char c = (char) i;
         if (c != ' ' && c != '\n' && c != '\t' && c != '\r' && c != '\f') {
           if (pos == buffer.length) buffer = Arrays.copyOf(buffer, 2 * pos);
@@ -73,6 +73,6 @@ public class ArrayBufferScanner extends AbstractScanner {
   }
 
   private void checkValidNumber(boolean condition) {
-    if(!condition) throw new NumberFormatException(current());
+    if (!condition) throw new NumberFormatException(current());
   }
 }
