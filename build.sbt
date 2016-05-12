@@ -47,6 +47,16 @@ lazy val akka = (project in file("akka"))
   )
   .dependsOn(core)
 
+lazy val shapelessScanner = (project in file("shapeless"))
+  .settings(commonSettings: _*)
+  .settings(noPublishSettings: _*)
+  .settings(
+    name := s"shapeless-scanner",
+    description := "Shapeless Scanner",
+    libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.0"
+  )
+  .dependsOn(core)
+
 lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
@@ -61,7 +71,7 @@ lazy val root = (project in file("."))
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(releaseSettings: _*)
-  .aggregate(core, akka)
+  .aggregate(core, akka, shapelessScanner)
 
 import UnidocKeys._
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
