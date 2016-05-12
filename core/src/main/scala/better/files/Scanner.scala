@@ -22,18 +22,23 @@ trait Scanner extends Iterator[String] with AutoCloseable {
   */
 object Scanner {
 
-  def apply(str: String)(implicit config: Config): Scanner = Scanner(new StringReader(str))(config)
+  def apply(str: String)(implicit config: Config): Scanner =
+    Scanner(new StringReader(str))(config)
 
-  def apply(reader: Reader)(implicit config: Config): Scanner = Scanner(reader.buffered)(config)
+  def apply(reader: Reader)(implicit config: Config): Scanner =
+    Scanner(reader.buffered)(config)
 
-  def apply(reader: BufferedReader)(implicit config: Config): Scanner = Scanner(new LineNumberReader(reader))(config)
+  def apply(reader: BufferedReader)(implicit config: Config): Scanner =
+    Scanner(new LineNumberReader(reader))(config)
 
-  def apply(inputStream: InputStream)(implicit config: Config): Scanner = Scanner(inputStream.reader(config.codec))(config)
+  def apply(inputStream: InputStream)(implicit config: Config): Scanner =
+    Scanner(inputStream.reader(config.codec))(config)
 
   def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
-    private[this] def tokenizer() = returning(tokenizers.headOption) {
+    private[this] def tokenizer() = {
       while (tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
+      tokenizers.headOption
     }
     override def lineNumber() = reader.getLineNumber
     override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
@@ -87,7 +92,8 @@ object Read {
 trait Scannable[A] {
   def apply(scanner: Scanner): A
 
-  def +[B](that: Scannable[B]): Scannable[(A, B)] = Scannable(s => this (s) -> that(s))
+  def +[B](that: Scannable[B]): Scannable[(A, B)] =
+    Scannable(s => this (s) -> that(s))
 }
 
 object Scannable {
@@ -95,7 +101,9 @@ object Scannable {
     override def apply(scanner: Scanner) = f(scanner)
   }
 
-  implicit def fromRead[A](implicit read: Read[A]): Scannable[A] = Scannable(s => read(s.next()))
+  implicit def fromRead[A](implicit read: Read[A]): Scannable[A] =
+    Scannable(s => read(s.next()))
 
-  implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] = t1 + t2
+  implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] =
+    t1 + t2
 }
