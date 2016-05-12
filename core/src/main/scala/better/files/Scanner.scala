@@ -17,9 +17,9 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 }
 
 /**
- * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
- * See: http://codeforces.com/blog/entry/7018
- */
+  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
+  * See: http://codeforces.com/blog/entry/7018
+  */
 object Scanner {
 
   def apply(str: String)(implicit config: Config): Scanner = Scanner(new StringReader(str))(config)
@@ -33,7 +33,7 @@ object Scanner {
   def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
     private[this] def tokenizer() = returning(tokenizers.headOption) {
-      while(tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
+      while (tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
     }
     override def lineNumber() = reader.getLineNumber
     override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
@@ -45,14 +45,15 @@ object Scanner {
   val stdin = Scanner(System.in)(Config.default)
 
   /**
-   * Use this to configure your Scanner
-   *
-   * @param delimiter
-   * @param includeDelimiters
-   */
+    * Use this to configure your Scanner
+    *
+    * @param delimiter
+    * @param includeDelimiters
+    */
   case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
   object Config {
     implicit val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
+
     object Delimiters {
       val lines = "\n\r"
       val whitespaces = " \t\f" + lines
@@ -81,17 +82,20 @@ object Read {
 }
 
 /**
- * Implement this trait to make thing parseable
- */
+  * Implement this trait to make thing parseable
+  */
 trait Scannable[A] {
   def apply(scanner: Scanner): A
-  def +[B](that: Scannable[B]): Scannable[(A, B)] = Scannable(s => this(s) -> that(s))
+
+  def +[B](that: Scannable[B]): Scannable[(A, B)] = Scannable(s => this (s) -> that(s))
 }
 
 object Scannable {
   def apply[A](f: Scanner => A): Scannable[A] = new Scannable[A] {
     override def apply(scanner: Scanner) = f(scanner)
   }
+
   implicit def fromRead[A](implicit read: Read[A]): Scannable[A] = Scannable(s => read(s.next()))
+
   implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] = t1 + t2
 }

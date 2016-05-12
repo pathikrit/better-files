@@ -3,11 +3,11 @@ package better.files
 import java.nio.file._
 
 /**
- * A thread based implementation of the FileMonitor
- *
- * @param root
- * @param maxDepth
- */
+  * A thread based implementation of the FileMonitor
+  *
+  * @param root
+  * @param maxDepth
+  */
 abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 

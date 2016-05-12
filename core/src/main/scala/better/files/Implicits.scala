@@ -14,18 +14,22 @@ import scala.io.{BufferedSource, Codec, Source}
 import scala.util.control.NonFatal
 
 /**
- * Container for various implicits
- */
+  * Container for various implicits
+  */
 trait Implicits {
+
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File = value(args).toFile
+
     def resource(args: Any*): Source = Source.fromInputStream(getClass.getResourceAsStream(value(args)))
+
     private[this] def value(args: Seq[Any]) = sc.s(args: _*)
   }
 
   implicit class StringOps(str: String) {
     def toFile: File = File(str)
-    def /(child: String): File = toFile/child
+
+    def /(child: String): File = toFile / child
   }
 
   implicit class FileOps(file: JFile) {
@@ -35,18 +39,18 @@ trait Implicits {
   implicit class InputStreamOps(in: InputStream) {
     def >(out: OutputStream): Unit = pipeTo(out)
 
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1<<10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1 << 10): Unit = pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
 
     /**
-     * Pipe an input stream to an output stream using a byte buffer
-     */
+      * Pipe an input stream to an output stream using a byte buffer
+      */
     @tailrec final def pipeTo(out: OutputStream, closeOutputStream: Boolean, buffer: Array[Byte]): Unit = in.read(buffer) match {
       case n if n > 0 =>
         out.write(buffer, 0, n)
         pipeTo(out, closeOutputStream, buffer)
       case _ =>
         in.close()
-        if(closeOutputStream) out.close()
+        if (closeOutputStream) out.close()
     }
 
     def buffered: BufferedInputStream = new BufferedInputStream(in)
@@ -71,8 +75,8 @@ trait Implicits {
 
     def printWriter(autoFlush: Boolean = false): PrintWriter = new PrintWriter(out, autoFlush)
 
-    def write(bytes: Iterator[Byte], bufferSize: Int = 1<<10): OutputStream = returning(out) {
-      bytes grouped bufferSize foreach {buffer => out.write(buffer.toArray)}
+    def write(bytes: Iterator[Byte], bufferSize: Int = 1 << 10): OutputStream = returning(out) {
+      bytes grouped bufferSize foreach { buffer => out.write(buffer.toArray) }
       out.flush()
     }
   }
@@ -105,15 +109,15 @@ trait Implicits {
   implicit class ZipOutputStreamOps(out: ZipOutputStream) {
 
     /**
-     * Correctly set the compression level
-     * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
-     *
-     * @param level
-     * @return
-     */
+      * Correctly set the compression level
+      * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
+      *
+      * @param level
+      * @return
+      */
     def withCompressionLevel(level: Int): ZipOutputStream = returning(out) {
       out.setLevel(level)
-      if(level == Deflater.NO_COMPRESSION) out.setMethod(ZipOutputStream.DEFLATED)
+      if (level == Deflater.NO_COMPRESSION) out.setMethod(ZipOutputStream.DEFLATED)
     }
 
     def add(file: File, name: String): ZipOutputStream = returning(out) {
@@ -129,16 +133,17 @@ trait Implicits {
 
   implicit class CloseableOps[A <: Closeable](resource: A) {
     /**
-     * Lightweight automatic resource management
-     * Closes the resource when done e.g.
-     * <pre>
-     * for {
-     *   in <- file.newInputStream.autoClosed
-     * } in.write(bytes)
-     * // in is closed now
-     * </pre>
-     * @return
-     */
+      * Lightweight automatic resource management
+      * Closes the resource when done e.g.
+      * <pre>
+      * for {
+      * in <- file.newInputStream.autoClosed
+      * } in.write(bytes)
+      * // in is closed now
+      * </pre>
+      *
+      * @return
+      */
     def autoClosed: ManagedResource[A] = new Traversable[A] {
       override def foreach[U](f: A => U) = try {
         f(resource)
@@ -148,22 +153,22 @@ trait Implicits {
     }
 
     /**
-     * Provides an iterator that closes the underlying resource when done
-     *
-     * e.g.
-     * <pre>
-     * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
-     * </pre>
-     *
-     * @param generator next element from this resource
-     * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
-     * @tparam B
-     * @return An iterator that closes the underlying resource when done
-     */
+      * Provides an iterator that closes the underlying resource when done
+      *
+      * e.g.
+      * <pre>
+      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
+      * </pre>
+      *
+      * @param generator      next element from this resource
+      * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
+      * @tparam B
+      * @return An iterator that closes the underlying resource when done
+      */
     def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
       var isClosed = false
       def isOpen(item: B) = {
-        if(!isClosed && !isValidElement(item)) close()
+        if (!isClosed && !isValidElement(item)) close()
         !isClosed
       }
 
@@ -187,11 +192,11 @@ trait Implicits {
 
   implicit class JStreamOps[A](stream: JStream[A]) {
     /**
-     * Closes this stream when iteration is complete
-     * It will NOT close the stream if it is not depleted!
-     *
-     * @return
-     */
+      * Closes this stream when iteration is complete
+      * It will NOT close the stream if it is not depleted!
+      *
+      * @return
+      */
     def toAutoClosedIterator: Iterator[A] = {
       val iterator = stream.iterator()
       var isOpen = true
