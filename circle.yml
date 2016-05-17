@@ -1,8 +1,6 @@
-branches:
-  ignore:
-    - gh-pages
-
 machine:
+  environment:
+    SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
   java:
     version: oraclejdk8
 
