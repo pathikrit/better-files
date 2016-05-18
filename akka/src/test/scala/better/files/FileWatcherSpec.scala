@@ -43,7 +43,7 @@ class FileWatcherSpec extends FlatSpec with Matchers {
     }
     /***************************************************************************/
     sleep(5 seconds)
-    (dir / "a" / "b" / "c.txt").write("Hello world"); sleep()
+    (dir / "a" / "b" / "c.txt").writeText("Hello world"); sleep()
     rm(dir / "a" / "b"); sleep()
     mkdir(dir / "d"); sleep()
     touch(dir / "d" / "e.txt"); sleep()

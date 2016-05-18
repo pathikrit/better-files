@@ -119,7 +119,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t1.contentAsString shouldEqual "foobar\n"
     t1.appendLines("hello", "world")
     t1.contentAsString shouldEqual "foobar\nhello\nworld\n"
-    t2.write("hello").append("world").contentAsString shouldEqual "helloworld"
+    t2.writeText("hello").appendText("world").contentAsString shouldEqual "helloworld"
 
     (testRoot/"diary")
       .createIfNotExists()
@@ -201,7 +201,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it must "have .size" in {
     fb.isEmpty shouldBe true
     t1.size shouldBe 0
-    t1.write("Hello World")
+    t1.writeText("Hello World")
     t1.size should be > 0L
     testRoot.size should be > (t1.size + t2.size)
   }
@@ -262,7 +262,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support ln/cp/mv" in {
     val magicWord = "Hello World"
-    t1 write magicWord
+    t1 writeText magicWord
     // link
     b1.linkTo(a1, symbolic = true)
     ln_s(b2, t2)
@@ -290,7 +290,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support custom codec" in {
     import scala.io.Codec
-    t1.write("你好世界")(codec = "UTF8")
+    t1.writeText("你好世界")(codec = "UTF8")
     t1.contentAsString(Codec.ISO8859) should not equal "你好世界"
     t1.contentAsString(Codec.UTF8) shouldEqual "你好世界"
     val c1 = md5(t1)
@@ -300,20 +300,20 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support hashing algos" in {
-    t1.write("")
+    t1.writeText("")
     assert(md5(t1) != sha1(t1))
     assert(sha256(t1) != sha512(t1))
   }
 
   it should "copy" in {
-    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Hello World")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").exists shouldBe true
   }
 
   it should "move" in {
-    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).write("Hello World")
+    (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Hello World")
     mv(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").notExists shouldBe true
@@ -353,7 +353,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "zip/unzip directories" in {
-    t1.write("hello world")
+    t1.writeText("hello world")
     val zipFile = testRoot.zip()
     zipFile.size should be > 100L
     zipFile.name should endWith (".zip")
@@ -365,7 +365,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "zip/unzip single files" in {
-    t1.write("hello world")
+    t1.writeText("hello world")
     val zipFile = t1.zip()
     zipFile.size should be > 100L
     zipFile.name should endWith (".zip")
@@ -382,7 +382,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "read bytebuffers" in {
-    t1.write("hello world")
+    t1.writeText("hello world")
     for {
       fileChannel <- t1.newFileChannel.autoClosed
       buffer = fileChannel.toMappedByteBuffer
@@ -445,7 +445,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   "file watcher" should "watch single files" in {
     assume(isCI)
-    val file = File.newTemporaryFile(suffix = ".txt").write("Hello world")
+    val file = File.newTemporaryFile(suffix = ".txt").writeText("Hello world")
 
     var log = List.empty[String]
     def output(msg: String) = synchronized {
@@ -461,13 +461,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     watcher.start()
     /***************************************************************************/
     sleep(5 seconds)
-    file.write("hello world"); sleep()
+    file.writeText("hello world"); sleep()
     file.clear(); sleep()
-    file.write("howdy"); sleep()
+    file.writeText("howdy"); sleep()
     file.delete(); sleep()
     sleep(5 seconds)
     val sibling = (file.parent / "t1.txt").createIfNotExists(); sleep()
-    sibling.write("hello world"); sleep()
+    sibling.writeText("hello world"); sleep()
     sleep(20 seconds)
 
     log.size should be >= 2
@@ -488,8 +488,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     watcher.start()
 
     sleep(5 seconds)
-    (dir/"a"/"b"/"t1").touch().write("hello world"); sleep()
-    (dir/"a"/"b"/"c"/"d"/"t1").touch().write("hello world"); sleep()
+    (dir/"a"/"b"/"t1").touch().writeText("hello world"); sleep()
+    (dir/"a"/"b"/"c"/"d"/"t1").touch().writeText("hello world"); sleep()
     sleep(10 seconds)
 
     withClue(log) {

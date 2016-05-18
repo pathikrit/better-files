@@ -238,10 +238,10 @@ class File private(val path: Path) {
   def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
     appendLines(line)(openOptions, codec)
 
-  def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
+  def appendText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
     append(text.getBytes(codec))(openOptions)
 
-  def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): this.type = {
+  def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
     Files.write(path, bytes, openOptions: _*)
     this
   }
@@ -255,7 +255,7 @@ class File private(val path: Path) {
     * @param bytes
     * @return this
     */
-  def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions): this.type = {
+  def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
     Files.write(path, bytes, openOptions: _*)
     this
   }
@@ -265,17 +265,17 @@ class File private(val path: Path) {
     this
   }
 
-  def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
+  def writeText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
     write(text.getBytes(codec))(openOptions)
 
   def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
+    writeText(text)(openOptions, codec)
 
   def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
+    writeText(text)(openOptions, codec)
 
   def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
+    writeText(text)(openOptions, codec)
 
 
   def newBufferedSource(implicit codec: Codec): BufferedSource =
