@@ -238,10 +238,13 @@ class File private(val path: Path) {
   def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
     appendLines(line)(openOptions, codec)
 
-  def appendText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
-    append(text.getBytes(codec))(openOptions)
+  def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
+    appendByteArray(text.getBytes(codec))(openOptions)
 
-  def append(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
+  def appendText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
+    append(text)(openOptions, codec)
+
+  def appendByteArray(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
     Files.write(path, bytes, openOptions: _*)
     this
   }
@@ -255,7 +258,7 @@ class File private(val path: Path) {
     * @param bytes
     * @return this
     */
-  def write(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
+  def writeByteArray(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
     Files.write(path, bytes, openOptions: _*)
     this
   }
@@ -265,18 +268,20 @@ class File private(val path: Path) {
     this
   }
 
+  def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
+    writeByteArray(text.getBytes(codec))(openOptions)
+
   def writeText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text.getBytes(codec))(openOptions)
+    write(text)(openOptions, codec)
 
   def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    writeText(text)(openOptions, codec)
+    write(text)(openOptions, codec)
 
   def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    writeText(text)(openOptions, codec)
+    write(text)(openOptions, codec)
 
   def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    writeText(text)(openOptions, codec)
-
+    write(text)(openOptions, codec)
 
   def newBufferedSource(implicit codec: Codec): BufferedSource =
     Source.fromFile(toJava)(codec)
@@ -722,7 +727,7 @@ class File private(val path: Path) {
   def clear(): this.type = {
     this match {
       case File.Type.Directory(children) => children.foreach(_.delete())
-      case _ => write(Array.emptyByteArray)(File.OpenOptions.default)
+      case _ => writeByteArray(Array.emptyByteArray)(File.OpenOptions.default)
     }
     this
   }
