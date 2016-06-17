@@ -243,10 +243,10 @@ file.copyTo(destination)       // unlike the default API, also works on director
 file.linkTo(destination)                     // ln file destination
 file.symbolicLinkTo(destination)             // ln -s file destination
 file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
-file.setOwner(user: String)    // chown user file
-file.setGroup(group: String)   // chgrp group file
-Seq(file1, file2) >: file3     // same as cat file1 file2 > file3
-Seq(file1, file2) >>: file3    // same as cat file1 file2 >> file3
+file.setOwner(user: String)      // chown user file
+file.setGroup(group: String)     // chgrp group file
+Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3
+Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3
 file.isReadLocked / file.isWriteLocked / file.isLocked
 File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 ```
