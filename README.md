@@ -142,7 +142,7 @@ val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.lines
 val source : scala.io.BufferedSource   = file.newBufferedSource // needs to be closed, unlike the above APIs which auto closes when iterator ends
 ```
-Note: The above APIs can be traversed atmost once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
+Note: The above APIs can be traversed at most once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
 
 You can write an `Iterator[Byte]` or an `Iterator[String]` back to a file:
@@ -293,7 +293,7 @@ file.posixAttributes / file.dosAttributes  // see file.attributes
 file.isEmpty      // true if file has no content (or no children if directory) or does not exist
 file.isParentOf / file.isChildOf / file.isSiblingOf / file.siblings
 ```
-All the above APIs let's you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
+All the above APIs let you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
 ```scala
 file.isDirectory(LinkOption.NOFOLLOW_LINKS)
 ```
@@ -420,7 +420,7 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
-The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module let's you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala) e.g.:
+The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala) e.g.:
 ```scala
 val in = Scanner("""
   12 Bob True
