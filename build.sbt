@@ -22,6 +22,7 @@ lazy val commonSettings = Seq(
     //"-Ywarn-numeric-widen",     // bugs in 2.10
     //"-Ywarn-value-discard",
     //"-Ywarn-unused-import",     // 2.11 only
+    //"-Ywarn-unused",            // 2.11 only
     //"-Xexperimental",           // 2.11 only
     "-Xfuture"
   ),

@@ -11,7 +11,6 @@ import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIP
 
 import scala.annotation.tailrec
 import scala.io.{BufferedSource, Codec, Source}
-import scala.util.control.NonFatal
 
 /**
   * Container for various implicits
@@ -214,10 +213,8 @@ trait Implicits {
 
       def next() = try {
         generator(resource)
-      } catch {
-        case NonFatal(e) =>
-          close()
-          throw e
+      } finally {
+        close()
       }
 
       Iterator.continually(next()).takeWhile(isOpen)
@@ -250,9 +247,11 @@ trait Implicits {
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
     produce(s.nextToken()).till(s.hasMoreTokens)
 
-  implicit def codecToCharSet(codec: Codec): Charset = codec.charSet
+  implicit def codecToCharSet(codec: Codec): Charset =
+    codec.charSet
 
-  //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) = PosixFilePermissions.asFileAttribute(Set(perm))
+  //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
+  //  PosixFilePermissions.asFileAttribute(Set(perm))
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Files =
     files.toAutoClosedIterator.map(File.apply)

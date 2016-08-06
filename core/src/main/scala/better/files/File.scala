@@ -886,11 +886,11 @@ object File {
     }
 
     case object Directory extends Type[Files] {
-      def unapply(file: File) = when(file.isDirectory)(file.children)
+      override def unapply(file: File) = when(file.isDirectory)(file.children)
     }
 
     case object SymbolicLink extends Type[File] {
-      def unapply(file: File) = file.symbolicLink
+      override def unapply(file: File) = file.symbolicLink
     }
   }
 

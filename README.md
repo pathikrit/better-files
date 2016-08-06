@@ -2,6 +2,15 @@
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
+## Talks
+  - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
+    
+  <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
+    <img src="http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
+  </a>
+
+  - [ScalaDays Berlin 2016][scalaDaysBerlin2016Event] ([video][scalaDaysBerlin2016Video], [slides][scalaDaysBerlin2016Slides])
+
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)  
@@ -73,6 +82,14 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 
 [updateImpactImg]: https://app.updateimpact.com/badge/704376701047672832/root.svg?config=compile
 [updateImpactLink]: https://app.updateimpact.com/latest/704376701047672832/root
+
+[scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
+[scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE
+[scalaDaysNyc2016Slides]: https://slides.com/pathikrit/better-files/
+
+[scalaDaysBerlin2016Event]: http://event.scaladays.org/scaladays-berlin-2016#!#schedulePopupExtras-7668
+[scalaDaysBerlin2016Video]: https://www.youtube.com/watch?v=m2YsD5cgnzI
+[scalaDaysBerlin2016Slides]: https://slides.com/pathikrit/better-files/
 --- 
 ### Instantiation 
 The following are all equivalent:
