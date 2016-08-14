@@ -12,6 +12,7 @@ import scala.util.Try
 
 class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   val isCI = sys.env.get("CI").exists(_.toBoolean)
+  val isUnixOS = Seq("Linux", "MacOS").contains(System.getProperty("os.name", "Other"))
 
   def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 
@@ -286,6 +287,14 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     t3 moveTo t2
     t2.exists shouldBe true
     t3.exists shouldBe false
+  }
+
+  it should "support creating hard links with ln" in {
+    assume(isUnixOS)
+    val magicWord = "Hello World"
+    t1 writeText magicWord
+    t1.linkTo(t3, symbolic = false)
+    (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
   }
 
   it should "support custom codec" in {

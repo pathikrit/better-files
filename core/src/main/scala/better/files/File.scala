@@ -660,7 +660,7 @@ class File private(val path: Path) {
 
   def linkTo(destination: File, symbolic: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): destination.type = {
     if (symbolic) symbolicLinkTo(destination)(attributes) else {
-      Files.createLink(path, destination.path)
+      Files.createLink(destination.path, path)
       destination
     }
   }
