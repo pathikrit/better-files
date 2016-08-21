@@ -1,6 +1,5 @@
 package better.files
 
-
 import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
 import java.net.URI
 import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
@@ -375,9 +374,8 @@ class File private(val path: Path) {
         val bytes = relativePath.toString.getBytes
         algorithm.update(bytes)
       } else {
-        file.inputStream foreach { stream =>
-          val digestStream = new DigestInputStream(stream, algorithm)
-          while (digestStream.read() != -1) {}
+        file.bytes.grouped(1024) foreach { bytes =>
+          algorithm.update(bytes.toArray)
         }
       }
     }

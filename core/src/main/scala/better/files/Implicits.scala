@@ -11,6 +11,7 @@ import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIP
 
 import scala.annotation.tailrec
 import scala.io.{BufferedSource, Codec, Source}
+import scala.util.control.NonFatal
 
 /**
   * Container for various implicits
@@ -212,9 +213,13 @@ trait Implicits {
       }
 
       def next() = try {
-        generator(resource)
-      } finally {
-        close()
+        val next = generator(resource)
+        if (!isValidElement(next)) close()
+        next
+      } catch {
+        case NonFatal(ex) =>
+          close()
+          throw ex
       }
 
       Iterator.continually(next()).takeWhile(isOpen)
