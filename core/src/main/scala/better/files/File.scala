@@ -4,7 +4,7 @@ import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 
 import java.net.URI
 import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
 import java.nio.file._, attribute._
-import java.security.MessageDigest
+import java.security.{MessageDigest, DigestInputStream}
 import java.time.Instant
 import java.util.zip.{Deflater, ZipFile}
 import javax.xml.bind.DatatypeConverter
@@ -370,8 +370,14 @@ class File private(val path: Path) {
     val algorithm = MessageDigest.getInstance(algorithmName)
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path resolve relativePath
-      val bytes = if (file.isDirectory) relativePath.toString.getBytes else file.loadBytes
-      algorithm.update(bytes)
+      if (file.isDirectory) {
+        val bytes = relativePath.toString.getBytes
+        algorithm.update(bytes)
+      } else {
+        file.bytes.grouped(1024) foreach { bytes =>
+          algorithm.update(bytes.toArray)
+        }
+      }
     }
     algorithm.digest()
   }
