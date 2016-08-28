@@ -6,7 +6,8 @@ machine:
 
 test:
   override:
-    - sbt +clean +coverage +test
+    - sbt +clean +test
+#    - sbt +clean +coverage +test
 #  post:
 #    - cp -r target/scala-2.10/ $CIRCLE_ARTIFACTS
 
