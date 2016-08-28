@@ -1,15 +1,17 @@
 package better.files
 
-import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
+import java.io.{File => JFile, _}
 import java.net.URI
-import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
-import java.nio.file._, attribute._
-import java.security.{MessageDigest, DigestInputStream}
+import java.nio.channels._
+import java.nio.file._
+import java.nio.file.attribute._
+import java.nio.{file => nio}
+import java.security.MessageDigest
 import java.time.Instant
 import java.util.zip.{Deflater, ZipFile}
 import javax.xml.bind.DatatypeConverter
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.io.{BufferedSource, Codec, Source}
 import scala.util.Properties
 
@@ -187,6 +189,7 @@ class File private(val path: Path) {
     */
   def lines(implicit codec: Codec): Traversable[String] =
     Files.readAllLines(path, codec)
+         .asScala
 
   /**
     * Iterate over lines in a file (auto-close stream on complete)
@@ -225,7 +228,7 @@ class File private(val path: Path) {
     * @return
     */
   def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type = {
-    Files.write(path, lines, codec, openOptions: _*)
+    Files.write(path, lines.asJava, codec, openOptions: _*)
     this
   }
 
@@ -344,7 +347,7 @@ class File private(val path: Path) {
     newOutputStream(openOptions).autoClosed
 
   def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
-    FileChannel.open(path, openOptions.toSet, attributes: _*)
+    FileChannel.open(path, openOptions.toSet.asJava, attributes: _*)
 
   def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): ManagedResource[FileChannel] =
     newFileChannel(openOptions, attributes).autoClosed
@@ -483,7 +486,7 @@ class File private(val path: Path) {
   def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     walk()(visitOptions).filter(matchFilter(_))
 
-  def fileSystem: FileSystem =
+  def fileSystem: nio.FileSystem =
     path.getFileSystem
 
   def uri: URI =
@@ -496,13 +499,14 @@ class File private(val path: Path) {
     walk()(visitOptions).map(f => Files.size(f.path)).sum
 
   def permissions(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Set[PosixFilePermission] =
-    Files.getPosixFilePermissions(path, linkOptions: _*).toSet
+    Files.getPosixFilePermissions(path, linkOptions: _*)
+         .asScala.toSet
 
   def permissionsAsString(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String =
-    PosixFilePermissions.toString(permissions(linkOptions))
+    PosixFilePermissions.toString(permissions(linkOptions).asJava)
 
   def setPermissions(permissions: Set[PosixFilePermission]): this.type = {
-    Files.setPosixFilePermissions(path, permissions)
+    Files.setPosixFilePermissions(path, permissions.asJava)
     this
   }
 
@@ -773,7 +777,7 @@ class File private(val path: Path) {
   def unzipTo(destination: File)(implicit codec: Codec): destination.type = {
     for {
       zipFile <- new ZipFile(toJava, codec).autoClosed
-      entry <- zipFile.entries()
+      entry <- zipFile.entries().asScala
       file = destination.createChild(entry.getName, entry.isDirectory)
       if !entry.isDirectory
     } zipFile.getInputStream(entry) > file.newOutputStream
@@ -815,7 +819,9 @@ object File {
     Paths.get(uri)
 
   def roots: Iterable[File] =
-    FileSystems.getDefault.getRootDirectories.map(File.apply)
+    FileSystems.getDefault
+               .getRootDirectories.asScala
+               .map(File.apply)
 
   def root: File =
     roots.head

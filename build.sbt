@@ -1,12 +1,20 @@
+import sbt._
+import Keys._
+import com.typesafe.sbt.SbtSite._
+
+
 val username = "pathikrit"
 val repo = "better-files"
+
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8"),
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M5"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
+  unmanagedSourceDirectories in Test ++=
+    Seq((sourceDirectory in Test).value / s"scala-${scalaBinaryVersion.value}"),
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -16,19 +24,20 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-Xfatal-warnings",
     "-Xlint",
-    "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
-    //"-Ywarn-numeric-widen",     // bugs in 2.10
-    //"-Ywarn-value-discard",
-    //"-Ywarn-unused-import",     // 2.11 only
-    //"-Ywarn-unused",            // 2.11 only
-    //"-Xexperimental",           // 2.11 only
     "-Xfuture"
-  ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test,
+  ) ++ compilerOptionsFor(scalaVersion.value),
+  libraryDependencies += depends.scalatest(scalaVersion.value),
   updateImpactOpenBrowser := false
 )
+
+def compilerOptionsFor(scalaVersion: String) =
+  if (scalaVersion.startsWith("2.10")) Seq()
+  else if (scalaVersion.startsWith("2.11")) Seq("-Yinline-warnings", "-Ywarn-unused-import", "-Ywarn-unused", "-Xexperimental", "-Ywarn-numeric-widen")
+  else if (scalaVersion.startsWith("2.12")) Seq("-Ywarn-unused-import", "-Ywarn-unused", "-Xexperimental", /*"-Ywarn-value-discard", */"-Ywarn-numeric-widen")
+  else Nil
+
 
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
@@ -44,7 +53,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.15"
+    libraryDependencies += depends.akkaActor(scalaVersion.value)
   )
   .dependsOn(core)
 
@@ -54,17 +63,16 @@ lazy val shapelessScanner = (project in file("shapeless"))
   .settings(
     name := s"shapeless-scanner",
     description := "Shapeless Scanner",
-    libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.1"
+    libraryDependencies += depends.shapeless(scalaVersion.value)
   )
   .dependsOn(core)
 
-lazy val benchmarks = (project in file("benchmarks"))
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
-  .settings(
-    name := s"$repo-benchmarks",
-    libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
-  )
+lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"),
+  settings = commonSettings ++
+             Seq(libraryDependencies ++= depends.scalaMeter(scalaVersion.value)) ++
+             Seq(name := s"$repo-benchmarks") ++ noPublishSettings ++
+             Seq((skip in compile) := scalaVersion.value startsWith "2.12")
+)
   .dependsOn(core)
 
 lazy val root = (project in file("."))
