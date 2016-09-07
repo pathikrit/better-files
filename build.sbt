@@ -28,7 +28,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-dead-code",
     "-Xfuture"
   ) ++ compilerOptionsFor(scalaVersion.value),
-  libraryDependencies += depends.scalatest(scalaVersion.value),
+  libraryDependencies += DependsOn.scalatest(scalaVersion.value),
   updateImpactOpenBrowser := false
 )
 
@@ -53,7 +53,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += depends.akkaActor(scalaVersion.value)
+    libraryDependencies += DependsOn.akkaActor(scalaVersion.value)
   )
   .dependsOn(core)
 
@@ -63,13 +63,13 @@ lazy val shapelessScanner = (project in file("shapeless"))
   .settings(
     name := s"shapeless-scanner",
     description := "Shapeless Scanner",
-    libraryDependencies += depends.shapeless(scalaVersion.value)
+    libraryDependencies += DependsOn.shapeless(scalaVersion.value)
   )
   .dependsOn(core)
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"),
   settings = commonSettings ++
-             Seq(libraryDependencies ++= depends.scalaMeter(scalaVersion.value)) ++
+             Seq(libraryDependencies ++= DependsOn.scalaMeter(scalaVersion.value)) ++
              Seq(name := s"$repo-benchmarks") ++ noPublishSettings ++
              Seq((skip in compile) := scalaVersion.value startsWith "2.12")
 )

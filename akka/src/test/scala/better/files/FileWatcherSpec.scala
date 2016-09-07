@@ -28,8 +28,8 @@ class FileWatcherSpec extends FlatSpec with Matchers {
     import java.nio.file.{StandardWatchEventKinds => Events}
 
     import ActorSystemSupport.system
-    import FileWatcher._
     import akka.actor.ActorRef
+    import FileWatcher._
 
     val watcher: ActorRef = dir.newWatcher(recursive = true)
 
