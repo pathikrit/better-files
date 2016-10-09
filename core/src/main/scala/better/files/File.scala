@@ -830,7 +830,7 @@ object File {
   def currentWorkingDirectory: File =
     File("")
 
-  def unique(): File =
+  def newUniqueFile(): File =
     File(UUID.randomUUID().toString)
 
   type Attributes = Seq[FileAttribute[_]]
