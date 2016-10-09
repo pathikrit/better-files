@@ -833,6 +833,10 @@ object File {
   def newUniqueFile(): File =
     File(UUID.randomUUID().toString)
 
+  def newUniqueDirectory(): File =
+    newUniqueFile.createDirectory()
+
+
   type Attributes = Seq[FileAttribute[_]]
   object Attributes {
     val default   : Attributes = Seq.empty
