@@ -124,9 +124,8 @@ Creating a unique directory or file is easy:
 import better.files._
 import File._
 
-unique //res0: better.files.File = /path/to/current/dir/73372518-1625-4953-89f5-f3a63a7faed1
-unique/"file.jpg" // /path/to/current/dir/302aa9d3-cab3-4411-b0cd-0c8ce376729b/file.jpg
-home / unique.pathAsString // /home/user/11268b08-2cca-4abe-9d10-236f9283cf33
+newUniqueFile() //res0: better.files.File = /path/to/current/dir/73372518-1625-4953-89f5-f3a63a7faed1
+newUniqueDirectory() //res0: better.files.File = /path/to/current/dir/bb0d7569-d6a0-43e3-8422-9a481cf9c51d/
 ```
 
 
