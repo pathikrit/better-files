@@ -11,7 +11,7 @@ object DependsOn {
   def akkaActor(scalaVersion: String): ModuleID = {
     val artifact = "com.typesafe.akka" %% "akka-actor"
     scalaVersion match {
-      case v if scalaVersion.startsWith("2.12") => artifact % "2.4.8"
+      case v if scalaVersion.startsWith("2.12") => artifact % "2.4.12"
       case v if scalaVersion.startsWith("2.11") => artifact % "2.4.8"
       case v if scalaVersion.startsWith("2.10") => artifact % "2.3.15"
     }
@@ -23,7 +23,9 @@ object DependsOn {
     else artifact % "2.3.1"
   }
 
-  def scalaMeter(scalaVersion: String): Seq[ModuleID] =
-    if (scalaVersion.startsWith("2.12")) Nil // no 2.12 support yet
-    else Seq("com.storm-enroute" %% "scalameter-core" % "0.7" % Test)
+  def scalaMeter(scalaVersion: String): ModuleID = {
+    val artifact = "com.storm-enroute" %% "scalameter-core"
+    if (scalaVersion.startsWith("2.12")) artifact % "0.8.1" % Test
+    else artifact % "0.7" % Test
+  }
 }

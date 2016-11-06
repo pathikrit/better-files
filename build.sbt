@@ -10,7 +10,7 @@ val repo = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M5"),
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   unmanagedSourceDirectories in Test ++=
@@ -69,7 +69,7 @@ lazy val shapelessScanner = (project in file("shapeless"))
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"),
   settings = commonSettings ++
-             Seq(libraryDependencies ++= DependsOn.scalaMeter(scalaVersion.value)) ++
+             Seq(libraryDependencies += DependsOn.scalaMeter(scalaVersion.value)) ++
              Seq(name := s"$repo-benchmarks") ++ noPublishSettings ++
              Seq((skip in compile) := scalaVersion.value startsWith "2.12")
 )
