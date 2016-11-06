@@ -3,7 +3,7 @@ package better.files
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermission, PosixFilePermissions}
 import java.util.zip.{Deflater, ZipOutputStream}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.io.Codec
 
 /**
@@ -75,7 +75,7 @@ object Cmds {
     * @param file
     * @return file
     */
-  def chmod(permissions: String, file: File): File = file.setPermissions(PosixFilePermissions.fromString(permissions).toSet)
+  def chmod(permissions: String, file: File): File = file.setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)
 
   def chmod_+(permission: PosixFilePermission, file: File): File = file.addPermission(permission)
 

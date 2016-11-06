@@ -1,12 +1,12 @@
 package better.files
 
-import Cmds._
-
+import better.files.Cmds._
 import org.scalatest._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
+
 
 class FileWatcherSpec extends FlatSpec with Matchers {
   val isCI = Try(sys.env("CI").toBoolean) getOrElse false     //TODO: Move these to core test package
@@ -26,10 +26,10 @@ class FileWatcherSpec extends FlatSpec with Matchers {
     }
     /***************************************************************************/
     import java.nio.file.{StandardWatchEventKinds => Events}
-    import FileWatcher._
 
-    import akka.actor.{ActorRef, ActorSystem}
-    implicit val system = ActorSystem()
+    import ActorSystemSupport.system
+    import akka.actor.ActorRef
+    import FileWatcher._
 
     val watcher: ActorRef = dir.newWatcher(recursive = true)
 
@@ -58,7 +58,5 @@ class FileWatcherSpec extends FlatSpec with Matchers {
     )
 
     expectedEvents diff log shouldBe empty
-
-    system.shutdown()
   }
 }
