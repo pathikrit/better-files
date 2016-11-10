@@ -12,7 +12,7 @@ import scala.util.Try
 
 class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   val isCI = sys.env.get("CI").exists(_.toBoolean)
-  val isUnixOS = Seq("Linux", "MacOS").contains(System.getProperty("os.name", "Other"))
+  val isUnixOS = sys.props.get("os.name").exists(os => os == "Linux" || os == "MaxOS")
 
   def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
 

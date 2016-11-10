@@ -213,13 +213,11 @@ trait Implicits {
       }
 
       def next() = try {
-        val next = generator(resource)
-        if (!isValidElement(next)) close()
-        next
+        generator(resource)
       } catch {
-        case NonFatal(ex) =>
+        case NonFatal(e) =>
           close()
-          throw ex
+          throw e
       }
 
       Iterator.continually(next()).takeWhile(isOpen)
