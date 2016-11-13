@@ -69,6 +69,13 @@ class File private(val path: Path) {
     }
   }
 
+  /**
+    * Returns the extension if file is a regular file
+    * If file is unreadable or does not exist, it is assumed to be not a regular file
+    * See: https://github.com/pathikrit/better-files/issues/89
+    *
+    * @return
+    */
   def hasExtension: Boolean =
     (isRegularFile || notExists) && (name contains ".")
 
