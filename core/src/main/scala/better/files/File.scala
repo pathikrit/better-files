@@ -642,7 +642,7 @@ class File private(val path: Path) {
     * @param overwrite
     * @return destination
     */
-  def copyTo(destination: File, overwrite: Boolean = false): destination.type = {
+  def copyTo(destination: File, overwrite: Boolean = false)(implicit copyOptions: File.CopyOptions = File.CopyOptions(overwrite)): destination.type = {
     if (isDirectory) {//TODO: maxDepth?
       if (overwrite) destination.delete(swallowIOExceptions = true)
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
@@ -654,12 +654,12 @@ class File private(val path: Path) {
         }
 
         override def visitFile(file: Path, attrs: BasicFileAttributes) = {
-          Files.copy(file, newPath(file), File.CopyOptions(overwrite): _*)
+          Files.copy(file, newPath(file), copyOptions: _*)
           super.visitFile(file, attrs)
         }
       })
     } else {
-      Files.copy(path, destination.path, File.CopyOptions(overwrite): _*)
+      Files.copy(path, destination.path, copyOptions: _*)
     }
     destination
   }
