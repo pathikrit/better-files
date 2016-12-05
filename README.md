@@ -340,7 +340,7 @@ file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for reg
 file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
 file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
-There are also various [`Ordering[File]` included](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Order$) e.g.:
+There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Order$) included, e.g.:
 ```scala
 val files = myDir.list.toSeq
 files.sorted(File.Order.byName) 
