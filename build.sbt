@@ -63,7 +63,7 @@ lazy val shapelessScanner = (project in file("shapeless"))
   .settings(
     name := s"shapeless-scanner",
     description := "Shapeless Scanner",
-    libraryDependencies += DependsOn.shapeless(scalaVersion.value)
+    libraryDependencies += DependsOn.shapeless
   )
   .dependsOn(core)
 
