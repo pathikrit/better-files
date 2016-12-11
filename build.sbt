@@ -10,7 +10,7 @@ val repo = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0"),
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   unmanagedSourceDirectories in Test ++=
@@ -75,12 +75,12 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"),
 )
   .dependsOn(core)
 
-lazy val root = (project in file("."))
-  .settings(commonSettings: _*)
-  .settings(docSettings: _*)
-  .settings(noPublishSettings: _*)
-  .settings(releaseSettings: _*)
-  .aggregate(core, akka, shapelessScanner)
+lazy val root =
+  Project(
+    id = "better-files",
+    base = file( "." ),
+    settings = Seq(name:= "Better Files") ++ commonSettings ++ docSettings ++ noPublishSettings ++ releaseSettings
+  ).aggregate(core, akka, shapelessScanner)
 
 import UnidocKeys._
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
