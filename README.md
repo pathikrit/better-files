@@ -10,6 +10,7 @@
   </a>
 
   - [ScalaDays Berlin 2016][scalaDaysBerlin2016Event] ([video][scalaDaysBerlin2016Video], [slides][scalaDaysBerlin2016Slides])
+  - [Scalæ by the Bay 2016][scalæByTheBay2016Event] ([video][scalæByTheBay2016Video], [slides][scalæByTheBay2016Slides])
 
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
@@ -85,11 +86,16 @@ Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.
 
 [scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
 [scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE
+[scalaDaysNyc2016VideoPreview]: http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg
 [scalaDaysNyc2016Slides]: https://slides.com/pathikrit/better-files/
 
 [scalaDaysBerlin2016Event]: http://event.scaladays.org/scaladays-berlin-2016#!#schedulePopupExtras-7668
 [scalaDaysBerlin2016Video]: https://www.youtube.com/watch?v=m2YsD5cgnzI
 [scalaDaysBerlin2016Slides]: https://slides.com/pathikrit/better-files/
+
+[scalæByTheBay2016Event]: http://sched.co/7iUn
+[scalæByTheBay2016Video]: https://www.youtube.com/watch?v=bLiCE6NGjrk&t=251s
+[scalæByTheBay2016Slides]: https://slides.com/pathikrit/better-files/
 --- 
 ### Instantiation 
 The following are all equivalent:
