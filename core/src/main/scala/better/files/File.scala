@@ -839,10 +839,10 @@ object File {
     val default   : Attributes = Seq.empty
   }
 
-  type StandardCopyOptions = Seq[StandardCopyOption]
-  object StandardCopyOptions {
-    def apply(overwrite: Boolean) : StandardCopyOptions = if (overwrite) StandardCopyOption.REPLACE_EXISTING +: default else default
-    val default                   : StandardCopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
+  type CopyOptions = Seq[CopyOption]
+  object CopyOptions {
+    def apply(overwrite: Boolean) : CopyOptions = (if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else default) ++ LinkOptions.default
+    val default                   : CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
   }
 
   type Events = Seq[WatchEvent.Kind[_]]
@@ -862,12 +862,6 @@ object File {
     val follow    : LinkOptions = Seq.empty
     val noFollow  : LinkOptions = Seq(LinkOption.NOFOLLOW_LINKS)
     val default   : LinkOptions = follow
-  }
-
-  type CopyOptions = Seq[CopyOption]
-  object CopyOptions {
-    def apply(overwrite: Boolean) : CopyOptions = StandardCopyOptions(overwrite) ++ LinkOptions.default
-    val default                   : CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
   }
 
   type VisitOptions = Seq[FileVisitOption]
