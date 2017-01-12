@@ -43,7 +43,8 @@ libraryDependencies ++= Seq(
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
 
-Although this library is compatible with [both Scala 2.10 and 2.11](https://oss.sonatype.org/#nexus-search;quick~better-files), it needs minimum JDK 8.
+Although this library is currently only actively developed for Scala 2.11 and 2.12, 
+you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files)
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
