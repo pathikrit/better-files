@@ -4,7 +4,7 @@ val repo = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8"),
+  crossScalaVersions := Seq("2.11.8"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions ++= Seq(
@@ -19,11 +19,11 @@ lazy val commonSettings = Seq(
     "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
-    //"-Ywarn-numeric-widen",     // bugs in 2.10
+    "-Ywarn-numeric-widen",
     //"-Ywarn-value-discard",
-    //"-Ywarn-unused-import",     // 2.11 only
-    //"-Ywarn-unused",            // 2.11 only
-    //"-Xexperimental",           // 2.11 only
+    "-Ywarn-unused-import",
+    "-Ywarn-unused",
+    "-Xexperimental",
     "-Xfuture"
   ),
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test,
@@ -117,16 +117,12 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
-  credentials ++= (for {
-    username <- sys.env.get("SONATYPE_USERNAME")
-    password <- sys.env.get("SONATYPE_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq,
   pomExtra :=
     <developers>
       <developer>
-        <id>pathikrit</id>
+        <id>{username}</id>
         <name>Pathikrit Bhowmick</name>
-        <url>http://github.com/pathikrit</url>
+        <url>http://github.com/{username}</url>
       </developer>
     </developers>
 )

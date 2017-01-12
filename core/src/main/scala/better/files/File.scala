@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{File => JFile, FileSystem => JFileSystem, _} //TODO: Scala 2.10 does not like java.io._
+import java.io.{File => JFile, _}
 import java.net.URI
 import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
 import java.nio.file._, attribute._
