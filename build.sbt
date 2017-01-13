@@ -3,8 +3,8 @@ val repo = "better-files"
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.11.8"),
+  scalaVersion := "2.12.1",
+  crossScalaVersions := Seq("2.12.1"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions ++= Seq(
@@ -16,7 +16,7 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-Xfatal-warnings",
     "-Xlint",
-    "-Yinline-warnings",
+    //"-Yinline-warnings", //Removed in 2.12?
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
