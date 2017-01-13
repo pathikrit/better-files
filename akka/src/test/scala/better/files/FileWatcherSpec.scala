@@ -59,6 +59,6 @@ class FileWatcherSpec extends FlatSpec with Matchers {
 
     expectedEvents diff log shouldBe empty
 
-    system.shutdown()
+    system.terminate()
   }
 }

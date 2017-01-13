@@ -26,7 +26,7 @@ lazy val commonSettings = Seq(
     "-Xexperimental",
     "-Xfuture"
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % Test,
+  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test,
   updateImpactOpenBrowser := false
 )
 
@@ -44,7 +44,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.15"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.16"
   )
   .dependsOn(core)
 
@@ -54,7 +54,7 @@ lazy val shapelessScanner = (project in file("shapeless"))
   .settings(
     name := s"shapeless-scanner",
     description := "Shapeless Scanner",
-    libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.1"
+    libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.2"
   )
   .dependsOn(core)
 
