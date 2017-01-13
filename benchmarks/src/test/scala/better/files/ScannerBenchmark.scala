@@ -11,14 +11,14 @@ object ScannerBenchmark extends App {
       .appendLine("world " * n)
   }
   val scanners: Seq[BufferedReader => AbstractScanner] = Seq(
-    //new BetterFilesScanner(_),
     new JavaScanner(_),
     new StreamingScanner(_),
     new ArrayBufferScanner(_),
     new CharBufferScanner(_),
     new IteratorScanner(_),
     new IterableScanner(_),
-    new StringBuilderScanner(_)
+    new StringBuilderScanner(_),
+    new BetterFilesScanner(_)
   )
 
   def test(scanner: AbstractScanner) = {

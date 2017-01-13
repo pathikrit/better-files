@@ -130,7 +130,8 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   * Based on the better-files implementation
   */
 class BetterFilesScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  private[this] val proxy = better.files.Scanner(reader)
-  override def hasNext = proxy.hasNext
-  override def next() = proxy.next
+  private[this] val scanner = better.files.Scanner(reader)
+  override def hasNext = scanner.hasNext
+  override def next() = scanner.next
+  override def nextLine() = scanner.tillEndOfLine()
 }
