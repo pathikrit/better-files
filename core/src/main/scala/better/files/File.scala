@@ -107,7 +107,8 @@ class File private(val path: Path) {
   def parentOption: Option[File] =
     Option(path.getParent).map(File.apply)
 
-  def /(child: String): File = path resolve child
+  def /(child: String): File =
+    path.resolve(child)
 
   def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
     (this / child).createIfNotExists(asDirectory)(attributes, linkOptions)
@@ -140,16 +141,16 @@ class File private(val path: Path) {
     Files.notExists(path, linkOptions: _*)
 
   def sibling(name: String): File =
-    path resolveSibling name
+    path.resolveSibling(name)
 
   def isSiblingOf(sibling: File): Boolean =
-    sibling isChildOf parent
+    sibling.isChildOf(parent)
 
   def siblings: Files =
     parent.list.filterNot(_ == this)
 
   def isChildOf(parent: File): Boolean =
-    parent isParentOf this
+    parent.isParentOf(this)
 
   /**
     * Check if this directory contains this file
@@ -376,7 +377,7 @@ class File private(val path: Path) {
   def digest(algorithmName: String): Array[Byte] = {
     val algorithm = MessageDigest.getInstance(algorithmName)
     listRelativePaths.toSeq.sorted foreach { relativePath =>
-      val file: File = path resolve relativePath
+      val file: File = path.resolve(relativePath)
       val batchedBytes: Iterator[Array[Byte]] = if (file.isDirectory) {
         Iterator(relativePath.toString.getBytes)
       } else {
@@ -623,7 +624,7 @@ class File private(val path: Path) {
   }
 
   def renameTo(newName: String): File =
-    moveTo(path resolveSibling newName)
+    moveTo(path.resolveSibling(newName))
 
   /**
     *
@@ -646,7 +647,7 @@ class File private(val path: Path) {
     if (isDirectory) {//TODO: maxDepth?
       if (overwrite) destination.delete(swallowIOExceptions = true)
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
-        def newPath(subPath: Path): Path = destination.path resolve (path relativize subPath)
+        def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
 
         override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
           Files.createDirectories(newPath(dir))
