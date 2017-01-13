@@ -123,11 +123,6 @@ trait Implicits {
       new BufferedWriter(writer)
   }
 
-  implicit class BufferedIteratorOps[A](it: BufferedIterator[A]) {
-    def headOption: Option[A] =
-      when(it.hasNext)(it.head) // TODO: https://issues.scala-lang.org/browse/SI-9691
-  }
-
   implicit class FileChannelOps(fc: FileChannel) {
     def toMappedByteBuffer: MappedByteBuffer =
       fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size())

@@ -15,9 +15,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     override def run() = Iterator.continually(service.take()) foreach process
   }
   thread.setDaemon(true)
-  thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler {
-    override def uncaughtException(thread: Thread, exception: Throwable) = onException(exception)
-  })
+  thread.setUncaughtExceptionHandler((thread, exception) => onException(exception))
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
@@ -26,8 +24,8 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
 
     val path = key.watchable().asInstanceOf[Path]
 
-    import scala.collection.JavaConversions._
-    key.pollEvents() foreach {
+    import scala.collection.JavaConverters._
+    key.pollEvents().asScala foreach {
       case event: WatchEvent[Path] @unchecked =>
         val target: File = path resolve event.context()
         if (reactTo(target)) {

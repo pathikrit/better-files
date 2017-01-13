@@ -43,8 +43,8 @@ libraryDependencies ++= Seq(
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
 
-Although this library is currently only actively developed for Scala 2.11 and 2.12, 
-you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files)
+Although this library is currently only actively developed for Scala 2.12, 
+you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files)
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
@@ -71,8 +71,8 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 [codacyImg2]: https://api.codacy.com/project/badge/grade/0e2aeb7949bc49e6802afcc43a7a1aa1
 [codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 
-[mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
-[mavenImg2]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.11/badge.svg
+[mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
+[mavenImg2]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.12/badge.svg
 [mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
 
 [gitterImg]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
