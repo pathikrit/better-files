@@ -6,7 +6,7 @@
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
     
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
-    <img src="http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
+    <img src="site/tech_talk_preview.png" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
   </a>
 
   - [ScalaDays Berlin 2016][scalaDaysBerlin2016Event] ([video][scalaDaysBerlin2016Video], [slides][scalaDaysBerlin2016Slides])
@@ -87,7 +87,8 @@ you can find reasonably recent versions of this library for Scala 2.10 and 2.11 
 
 [scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
 [scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE
-[scalaDaysNyc2016VideoPreview]: http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg
+<!--[scalaDaysNyc2016VideoPreview]: http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg-->
+[scalaDaysNyc2016VideoPreview]: site/tech_talk_preview.png
 [scalaDaysNyc2016Slides]: https://slides.com/pathikrit/better-files/
 
 [scalaDaysBerlin2016Event]: http://event.scaladays.org/scaladays-berlin-2016#!#schedulePopupExtras-7668
@@ -204,7 +205,7 @@ val fr           : java.io.FileReader           = file.newFileReader
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 val printer      : java.io.PrintWriter          = file.newPrintWriter
 ```
-The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/#better.files.Implicits) to above classes e.g.:
+The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits.html) to above classes e.g.:
 ```scala
 file1.reader > file2.writer       // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
@@ -222,7 +223,7 @@ val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
  
 ### Pattern matching
-Instead of `if-else`, more idiomatic powerful Scala [pattern matching](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Types$):
+Instead of `if-else`, more idiomatic powerful Scala [pattern matching](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Type$.html):
 ```scala
 /**
  * @return true if file is a directory with no children or a file with no contents
@@ -277,7 +278,7 @@ File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
 
 ### UNIX DSL
-All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/#better.files.Cmds$) reminiscent of the command line:
+All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Cmds$.html) reminiscent of the command line:
 ```scala
 import better.files_, Cmds._   // must import Cmds._ to bring in these utils
 pwd / cwd     // current dir
@@ -322,9 +323,9 @@ All the above APIs let you specify the [`LinkOption`](http://docs.oracle.com/jav
 ```scala
 file.isDirectory(LinkOption.NOFOLLOW_LINKS)
 ```
-Or using the [`File.Links`](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Links$) helper:
+Or using the [`File.LinkOptions`](http://pathikrit.github.io/better-files/latest/api/better/files/File$$LinkOptions$.html) helper:
 ```scala
-file.isDirectory(File.Links.noFollow)
+file.isDirectory(File.LinkOptions.noFollow)
 ```
 
 `chmod`:
@@ -348,7 +349,7 @@ file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for reg
 file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
 file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
-There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/#better.files.File$$Order$) included, e.g.:
+There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Order$.html) included, e.g.:
 ```scala
 val files = myDir.list.toSeq
 files.sorted(File.Order.byName) 
@@ -401,7 +402,7 @@ for {
 // or simply:
 file.bufferedReader.map(foo)
 ```
-Or use a [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/#better.files.package$$CloseableOps):
+Or use a [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits$CloseableOps.html):
 ```scala
 val eof = -1
 val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).map(_.toByte) 
@@ -413,7 +414,7 @@ If you only partially use the iterator e.g. `.take(5)`, it may leave the resourc
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
-`better-files` provides a [faster](benchmarks#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/#better.files.Scanner) 
+`better-files` provides a [faster](benchmarks#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html) 
 that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val data = t1 << s"""
