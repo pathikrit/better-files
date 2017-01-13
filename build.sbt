@@ -115,6 +115,10 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
+  credentials ++= (for {
+    username <- sys.env.get("SONATYPE_USERNAME")
+    password <- sys.env.get("SONATYPE_PASSWORD")
+  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq,
   pomExtra :=
     <developers>
       <developer>
