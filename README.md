@@ -273,6 +273,7 @@ Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3
 Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3
 file.isReadLocked / file.isWriteLocked / file.isLocked
 File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
+File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
 
 ### UNIX DSL
