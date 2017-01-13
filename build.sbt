@@ -16,7 +16,6 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-Xfatal-warnings",
     "-Xlint",
-    //"-Yinline-warnings", //Removed in 2.12?
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
@@ -62,8 +61,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
-    name := s"$repo-benchmarks",
-    libraryDependencies += "com.storm-enroute" %% "scalameter-core" % "0.7" % Test
+    name := s"$repo-benchmarks"
   )
   .dependsOn(core)
 
