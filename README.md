@@ -17,7 +17,6 @@
   0. [Simple I/O](#file-readwrite)  
   0. [Streams and Codecs](#streams-and-codecs)
   0. [Java compatibility](#java-interoperability)
-  0. [Pattern matching](#pattern-matching)
   0. [Globbing](#globbing)
   0. [File system operations](#file-system-operations)
   0. [UNIX DSL](#unix-dsl)
@@ -38,13 +37,13 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(  
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.3.15"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.4.16"
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink]
 
 Although this library is currently only actively developed for Scala 2.12, 
-you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files)
+you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
@@ -220,22 +219,6 @@ val printer : PrintWriter           = outputstream.printWriter
 val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
-```
- 
-### Pattern matching
-Instead of `if-else`, more idiomatic powerful Scala [pattern matching](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Type$.html):
-```scala
-/**
- * @return true if file is a directory with no children or a file with no contents
- */
-def isEmpty(file: File): Boolean = file match {
-  case File.Type.SymbolicLink(to) => isEmpty(to)  // this must be first case statement if you want to handle symlinks specially; else will follow link
-  case File.Type.Directory(files) => files.isEmpty
-  case File.Type.RegularFile(content) => content.isEmpty
-  case _ => file.notExists    // a file may not be one of the above e.g. UNIX pipes, sockets, devices etc
-}
-// or as extractors on LHS:
-val File.Type.Directory(researchDocs) = home/"Downloads"/"research"
 ```
 
 ### Globbing

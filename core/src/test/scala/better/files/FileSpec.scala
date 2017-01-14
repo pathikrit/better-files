@@ -1,7 +1,6 @@
 package better.files
 
 import File.{root, home}
-import File.Type._
 import Cmds._
 
 import org.scalatest._
@@ -92,27 +91,6 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
-  it can "be matched" in {
-    "src"/"test"/"foo" match {
-      case SymbolicLink(to) => fail()   //this must be first case statement if you want to handle symlinks specially; else will follow link
-      case Directory(children) => fail()
-      case RegularFile(contents) => fail()
-      case other if other.exists => fail()  //A file may not be one of the above e.g. UNIX pipes, sockets, devices etc
-      case _ =>                               //A file that does not exist
-    }
-    root/"dev"/"null" match {
-      case SymbolicLink(to) => fail()
-      case Directory(children) => fail()
-      case RegularFile(contents) => fail()
-      case other if other.exists =>   //A file can be not any of the above e.g. UNIX pipes & sockets etc
-      case _ => fail()
-    }
-    root/"dev" match {
-      case Directory(children) => children.exists(_.pathAsString == "/dev/null") shouldBe true // /dev should have 'null'
-      case _ => fail()
-    }
-  }
-
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
@@ -197,9 +175,9 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   it should "support sorting" in {
     testRoot.list.toSeq.sorted(File.Order.byName) should not be empty
-    testRoot.list.toSeq.max(File.Order.bySize) should not be empty
-    testRoot.list.toSeq.min(File.Order.byDepth) should not be empty
-    testRoot.list.toSeq.min(File.Order.byModificationTime) should not be empty
+    testRoot.list.toSeq.max(File.Order.bySize).isEmpty shouldBe false
+    testRoot.list.toSeq.min(File.Order.byDepth).isEmpty shouldBe false
+    testRoot.list.toSeq.min(File.Order.byModificationTime).isEmpty shouldBe false
     testRoot.list.toSeq.sorted(File.Order.byDirectoriesFirst) should not be empty
   }
 
