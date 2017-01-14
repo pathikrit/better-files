@@ -780,7 +780,7 @@ class File private(val path: Path) {
     for {
       zipFile <- new ZipFile(toJava, codec).autoClosed
       entry <- zipFile.entries().asScala
-      file = destination.createChild(entry.getName, entry.isDirectory)
+      file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
       if !entry.isDirectory
     } zipFile.getInputStream(entry) > file.newOutputStream
     destination
