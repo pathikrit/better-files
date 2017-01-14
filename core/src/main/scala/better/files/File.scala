@@ -726,7 +726,7 @@ class File private(val path: Path) {
     if (isDirectory(linkOptions)) {
       children.isEmpty
     } else if (isRegularFile(linkOptions))  {
-      size == 0
+      toJava.length() == 0
     } else {
       notExists(linkOptions)
     }
