@@ -722,12 +722,18 @@ class File private(val path: Path) {
   /**
     * @return true if file is not present or empty directory or 0-bytes file
     */
-  def isEmpty: Boolean = {
-    this match {
-      case File.Type.Directory(children) => children.isEmpty
-      case File.Type.RegularFile(content) => content.isEmpty
-      case _ => notExists
+  def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
+    if (isDirectory(linkOptions)) {
+      children.isEmpty
+    } else if (isRegularFile(linkOptions))  {
+      size == 0
+    } else {
+      notExists(linkOptions)
     }
+  }
+
+  def isNotEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
+    !isEmpty(linkOptions)
   }
 
   /**
@@ -736,10 +742,11 @@ class File private(val path: Path) {
     *
     * @return this
     */
-  def clear(): this.type = {
-    this match {
-      case File.Type.Directory(children) => children.foreach(_.delete())
-      case _ => writeByteArray(Array.emptyByteArray)(File.OpenOptions.default)
+  def clear()(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+    if (isDirectory(linkOptions)) {
+      children.foreach(_.delete())
+    } else {
+      writeByteArray(Array.emptyByteArray)(File.OpenOptions.default)
     }
     this
   }
@@ -880,30 +887,6 @@ object File {
     val byDirectoriesLast   : Order = Ordering.by(_.isDirectory)
     val byDirectoriesFirst  : Order = byDirectoriesLast.reverse
     val default             : Order = byDirectoriesFirst
-  }
-
-  /**
-    * Denote various file types using this
-    *
-    * @tparam Content The type of underlying contents e.g. a directory has its children files as contents but a regular file may have bytes as contents
-    */
-  sealed trait Type[Content] {
-    def unapply(file: File): Option[Content]
-  }
-
-  object Type {
-
-    case object RegularFile extends Type[BufferedSource] {
-      override def unapply(file: File) = when(file.isRegularFile)(file.newBufferedSource)
-    }
-
-    case object Directory extends Type[Files] {
-      override def unapply(file: File) = when(file.isDirectory)(file.children)
-    }
-
-    case object SymbolicLink extends Type[File] {
-      override def unapply(file: File) = file.symbolicLink
-    }
   }
 
   class PathMatcherSyntax private (val name: String)
