@@ -110,8 +110,8 @@ class File private(val path: Path) {
   def /(child: String): File =
     path.resolve(child)
 
-  def createChild(child: String, asDirectory: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
-    (this / child).createIfNotExists(asDirectory)(attributes, linkOptions)
+  def createChild(child: String, asDirectory: Boolean = false, createParents: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
+    (this / child).createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
 
   /**
     * Create this file. If it exists, don't do anything
@@ -487,7 +487,7 @@ class File private(val path: Path) {
     * @return
     */
   def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
-    walk()(visitOptions).filter(matchFilter(_))
+    walk()(visitOptions).filter(matchFilter)
 
   def fileSystem: FileSystem =
     path.getFileSystem
@@ -787,7 +787,7 @@ class File private(val path: Path) {
     for {
       zipFile <- new ZipFile(toJava, codec).autoClosed
       entry <- zipFile.entries().asScala
-      file = (destination / entry.getName).createIfNotExists(entry.isDirectory, createParents = true)
+      file = destination.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
       if !entry.isDirectory
     } zipFile.getInputStream(entry) > file.newOutputStream
     destination
