@@ -32,7 +32,7 @@ class File private(val path: Path) {
     * @return
     */
   def name: String =
-    nameOption getOrElse ""
+    nameOption.getOrElse("")
 
   /**
     * Certain files may not have a name e.g. root directory - returns None in that case
@@ -220,7 +220,7 @@ class File private(val path: Path) {
     for {
       pw <- printWriter()(openOptions)
       line <- lines
-    } pw println line
+    } pw.println(line)
     this
   }
 
@@ -522,35 +522,35 @@ class File private(val path: Path) {
   /**
     * test if file has this permission
     */
-  def apply(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+  def testPermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     permissions(linkOptions)(permission)
 
   def isOwnerReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OWNER_READ)(linkOptions)
+    testPermission(PosixFilePermission.OWNER_READ)(linkOptions)
 
   def isOwnerWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OWNER_WRITE)(linkOptions)
+    testPermission(PosixFilePermission.OWNER_WRITE)(linkOptions)
 
   def isOwnerExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OWNER_EXECUTE)(linkOptions)
+    testPermission(PosixFilePermission.OWNER_EXECUTE)(linkOptions)
 
   def isGroupReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.GROUP_READ)(linkOptions)
+    testPermission(PosixFilePermission.GROUP_READ)(linkOptions)
 
   def isGroupWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.GROUP_WRITE)(linkOptions)
+    testPermission(PosixFilePermission.GROUP_WRITE)(linkOptions)
 
   def isGroupExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
+    testPermission(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
 
   def isOtherReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OTHERS_READ)(linkOptions)
+    testPermission(PosixFilePermission.OTHERS_READ)(linkOptions)
 
   def isOtherWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OTHERS_WRITE)(linkOptions)
+    testPermission(PosixFilePermission.OTHERS_WRITE)(linkOptions)
 
   def isOtherExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
-    this(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
+    testPermission(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
 
   /**
     * This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
@@ -672,7 +672,9 @@ class File private(val path: Path) {
   }
 
   def linkTo(destination: File, symbolic: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): destination.type = {
-    if (symbolic) symbolicLinkTo(destination)(attributes) else {
+    if (symbolic) {
+      symbolicLinkTo(destination)(attributes)
+    } else {
       Files.createLink(destination.path, path)
       destination
     }
@@ -710,7 +712,7 @@ class File private(val path: Path) {
   def isSimilarContentAs(that: File): Boolean =
     this.md5 == that.md5
 
-  def =!=(that: File): Boolean =
+  def !==(that: File): Boolean =
     !isSameContentAs(that)
 
   override def equals(obj: Any) = {
@@ -801,7 +803,7 @@ class File private(val path: Path) {
     */
   def unzip()(implicit codec: Codec): File = unzipTo(destination = File.newTemporaryDirectory(name))(codec)
 
-  //TODO: add features from https://github.com/sbt/io/blob/master/io/src/main/scala/sbt/io/IO.scala
+  //TODO: add features from https://github.com/sbt/io
 }
 
 object File {

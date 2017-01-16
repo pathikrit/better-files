@@ -326,7 +326,7 @@ assert(file.permissionsAsString == "rw-r--r--")
 
 // The following are all equivalent:
 assert(file.permissions contains PosixFilePermission.OWNER_EXECUTE)
-assert(file(PosixFilePermission.OWNER_EXECUTE))
+assert(file.testPermission(PosixFilePermission.OWNER_EXECUTE))
 assert(file.isOwnerExecutable)
 ```
 
