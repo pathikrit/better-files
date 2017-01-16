@@ -221,8 +221,8 @@ val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
 
-`[tee](http://stackoverflow.com/questions/7987395/)` multiple outputstreams:
-```
+[`tee`](http://stackoverflow.com/questions/7987395/) multiple outputstreams:
+```scala
 val s3 = s1.tee(s2)
 s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
 ```

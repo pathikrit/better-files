@@ -482,6 +482,7 @@ class File private(val path: Path) {
 
   /**
     * More Scala friendly way of doing Files.walk
+    * Note: This is lazy (returns an Iterator) and won't evaluate till we reify the iterator (e.g. using .toList)
     *
     * @param matchFilter
     * @return
