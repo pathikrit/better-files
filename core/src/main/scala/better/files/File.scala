@@ -3,10 +3,11 @@ package better.files
 import java.io.{File => JFile, _}
 import java.net.URI
 import java.nio.channels._
-import java.nio.file._, attribute._
+import java.nio.file._
+import attribute._
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.zip.{Deflater, ZipFile}
+import java.util.zip.{Deflater, ZipEntry, ZipFile}
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
@@ -797,12 +798,13 @@ class File private(val path: Path) {
     * Unzips this zip file
     *
     * @param destination destination folder; Creates this if it does not exist
+    * @param zipFilter An optional param to reject or accept unzipping a file
     * @return The destination where contents are unzipped
     */
-  def unzipTo(destination: File)(implicit codec: Codec): destination.type = {
+  def unzipTo(destination: File, zipFilter: ZipEntry => Boolean = _ => true)(implicit codec: Codec): destination.type = {
     for {
       zipFile <- new ZipFile(toJava, codec).autoClosed
-      entry <- zipFile.entries().asScala
+      entry <- zipFile.entries().asScala if zipFilter(entry)
       file = destination.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
       if !entry.isDirectory
     } zipFile.getInputStream(entry) > file.newOutputStream
@@ -814,7 +816,8 @@ class File private(val path: Path) {
     *
     * @return the zip file
     */
-  def unzip()(implicit codec: Codec): File = unzipTo(destination = File.newTemporaryDirectory(name))(codec)
+  def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit codec: Codec): File =
+    unzipTo(destination = File.newTemporaryDirectory(name), zipFilter)(codec)
 
   //TODO: add features from https://github.com/sbt/io
 }
