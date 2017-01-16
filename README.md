@@ -126,6 +126,16 @@ import better.files._
 import java.io.{File => JFile}
 ```
 
+Creating a unique directory or file is easy:
+```scala
+import better.files._
+import File._
+
+newUniqueFile() //res0: better.files.File = /path/to/current/dir/73372518-1625-4953-89f5-f3a63a7faed1
+newUniqueDirectory() //res0: better.files.File = /path/to/current/dir/bb0d7569-d6a0-43e3-8422-9a481cf9c51d/
+```
+
+
 ### File Read/Write
 Dead simple I/O:
 ```scala

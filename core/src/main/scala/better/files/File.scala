@@ -6,6 +6,7 @@ import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel,
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
+import java.util.UUID
 import java.util.zip.{Deflater, ZipFile}
 import javax.xml.bind.DatatypeConverter
 
@@ -844,6 +845,13 @@ object File {
 
   def currentWorkingDirectory: File =
     File("")
+
+  def newUniqueFile(): File =
+    File(UUID.randomUUID().toString)
+
+  def newUniqueDirectory(): File =
+    newUniqueFile.createDirectory()
+
 
   type Attributes = Seq[FileAttribute[_]]
   object Attributes {
