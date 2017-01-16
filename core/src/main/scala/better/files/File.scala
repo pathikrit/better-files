@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{File => JFile, _}
 import java.net.URI
-import java.nio.channels.{OverlappingFileLockException, AsynchronousFileChannel, FileChannel, NonWritableChannelException, NonReadableChannelException}
+import java.nio.channels._
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
@@ -386,6 +386,19 @@ class File private(val path: Path) {
       batchedBytes.foreach(algorithm.update)
     }
     algorithm.digest()
+  }
+
+  /**
+    * Set a file attribute e.g. file("dos:system") = true
+    *
+    * @param attribute
+    * @param value
+    * @param linkOptions
+    * @return
+    */
+  def update(attribute: String, value: Any)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+    Files.setAttribute(path, attribute, value, linkOptions : _*)
+    this
   }
 
   /**
