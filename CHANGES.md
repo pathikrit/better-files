@@ -11,3 +11,4 @@
 
 * [PR #100](https://github.com/pathikrit/better-files/pull/100): Fix issue in unzip of parents
 * [PR #101](https://github.com/pathikrit/better-files/pull/101): Removed File.Type
+* [Issue #96](https://github.com/pathikrit/better-files/issues/96): Teeing outputstreams

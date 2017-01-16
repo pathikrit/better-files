@@ -221,6 +221,12 @@ val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
 
+`[tee](http://stackoverflow.com/questions/7987395/)` multiple outputstreams:
+```
+val s3 = s1.tee(s2)
+s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
+```
+
 ### Globbing
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
