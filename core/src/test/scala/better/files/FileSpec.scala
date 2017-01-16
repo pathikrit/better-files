@@ -352,7 +352,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
     destination === testRoot shouldBe true
     (destination/"a"/"a1"/"t1.txt").overwrite("hello")
-    destination !== testRoot shouldBe true
+    (destination !== testRoot) shouldBe true
   }
 
   it should "zip/unzip single files" in {

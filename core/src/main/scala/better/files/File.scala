@@ -728,14 +728,14 @@ class File private(val path: Path) {
   def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
     if (isDirectory(linkOptions)) {
       children.isEmpty
-    } else if (isRegularFile(linkOptions))  {
+    } else if (isRegularFile(linkOptions)) {
       toJava.length() == 0
     } else {
       notExists(linkOptions)
     }
   }
 
-  def isNotEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
+  def nonEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
     !isEmpty(linkOptions)
   }
 
