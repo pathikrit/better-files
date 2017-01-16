@@ -41,13 +41,12 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
   }
 
   protected[this] def watch(file: File, depth: Int): Unit = {
-    if (file.isDirectory) {
-      for {
-        f <- file.walk(depth) if f.isDirectory && f.exists
-      } f.register(service)
-    } else if (file.exists) {
-      file.parent.register(service) // There is no way to watch a regular file; so watch its parent instead
+    val toWatch: Files = if (file.isDirectory) {
+      file.walk(depth).filter(f => f.isDirectory && f.exists)
+    } else {
+      when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
+    toWatch.foreach(_.register(service))
   }
 
   override def start() = {

@@ -19,7 +19,7 @@ lazy val commonSettings = Seq(
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    //"-Ywarn-value-discard",
+    "-Ywarn-value-discard",
     "-Ywarn-unused-import",
     "-Ywarn-unused",
     "-Xexperimental",

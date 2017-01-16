@@ -199,7 +199,7 @@ trait Implicits {
     def autoClosed: ManagedResource[A] = new Traversable[A] {
       var isClosed = false
       override def foreach[U](f: A => U) = try {
-        f(resource)
+        val _ = f(resource)
       } finally {
         if (!isClosed) {
           resource.close()

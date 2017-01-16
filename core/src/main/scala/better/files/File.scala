@@ -3,8 +3,7 @@ package better.files
 import java.io.{File => JFile, _}
 import java.net.URI
 import java.nio.channels._
-import java.nio.file._
-import attribute._
+import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.zip.{Deflater, ZipEntry, ZipFile}

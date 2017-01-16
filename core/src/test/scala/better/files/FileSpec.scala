@@ -57,7 +57,9 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     Seq(t1, t2) foreach touch
   }
 
-  override def afterEach() = rm(testRoot)
+  override def afterEach() = {
+    val _ = rm(testRoot)
+  }
 
   override def withFixture(test: NoArgTest) = {
     val before = File.numberOfOpenFileDescriptors()
