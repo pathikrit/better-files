@@ -78,7 +78,8 @@ you can find reasonably recent versions of this library for Scala 2.10 and 2.11 
 [gitterImg2]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
-[scaladocImg]: http://img.shields.io/:docs-ScalaDoc-blue.svg
+[scaladocImg]: https://www.javadoc.io/badge/com.github.pathikrit/better-files_2.12.svg?color=blue&label=scaladocs
+<!--[scaladocLink]: https://www.javadoc.io/page/com.github.pathikrit/better-files_2.12/latest/better/files/File.html-->
 [scaladocLink]: http://pathikrit.github.io/better-files/latest/api/better/files/File.html
 
 [updateImpactImg]: https://app.updateimpact.com/badge/704376701047672832/root.svg?config=compile
