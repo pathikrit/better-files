@@ -55,22 +55,22 @@ object Dsl {
       file.contentAsString(codec)
   }
 
-  def cp(file1: File, file2: File): File =
+  def cp(file1: File, file2: File): file2.type =
     file1.copyTo(file2, overwrite = true)
 
-  def mv(file1: File, file2: File): File =
+  def mv(file1: File, file2: File): file2.type =
     file1.moveTo(file2, overwrite = true)
 
-  def rm(file: File): File =
+  def rm(file: File): file.type =
     file.delete(swallowIOExceptions = true)
 
-  def del(file: File): File =
+  def del(file: File): file.type =
     rm(file)
 
-  def ln(file1: File, file2: File): File =
+  def ln(file1: File, file2: File): file2.type =
     file1.linkTo(file2)
 
-  def ln_s(file1: File, file2: File): File =
+  def ln_s(file1: File, file2: File): file2.type =
     file1.symbolicLinkTo(file2)
 
   def cat(files: File*): Seq[Iterator[Byte]] =
@@ -85,10 +85,10 @@ object Dsl {
   def ls_r(file: File): Files =
     file.listRecursively
 
-  def touch(file: File): File =
+  def touch(file: File): file.type =
     file.touch()
 
-  def mkdir(file: File): File =
+  def mkdir(file: File): file.type =
     file.createDirectory()
 
   def md5(file: File): String =
@@ -103,13 +103,13 @@ object Dsl {
   def sha512(file: File): String =
     file.sha512
 
-  def mkdirs(file: File): File =
+  def mkdirs(file: File): file.type =
     file.createDirectories()
 
-  def chown(owner: String, file: File): File =
+  def chown(owner: String, file: File): file.type =
     file.setOwner(owner)
 
-  def chgrp(group: String, file: File): File =
+  def chgrp(group: String, file: File): file.type =
     file.setGroup(group)
 
   /**
@@ -119,21 +119,21 @@ object Dsl {
     * @param file
     * @return file
     */
-  def chmod(permissions: String, file: File): File =
+  def chmod(permissions: String, file: File): file.type =
     file.setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)
 
-  def chmod_+(permission: PosixFilePermission, file: File): File =
+  def chmod_+(permission: PosixFilePermission, file: File): file.type =
     file.addPermission(permission)
 
-  def chmod_-(permission: PosixFilePermission, file: File): File =
+  def chmod_-(permission: PosixFilePermission, file: File): file.type =
     file.removePermission(permission)
 
   def stat(file: File): PosixFileAttributes =
     file.posixAttributes
 
-  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): File =
+  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): destination.type =
     zipFile.unzipTo(destination)(codec)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File =
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(codec)
 }
