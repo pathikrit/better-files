@@ -6,7 +6,7 @@ import java.nio.channels._
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.zip.{Deflater, ZipEntry, ZipFile}
+import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
@@ -213,9 +213,6 @@ class File private(val path: Path) {
   def contentAsString(implicit codec: Codec): String =
     new String(byteArray, codec)
 
-  def `!`(implicit codec: Codec): String =
-    contentAsString(codec)
-
   def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
     for {
       pw <- printWriter()(openOptions)
@@ -236,12 +233,6 @@ class File private(val path: Path) {
     Files.write(path, lines.asJava, codec, openOptions: _*)
     this
   }
-
-  def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
-    appendLines(line)(openOptions, codec)
-
-  def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
-    appendLines(line)(openOptions, codec)
 
   def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
     appendLines(line)(openOptions, codec)
@@ -283,12 +274,6 @@ class File private(val path: Path) {
     write(text)(openOptions, codec)
 
   def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
-
-  def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
-
-  def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
     write(text)(openOptions, codec)
 
   def newBufferedSource(implicit codec: Codec): BufferedSource =
@@ -781,7 +766,7 @@ class File private(val path: Path) {
     */
   def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): destination.type = {
     val files = if (isDirectory) children.toSeq else Seq(this)
-    Cmds.zip(files: _*)(destination, compressionLevel)(codec)
+    Dsl.zip(files: _*)(destination, compressionLevel)(codec)
     destination
   }
 

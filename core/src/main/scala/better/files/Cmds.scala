@@ -9,7 +9,7 @@ import scala.io.Codec
 /**
   * Do file ops using a UNIX command line DSL
   */
-object Cmds {
+object Dsl {
   def ~ : File =
     File.home
 
@@ -25,7 +25,11 @@ object Cmds {
   val  `.`: File => File =
     identity
 
-  implicit class FileDsl(file: File) {
+  /**
+    * Adds some symbolic operations to file
+    * @param file
+    */
+  implicit class SymbolicOperations(val file: File) {
     /**
       * Allows navigation up e.g. file / .. / ..
       *
@@ -34,6 +38,21 @@ object Cmds {
       */
     def /(f: File => File): File =
       f(file)
+
+    def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
+      file.appendLines(line)(openOptions, codec)
+
+    def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
+      file.appendLines(line)(openOptions, codec)
+
+    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
+      file.write(text)(openOptions, codec)
+
+    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
+      file.write(text)(openOptions, codec)
+
+    def `!`(implicit codec: Codec): String =
+      file.contentAsString(codec)
   }
 
   def cp(file1: File, file2: File): File =
