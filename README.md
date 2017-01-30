@@ -137,12 +137,16 @@ assert(file.contentAsString == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
+import better.files.Dsl.SymbolicOperations
+
 file < "hello"     // same as file.overwrite("hello")
 file << "world"    // same as file.appendLines("world")
 assert(file! == "hello\nworld")
 ```
 Or even, right-associatively:
 ```scala
+import better.files.Dsl.SymbolicOperations
+
 "hello" `>:` file
 "world" >>: file
 val bytes: Array[Byte] = file.loadBytes
@@ -260,17 +264,17 @@ file.symbolicLinkTo(destination)             // ln -s file destination
 file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
 file.setOwner(user: String)      // chown user file
 file.setGroup(group: String)     // chgrp group file
-Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3
-Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3
-file.isReadLocked / file.isWriteLocked / file.isLocked
+Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3 (must import import better.files.Dsl.SymbolicOperations)
+Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must import import better.files.Dsl.SymbolicOperations)
+file.isReadLocked; file.isWriteLocked; file.isLocked
 File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
 
 ### UNIX DSL
-All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Cmds$.html) reminiscent of the command line:
+All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Dsl$.html) reminiscent of the command line:
 ```scala
-import better.files_, Cmds._   // must import Cmds._ to bring in these utils
+import better.files_, Dsl._   // must import Dsl._ to bring in these utils
 pwd / cwd     // current dir
 cp(file1, file2)
 mv(file1, file2)
@@ -287,7 +291,7 @@ chown(owner, file)
 chgrp(owner, file)
 chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
-md5(file) / sha1(file) / sha256(file) / sha512(file)
+md5(file); sha1(file); sha256(file); sha512(file)
 unzip(zipFile)(targetDir)
 zip(file*)(zipFile)
 ```
@@ -299,15 +303,16 @@ file.name       // simpler than java.io.File#getName
 file.extension
 file.contentType
 file.lastModifiedTime     // returns JSR-310 time
-file.owner / file.group
-file.isDirectory / file.isSymbolicLink / file.isRegularFile
+file.owner 
+file.group
+file.isDirectory; file.isSymbolicLink; file.isRegularFile
 file.isHidden
-file.hide() / file.unhide()
-file.isOwnerExecutable / file.isGroupReadable // etc. see file.permissions
+file.hide(); file.unhide()
+file.isOwnerExecutable; file.isGroupReadable // etc. see file.permissions
 file.size                 // for a directory, computes the directory size
-file.posixAttributes / file.dosAttributes  // see file.attributes
+file.posixAttributes; file.dosAttributes  // see file.attributes
 file.isEmpty      // true if file has no content (or no children if directory) or does not exist
-file.isParentOf / file.isChildOf / file.isSiblingOf / file.siblings
+file.isParentOf; file.isChildOf; file.isSiblingOf; file.siblings
 file("dos:system") = true  // set custom meta-data for file (similar to Files.setAttribute)
 ```
 All the above APIs let you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
