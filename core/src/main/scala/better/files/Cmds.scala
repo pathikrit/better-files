@@ -1,7 +1,7 @@
 package better.files
 
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermission, PosixFilePermissions}
-import java.util.zip.{Deflater, ZipOutputStream}
+import java.util.zip.Deflater
 
 import scala.collection.JavaConverters._
 import scala.io.Codec
@@ -134,13 +134,6 @@ object Dsl {
   def unzip(zipFile: File)(destination: File)(implicit codec: Codec): File =
     zipFile.unzipTo(destination)(codec)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = {
-    for {
-      output <- new ZipOutputStream(destination.newOutputStream, codec).withCompressionLevel(compressionLevel).autoClosed
-      input <- files
-      file <- input.walk()
-      name = input.parent relativize file
-    } output.add(file, name.toString)
-    destination
-  }
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File =
+    destination.zipIn(files.iterator, compressionLevel)(codec)
 }
