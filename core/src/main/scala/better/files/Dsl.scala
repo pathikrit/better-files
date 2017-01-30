@@ -55,22 +55,22 @@ object Dsl {
       file.contentAsString(codec)
   }
 
-  def cp(file1: File, file2: File): file2.type =
+  def cp(file1: File, file2: File): File =  //todo return file2.type when SI-4751 is fixed
     file1.copyTo(file2, overwrite = true)
 
-  def mv(file1: File, file2: File): file2.type =
+  def mv(file1: File, file2: File): File =
     file1.moveTo(file2, overwrite = true)
 
-  def rm(file: File): file.type =
+  def rm(file: File): File =
     file.delete(swallowIOExceptions = true)
 
-  def del(file: File): file.type =
+  def del(file: File): File =
     rm(file)
 
-  def ln(file1: File, file2: File): file2.type =
+  def ln(file1: File, file2: File): File =
     file1.linkTo(file2)
 
-  def ln_s(file1: File, file2: File): file2.type =
+  def ln_s(file1: File, file2: File): File =
     file1.symbolicLinkTo(file2)
 
   def cat(files: File*): Seq[Iterator[Byte]] =
@@ -85,10 +85,10 @@ object Dsl {
   def ls_r(file: File): Files =
     file.listRecursively
 
-  def touch(file: File): file.type =
+  def touch(file: File): File =
     file.touch()
 
-  def mkdir(file: File): file.type =
+  def mkdir(file: File): File =
     file.createDirectory()
 
   def md5(file: File): String =
@@ -103,13 +103,13 @@ object Dsl {
   def sha512(file: File): String =
     file.sha512
 
-  def mkdirs(file: File): file.type =
+  def mkdirs(file: File): File =
     file.createDirectories()
 
-  def chown(owner: String, file: File): file.type =
+  def chown(owner: String, file: File): File =
     file.setOwner(owner)
 
-  def chgrp(group: String, file: File): file.type =
+  def chgrp(group: String, file: File): File =
     file.setGroup(group)
 
   /**
@@ -119,13 +119,13 @@ object Dsl {
     * @param file
     * @return file
     */
-  def chmod(permissions: String, file: File): file.type =
+  def chmod(permissions: String, file: File): File =
     file.setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)
 
-  def chmod_+(permission: PosixFilePermission, file: File): file.type =
+  def chmod_+(permission: PosixFilePermission, file: File): File =
     file.addPermission(permission)
 
-  def chmod_-(permission: PosixFilePermission, file: File): file.type =
+  def chmod_-(permission: PosixFilePermission, file: File): File =
     file.removePermission(permission)
 
   def stat(file: File): PosixFileAttributes =

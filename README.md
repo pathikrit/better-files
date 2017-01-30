@@ -228,7 +228,7 @@ val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 
 [`tee`](http://stackoverflow.com/questions/7987395/) multiple outputstreams:
 ```scala
-val s3 = s1.tee(s2)
+val s3 = s1 tee s2
 s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
 ```
 
@@ -274,7 +274,9 @@ File.numberOfOpenFileDescriptors        // number of open file descriptors
 ### UNIX DSL
 All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Dsl$.html) reminiscent of the command line:
 ```scala
-import better.files_, Dsl._   // must import Dsl._ to bring in these utils
+import better.files._
+import better.files.Dsl._   // must import Dsl._ to bring in these utils
+
 pwd / cwd     // current dir
 cp(file1, file2)
 mv(file1, file2)
@@ -293,7 +295,7 @@ chmod_+(permission, files)  // add permission
 chmod_-(permission, files)  // remove permission
 md5(file); sha1(file); sha256(file); sha512(file)
 unzip(zipFile)(targetDir)
-zip(file*)(zipFile)
+zip(file*)(targetZipFile)
 ```
 
 ### File attributes
@@ -364,6 +366,9 @@ val research: File = zipFile.unzipTo(destination = home/"Documents"/"research")
 
 // Zipping:
 val zipFile: File = directory.zipTo(destination = home/"Desktop"/"toEmail.zip")
+
+// Zipping in:
+val zipFile = File("countries.zip").zipIn(file"usa.txt", file"russia.txt")
 
 // Zipping/Unzipping to temporary files/directories:
 val someTempZipFile: File = directory.zip()
