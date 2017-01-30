@@ -1,7 +1,7 @@
 package better.files
 
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermission, PosixFilePermissions}
-import java.util.zip.{Deflater, ZipOutputStream}
+import java.util.zip.Deflater
 
 import scala.collection.JavaConverters._
 import scala.io.Codec
@@ -9,7 +9,7 @@ import scala.io.Codec
 /**
   * Do file ops using a UNIX command line DSL
   */
-object Cmds {
+object Dsl {
   def ~ : File =
     File.home
 
@@ -25,7 +25,11 @@ object Cmds {
   val  `.`: File => File =
     identity
 
-  implicit class FileDsl(file: File) {
+  /**
+    * Adds some symbolic operations to file
+    * @param file
+    */
+  implicit class SymbolicOperations(val file: File) {
     /**
       * Allows navigation up e.g. file / .. / ..
       *
@@ -34,9 +38,24 @@ object Cmds {
       */
     def /(f: File => File): File =
       f(file)
+
+    def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
+      file.appendLines(line)(openOptions, codec)
+
+    def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
+      file.appendLines(line)(openOptions, codec)
+
+    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
+      file.write(text)(openOptions, codec)
+
+    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
+      file.write(text)(openOptions, codec)
+
+    def `!`(implicit codec: Codec): String =
+      file.contentAsString(codec)
   }
 
-  def cp(file1: File, file2: File): File =
+  def cp(file1: File, file2: File): File =  //todo return file2.type when SI-4751 is fixed
     file1.copyTo(file2, overwrite = true)
 
   def mv(file1: File, file2: File): File =
@@ -112,16 +131,9 @@ object Cmds {
   def stat(file: File): PosixFileAttributes =
     file.posixAttributes
 
-  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): File =
+  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): destination.type =
     zipFile.unzipTo(destination)(codec)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): File = {
-    for {
-      output <- new ZipOutputStream(destination.newOutputStream, codec).withCompressionLevel(compressionLevel).autoClosed
-      input <- files
-      file <- input.walk()
-      name = input.parent relativize file
-    } output.add(file, name.toString)
-    destination
-  }
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): destination.type =
+    destination.zipIn(files.iterator, compressionLevel)(codec)
 }

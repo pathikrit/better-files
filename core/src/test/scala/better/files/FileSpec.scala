@@ -1,12 +1,12 @@
 package better.files
 
 import File.{root, home}
-import Cmds._
+import Dsl._
 
 import org.scalatest._
 
 import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.language.{postfixOps, existentials}
 import scala.util.Try
 
 class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {

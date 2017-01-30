@@ -6,7 +6,7 @@ import java.nio.channels._
 import java.nio.file._, attribute._
 import java.security.MessageDigest
 import java.time.Instant
-import java.util.zip.{Deflater, ZipEntry, ZipFile}
+import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
@@ -213,9 +213,6 @@ class File private(val path: Path) {
   def contentAsString(implicit codec: Codec): String =
     new String(byteArray, codec)
 
-  def `!`(implicit codec: Codec): String =
-    contentAsString(codec)
-
   def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
     for {
       pw <- printWriter()(openOptions)
@@ -236,12 +233,6 @@ class File private(val path: Path) {
     Files.write(path, lines.asJava, codec, openOptions: _*)
     this
   }
-
-  def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
-    appendLines(line)(openOptions, codec)
-
-  def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
-    appendLines(line)(openOptions, codec)
 
   def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): this.type =
     appendLines(line)(openOptions, codec)
@@ -283,12 +274,6 @@ class File private(val path: Path) {
     write(text)(openOptions, codec)
 
   def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
-
-  def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
-    write(text)(openOptions, codec)
-
-  def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): this.type =
     write(text)(openOptions, codec)
 
   def newBufferedSource(implicit codec: Codec): BufferedSource =
@@ -350,6 +335,12 @@ class File private(val path: Path) {
 
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] =
     newOutputStream(openOptions).autoClosed
+
+  def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): ZipOutputStream =
+    new ZipOutputStream(newOutputStream, codec.charSet)
+
+  def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): ManagedResource[ZipOutputStream] =
+    newZipOutputStream(openOptions, codec).autoClosed
 
   def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
     FileChannel.open(path, openOptions.toSet.asJava, attributes: _*)
@@ -780,9 +771,8 @@ class File private(val path: Path) {
     * @return The destination zip file
     */
   def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): destination.type = {
-    val files = if (isDirectory) children.toSeq else Seq(this)
-    Cmds.zip(files: _*)(destination, compressionLevel)(codec)
-    destination
+    val files = if (isDirectory) children else Iterator(this)
+    destination.zipIn(files, compressionLevel)(codec)
   }
 
   /**
@@ -808,6 +798,25 @@ class File private(val path: Path) {
       if !entry.isDirectory
     } zipFile.getInputStream(entry) > file.newOutputStream
     destination
+  }
+
+  /**
+    * Adds these files into this zip file
+    * Example usage: File("test.zip").zipIn(Seq(file"hello.txt", file"hello2.txt"))
+    *
+    * @param files
+    * @param compressionLevel
+    * @param codec
+    * @return this
+    */
+  def zipIn(files: Files, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(codec: Codec): this.type = {
+    for {
+      output <- newZipOutputStream(File.OpenOptions.default, codec).withCompressionLevel(compressionLevel).autoClosed
+      input <- files
+      file <- input.walk()
+      name = input.parent relativize file
+    } output.add(file, name.toString)
+    this
   }
 
   /**
