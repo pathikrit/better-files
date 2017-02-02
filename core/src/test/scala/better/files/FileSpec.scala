@@ -233,16 +233,17 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "detect file locks" in {
-    val file = File.newTemporaryFile()
-    def lockInfo() = file.isReadLocked() -> file.isWriteLocked()
-    // TODO: Why is file.isReadLocked() should be false?
-    lockInfo() shouldBe (true -> false)
-    val channel = file.newRandomAccess(File.RandomAccessMode.readWrite).getChannel
-    val lock = channel.tryLock()
-    lockInfo() shouldBe (true -> true)
-    lock.release()
-    channel.close()
-    lockInfo() shouldBe (true -> false)
+    File.usingTemporaryFile() {file =>
+      def lockInfo() = file.isReadLocked() -> file.isWriteLocked()
+      // TODO: Why is file.isReadLocked() should be false?
+      lockInfo() shouldBe (true -> false)
+      val channel = file.newRandomAccess(File.RandomAccessMode.readWrite).getChannel
+      val lock = channel.tryLock()
+      lockInfo() shouldBe (true -> true)
+      lock.release()
+      channel.close()
+      lockInfo() shouldBe (true -> false)
+    }
   }
 
   it should "support ln/cp/mv" in {

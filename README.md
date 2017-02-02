@@ -19,6 +19,7 @@
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
   0. [File system operations](#file-system-operations)
+  0. [Temporary files](#temporary-files)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
   0. [File comparison](#file-comparison)
@@ -270,8 +271,27 @@ file.setGroup(group: String)     // chgrp group file
 Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3 (must import import better.files.Dsl.SymbolicOperations)
 Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must import import better.files.Dsl.SymbolicOperations)
 file.isReadLocked; file.isWriteLocked; file.isLocked
-File.newTemporaryDirectory() / File.newTemporaryFile() // create temp dir/file
 File.numberOfOpenFileDescriptors        // number of open file descriptors
+```
+
+### Temporary files
+Utils to create temporary files:
+```scala
+File.newTemporaryDirectory() 
+File.newTemporaryFile()
+```
+The above APIs allow optional specifications of `prefix`, `suffix` and `parentDir`. 
+These files are [not deleted automatically on exit by the JVM](http://stackoverflow.com/questions/16691437/when-are-java-temporary-files-deleted) (you have to set `deleteOnExit` which adds to `shutdownHook`).
+
+A cleaner alternative is to use self-deleting file contexts which deletes the file immediately when done:
+```scala
+File.usingTempFile() {tempFile =>
+  ...
+}
+
+// or equivalently:
+
+File.newTempFile().applyAndDelete(tempFile =>  ...)
 ```
 
 ### UNIX DSL

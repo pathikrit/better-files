@@ -759,6 +759,11 @@ class File private(val path: Path) {
     this
   }
 
+  def deleteOnExit(): this.type = {
+    toJava.deleteOnExit()
+    this
+  }
+
   override def hashCode =
     path.hashCode()
 
@@ -828,6 +833,20 @@ class File private(val path: Path) {
   def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit codec: Codec): File =
     unzipTo(destination = File.newTemporaryDirectory(name), zipFilter)(codec)
 
+  /**
+    * Applies the given function on this and then deletes this file
+    *
+    * @param f
+    * @tparam U
+    * @return
+    */
+  def applyAndDelete[U](f: File => U): U =
+    try {
+      f(this)
+    } finally {
+      val _ = delete(swallowIOExceptions = true)
+    }
+
   //TODO: add features from https://github.com/sbt/io
 }
 
@@ -839,12 +858,18 @@ object File {
     }
   }
 
+  def usingTemporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): U =
+    newTemporaryDirectory(prefix, parent)(attributes).applyAndDelete(f)
+
   def newTemporaryFile(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {
       case Some(dir) => Files.createTempFile(dir.path, prefix, suffix, attributes: _*)
       case _ => Files.createTempFile(prefix, suffix, attributes: _*)
     }
   }
+
+  def usingTemporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): U =
+    newTemporaryFile(prefix, suffix, parent)(attributes).applyAndDelete(f)
 
   implicit def apply(path: Path): File =
     new File(path.toAbsolutePath.normalize())
