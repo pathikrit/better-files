@@ -434,17 +434,18 @@ class File private(val path: Path) {
   def isHidden: Boolean =
     Files.isHidden(path)
 
-  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean = {
-    val channel = newRandomAccess(mode).getChannel
+  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean =
     try {
-      channel.tryLock(position, size, isShared).release()
-      false
+      usingLock(mode) {channel =>
+        channel.tryLock(position, size, isShared).release()
+        false
+      }
     } catch {
       case _: OverlappingFileLockException | _: NonWritableChannelException | _: NonReadableChannelException => true
-    } finally {
-      channel.close()
     }
-  }
+
+  def usingLock[U](mode: File.RandomAccessMode)(f: FileChannel => U): U =
+    using(newRandomAccess(mode).getChannel)(f)
 
   def isReadLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.read, position, size, isShared)

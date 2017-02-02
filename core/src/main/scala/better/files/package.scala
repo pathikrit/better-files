@@ -15,7 +15,10 @@ package object files extends Implicits {
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
+
   @inline private[files] def repeat[U](n: Int)(f: => U): Unit = (1 to n).foreach(_ => f)
+
+  private[files] def using[A <: Closeable, U](resource: A)(f: A => U): U = try { f(resource) } finally {resource.close()}
 
   private[files] def produce[A](f: => A) = new {
     def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {

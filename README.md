@@ -1,8 +1,8 @@
-# better-files [![License][licenseImg]][licenseLink] [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter][gitterImg]][gitterLink]
+# better-files [![License][licenseImg]][licenseLink] [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
-## Talks
+## Talks [![Gitter][gitterImg]][gitterLink]
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
     
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"     %% "akka-actor"         % "2.4.16"
 )
 ```
-Latest `version`: [![Maven][mavenImg]][mavenLink]
+Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
 
 Although this library is currently only actively developed for Scala 2.12, 
 you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
@@ -77,6 +77,9 @@ you can find reasonably recent versions of this library for Scala 2.10 and 2.11 
 [gitterImg]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
 [gitterImg2]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
+
+[scaladexImg]: https://index.scala-lang.org/pathikrit/better-files/better-files/latest.svg
+[scaladexLink]: https://index.scala-lang.org/pathikrit/better-files
 
 [scaladocImg]: https://www.javadoc.io/badge/com.github.pathikrit/better-files_2.12.svg?color=blue&label=scaladocs
 <!--[scaladocLink]: https://www.javadoc.io/page/com.github.pathikrit/better-files_2.12/latest/better/files/File.html-->
