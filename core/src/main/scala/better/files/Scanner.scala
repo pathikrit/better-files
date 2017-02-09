@@ -1,8 +1,7 @@
 package better.files
 
 import java.io.{InputStream, BufferedReader, LineNumberReader, Reader, StringReader}
-
-import scala.io.Codec
+import java.nio.charset.Charset
 
 trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
@@ -32,7 +31,7 @@ object Scanner {
     Scanner(new LineNumberReader(reader))(config)
 
   def apply(inputStream: InputStream)(implicit config: Config): Scanner =
-    Scanner(inputStream.reader(config.codec))(config)
+    Scanner(inputStream.reader(config.charset))(config)
 
   def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
     private[this] val tokenizers = reader.tokenizers(config).buffered
@@ -55,7 +54,7 @@ object Scanner {
     * @param delimiter
     * @param includeDelimiters
     */
-  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val codec: Codec)
+  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val charset: Charset = File.defaultCharset)
   object Config {
     implicit val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
 

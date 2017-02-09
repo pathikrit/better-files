@@ -10,7 +10,6 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
 
 import scala.annotation.tailrec
-import scala.io.{BufferedSource, Codec, Source}
 import scala.util.control.NonFatal
 
 /**
@@ -21,9 +20,6 @@ trait Implicits {
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File =
       value(args).toFile
-
-    def resource(args: Any*): Source =
-      Source.fromInputStream(getClass.getResourceAsStream(value(args)))
 
     private[this] def value(args: Seq[Any]) =
       sc.s(args: _*)
@@ -69,14 +65,11 @@ trait Implicits {
     def gzipped: GZIPInputStream =
       new GZIPInputStream(in)
 
-    def reader(implicit codec: Codec): InputStreamReader =
-      new InputStreamReader(in, codec)
+    def reader(implicit charset: Charset = File.defaultCharset): InputStreamReader =
+      new InputStreamReader(in, charset)
 
-    def content(implicit codec: Codec): BufferedSource =
-      Source.fromInputStream(in)(codec)
-
-    def lines(implicit codec: Codec): Iterator[String] =
-      content(codec).getLines()
+    def lines(implicit charset: Charset = File.defaultCharset): Iterator[String] =
+      reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
       in.autoClosedIterator(_.read())(_ != eof).map(_.toByte)
@@ -89,8 +82,8 @@ trait Implicits {
     def gzipped: GZIPOutputStream =
       new GZIPOutputStream(out)
 
-    def writer(implicit codec: Codec): OutputStreamWriter =
-      new OutputStreamWriter(out, codec)
+    def writer(implicit charset: Charset = File.defaultCharset): OutputStreamWriter =
+      new OutputStreamWriter(out, charset)
 
     def printWriter(autoFlush: Boolean = false): PrintWriter =
       new PrintWriter(out, autoFlush)
@@ -271,9 +264,6 @@ trait Implicits {
 
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
     produce(s.nextToken()).till(s.hasMoreTokens)
-
-  implicit def codecToCharSet(codec: Codec): Charset =
-    codec.charSet
 
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
   //  PosixFilePermissions.asFileAttribute(Set(perm))
