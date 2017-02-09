@@ -1,10 +1,10 @@
 package better.files
 
+import java.nio.charset.Charset
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermission, PosixFilePermissions}
 import java.util.zip.Deflater
 
 import scala.collection.JavaConverters._
-import scala.io.Codec
 
 /**
   * Do file ops using a UNIX command line DSL
@@ -39,20 +39,20 @@ object Dsl {
     def /(f: File => File): File =
       f(file)
 
-    def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
-      file.appendLines(line)(openOptions, codec)
+    def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): file.type =
+      file.appendLines(line)(openOptions, charset)
 
-    def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, codec: Codec): file.type =
-      file.appendLines(line)(openOptions, codec)
+    def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): file.type =
+      file.appendLines(line)(openOptions, charset)
 
-    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
-      file.write(text)(openOptions, codec)
+    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): file.type =
+      file.write(text)(openOptions, charset)
 
-    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, codec: Codec): file.type =
-      file.write(text)(openOptions, codec)
+    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): file.type =
+      file.write(text)(openOptions, charset)
 
-    def `!`(implicit codec: Codec): String =
-      file.contentAsString(codec)
+    def `!`(implicit charset: Charset = File.defaultCharset): String =
+      file.contentAsString(charset)
   }
 
   def cp(file1: File, file2: File): File =  //todo return file2.type when SI-4751 is fixed
@@ -131,9 +131,9 @@ object Dsl {
   def stat(file: File): PosixFileAttributes =
     file.posixAttributes
 
-  def unzip(zipFile: File)(destination: File)(implicit codec: Codec): destination.type =
-    zipFile.unzipTo(destination)(codec)
+  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = File.defaultCharset): destination.type =
+    zipFile.unzipTo(destination)(charset)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit codec: Codec): destination.type =
-    destination.zipIn(files.iterator, compressionLevel)(codec)
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = File.defaultCharset): destination.type =
+    destination.zipIn(files.iterator, compressionLevel)(charset)
 }

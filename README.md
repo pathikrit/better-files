@@ -15,7 +15,7 @@
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)  
-  0. [Streams and Codecs](#streams-and-codecs)
+  0. [Streams and encodings](#streams-and-encodings)
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
   0. [File system operations](#file-system-operations)
@@ -117,8 +117,7 @@ val f4: File = root/"User"/"johndoe"/"Documents"             // using root helpe
 val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
 val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
 val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
-```
-Resources in the classpath can be accessed using resource interpolator e.g. `resource"production.config"` 
+``` 
 
 **Note**: Rename the import if you think the usage of the class `File` may confuse your teammates:
 ```scala
@@ -167,13 +166,12 @@ val bytes: Array[Byte] = file.loadBytes
   .lines
 ```
 
-### Streams and Codecs
+### Streams and encodings
 Various ways to slurp a file without loading the contents into memory:
  ```scala
 val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
-val lines  : Iterator[String]          = file.lines
-val source : scala.io.BufferedSource   = file.newBufferedSource // needs to be closed, unlike the above APIs which auto closes when iterator ends
+val lines  : Iterator[String]          = file.lineIterator      //file.lines loads all lines in memory
 ```
 Note: The above APIs can be traversed at most once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
@@ -184,15 +182,16 @@ file.writeBytes(bytes)
 file.printLines(lines)
 ```
 
-You can supply your own codec too for anything that does a read/write (it assumes `scala.io.Codec.default` if you don't provide one):
+You can supply your own encoding too for anything that does a read/write (it assumes `java.nio.charset.Charset.defaultCharset()` if you don't provide one):
 ```scala
-val content: String = file.contentAsString  // default codec
-// custom codec:
-import scala.io.Codec
-file.contentAsString(Codec.ISO8859)
-//or
-import scala.io.Codec.string2codec
-file.write("hello world")(codec = "US-ASCII")
+val content: String = file.contentAsString  // default charset
+
+// custom charset:
+import java.nio.charset.Charset
+file.content(charset = Charset.forName("US-ASCII"))
+
+//or simply using File.charset util
+file.write("hello world")(charset = File.charset("US-ASCII"))
  ```
  
 ### Java interoperability
