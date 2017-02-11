@@ -722,6 +722,7 @@ class File private(val path: Path) {
   }
 
   /**
+    * @param linkOptions
     * @return true if file is not present or empty directory or 0-bytes file
     */
   def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
@@ -734,9 +735,15 @@ class File private(val path: Path) {
     }
   }
 
-  def nonEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
+  /**
+    *
+    * @param linkOptions
+    * @return for directories, true if it has no children, false otherwise
+    *         for files, true if it is a 0-byte file, false otherwise
+    *         else true if it exists, false otherwise
+    */
+  def nonEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     !isEmpty(linkOptions)
-  }
 
   /**
     * If this is a directory, remove all its children

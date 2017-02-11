@@ -367,7 +367,7 @@ Use `==` to check for path-based equality and `===` for content-based equality:
 file1 == file2    // equivalent to `file1.isSamePathAs(file2)`
 file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for regular-files and directories)
 file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
-file1 =!= file2   // equivalent to `!file1.isSameContentAs(file2)`
+file1 !== file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
 There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Order$.html) included, e.g.:
 ```scala
