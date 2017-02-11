@@ -199,7 +199,8 @@ You can always access the Java I/O classes:
 ```scala
 val file: File = tmp / "hello.txt"
 val javaFile     : java.io.File                 = file.toJava
-val uri          : java.net.uri                 = file.uri
+val uri          : java.net.URI                 = file.uri
+val url          : java.net.URL                 = file.url
 val reader       : java.io.BufferedReader       = file.newBufferedReader 
 val outputstream : java.io.OutputStream         = file.newOutputStream 
 val writer       : java.io.BufferedWriter       = file.newBufferedWriter 

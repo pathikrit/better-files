@@ -1,7 +1,7 @@
 package better.files
 
 import java.io.{File => JFile, _}
-import java.net.URI
+import java.net.{URL, URI}
 import java.nio.charset.Charset
 import java.nio.channels._
 import java.nio.file._, attribute._
@@ -495,6 +495,9 @@ class File private(val path: Path) {
   def uri: URI =
     path.toUri
 
+  def url: URL =
+    uri.toURL
+
   /**
     * @return file size (for directories, return size of the directory) in bytes
     */
@@ -882,6 +885,9 @@ object File {
 
   def apply(path: String, fragments: String*): File =
     Paths.get(path, fragments: _*)
+
+  def apply(url: URL): File =
+    apply(url.toURI)
 
   def apply(uri: URI): File =
     Paths.get(uri)
