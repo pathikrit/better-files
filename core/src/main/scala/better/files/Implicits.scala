@@ -1,13 +1,15 @@
 package better.files
 
-import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
+import java.io.{File => JFile, _}
+import StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file.Path
+import java.security.{DigestInputStream, MessageDigest}
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{Deflater, GZIPInputStream, ZipEntry, ZipOutputStream, GZIPOutputStream}
+import java.util.zip.{Deflater, GZIPInputStream, GZIPOutputStream, ZipEntry, ZipOutputStream}
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal
@@ -36,6 +38,13 @@ trait Implicits {
   implicit class FileOps(file: JFile) {
     def toScala: File =
       File(file.getPath)
+  }
+
+  implicit class DigestInputStreamsOps(in: DigestInputStream) {
+    def consume(bufferSize: Int = 1<<10): Unit = {
+      val buffer = Array.ofDim[Byte](bufferSize)
+      while(in.read(buffer) != -1) {}
+    }
   }
 
   implicit class InputStreamOps(in: InputStream) {
@@ -261,6 +270,9 @@ trait Implicits {
       }
     }
   }
+
+  implicit def stringToMessageDigest(algorithmName: String): MessageDigest =
+    MessageDigest.getInstance(algorithmName)
 
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
     produce(s.nextToken()).till(s.hasMoreTokens)
