@@ -296,6 +296,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support hashing algos" in {
+    implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("")
     assert(md5(t1) == "D41D8CD98F00B204E9800998ECF8427E")
     assert(sha1(t1) == "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709")
@@ -304,6 +305,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "compute correct checksum for non-zero length string" in {
+    implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("test")
     assert(md5(t1) == "098F6BCD4621D373CADE4E832627B4F6")
     assert(sha1(t1) == "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3")

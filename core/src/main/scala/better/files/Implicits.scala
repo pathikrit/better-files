@@ -41,7 +41,7 @@ trait Implicits {
   }
 
   implicit class DigestInputStreamsOps(in: DigestInputStream) {
-    def consume(bufferSize: Int = 1<<10): Unit = {
+    def consume(bufferSize: Int = defaultBufferSize): Unit = {
       val buffer = Array.ofDim[Byte](bufferSize)
       while(in.read(buffer) != -1) {}
     }
@@ -51,7 +51,7 @@ trait Implicits {
     def >(out: OutputStream): Unit =
       pipeTo(out)
 
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = 1 << 10): Unit =
+    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = defaultBufferSize): Unit =
       pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
 
     /**
@@ -97,7 +97,7 @@ trait Implicits {
     def printWriter(autoFlush: Boolean = false): PrintWriter =
       new PrintWriter(out, autoFlush)
 
-    def write(bytes: Iterator[Byte], bufferSize: Int = 1 << 10): out.type = {
+    def write(bytes: Iterator[Byte], bufferSize: Int = defaultBufferSize): out.type = {
       bytes grouped bufferSize foreach { buffer => out.write(buffer.toArray) }
       out.flush()
       out

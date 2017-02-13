@@ -3,6 +3,13 @@ package better
 import scala.collection.mutable
 
 package object files extends Implicits {
+
+  /**
+    * Default array buffer size
+    * Seems like a good value used by JDK: (see: java.io.BufferedInputStream.DEFAULT_BUFFER_SIZE)
+    */
+  private[files] val defaultBufferSize = 8192
+
   type Files = Iterator[File]
 
   type Closeable = {
