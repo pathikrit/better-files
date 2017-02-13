@@ -328,11 +328,11 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
   }
 
-  it should "support custom codec" in {
+  it should "support custom ccharset" in {
     import java.nio.charset.Charset
-    t1.writeText("你好世界")(charset = File.charset("UTF8"))
-    t1.contentAsString(File.charset("ISO-8859-1")) should not equal "你好世界"
-    t1.contentAsString(File.charset("UTF8")) shouldEqual "你好世界"
+    t1.writeText("你好世界")(charset = "UTF8")
+    t1.contentAsString(charset = "ISO-8859-1") should not equal "你好世界"
+    t1.contentAsString(charset = "UTF8") shouldEqual "你好世界"
     val c1 = md5(t1)
     val c2 = t1.overwrite("你好世界")(File.OpenOptions.default, Charset.forName("ISO-8859-1")).md5
     c1 should not equal c2

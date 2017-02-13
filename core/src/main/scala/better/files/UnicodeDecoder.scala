@@ -9,7 +9,7 @@ import java.nio.{ByteBuffer, CharBuffer}
   * (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not consumed for UTF-8
   * by always consuming the BOM. See: https://github.com/pathikrit/better-files/issues/107
   *
-  * @param defaultCharset Use this charset if BOM is not found
+  * @param defaultCharset Use this charset if no known byte-order marker is detected
   */
 class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(null, 1, 1) {
   import UnicodeDecoder._
@@ -72,13 +72,12 @@ object UnicodeDecoder {
   ).collect{case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)}
    .ensuring(_.nonEmpty, "No unicode charset detected")
 
-  def apply(charset: String): Charset = {
-    val proxy = Charset.forName(charset)
+  def apply(charset: Charset): Charset = {
     import scala.collection.JavaConverters._
-    new Charset(proxy.name(), proxy.aliases().asScala.toArray) {
-      override def newDecoder() = new UnicodeDecoder(proxy)
-      override def newEncoder() = proxy.newEncoder()
-      override def contains(cs: Charset) = proxy.contains(cs)
+    new Charset(charset.name(), charset.aliases().asScala.toArray) {
+      override def newDecoder() = new UnicodeDecoder(charset)
+      override def newEncoder() = charset.newEncoder()
+      override def contains(cs: Charset) = charset.contains(cs)
     }
   }
 }

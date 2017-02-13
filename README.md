@@ -197,7 +197,7 @@ file.write("hello world")(charset = "US-ASCII")
 Note that by default, `better-file` [correctly handles BOMs](https://github.com/pathikrit/better-files/issues/107).
 If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058), 
 you would need to supply Java's UTF-8 charset e.g.:
-```
+```scala
 file.contentAsString(charset = Charset.forName("UTF-8"))
 ```
  
