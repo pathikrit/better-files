@@ -1,5 +1,7 @@
 package better.files
 
+import java.nio.charset.StandardCharsets
+
 import File.{root, home}
 import Dsl._
 
@@ -294,9 +296,21 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "support hashing algos" in {
+    implicit val charset = StandardCharsets.UTF_8
     t1.writeText("")
-    assert(md5(t1) != sha1(t1))
-    assert(sha256(t1) != sha512(t1))
+    assert(md5(t1) == "D41D8CD98F00B204E9800998ECF8427E")
+    assert(sha1(t1) == "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709")
+    assert(sha256(t1) == "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855")
+    assert(sha512(t1) == "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E")
+  }
+
+  it should "compute correct checksum for non-zero length string" in {
+    implicit val charset = StandardCharsets.UTF_8
+    t1.writeText("test")
+    assert(md5(t1) == "098F6BCD4621D373CADE4E832627B4F6")
+    assert(sha1(t1) == "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3")
+    assert(sha256(t1) == "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08")
+    assert(sha512(t1) == "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF")
   }
 
   it should "copy" in {
