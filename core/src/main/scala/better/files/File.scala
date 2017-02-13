@@ -1,11 +1,12 @@
 package better.files
 
 import java.io.{File => JFile, _}
-import java.net.{URL, URI}
+import java.net.{URI, URL}
 import java.nio.charset.Charset
 import java.nio.channels._
-import java.nio.file._, attribute._
-import java.security.MessageDigest
+import java.nio.file._
+import attribute._
+import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
 import java.util.zip._
 import javax.xml.bind.DatatypeConverter
@@ -363,12 +364,18 @@ class File private(val path: Path) {
     val algorithm = MessageDigest.getInstance(algorithmName)
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path.resolve(relativePath)
-      val batchedBytes: Iterator[Array[Byte]] = if (file.isDirectory) {
-        Iterator(relativePath.toString.getBytes)
+
+      if(file.isDirectory) {
+        algorithm.update(relativePath.toString.getBytes)
       } else {
-        file.bytes.grouped(1024).map(_.toArray)
+        val buffer = new Array[Byte](8192)
+        val inputStream = new DigestInputStream(file.newInputStream, algorithm)
+        try {
+          while (inputStream.read(buffer) != -1) {}
+        } finally {
+          inputStream.close()
+        }
       }
-      batchedBytes.foreach(algorithm.update)
     }
     algorithm.digest()
   }
