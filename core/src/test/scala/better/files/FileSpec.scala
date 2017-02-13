@@ -159,9 +159,10 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "handle BOM" in {
-    val expectedContent = Seq(1, 2).mkString("\n")
+    val lines = Seq("Line 1", "Line 2")
+    val expectedContent = lines.mkString(start = "", sep = "\n", end = "\n")
     File.usingTemporaryFile() {file =>
-      file.write(expectedContent)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
+      file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
       file.contentAsString(charset = "UTF-8") should not equal expectedContent
       file.contentAsString shouldEqual expectedContent
     }
@@ -231,8 +232,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support sorting" in {
     testRoot.list.toSeq.sorted(File.Order.byName) should not be empty
     testRoot.list.toSeq.max(File.Order.bySize).isEmpty shouldBe false
-    List(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
-    Thread.sleep(1000)
+    Seq(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
+    sleep()
     t2.appendLine("modified!")
     a1.list.toSeq.min(File.Order.byModificationTime) shouldBe t1
     testRoot.list.toSeq.sorted(File.Order.byDirectoriesFirst) should not be empty

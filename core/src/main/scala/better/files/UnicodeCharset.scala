@@ -35,7 +35,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
   private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: Set[Charset] = Set.empty): CoderResult = {
     if (isCharsetDetected) {
       detectedCharset().newDecoder().decode(in, out, true)
-    } else if (candidates.isEmpty || in.remaining() <= 0) {
+    } else if (candidates.isEmpty || !in.hasRemaining) {
       inferredCharset = Some(defaultCharset)
       in.rewind()
       decode(in, out)
@@ -68,35 +68,30 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
 class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
   private[this] val bom = UnicodeCharset.bomTable.getOrElse(charset, throw new IllegalArgumentException(s"$charset does not support BOMs")).toArray
   private[this] var isBomWritten = false
-  private[this] val defaultEncoder = charset.newEncoder()
 
-  override def encodeLoop(in: CharBuffer, out: ByteBuffer) = {
+  override def encodeLoop(in: CharBuffer, out: ByteBuffer): CoderResult = {
     if (!isBomWritten) {
       try {
         out.put(bom)
-        isBomWritten = true
       } catch {
-        case _: BufferOverflowException => CoderResult.OVERFLOW
+        case _: BufferOverflowException => return CoderResult.OVERFLOW
+      } finally {
+        isBomWritten = true
       }
     }
-    defaultEncoder.encode(in, out, true)
+    charset.newEncoder().encode(in, out, true)
   }
 
-  override def malformedInputAction() = defaultEncoder.malformedInputAction()
-  //override def implReset() = {defaultEncoder.implReset(); isBomWritten = false}
-  override def unmappableCharacterAction() = defaultEncoder.unmappableCharacterAction()
-  //override def isLegalReplacement(repl: Array[Byte]) = defaultEncoder.isLegalReplacement(repl)
-  override def canEncode(c: Char) = defaultEncoder.canEncode(c)
-  override def canEncode(cs: CharSequence) = defaultEncoder.canEncode(cs)
+  override def implReset() = isBomWritten = false
 }
 
 object UnicodeCharset {
   private[files] val bomTable: Map[Charset, IndexedSeq[Byte]] = Map(
     "UTF-8"    -> IndexedSeq(0xEF, 0xBB, 0xBF),
-    "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xFE, 0xFF),
-    "UTF-32LE" -> IndexedSeq(0xFF, 0xFE, 0x00, 0x00),
     "UTF-16BE" -> IndexedSeq(0xFE, 0xFF),
-    "UTF-16LE" -> IndexedSeq(0xFF, 0xFE)
+    "UTF-16LE" -> IndexedSeq(0xFF, 0xFE),
+    "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xFE, 0xFF),
+    "UTF-32LE" -> IndexedSeq(0xFF, 0xFE, 0x00, 0x00)
   ).collect{case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)}
    .ensuring(_.nonEmpty, "No unicode charset detected")
 
