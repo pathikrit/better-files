@@ -188,11 +188,18 @@ val content: String = file.contentAsString  // default charset
 
 // custom charset:
 import java.nio.charset.Charset
-file.content(charset = Charset.forName("US-ASCII"))
+file.contentAsString(charset = Charset.forName("US-ASCII"))
 
-//or simply using File.charset util
-file.write("hello world")(charset = File.charset("US-ASCII"))
+//or simply using implicit conversion from Strings
+file.write("hello world")(charset = "US-ASCII")
  ```
+
+Note that by default, `better-file` [correctly handles BOMs](https://github.com/pathikrit/better-files/issues/107).
+If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058), 
+you would need to supply Java's UTF-8 charset e.g.:
+```
+file.contentAsString(charset = Charset.forName("UTF-8"))
+```
  
 ### Java interoperability
 You can always access the Java I/O classes:
