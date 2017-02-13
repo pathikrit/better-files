@@ -5,7 +5,7 @@ import java.net.{URI, URL}
 import java.nio.charset.Charset
 import java.nio.channels._
 import java.nio.file._
-import attribute._
+import java.nio.file.attribute._
 import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
 import java.util.zip._
@@ -364,17 +364,10 @@ class File private(val path: Path) {
     val algorithm = MessageDigest.getInstance(algorithmName)
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path.resolve(relativePath)
-
       if(file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
-        val buffer = new Array[Byte](8192)
-        val inputStream = new DigestInputStream(file.newInputStream, algorithm)
-        try {
-          while (inputStream.read(buffer) != -1) {}
-        } finally {
-          inputStream.close()
-        }
+        new DigestInputStream(file.newInputStream, algorithm).autoClosed.foreach(_.consume())
       }
     }
     algorithm.digest()
