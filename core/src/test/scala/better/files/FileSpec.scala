@@ -117,15 +117,15 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    a1.glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    a1.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
-    testRoot.glob("**/*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+    testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
-    File(path).glob("**/*.{txt}").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
-    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq shouldEqual Seq("ArrayBufferScanner.java", "Scanners.scala", "ScannerBenchmark.scala")
-    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
-    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
-    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq shouldEqual Seq("Scanners.scala", "ScannerBenchmark.scala")
+    File(path).glob("**/*.{txt}").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
+    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq.sorted shouldEqual Seq("ArrayBufferScanner.java", "ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
     ls("core"/"src"/"test") should have length 1
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
@@ -180,8 +180,10 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support sorting" in {
     testRoot.list.toSeq.sorted(File.Order.byName) should not be empty
     testRoot.list.toSeq.max(File.Order.bySize).isEmpty shouldBe false
-    testRoot.list.toSeq.min(File.Order.byDepth).isEmpty shouldBe false
-    testRoot.list.toSeq.min(File.Order.byModificationTime).isEmpty shouldBe false
+    List(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
+    Thread.sleep(1000)
+    t2.appendLine("modified!")
+    a1.list.toSeq.min(File.Order.byModificationTime) shouldBe t1
     testRoot.list.toSeq.sorted(File.Order.byDirectoriesFirst) should not be empty
   }
 
