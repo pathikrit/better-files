@@ -866,7 +866,7 @@ object File {
     *       it uses a more compliant version than the JDK one (see: https://github.com/pathikrit/better-files/issues/107)
     */
   implicit val defaultCharset: Charset =
-    UnicodeDecoder.handleByteOrderMarkers(Charset.defaultCharset())
+    UnicodeCharset(Charset.defaultCharset())
 
   def resource(name: String): File =
     File(Thread.currentThread().getContextClassLoader.getResource(name))
