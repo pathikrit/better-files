@@ -319,6 +319,12 @@ class File private(val path: Path) {
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] =
     newInputStream(openOptions).autoClosed
 
+  def newDigestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): DigestInputStream =
+    new DigestInputStream(newInputStream(openOptions), digest)
+
+  def digestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[DigestInputStream] =
+    newDigestInputStream(digest)(openOptions).autoClosed
+
   def newScanner(implicit config: Scanner.Config = Scanner.Config.default): Scanner =
     Scanner(newBufferedReader(config.charset))(config)
 
@@ -360,14 +366,13 @@ class File private(val path: Path) {
     this
   }
 
-  def digest(algorithmName: String): Array[Byte] = {
-    val algorithm = MessageDigest.getInstance(algorithmName)
+  def digest(algorithm: MessageDigest): Array[Byte] = {
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path.resolve(relativePath)
       if(file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
-        new DigestInputStream(file.newInputStream, algorithm).autoClosed.foreach(_.consume())
+        file.digestInputStream(algorithm).foreach(_.consume())
       }
     }
     algorithm.digest()
@@ -389,7 +394,7 @@ class File private(val path: Path) {
   /**
     * @return checksum of this file (or directory) in hex format
     */
-  def checksum(algorithm: String): String =
+  def checksum(algorithm: MessageDigest): String =
     DatatypeConverter.printHexBinary(digest(algorithm))
 
   def md5: String =
