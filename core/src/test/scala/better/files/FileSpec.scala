@@ -93,6 +93,50 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
+  it can "be instantiated with anchor" in {
+    // testRoot / a / a1 / t1.txt
+    val basedir = a1
+    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+
+    File(basedir, "rel/path/to/loc").toString should be (basedir.toString + "/rel/path/to/loc")
+    File(basedir, "../rel/path/to/loc").toString should be (fa.toString + "/rel/path/to/loc")
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (fa.toString + "/rel/path/to/loc")
+
+    val baseref = t1
+    File(baseref, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
+    File(baseref, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+
+    File(baseref, "rel/path/to/loc").toString should be (a1.toString + "/rel/path/to/loc")
+    File(baseref, "../rel/path/to/loc").toString should be (fa.toString + "/rel/path/to/loc")
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (fa.toString + "/rel/path/to/loc")
+  }
+
+  it can "be instantiated with non-existing abs anchor" in {
+    val anchorStr = "/abs/to/nowhere"
+    val anchorStr_a = anchorStr + "/a"
+    val basedir = File(anchorStr_a + "/last")
+
+    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+
+    File(basedir, "rel/path/to/loc").toString should be (anchorStr_a + "/rel/path/to/loc")
+    File(basedir, "../rel/path/to/loc").toString should be (anchorStr + "/rel/path/to/loc")
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (anchorStr + "/rel/path/to/loc")
+  }
+
+  it can "be instantiated with non-existing relative anchor" in {
+    val relAnchor = File("rel/anc/b/last")
+    val basedir = relAnchor
+
+    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+
+    File(basedir, "rel/path/to/loc").toString should be (File("rel/anc/b").toString + "/rel/path/to/loc")
+    File(basedir, "../rel/path/to/loc").toString should be (File("rel/anc").toString + "/rel/path/to/loc")
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (File("rel/anc").toString + "/rel/path/to/loc")
+  }
+
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
