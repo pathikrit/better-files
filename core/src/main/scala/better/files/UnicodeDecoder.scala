@@ -6,8 +6,8 @@ import java.nio.{ByteBuffer, CharBuffer}
 /**
   * A Unicode decoder that uses the Unicode byte-order marker (BOM) to auto-detect the encoding
   * (if none detected, falls back on the defaultCharset). This also gets around a bug in the JDK
-  * (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not consumed for UTF-8
-  * by always consuming the BOM. See: https://github.com/pathikrit/better-files/issues/107
+  * (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not consumed for UTF-8.
+  * See: https://github.com/pathikrit/better-files/issues/107
   *
   * @param defaultCharset Use this charset if no known byte-order marker is detected
   */
@@ -17,30 +17,24 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(null, 1, 1)
   private[this] var inferredCharset: Option[Charset] = None
 
   override def decodeLoop(in: ByteBuffer, out: CharBuffer) =
-    decode(in = in, out = out, candidates = bomTable.keys.toList)
+    decode(in = in, out = out, candidates = bomTable.keySet)
 
   @annotation.tailrec
-  private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: List[Charset]): CoderResult = {
+  private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: Set[Charset]): CoderResult = {
     if (isCharsetDetected) {
       detectedCharset().newDecoder().decode(in, out, true)
     } else if (candidates.isEmpty || in.remaining() <= 0) {
       inferredCharset = Some(defaultCharset)
-      in.position(0)
-      decode(in, out, Nil)
+      in.rewind()
+      decode(in, out, candidates)
+    } else if (candidates.forall(c => bomTable(c).length == in.position())) {
+      inferredCharset = candidates.headOption
+      decode(in, out, candidates)
     } else {
       val idx = in.position()
       val byte = in.get()
-      val newCandidates = candidates filter {charset =>
-        val bom = bomTable(charset)
-        bom.isDefinedAt(idx) && bom(idx) == byte
-      }
-      newCandidates match {
-        case charset :: Nil if bomTable(charset).length == idx + 1 =>
-          inferredCharset = Some(charset)
-          in.position(idx + 1)
-        case _ =>
-      }
-      decode(in, out, newCandidates)
+      def isPossible(charset: Charset) = bomTable(charset).lift(idx).contains(byte)
+      decode(in, out, candidates.filter(isPossible))
     }
   }
 
@@ -63,11 +57,14 @@ object UnicodeDecoder {
   ).collect{case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)}
    .ensuring(_.nonEmpty, "No unicode charset detected")
 
+  private[files] def handleByteOrderMarkers(charset: Charset): Charset =
+    if (bomTable.contains(charset)) UnicodeDecoder(charset) else charset
+
   def apply(charset: Charset): Charset = {
     import scala.collection.JavaConverters._
     new Charset(charset.name(), charset.aliases().asScala.toArray) {
       override def newDecoder() = new UnicodeDecoder(charset)
-      override def newEncoder() = charset.newEncoder()
+      override def newEncoder() = charset.newEncoder()  //TODO: Add flag to optionally write BOMs here
       override def contains(cs: Charset) = charset.contains(cs)
     }
   }

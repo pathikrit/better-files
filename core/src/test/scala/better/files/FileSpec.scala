@@ -161,8 +161,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "handle BOM" in {
     val file = File.resource("file_with_bom.txt")
     val expectedContent = "I contain an offending UTF-8 BOM\n"
-    file.contentAsString should not equal expectedContent
-    file.contentAsString(charset = UnicodeDecoder("UTF-8")) shouldEqual expectedContent
+    file.contentAsString(charset = "UTF-8") should not equal expectedContent
+    file.contentAsString shouldEqual expectedContent
   }
 
   it should "glob" in {
