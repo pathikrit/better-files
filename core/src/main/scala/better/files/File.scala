@@ -862,8 +862,8 @@ class File private(val path: Path) {
 object File {
   implicit val defaultCharset: Charset = Charset.defaultCharset()
 
-  def charset(name: String): Charset =
-    Charset.forName(name)
+  def resource(name: String): File =
+    File(Thread.currentThread().getContextClassLoader.getResource(name))
 
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {
