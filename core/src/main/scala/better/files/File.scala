@@ -891,6 +891,39 @@ object File {
   def apply(path: String, fragments: String*): File =
     Paths.get(path, fragments: _*)
 
+  /**
+   * Get File to path with help of reference anchor.
+   *
+   * Anchor is used as a reference in case that path
+   * is not absolute. Anchor could be path to directory or
+   * path to file. If anchor is file, then file's parent dir
+   * is used as an anchor.
+   *
+   * If anchor itself is relative, then anchor is used together
+   * with current working directory.
+   *
+   * NOTE: If anchor is non-existing path on filesystem,
+   * then it's always treated as file, e.g. it's last component
+   * is removed when it is used as an anchor.
+   *
+   * @param anchor path to be used as anchor
+   * @param path as string
+   * @param fragments optional path fragments
+   * @return absolute, normalize path
+   */
+  def apply(anchor: File, path: String, fragments: String*): File = {
+    val p = Paths.get(path, fragments: _*)
+    if (p.isAbsolute) {
+      p
+    } else {
+      if (anchor.isDirectory) {
+        anchor / p.toString
+      } else {
+        anchor.parent / p.toString
+      }
+    }
+  }
+
   def apply(url: URL): File =
     apply(url.toURI)
 
