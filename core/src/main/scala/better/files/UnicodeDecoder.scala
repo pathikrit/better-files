@@ -14,31 +14,22 @@ import java.nio.{ByteBuffer, CharBuffer}
 class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(null, 1, 1) {
   import UnicodeDecoder._
 
-  private var inferredCharset: Option[Charset] = None
+  private[this] var inferredCharset: Option[Charset] = None
 
   override def decodeLoop(in: ByteBuffer, out: CharBuffer) =
-    decode(
-      in = in,
-      out = out,
-      candidates = bomTable.keys.toList,
-      header = ByteBuffer.allocate(4).mark().asInstanceOf[ByteBuffer]
-    )
+    decode(in = in, out = out, candidates = bomTable.keys.toList)
 
   @annotation.tailrec
-  private def decode(in: ByteBuffer, out: CharBuffer, candidates: List[Charset], header: ByteBuffer): CoderResult = {
+  private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: List[Charset]): CoderResult = {
     if (isCharsetDetected) {
-      val decoder = detectedCharset().newDecoder()
-      val hasMore = in.remaining() > 0
-      if (header.remaining() > 0) decoder.decode(header, out, !hasMore)
-      decoder.decode(in, out, true)
+      detectedCharset().newDecoder().decode(in, out, true)
     } else if (candidates.isEmpty || in.remaining() <= 0) {
       inferredCharset = Some(defaultCharset)
-      header.reset()
-      decode(in, out, candidates, header)
+      in.position(0)
+      decode(in, out, Nil)
     } else {
+      val idx = in.position()
       val byte = in.get()
-      val idx = header.position()
-      header.put(byte)
       val newCandidates = candidates filter {charset =>
         val bom = bomTable(charset)
         bom.isDefinedAt(idx) && bom(idx) == byte
@@ -46,10 +37,10 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(null, 1, 1)
       newCandidates match {
         case charset :: Nil if bomTable(charset).length == idx + 1 =>
           inferredCharset = Some(charset)
-          header.limit(idx)
+          in.position(idx + 1)
         case _ =>
       }
-      decode(in, out, newCandidates, header)
+      decode(in, out, newCandidates)
     }
   }
 

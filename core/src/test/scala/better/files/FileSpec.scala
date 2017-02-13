@@ -158,6 +158,13 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
+  it should "handle BOM" in {
+    val file = File.resource("file_with_bom.txt")
+    val expectedContent = "I contain an offending UTF-8 BOM\n"
+    file.contentAsString should not equal expectedContent
+    file.contentAsString(charset = UnicodeDecoder("UTF-8")) shouldEqual expectedContent
+  }
+
   it should "glob" in {
     a1.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
@@ -493,13 +500,6 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     }
     val scanner = file.newScanner()
     Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
-  }
-
-  it should "handle BOM" in {
-    val file = File.resource("file_with_bom.txt")
-    val expectedContent = "I contain an offending UTF-8 BOM\n"
-    file.contentAsString should not equal expectedContent
-    file.contentAsString(charset = UnicodeDecoder("UTF-8")) shouldEqual expectedContent
   }
 
   "file watcher" should "watch single files" in {
