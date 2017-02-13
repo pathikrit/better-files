@@ -1,5 +1,6 @@
 ## v3.0.0
 
+* [PR #113](https://github.com/pathikrit/better-files/pull/113): File anchor util
 * [Issue #105](https://github.com/pathikrit/better-files/issues/105): Remove dependency on scala.io
 * [File.usingTemp](https://github.com/pathikrit/better-files/commit/d3522e8da63b55c7d3fa14cc9b0b76acd57c60ca)
 * [Optional symbolic operations](https://github.com/pathikrit/better-files/issues/102)
