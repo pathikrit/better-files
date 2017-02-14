@@ -1,6 +1,7 @@
 package better
 
 import scala.collection.mutable
+import scala.util.{Failure, Success, Try}
 
 package object files extends Implicits {
 
@@ -32,5 +33,24 @@ package object files extends Implicits {
       override def hasNext = hasMore
       override def next() = f
     }
+  }
+
+  /**
+    * Utility to apply f on all xs skipping over errors
+    * Throws the last error that happened
+    * *
+    * @param xs
+    * @param f
+    * @tparam A
+    */
+  private[files] def tryAll[A](xs: Seq[A])(f: A => Unit): Unit = {
+    val res = xs.foldLeft(Option.empty[Throwable]) {
+      case (currError, a) =>
+        Try(f(a)) match {
+          case Success(_) => currError
+          case Failure(e) => Some(e)
+        }
+    }
+    res.foreach(throwable => throw throwable)
   }
 }
