@@ -203,7 +203,7 @@ you would need to supply Java's UTF-8 charset e.g.:
 file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect JDK behaviour for UTF-8 (see: JDK-4508058) 
 ```
 
-If you wish to also write BOMs while encoding, you would need to supply it as:
+If you also wish to write BOMs while encoding, you would need to supply it as:
 ```scala
 file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true)) 
 ```
