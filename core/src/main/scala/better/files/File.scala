@@ -372,7 +372,7 @@ class File private(val path: Path) {
       if(file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
-        file.digestInputStream(algorithm).foreach(_.consume())
+        file.digestInputStream(algorithm).foreach(_.pipeTo(NullOutputStream))
       }
     }
     algorithm.digest()

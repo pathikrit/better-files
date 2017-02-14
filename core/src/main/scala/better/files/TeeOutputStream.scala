@@ -14,3 +14,7 @@ class TeeOutputStream(outs: OutputStream*) extends OutputStream {
   override def write(b: Array[Byte], off: Int, len: Int) = outs.foreach(_.write(b, off, len))
   override def close() = outs.foreach(_.close())
 }
+
+object NullOutputStream extends OutputStream {
+  override def write(b: Int) = {}
+}

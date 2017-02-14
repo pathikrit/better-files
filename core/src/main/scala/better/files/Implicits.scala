@@ -1,12 +1,11 @@
 package better.files
 
-import java.io.{File => JFile, _}
-import StreamTokenizer.{TT_EOF => eof}
+import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file.Path
-import java.security.{DigestInputStream, MessageDigest}
+import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip.{Deflater, GZIPInputStream, GZIPOutputStream, ZipEntry, ZipOutputStream}
@@ -38,13 +37,6 @@ trait Implicits {
   implicit class FileOps(file: JFile) {
     def toScala: File =
       File(file.getPath)
-  }
-
-  implicit class DigestInputStreamsOps(in: DigestInputStream) {
-    def consume(bufferSize: Int = defaultBufferSize): Unit = {
-      val buffer = Array.ofDim[Byte](bufferSize)
-      while(in.read(buffer) != -1) {}
-    }
   }
 
   implicit class InputStreamOps(in: InputStream) {
