@@ -98,37 +98,13 @@ trait Implicits {
       new PrintWriter(out, autoFlush)
 
     def write(bytes: Iterator[Byte], bufferSize: Int = defaultBufferSize): out.type = {
-      bytes grouped bufferSize foreach { buffer => out.write(buffer.toArray) }
+      bytes.grouped(bufferSize).foreach(buffer => out.write(buffer.toArray))
       out.flush()
       out
     }
 
-    def tee(out2: OutputStream): OutputStream = new OutputStream {
-      override def write(b: Int): Unit = {
-        out.write(b)
-        out2.write(b)
-      }
-
-      override def flush() = {
-        out.flush()
-        out2.flush()
-      }
-
-      override def write(b: Array[Byte]) = {
-        out.write(b)
-        out2.write(b)
-      }
-
-      override def write(b: Array[Byte], off: Int, len: Int) = {
-        out.write(b, off, len)
-        out2.write(b, off, len)
-      }
-
-      override def close() = {
-        out.close()
-        out2.close()
-      }
-    }
+    def tee(out2: OutputStream): OutputStream =
+      new TeeOutputStream(out, out2)
   }
 
   implicit class ReaderOps(reader: Reader) {
