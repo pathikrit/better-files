@@ -15,7 +15,8 @@
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)  
-  0. [Streams and encodings](#streams-and-encodings)
+  0. [Streams](#streams)
+  0. [Encodings](#encodings)
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
   0. [File system operations](#file-system-operations)
@@ -166,7 +167,7 @@ val bytes: Array[Byte] = file.loadBytes
   .lines
 ```
 
-### Streams and encodings
+### Streams
 Various ways to slurp a file without loading the contents into memory:
  ```scala
 val bytes  : Iterator[Byte]            = file.bytes
@@ -182,17 +183,30 @@ file.writeBytes(bytes)
 file.printLines(lines)
 ```
 
-You can supply your own encoding too for anything that does a read/write (it assumes `java.nio.charset.Charset.defaultCharset()` if you don't provide one):
+### Encodings
+You can supply your own charset too for anything that does a read/write (it assumes `java.nio.charset.Charset.defaultCharset()` if you don't provide one):
 ```scala
 val content: String = file.contentAsString  // default charset
 
 // custom charset:
 import java.nio.charset.Charset
-file.content(charset = Charset.forName("US-ASCII"))
+file.contentAsString(charset = Charset.forName("US-ASCII"))
 
-//or simply using File.charset util
-file.write("hello world")(charset = File.charset("US-ASCII"))
+//or simply using implicit conversion from Strings
+file.write("hello world")(charset = "US-ASCII")
  ```
+
+Note: By default, `better-files` [correctly handles BOMs while decoding](core/src/main/scala/better/files/UnicodeCharset.scala).
+If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058), 
+you would need to supply Java's UTF-8 charset e.g.:
+```scala
+file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect JDK behaviour for UTF-8 (see: JDK-4508058) 
+```
+
+If you also wish to write BOMs while encoding, you would need to supply it as:
+```scala
+file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true)) 
+```
  
 ### Java interoperability
 You can always access the Java I/O classes:

@@ -158,16 +158,26 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
       .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
+  it should "handle BOM" in {
+    val lines = Seq("Line 1", "Line 2")
+    val expectedContent = lines.mkString(start = "", sep = "\n", end = "\n")
+    File.usingTemporaryFile() {file =>
+      file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
+      file.contentAsString(charset = "UTF-8") should not equal expectedContent
+      file.contentAsString shouldEqual expectedContent
+    }
+  }
+
   it should "glob" in {
     a1.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
     testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
     File(path).glob("**/*.{txt}").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
-    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq.sorted shouldEqual Seq("ArrayBufferScanner.java", "ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq.sorted shouldEqual Seq("ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq.sorted shouldEqual Seq("ArrayBufferScanner.java",  "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq.sorted shouldEqual Seq("Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
     ls("core"/"src"/"test") should have length 1
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
@@ -222,8 +232,8 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support sorting" in {
     testRoot.list.toSeq.sorted(File.Order.byName) should not be empty
     testRoot.list.toSeq.max(File.Order.bySize).isEmpty shouldBe false
-    List(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
-    Thread.sleep(1000)
+    Seq(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
+    sleep()
     t2.appendLine("modified!")
     a1.list.toSeq.min(File.Order.byModificationTime) shouldBe t1
     testRoot.list.toSeq.sorted(File.Order.byDirectoriesFirst) should not be empty
@@ -328,11 +338,11 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
   }
 
-  it should "support custom codec" in {
+  it should "support custom charset" in {
     import java.nio.charset.Charset
-    t1.writeText("你好世界")(charset = File.charset("UTF8"))
-    t1.contentAsString(File.charset("ISO-8859-1")) should not equal "你好世界"
-    t1.contentAsString(File.charset("UTF8")) shouldEqual "你好世界"
+    t1.writeText("你好世界")(charset = "UTF8")
+    t1.contentAsString(charset = "ISO-8859-1") should not equal "你好世界"
+    t1.contentAsString(charset = "UTF8") shouldEqual "你好世界"
     val c1 = md5(t1)
     val c2 = t1.overwrite("你好世界")(File.OpenOptions.default, Charset.forName("ISO-8859-1")).md5
     c1 should not equal c2
@@ -342,19 +352,19 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   it should "support hashing algos" in {
     implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("")
-    assert(md5(t1) == "D41D8CD98F00B204E9800998ECF8427E")
-    assert(sha1(t1) == "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709")
-    assert(sha256(t1) == "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855")
-    assert(sha512(t1) == "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E")
+    md5(t1) shouldEqual "D41D8CD98F00B204E9800998ECF8427E"
+    sha1(t1) shouldEqual "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
+    sha256(t1) shouldEqual "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    sha512(t1) shouldEqual "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
   }
 
   it should "compute correct checksum for non-zero length string" in {
     implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("test")
-    assert(md5(t1) == "098F6BCD4621D373CADE4E832627B4F6")
-    assert(sha1(t1) == "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3")
-    assert(sha256(t1) == "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08")
-    assert(sha512(t1) == "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF")
+    md5(t1) shouldEqual "098F6BCD4621D373CADE4E832627B4F6"
+    sha1(t1) shouldEqual "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3"
+    sha256(t1) shouldEqual "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08"
+    sha512(t1) shouldEqual "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF"
   }
 
   it should "copy" in {

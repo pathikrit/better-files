@@ -860,10 +860,16 @@ class File private(val path: Path) {
 }
 
 object File {
-  implicit val defaultCharset: Charset = Charset.defaultCharset()
+  /**
+    * The default charset used by better-files
+    * Note: It uses java.net.charset.Charset.defaultCharset() in general but if the default supports byte-order markers,
+    *       it uses a more compliant version than the JDK one (see: https://github.com/pathikrit/better-files/issues/107)
+    */
+  implicit val defaultCharset: Charset =
+    UnicodeCharset(Charset.defaultCharset())
 
-  def charset(name: String): Charset =
-    Charset.forName(name)
+  def resource(name: String): File =
+    File(Thread.currentThread().getContextClassLoader.getResource(name))
 
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {

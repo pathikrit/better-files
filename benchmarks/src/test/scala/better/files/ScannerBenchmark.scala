@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{BufferedReader, StringReader}
 
-object ScannerBenchmark extends App {
+object ScannerBenchmark extends Benchmark {
   val file = File.newTemporaryFile()
   val n = 1000
   repeat(n) {
@@ -33,11 +33,6 @@ object ScannerBenchmark extends App {
     val line = "" //scanner.nextLine()
     val words = IndexedSeq.fill(2 * n)(scanner.next())
     (line, ints, words)
-  }
-
-  def profile[A](f: => A): (A, Long) = {
-    val t = System.nanoTime()
-    (f, ((System.nanoTime() - t) / 1e6).toLong)
   }
 
   println("Warming up ...")

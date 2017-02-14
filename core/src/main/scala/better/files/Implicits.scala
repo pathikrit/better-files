@@ -274,6 +274,9 @@ trait Implicits {
   implicit def stringToMessageDigest(algorithmName: String): MessageDigest =
     MessageDigest.getInstance(algorithmName)
 
+  implicit def stringToCharset(charsetName: String): Charset =
+    Charset.forName(charsetName)
+
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
     produce(s.nextToken()).till(s.hasMoreTokens)
 
