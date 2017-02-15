@@ -8,6 +8,7 @@ import java.nio.file._
 import java.nio.file.attribute._
 import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
+import java.util.regex.Pattern
 import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
@@ -471,8 +472,41 @@ class File private(val path: Path) {
   def walk(maxDepth: Int = Int.MaxValue)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
-  def pathMatcher(syntax: File.PathMatcherSyntax)(pattern: String): PathMatcher =
-    fileSystem.getPathMatcher(s"${syntax.name}:$pattern")
+
+  /**
+   * Combine glob with path so that it will match relative path without leading glob-pattern.
+   */
+  protected def pathGlob(glob: String) = {
+    val escapedPath = (path.toString + fileSystem.getSeparator)
+      .replaceAllLiterally("""\\""", """\\\\""")
+      .replaceAllLiterally("*", "\\*")
+      .replaceAllLiterally("?", "\\?")
+      .replaceAllLiterally("{", "\\{")
+      .replaceAllLiterally("}", "\\}")
+      .replaceAllLiterally("[", "\\[")
+      .replaceAllLiterally("]", "\\]")
+
+    "glob:" + escapedPath + glob
+  }
+
+  /**
+   * Combine regex with path so that it will match relative path without leading regex-pattern.
+   */
+  protected def pathRegex(regex: String) = {
+    val pathWithSep = path.toString + fileSystem.getSeparator
+    "regex:" + Pattern.quote(pathWithSep) + regex
+  }
+
+  def pathMatcher(syntax: File.PathMatcherSyntax)(pattern: String): PathMatcher = {
+    if (syntax.name == "pathGlob") {
+      fileSystem.getPathMatcher(pathGlob(pattern))
+    } else if (syntax.name == "pathRegex") {
+      fileSystem.getPathMatcher(pathRegex(pattern))
+    } else {
+      fileSystem.getPathMatcher(s"${syntax.name}:$pattern")
+    }
+  }
+
 
   /**
     * Util to glob from this file's path
@@ -997,7 +1031,9 @@ object File {
   object PathMatcherSyntax {
     val glob = new PathMatcherSyntax("glob")
     val regex = new PathMatcherSyntax("regex")
-    val default = glob
+    val pathGlob = new PathMatcherSyntax("pathGlob")
+    val pathRegex = new PathMatcherSyntax("pathRegex")
+    val default = pathGlob
     def other(syntax: String) = new PathMatcherSyntax(syntax)
   }
 
