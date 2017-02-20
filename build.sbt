@@ -45,7 +45,7 @@ lazy val akka = (project in file("akka"))
     description := "Reactive file watcher using Akka actors",
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.16"
   )
-  .dependsOn(core)
+  .dependsOn(core % "test->test;compile->compile")
 
 lazy val shapelessScanner = (project in file("shapeless"))
   .settings(commonSettings: _*)
@@ -55,7 +55,7 @@ lazy val shapelessScanner = (project in file("shapeless"))
     description := "Shapeless Scanner",
     libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.2"
   )
-  .dependsOn(core)
+  .dependsOn(core % "test->test;compile->compile")
 
 lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
@@ -63,7 +63,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(
     name := s"$repo-benchmarks"
   )
-  .dependsOn(core)
+  .dependsOn(core % "test->test;compile->compile")
 
 lazy val root = (project in file("."))
   .settings(commonSettings: _*)

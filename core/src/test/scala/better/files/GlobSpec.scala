@@ -1,14 +1,10 @@
 package better.files
 
 import better.files.Dsl._
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 
-class GlobSpec extends FlatSpec with BeforeAndAfterAll with Matchers {
-  val isUnixOS = sys.props.get("os.name") match {
-    case Some("Linux" | "MaxOS") => true
-    case _ => false
-  }
+import org.scalatest.BeforeAndAfterAll
 
+class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   var testDir: File = _
   var globTree: File = _
   var specialTree: File = _

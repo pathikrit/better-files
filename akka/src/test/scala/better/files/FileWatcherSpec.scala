@@ -2,17 +2,10 @@ package better.files
 
 import Dsl._
 
-import org.scalatest._
-
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.Try
 
-class FileWatcherSpec extends FlatSpec with Matchers {
-  val isCI = Try(sys.env("CI").toBoolean) getOrElse false     //TODO: Move these to core test package
-
-  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
-
+class FileWatcherSpec extends CommonSpec {
   "file watcher" should "watch directories" in {
     assume(isCI)
     val dir = File.newTemporaryDirectory()
@@ -38,9 +31,7 @@ class FileWatcherSpec extends FlatSpec with Matchers {
       case (Events.ENTRY_MODIFY, file) => output(file, "modified")
     }
 
-    watcher ! on(Events.ENTRY_DELETE) {    // register partial function for single event
-      case file => output(file, "deleted")
-    }
+    watcher ! on(Events.ENTRY_DELETE)(file => output(file, "deleted"))    // register partial function for single event
     /***************************************************************************/
     sleep(5 seconds)
     (dir / "a" / "b" / "c.txt").writeText("Hello world"); sleep()

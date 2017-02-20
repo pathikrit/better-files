@@ -3,22 +3,11 @@ package better.files
 import File.{root, home}
 import Dsl._
 
-import org.scalatest._
-
 import scala.concurrent.duration._
 import scala.language.{postfixOps, existentials}
 import scala.util.Try
 
-class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-  val isCI = sys.env.get("CI").exists(_.toBoolean)
-
-  val isUnixOS = sys.props.get("os.name") match {
-    case Some("Linux" | "MaxOS") => true
-    case _ => false
-  }
-
-  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
-
+class FileSpec extends CommonSpec {
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
   var a1: File = _
@@ -182,7 +171,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
     ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
-    ls_r("core"/"src"/"test") should have length 5
+    ls_r("core"/"src"/"test") should have length 6
   }
 
   it should "support names/extensions" in {
