@@ -1,6 +1,6 @@
 ## v3.0.0
 
-* [PR #116](https://github.com/pathikrit/better-files/pull/116): Glob with automatic path
+* [Issue #114](https://github.com/pathikrit/better-files/issues/114): Glob with automatic path
 * [Issue #107](https://github.com/pathikrit/better-files/issues/107): Handle Byte-order markers
 * [PR #113](https://github.com/pathikrit/better-files/pull/113): File anchor util
 * [Issue #105](https://github.com/pathikrit/better-files/issues/105): Remove dependency on scala.io

@@ -254,18 +254,23 @@ s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src"/"test"
-val matches: Iterator[File] = dir.glob("**/*.{java,scala}")
+val matches: Iterator[File] = dir.glob("*.{java,scala}")
 // above code is equivalent to:
 dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
 ```
-List `*.txt` files:
-````scala
-    val txts = dir.glob("*.txt")
-````
+
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
 ```scala
 val matches = dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.regex)
 ```
+
+Note that the default glob syntax in `better-files` is [different from](https://github.com/pathikrit/better-files/issues/114)
+the default glob syntax. To use the default behaviour:
+```scala
+file.pathMatcher(syntax = File.PathMatcherSyntax.Glob)
+```
+You can also extend the `File.PathMatcherSyntax` to create your own matchers.
+
 For custom cases:
 ```scala
 dir.collectChildren(_.isSymbolicLink) // collect all symlinks in a directory

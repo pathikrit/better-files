@@ -994,20 +994,21 @@ object File {
     val default             : Order = byDirectoriesFirst
   }
 
-  sealed class PathMatcherSyntax private (val name: String) {
+  class PathMatcherSyntax private (val name: String) {
     def apply(pattern: String, file: File): PathMatcher =
       file.fileSystem.getPathMatcher(s"$name:$pattern")
   }
   object PathMatcherSyntax {
-    case object glob extends PathMatcherSyntax("glob")
-    case object regex extends PathMatcherSyntax("regex")
+    case object Glob extends PathMatcherSyntax("glob")
+    case object Regex extends PathMatcherSyntax("regex")
 
     /**
       * Combine glob with path so that it will match relative path without leading glob-pattern.
       */
-    case object pathGlob extends PathMatcherSyntax("glob") {
+    case object PathGlob extends PathMatcherSyntax("glob") {
       override def apply(pattern: String, file: File) = {
-        val escapedPath = (file.path.toString + file.fileSystem.getSeparator)
+        val path = file.path.toString + file.fileSystem.getSeparator
+        val escapedPath = path
           .replaceAllLiterally("""\\""", """\\\\""")
           .replaceAllLiterally("*", "\\*")
           .replaceAllLiterally("?", "\\?")
@@ -1022,14 +1023,14 @@ object File {
     /**
       * Combine regex with path so that it will match relative path without leading regex-pattern.
       */
-    case object pathRegex extends PathMatcherSyntax("regex") {
+    case object PathRegex extends PathMatcherSyntax("regex") {
       override def apply(pattern: String, file: File) = {
-        val pathWithSep = file.path.toString + file.fileSystem.getSeparator
-        super.apply(s"${Pattern.quote(pathWithSep)}$pattern", file)
+        val path = file.path.toString + file.fileSystem.getSeparator
+        super.apply(s"${Pattern.quote(path)}$pattern", file)
       }
     }
 
-    val default = pathGlob
+    val default = PathGlob
     def other(syntax: String) = new PathMatcherSyntax(syntax)
   }
 

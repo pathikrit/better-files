@@ -170,7 +170,7 @@ class GlobSpec extends FlatSpec with BeforeAndAfterAll with Matchers {
 
     verify(paths, refPaths, globTree) should be(true)
 
-    assert(globTree.glob("*.txt")(File.PathMatcherSyntax.glob).isEmpty)
+    assert(globTree.glob("*.txt")(File.PathMatcherSyntax.Glob).isEmpty)
   }
 
   it should "match fixed sub dir and file-glob  (e.g. '**/subdir/*.ext')" in {
@@ -346,7 +346,7 @@ class GlobSpec extends FlatSpec with BeforeAndAfterAll with Matchers {
       "b/b.txt",
       "b/a/ba.txt")
 
-    val paths = globTree.glob(".*/.*\\.txt")(File.PathMatcherSyntax.pathRegex)
+    val paths = globTree.glob(".*/.*\\.txt")(File.PathMatcherSyntax.PathRegex)
 
     verify(paths, refPaths, globTree) should be(true)
   }
@@ -359,17 +359,17 @@ class GlobSpec extends FlatSpec with BeforeAndAfterAll with Matchers {
       "a/a2/a2.txt",
       "a/a2/x.txt")
 
-    val paths = globTree.glob("a/.*\\.txt")(File.PathMatcherSyntax.pathRegex)
+    val paths = globTree.glob("a/.*\\.txt")(File.PathMatcherSyntax.PathRegex)
 
     verify(paths, refPaths, globTree) should be(true)
 
-    assert(globTree.glob("a/.*\\.txt")(File.PathMatcherSyntax.regex).isEmpty)
+    assert(globTree.glob("a/.*\\.txt")(File.PathMatcherSyntax.Regex).isEmpty)
   }
 
   it should "not use dir name as wildcard (e.g. dirname is .*)" in {
 
     val d = regexWildcardPath // "path" / "with" / ".*"
-    val paths = d.glob("a\\.txt")(File.PathMatcherSyntax.pathRegex)
+    val paths = d.glob("a\\.txt")(File.PathMatcherSyntax.PathRegex)
 
     assert(paths.isEmpty)
   }
