@@ -169,7 +169,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
   }
 
   it should "glob" in {
-    a1.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
+    a1.glob("*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
     testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
@@ -182,7 +182,7 @@ class FileSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
     ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
-    ls_r("core"/"src"/"test") should have length 4
+    ls_r("core"/"src"/"test") should have length 5
   }
 
   it should "support names/extensions" in {
