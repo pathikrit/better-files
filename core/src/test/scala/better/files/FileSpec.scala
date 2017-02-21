@@ -3,8 +3,7 @@ package better.files
 import File.{root, home}
 import Dsl._
 
-import scala.concurrent.duration._
-import scala.language.{postfixOps, existentials}
+import scala.language.postfixOps
 import scala.util.Try
 
 class FileSpec extends CommonSpec {
@@ -171,7 +170,7 @@ class FileSpec extends CommonSpec {
     ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
     ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
     ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
-    ls_r("core"/"src"/"test") should have length 6
+    ls_r("core"/"src"/"test") should have length 8
   }
 
   it should "support names/extensions" in {
@@ -440,111 +439,5 @@ class FileSpec extends CommonSpec {
     } buffer.remaining() shouldEqual t1.bytes.length
 
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
-  }
-
-  //TODO: Test above for all kinds of FileType
-
-  "scanner" should "parse files" in {
-    val data = t1 << s"""
-    | Hello World
-    | 1 2 3
-    | Ok 23 football
-    """.stripMargin
-    val scanner: Scanner = data.newScanner()
-    assert(scanner.lineNumber() == 0)
-    assert(scanner.next[String] == "Hello")
-    assert(scanner.lineNumber() == 2)
-    assert(scanner.next[String] == "World")
-    assert(scanner.next[Int] == 1)
-    assert(scanner.next[Int] == 2)
-    assert(scanner.lineNumber() == 3)
-    assert(scanner.next[Int] == 3)
-    assert(scanner.next[String] == "Ok")
-    assert(scanner.tillEndOfLine() == " 23 football")
-    assert(!scanner.hasNext)
-    a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
-    a[NoSuchElementException] should be thrownBy scanner.next()
-    assert(!scanner.hasNext)
-    data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
-    data.tokens shouldEqual data.newScanner().toTraversable
-  }
-
-  it should "parse longs/booleans" in {
-    val data = for {
-      scanner <- Scanner("10 false").autoClosed
-    } yield scanner.next[(Long, Boolean)]
-    data shouldBe Seq(10L -> false)
-  }
-
-  it should "parse custom parsers" in {
-    val file = t1 < """
-      |Garfield
-      |Woofer
-    """.stripMargin
-
-    sealed trait Animal
-    case class Dog(name: String) extends Animal
-    case class Cat(name: String) extends Animal
-
-    implicit val animalParser: Scannable[Animal] = Scannable {scanner =>
-      val name = scanner.next[String]
-      if (name == "Garfield") Cat(name) else Dog(name)
-    }
-    val scanner = file.newScanner()
-    Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
-  }
-
-  "file watcher" should "watch single files" in {
-    assume(isCI)
-    val file = File.newTemporaryFile(suffix = ".txt").writeText("Hello world")
-
-    var log = List.empty[String]
-    def output(msg: String) = synchronized {
-      println(msg)
-      log = msg :: log
-    }
-    /***************************************************************************/
-    val watcher = new ThreadBackedFileMonitor(file) {
-      override def onCreate(file: File) = output(s"$file got created")
-      override def onModify(file: File) = output(s"$file got modified")
-      override def onDelete(file: File) = output(s"$file got deleted")
-    }
-    watcher.start()
-    /***************************************************************************/
-    sleep(5 seconds)
-    file.writeText("hello world"); sleep()
-    file.clear(); sleep()
-    file.writeText("howdy"); sleep()
-    file.delete(); sleep()
-    sleep(5 seconds)
-    val sibling = (file.parent / "t1.txt").createIfNotExists(); sleep()
-    sibling.writeText("hello world"); sleep()
-    sleep(20 seconds)
-
-    log.size should be >= 2
-    log.exists(_ contains sibling.name) shouldBe false
-    log.forall(_ contains file.name) shouldBe true
-  }
-
-  ignore should "watch directories to configurable depth" in {
-    assume(isCI)
-    val dir = File.newTemporaryDirectory()
-    (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
-    var log = List.empty[String]
-    def output(msg: String) = synchronized(log = msg :: log)
-
-    val watcher = new ThreadBackedFileMonitor(dir, maxDepth = 2) {
-      override def onCreate(file: File) = output(s"Create happened on ${file.name}")
-    }
-    watcher.start()
-
-    sleep(5 seconds)
-    (dir/"a"/"b"/"t1").touch().writeText("hello world"); sleep()
-    (dir/"a"/"b"/"c"/"d"/"t1").touch().writeText("hello world"); sleep()
-    sleep(10 seconds)
-
-    withClue(log) {
-      log.size shouldEqual 1
-    }
   }
 }
