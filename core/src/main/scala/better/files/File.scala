@@ -873,6 +873,19 @@ object File {
   def resource(name: String): File =
     File(Thread.currentThread().getContextClassLoader.getResource(name))
 
+  /**
+    * Copies a resource into a tempFile
+    *
+    * @param name
+    * @return
+    */
+  def resourceAsTempFile(name: String): File = {
+    val in = getClass.getResourceAsStream(name)
+    val file = File.newTemporaryFile(prefix = name)
+    in.pipeTo(file.newOutputStream)
+    file
+  }
+
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {
       case Some(dir) => Files.createTempDirectory(dir.path, prefix, attributes: _*)

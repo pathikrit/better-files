@@ -261,13 +261,15 @@ dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == S
 
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
 ```scala
-val matches = dir.glob("*.txt")(syntax = File.PathMatcherSyntax.regex)
+val matches = dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.regex)
 ```
 
-Note that the default glob syntax in `better-files` is [different from](https://github.com/pathikrit/better-files/issues/114)
-the default glob syntax since it always includes path. To use the default behaviour:
+By default, glob syntax in `better-files` is [different from](https://github.com/pathikrit/better-files/issues/114)
+the default JDK glob behaviour since it always includes path. To use the default behaviour:
 ```scala
-dir.glob("**/*.txt", includePath = false) // this is equivalent to dir.glob("*.txt", includePath = true) 
+dir.glob("**/*.txt", includePath = false) // JDK default
+//OR
+dir.glob("*.txt", includePath = true) // better-files default
 ```
 You can also extend the `File.PathMatcherSyntax` to create your own matchers.
 
@@ -310,6 +312,7 @@ A cleaner alternative is to use self-deleting file contexts which deletes the fi
 ```scala
 File.usingTempFile() {tempFile =>
   ...
+  // tempFile is auto deleted at the end of this block - even if an exception happens
 }
 
 // or equivalently:
