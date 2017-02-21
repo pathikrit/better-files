@@ -106,7 +106,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     files
       .sortBy(_.path)
       .map(files => s"PATH: ${files.toString}")
-      .mkString(s"SIZE: ${files.size}", "\n", "")
+      .mkString(s"SIZE: ${files.size}\n", "\n", "\n")
   }
 
   /**
@@ -116,7 +116,6 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
    * @param pathsIt candidates
    * @param refPaths references
    * @param baseDir basedir to for creating full path of references
-   * @return true if candidates are identical with references
    */
   private def verify(pathsIt: Files, refPaths: Seq[String], baseDir: File) = {
     val paths = pathsIt.toSeq
@@ -124,7 +123,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       .map(refPath => baseDir/refPath)
       .sortBy(_.path)
 
-    withClue(debugPaths(paths)) {
+    withClue("Result: " + debugPaths(paths) + "Reference: " + debugPaths(refs)) {
       assert(paths.length === refPaths.length)
       assert(paths.nonEmpty)
       paths.sortBy(_.path).zip(refs).foreach({case (path, refPath) => assert(path === refPath)})
