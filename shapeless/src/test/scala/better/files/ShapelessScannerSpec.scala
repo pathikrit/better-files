@@ -2,9 +2,7 @@ package better.files
 
 import shapeless._
 
-import org.scalatest._
-
-class ShapelessScannerSpec extends FlatSpec with Matchers {
+class ShapelessScannerSpec extends CommonSpec {
   import ShapelessScanner._
 
   "HList Scanner" should "parse HList" in {

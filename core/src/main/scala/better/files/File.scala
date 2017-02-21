@@ -8,6 +8,7 @@ import java.nio.file._
 import java.nio.file.attribute._
 import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
+import java.util.regex.Pattern
 import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
@@ -472,17 +473,15 @@ class File private(val path: Path) {
     Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
   def pathMatcher(syntax: File.PathMatcherSyntax)(pattern: String): PathMatcher =
-    fileSystem.getPathMatcher(s"${syntax.name}:$pattern")
+    syntax(pattern, this)
 
   /**
     * Util to glob from this file's path
     *
     * @return Set of files that matched
     */
-  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
-    val matcher = pathMatcher(syntax)(pattern)
-    collectChildren(child => matcher.matches(child.path))(visitOptions)
-  }
+  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+    pathMatcher(syntax)(pattern).matches(this)(visitOptions)
 
   /**
     * More Scala friendly way of doing Files.walk
@@ -993,11 +992,43 @@ object File {
     val default             : Order = byDirectoriesFirst
   }
 
-  class PathMatcherSyntax private (val name: String)
+  class PathMatcherSyntax private (val name: String) {
+    def apply(pattern: String, file: File): PathMatcher =
+      file.fileSystem.getPathMatcher(s"$name:$pattern")
+  }
   object PathMatcherSyntax {
-    val glob = new PathMatcherSyntax("glob")
-    val regex = new PathMatcherSyntax("regex")
-    val default = glob
+    case object Glob extends PathMatcherSyntax("glob")
+    case object Regex extends PathMatcherSyntax("regex")
+
+    /**
+      * Combine glob with path so that it will match relative path without leading glob-pattern.
+      */
+    case object PathGlob extends PathMatcherSyntax("glob") {
+      override def apply(pattern: String, file: File) = {
+        val path = file.path.toString + file.fileSystem.getSeparator
+        val escapedPath = path
+          .replaceAllLiterally("""\\""", """\\\\""")
+          .replaceAllLiterally("*", "\\*")
+          .replaceAllLiterally("?", "\\?")
+          .replaceAllLiterally("{", "\\{")
+          .replaceAllLiterally("}", "\\}")
+          .replaceAllLiterally("[", "\\[")
+          .replaceAllLiterally("]", "\\]")
+        super.apply(s"$escapedPath$pattern", file)
+      }
+    }
+
+    /**
+      * Combine regex with path so that it will match relative path without leading regex-pattern.
+      */
+    case object PathRegex extends PathMatcherSyntax("regex") {
+      override def apply(pattern: String, file: File) = {
+        val path = file.path.toString + file.fileSystem.getSeparator
+        super.apply(s"${Pattern.quote(path)}$pattern", file)
+      }
+    }
+
+    val default = PathGlob
     def other(syntax: String) = new PathMatcherSyntax(syntax)
   }
 
