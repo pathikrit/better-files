@@ -320,6 +320,8 @@ File.usingTempFile() {tempFile =>
 File.newTempFile().applyAndDelete(tempFile =>  ...)
 ```
 
+You can also load resources from your classpath using `File.resource` or `File.copyResource`.
+
 ### UNIX DSL
 All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Dsl$.html) reminiscent of the command line:
 ```scala

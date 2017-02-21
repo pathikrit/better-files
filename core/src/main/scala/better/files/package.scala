@@ -1,5 +1,7 @@
 package better
 
+import java.io.InputStream
+
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
@@ -17,6 +19,8 @@ package object files extends Implicits {
     def close(): Unit
   }
 
+  def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name)
+
   type ManagedResource[A <: Closeable] = Traversable[A]
 
   // Some utils:
@@ -25,6 +29,8 @@ package object files extends Implicits {
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 
   @inline private[files] def repeat[U](n: Int)(f: => U): Unit = (1 to n).foreach(_ => f)
+
+  private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
   private[files] def using[A <: Closeable, U](resource: A)(f: A => U): U = try { f(resource) } finally {resource.close()}
 

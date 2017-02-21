@@ -1,5 +1,6 @@
 ## v3.0.0
 
+* [Issue #9](https://github.com/pathikrit/better-files/issues/9): File resource utils
 * [Issue #114](https://github.com/pathikrit/better-files/issues/114): Glob with automatic path
 * [Issue #107](https://github.com/pathikrit/better-files/issues/107): Handle Byte-order markers
 * [PR #113](https://github.com/pathikrit/better-files/pull/113): File anchor util

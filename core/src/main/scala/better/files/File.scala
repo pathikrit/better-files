@@ -870,20 +870,27 @@ object File {
   implicit val defaultCharset: Charset =
     UnicodeCharset(Charset.defaultCharset())
 
-  def resource(name: String): File =
-    File(Thread.currentThread().getContextClassLoader.getResource(name))
-
   /**
-    * Copies a resource into a tempFile
+    * Get a file from a resource
+    * Note: Use resourceToFile instead as this may not actually always load the file
+    * See: http://stackoverflow.com/questions/676250/different-ways-of-loading-a-file-as-an-inputstream
     *
     * @param name
     * @return
     */
-  def resourceAsTempFile(name: String): File = {
-    val in = getClass.getResourceAsStream(name)
-    val file = File.newTemporaryFile(prefix = name)
-    in.pipeTo(file.newOutputStream)
-    file
+  def resource(name: String): File =
+    File(currentClassLoader().getResource(name))
+
+  /**
+    * Copies a resource into a file
+    *
+    * @param name
+    * @param out File where resource is copied into, if not specified a temp file is created
+    * @return
+    */
+  def copyResource(name: String)(out: File = File.newTemporaryFile(prefix = name)): out.type = {
+    resourceAsStream(name) > out.newOutputStream
+    out
   }
 
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
