@@ -472,16 +472,19 @@ class File private(val path: Path) {
   def walk(maxDepth: Int = Int.MaxValue)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
-  def pathMatcher(syntax: File.PathMatcherSyntax)(pattern: String): PathMatcher =
-    syntax(pattern, this)
+  def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
+    syntax(this, pattern, includePath)
 
   /**
     * Util to glob from this file's path
     *
+    *
+    * @param includePath If true, we don't need to set path glob patterns
+    *                    e.g. instead of **//*.txt we just use *.txt
     * @return Set of files that matched
     */
-  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
-    pathMatcher(syntax)(pattern).matches(this)(visitOptions)
+  def glob(pattern: String, includePath: Boolean = true)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+    pathMatcher(syntax, includePath)(pattern).matches(this)(visitOptions)
 
   /**
     * More Scala friendly way of doing Files.walk
@@ -992,44 +995,41 @@ object File {
     val default             : Order = byDirectoriesFirst
   }
 
-  class PathMatcherSyntax private (val name: String) {
-    def apply(pattern: String, file: File): PathMatcher =
-      file.fileSystem.getPathMatcher(s"$name:$pattern")
+  abstract class PathMatcherSyntax private (val name: String) {
+
+    /**
+      * Return PathMatcher from this file
+      *
+      * @param file
+      * @param pattern
+      * @param includePath If this is true, no need to include path matchers
+      *                    e.g. instead of "**//*.txt" we can simply use *.txt
+      * @return
+      */
+    def apply(file: File, pattern: String, includePath: Boolean): PathMatcher = {
+      val escapedPath = if (includePath) escapePath(file.path.toString + file.fileSystem.getSeparator) else ""
+      file.fileSystem.getPathMatcher(s"$name:$escapedPath$pattern")
+    }
+
+    def escapePath(path: String): String
   }
   object PathMatcherSyntax {
-    case object Glob extends PathMatcherSyntax("glob")
-    case object Regex extends PathMatcherSyntax("regex")
-
-    /**
-      * Combine glob with path so that it will match relative path without leading glob-pattern.
-      */
-    case object PathGlob extends PathMatcherSyntax("glob") {
-      override def apply(pattern: String, file: File) = {
-        val path = file.path.toString + file.fileSystem.getSeparator
-        val escapedPath = path
-          .replaceAllLiterally("""\\""", """\\\\""")
-          .replaceAllLiterally("*", "\\*")
-          .replaceAllLiterally("?", "\\?")
-          .replaceAllLiterally("{", "\\{")
-          .replaceAllLiterally("}", "\\}")
-          .replaceAllLiterally("[", "\\[")
-          .replaceAllLiterally("]", "\\]")
-        super.apply(s"$escapedPath$pattern", file)
-      }
+    val glob: PathMatcherSyntax = new PathMatcherSyntax("glob") {
+      override def escapePath(path: String) = path
+        .replaceAllLiterally("""\\""", """\\\\""")
+        .replaceAllLiterally("*", "\\*")
+        .replaceAllLiterally("?", "\\?")
+        .replaceAllLiterally("{", "\\{")
+        .replaceAllLiterally("}", "\\}")
+        .replaceAllLiterally("[", "\\[")
+        .replaceAllLiterally("]", "\\]")
     }
 
-    /**
-      * Combine regex with path so that it will match relative path without leading regex-pattern.
-      */
-    case object PathRegex extends PathMatcherSyntax("regex") {
-      override def apply(pattern: String, file: File) = {
-        val path = file.path.toString + file.fileSystem.getSeparator
-        super.apply(s"${Pattern.quote(path)}$pattern", file)
-      }
+    val regex: PathMatcherSyntax = new PathMatcherSyntax("regex") {
+      override def escapePath(path: String) = Pattern.quote(path)
     }
 
-    val default = PathGlob
-    def other(syntax: String) = new PathMatcherSyntax(syntax)
+    val default = glob
   }
 
   class RandomAccessMode private(val value: String)
