@@ -4,7 +4,7 @@ import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
-import java.nio.file.Path
+import java.nio.file.{Path, PathMatcher}
 import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
@@ -123,6 +123,11 @@ trait Implicits {
   implicit class FileChannelOps(fc: FileChannel) {
     def toMappedByteBuffer: MappedByteBuffer =
       fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size())
+  }
+
+  implicit class PathMatcherOps(matcher: PathMatcher) {
+    def matches(file: File)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
+      file.collectChildren(child => matcher.matches(child.path))(visitOptions)
   }
 
   implicit class ZipOutputStreamOps(val out: ZipOutputStream) {

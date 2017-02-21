@@ -480,10 +480,8 @@ class File private(val path: Path) {
     *
     * @return Set of files that matched
     */
-  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
-    val matcher = pathMatcher(syntax)(pattern)
-    collectChildren(child => matcher.matches(child.path))(visitOptions)
-  }
+  def glob(pattern: String)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+    pathMatcher(syntax)(pattern).matches(this)(visitOptions)
 
   /**
     * More Scala friendly way of doing Files.walk
