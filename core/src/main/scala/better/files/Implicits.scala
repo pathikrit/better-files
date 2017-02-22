@@ -244,6 +244,11 @@ trait Implicits {
     }
   }
 
+  private[files] implicit class OrderingOps[A](order: Ordering[A]) {
+    def andThenBy(order2: Ordering[A]): Ordering[A] =
+      Ordering.comparatorToOrdering(order.thenComparing(order2))
+  }
+
   implicit def stringToMessageDigest(algorithmName: String): MessageDigest =
     MessageDigest.getInstance(algorithmName)
 

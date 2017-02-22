@@ -1012,10 +1012,10 @@ object File {
     val byModificationTime  : Order = Ordering.by(_.lastModifiedTime)
     val byDirectoriesLast   : Order = Ordering.by(_.isDirectory)
     val byDirectoriesFirst  : Order = byDirectoriesLast.reverse
-    val default             : Order = byDirectoriesFirst
+    val default             : Order = byDirectoriesFirst.andThenBy(byName)
   }
 
-  abstract class PathMatcherSyntax private (val name: String) {
+  abstract class PathMatcherSyntax(name: String) {
 
     /**
       * Return PathMatcher from this file
