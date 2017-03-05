@@ -1036,7 +1036,7 @@ object File {
   object PathMatcherSyntax {
     val glob: PathMatcherSyntax = new PathMatcherSyntax("glob") {
       override def escapePath(path: String) = path
-        .replaceAllLiterally("""\\""", """\\\\""")
+        .replaceAllLiterally("\\", "\\\\")
         .replaceAllLiterally("*", "\\*")
         .replaceAllLiterally("?", "\\?")
         .replaceAllLiterally("{", "\\{")

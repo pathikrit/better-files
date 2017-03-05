@@ -80,16 +80,19 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     // Special target with path name components as wildcards
     specialTree = testDir / "special"
 
-    // regex
-    mkdir(specialTree)
-    regexWildcardPath = mkdir(specialTree / ".*" )
-    mkdir(specialTree / ".*" / "a" )
-    touch(specialTree / ".*" / "a" / "a.txt")
+    // Windows does not support '*' in file names
+    if (isUnixOS) {
+      // regex
+      mkdir(specialTree)
+      regexWildcardPath = mkdir(specialTree / ".*")
+      mkdir(specialTree / ".*" / "a")
+      touch(specialTree / ".*" / "a" / "a.txt")
 
-    // glob
-    globWildcardPath = mkdir(specialTree / "**" )
-    mkdir(specialTree / "**" / "a" )
-    touch(specialTree / "**" / "a" / "a.txt")
+      // glob
+      globWildcardPath = mkdir(specialTree / "**")
+      mkdir(specialTree / "**" / "a")
+      touch(specialTree / "**" / "a" / "a.txt")
+    }
 
     ()
   }
@@ -300,6 +303,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   it should "not use dir name as wildcard (e.g. dirname is **)" in {
+    assume(isUnixOS)
     val d = globWildcardPath // "path" / "with" / "**"
     val paths = d.glob("*.txt")
 
@@ -337,6 +341,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   it should "not use dir name as wildcard (e.g. dirname is .*)" in {
+    assume(isUnixOS)
     val d = regexWildcardPath // "path" / "with" / ".*"
     val paths = d.glob("a\\.txt")(File.PathMatcherSyntax.regex)
     assert(paths.isEmpty)
