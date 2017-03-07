@@ -53,6 +53,12 @@ object Dsl {
 
     def `!`(implicit charset: Charset = File.defaultCharset): String =
       file.contentAsString(charset)
+
+    def `===`(that: File): Boolean =
+      file.isSameContentAs(that)
+
+    def !==(that: File): Boolean =
+      !(file === that)
   }
 
   def cp(file1: File, file2: File): File =  //todo return file2.type when SI-4751 is fixed

@@ -708,10 +708,7 @@ class File private(val path: Path) {
   def isSameContentAs(that: File): Boolean =
     isSimilarContentAs(that)
 
-  def `===`(that: File): Boolean =
-    isSameContentAs(that)
-
-  /**
+   /**
     * Almost same as isSameContentAs but uses faster md5 hashing to compare (and thus small chance of false positive)
     * Also works for directories
     *
@@ -720,9 +717,6 @@ class File private(val path: Path) {
     */
   def isSimilarContentAs(that: File): Boolean =
     this.md5 == that.md5
-
-  def !==(that: File): Boolean =
-    !isSameContentAs(that)
 
   override def equals(obj: Any) = {
     obj match {
