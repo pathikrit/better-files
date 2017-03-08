@@ -280,7 +280,7 @@ dir.collectChildren(_.isSymbolicLink) // collect all symlinks in a directory
 For simpler cases, you can always use `dir.list` or `dir.walk(maxDepth: Int)`
 
 ### File system operations
-Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `diff`, `touch`, `cat` etc:
+Utilities to `ls`, `cp`, `rm`, `mv`, `ln`, `md5`, `touch`, `cat` etc:
 ```scala
 file.touch()
 file.delete()     // unlike the Java API, also works on directories as expected (deletes children recursively)
