@@ -294,6 +294,12 @@ class FileSpec extends CommonSpec {
     val magicWord = "Hello World"
     t1 writeText magicWord
     // link
+    // to relative target
+    val b0 = b1.sibling("b0")
+    java.nio.file.Files.createSymbolicLink(b0.path, java.nio.file.Paths.get("b1"))
+    b0.symbolicLink should not be empty
+    b0.symbolicLink.get.path.isAbsolute shouldBe false
+    // to absolute target
     b1.linkTo(a1, symbolic = true)
     ln_s(b2, t2)
     (b1 / "t1.txt").contentAsString shouldEqual magicWord

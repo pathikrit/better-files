@@ -414,7 +414,7 @@ class File private(val path: Path) {
     * @return Some(target) if this is a symbolic link (to target) else None
     */
   def symbolicLink: Option[File] =
-    when(isSymbolicLink)(Files.readSymbolicLink(path))
+    when(isSymbolicLink)(new File(Files.readSymbolicLink(path)))
 
   /**
     * @return true if this file (or the file found by following symlink) is a directory
