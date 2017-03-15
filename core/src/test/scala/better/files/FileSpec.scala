@@ -446,4 +446,18 @@ class FileSpec extends CommonSpec {
 
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }
+
+  it should "serialize/deserialize" in {
+    class Person(val name: String, val age: Int) extends Serializable
+    val p1 = new Person("Chris", 34)
+
+    File.usingTemporaryFile() {f => //serialization round-trip test
+      assert(f.isEmpty)
+      f.writeSerialized(p1)
+      assert(f.nonEmpty)
+      val p2: Person = f.readDeserialized[Person]
+      assert(p1.name === p2.name)
+      assert(p1.age === p2.age)
+    }
+  }
 }

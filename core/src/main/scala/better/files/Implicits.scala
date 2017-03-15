@@ -63,8 +63,14 @@ trait Implicits {
     def buffered: BufferedInputStream =
       new BufferedInputStream(in)
 
+    def buffered(bufferSize: Int): BufferedInputStream =
+      new BufferedInputStream(in, bufferSize)
+
     def gzipped: GZIPInputStream =
       new GZIPInputStream(in)
+
+    def asObjectInputStream: ObjectInputStream =
+      new ObjectInputStream(in)
 
     def reader(implicit charset: Charset = File.defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
@@ -97,6 +103,9 @@ trait Implicits {
 
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
+
+    def asObjectOutputStream: ObjectOutputStream =
+      new ObjectOutputStream(out)
   }
 
   implicit class ReaderOps(reader: Reader) {
@@ -128,6 +137,18 @@ trait Implicits {
   implicit class PathMatcherOps(matcher: PathMatcher) {
     def matches(file: File)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
       file.collectChildren(child => matcher.matches(child.path))(visitOptions)
+  }
+
+  implicit class ObjectInputStreamOps(ois: ObjectInputStream) {
+    def deserialize[A]: A =
+      ois.readObject().asInstanceOf[A]
+  }
+
+  implicit class ObjectOutputStreamOps(val oos: ObjectOutputStream) {
+    def serialize(obj: Serializable): oos.type = {
+      oos.writeObject(obj)
+      oos
+    }
   }
 
   implicit class ZipOutputStreamOps(val out: ZipOutputStream) {
