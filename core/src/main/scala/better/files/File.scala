@@ -363,6 +363,25 @@ class File private(val path: Path) {
   def watchService: ManagedResource[WatchService] =
     newWatchService.autoClosed
 
+  /**
+    * Serialize a object using Java's serializer into this file
+    *
+    * @param obj
+    * @return
+    */
+  def writeSerialized(obj: Serializable)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
+    createIfNotExists().outputStream(openOptions).foreach(_.buffered.asObjectOutputStream.serialize(obj).flush())
+    this
+  }
+
+  /**
+    * Deserialize a object using Java's default serialization from this file
+    *
+    * @return
+    */
+  def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
+    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A]).head
+
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)
     this

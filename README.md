@@ -17,9 +17,10 @@
   0. [Simple I/O](#file-readwrite)  
   0. [Streams](#streams)
   0. [Encodings](#encodings)
+  0. [Java serialization utils](#java-serialization-utils)
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
-  0. [File system operations](#file-system-operations)
+  0. [File system operations](#file-system-operations)  
   0. [Temporary files](#temporary-files)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
@@ -206,6 +207,27 @@ file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect
 If you also wish to write BOMs while encoding, you would need to supply it as:
 ```scala
 file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true)) 
+```
+
+### Java serialization utils
+
+Some common utils to serialize/deserialize using Java's serialization util
+```scala
+case class Person(name: String, age: Int)
+val person = new Person("Chris", 24)
+
+// Write
+file.newOutputStream.buffered.asObjectOutputStream.serialize(obj).flush()
+
+// Read
+val person2 = file.newInputStream.map.buffered.asObjectInputStream.readObject().asInstanceOf[A])
+assert(person == person2)
+```
+
+The above can be simply written as:
+```scala
+val person2: Person = file.writeSerialized(person).readDeserialized[Person]
+assert(person == person2)
 ```
  
 ### Java interoperability
