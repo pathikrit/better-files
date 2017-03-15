@@ -20,14 +20,14 @@
   0. [Java serialization utils](#java-serialization-utils)
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
-  0. [File system operations](#file-system-operations)  
+  0. [File system operations](#file-system-operations) 
   0. [Temporary files](#temporary-files)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
   0. [File comparison](#file-comparison)
   0. [Zip/Unzip](#zip-apis)
   0. [Automatic Resource Management](#lightweight-arm)
-  0. [Scanner] (#scanner)
+  0. [Scanner](#scanner)
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
@@ -220,7 +220,7 @@ val person = new Person("Chris", 24)
 file.newOutputStream.buffered.asObjectOutputStream.serialize(obj).flush()
 
 // Read
-val person2 = file.newInputStream.map.buffered.asObjectInputStream.readObject().asInstanceOf[A])
+val person2 = file.newInputStream.buffered.asObjectInputStream.readObject().asInstanceOf[Person]
 assert(person == person2)
 ```
 
