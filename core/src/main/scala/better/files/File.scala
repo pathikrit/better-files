@@ -320,6 +320,7 @@ class File private(val path: Path) {
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] =
     newInputStream(openOptions).autoClosed
 
+  //TODO: Move this to inputstream implicit
   def newDigestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): DigestInputStream =
     new DigestInputStream(newInputStream(openOptions), digest)
 

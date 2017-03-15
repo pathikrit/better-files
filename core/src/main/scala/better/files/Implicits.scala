@@ -63,8 +63,14 @@ trait Implicits {
     def buffered: BufferedInputStream =
       new BufferedInputStream(in)
 
+    def buffered(bufferSize: Int): BufferedInputStream =
+      new BufferedInputStream(in, bufferSize)
+
     def gzipped: GZIPInputStream =
       new GZIPInputStream(in)
+
+    def asObjectInputStream: ObjectInputStream =
+      new ObjectInputStream(in)
 
     def reader(implicit charset: Charset = File.defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
