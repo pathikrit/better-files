@@ -20,7 +20,7 @@
   0. [Java serialization utils](#java-serialization-utils)
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
-  0. [File system operations](#file-system-operations) 
+  0. [File system operations](#file-system-operations)
   0. [Temporary files](#temporary-files)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
@@ -104,7 +104,8 @@ you can find reasonably recent versions of this library for Scala 2.10 and 2.11 
 [scalæByTheBay2016Event]: http://sched.co/7iUn
 [scalæByTheBay2016Video]: https://www.youtube.com/watch?v=bLiCE6NGjrk&t=251s
 [scalæByTheBay2016Slides]: https://slides.com/pathikrit/better-files/
---- 
+
+------- 
 ### Instantiation 
 The following are all equivalent:
 ```scala
@@ -210,7 +211,6 @@ file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarker
 ```
 
 ### Java serialization utils
-
 Some common utils to serialize/deserialize using Java's serialization util
 ```scala
 case class Person(name: String, age: Int)
