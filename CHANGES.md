@@ -14,6 +14,7 @@
 * [File.nonEmpty](https://github.com/pathikrit/better-files/commit/18c9cd51b7b2e503ff4944050ac5119470869e6e)
 * [Update metadata API](https://github.com/pathikrit/better-files/commit/c3d65951d80f09b813e158a9e3a1785c622353b3)
 * [Issue #80](https://github.com/pathikrit/better-files/issues/80): Unzip filters
+* [PR #107](https://github.com/pathikrit/better-files/pull/127): Java serialization utils
 
 ## v2.17.1
 

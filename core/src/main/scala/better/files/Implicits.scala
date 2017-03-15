@@ -103,6 +103,9 @@ trait Implicits {
 
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
+
+    def asObjectOutputStream: ObjectOutputStream =
+      new ObjectOutputStream(out)
   }
 
   implicit class ReaderOps(reader: Reader) {
@@ -134,6 +137,18 @@ trait Implicits {
   implicit class PathMatcherOps(matcher: PathMatcher) {
     def matches(file: File)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
       file.collectChildren(child => matcher.matches(child.path))(visitOptions)
+  }
+
+  implicit class ObjectInputStreamOps(ois: ObjectInputStream) {
+    def deserialize[A]: A =
+      ois.readObject().asInstanceOf[A]
+  }
+
+  implicit class ObjectOutputStreamOps(val oos: ObjectOutputStream) {
+    def serialize(obj: Serializable): oos.type = {
+      oos.writeObject(obj)
+      oos
+    }
   }
 
   implicit class ZipOutputStreamOps(val out: ZipOutputStream) {
