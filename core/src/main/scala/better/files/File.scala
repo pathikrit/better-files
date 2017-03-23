@@ -18,7 +18,7 @@ import scala.util.Properties
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path) {
+class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
   //TODO: LinkOption?
 
   def pathAsString: String =
@@ -515,9 +515,6 @@ class File private(val path: Path) {
     */
   def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     walk()(visitOptions).filter(matchFilter)
-
-  def fileSystem: FileSystem =
-    path.getFileSystem
 
   def uri: URI =
     path.toUri
