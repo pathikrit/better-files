@@ -157,6 +157,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "glob" in {
+    assume(isCI)
     a1.glob("*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
     //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
     testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
