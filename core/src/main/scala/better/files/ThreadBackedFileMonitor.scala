@@ -50,6 +50,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     }
 
     toWatch.foreach { f =>
+      // The `Try` is not used intentionally, because it would generate many many `Try` instances (one for each file) which is not very effective
       try { f.register(service) } catch { case NonFatal(e) => onException(e) }
     }
   }
