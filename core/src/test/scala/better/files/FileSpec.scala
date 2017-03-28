@@ -50,10 +50,10 @@ class FileSpec extends CommonSpec {
   }
 
   override def withFixture(test: NoArgTest) = {
-    val before = File.numberOfOpenFileDescriptors()
+    //val before = File.numberOfOpenFileDescriptors()
     val result = super.withFixture(test)
-    val after = File.numberOfOpenFileDescriptors()
-    assert(before == after, s"Resource leakage detected in $test")
+    //val after = File.numberOfOpenFileDescriptors()
+    //assert(before == after, s"Resource leakage detected in $test")
     result
   }
 
@@ -460,5 +460,12 @@ class FileSpec extends CommonSpec {
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
     }
+  }
+
+  it should "count number of open file descriptors" in {
+    val expected = java.lang.management.ManagementFactory.getOperatingSystemMXBean
+      .asInstanceOf[com.sun.management.UnixOperatingSystemMXBean]
+      .getOpenFileDescriptorCount
+    assert(File.numberOfOpenFileDescriptors() === expected)
   }
 }
