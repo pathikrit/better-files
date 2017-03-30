@@ -46,14 +46,19 @@ object FileWatcher {
   }
 
   implicit class FileWatcherOps(file: File) {
-    def watcherProps(recursive: Boolean): Props = Props(new FileWatcher(file, recursive))
+    def watcherProps(recursive: Boolean): Props =
+      Props(new FileWatcher(file, recursive))
 
-    def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef = system.actorOf(watcherProps(recursive))
+    def newWatcher(recursive: Boolean = true)(implicit system: ActorSystem): ActorRef =
+      system.actorOf(watcherProps(recursive))
   }
 
-  def when(events: Event*)(callback: Callback): Message = Message.RegisterCallback(events, callback)
+  def when(events: Event*)(callback: Callback): Message =
+    Message.RegisterCallback(events, callback)
 
-  def on(event: Event)(callback: File => Unit): Message = when(event) { case (`event`, file) => callback(file) }
+  def on(event: Event)(callback: File => Unit): Message =
+    when(event) { case (`event`, file) => callback(file) }
 
-  def stop(event: Event, callback: Callback): Message = Message.RemoveCallback(event, callback)
+  def stop(event: Event, callback: Callback): Message =
+    Message.RemoveCallback(event, callback)
 }

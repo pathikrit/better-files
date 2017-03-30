@@ -2,7 +2,7 @@ package better.files
 
 import java.nio.file._
 
-import scala.util.control.NonFatal
+import scala.util.Try
 
 /**
   * A thread based implementation of the FileMonitor
@@ -14,7 +14,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
   protected[this] val service = root.newWatchService
 
   private[this] val thread = new Thread {
-    override def run() = Iterator.continually(service.take()) foreach process
+    override def run() = Iterator.continually(service.take()).foreach(process)
   }
   thread.setDaemon(true)
   thread.setUncaughtExceptionHandler((thread, exception) => onException(exception))
@@ -22,17 +22,17 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
   protected[this] def process(key: WatchKey) = {
-    def reactTo(target: File) = root.isDirectory || (root isSamePathAs target) // if watching non-directory, don't react to siblings
+    def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target) // if watching non-directory, don't react to siblings
 
     val path = key.watchable().asInstanceOf[Path]
 
     import scala.collection.JavaConverters._
     key.pollEvents().asScala foreach {
       case event: WatchEvent[Path] @unchecked =>
-        val target: File = path resolve event.context()
+        val target: File = path.resolve(event.context())
         if (reactTo(target)) {
           if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-            val depth = (root relativize target).getNameCount
+            val depth = root.relativize(target).getNameCount
             watch(target, (maxDepth - depth) max 0) // auto-watch new files in a directory
           }
           repeat(event.count())(onEvent(event.kind(), target))
@@ -48,11 +48,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     } else {
       when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
-
-    toWatch.foreach { f =>
-      // The `Try` is not used intentionally, because it would generate many many `Try` instances (one for each file) which is not very effective
-      try { f.register(service) } catch { case NonFatal(e) => onException(e) }
-    }
+    toWatch.foreach(f => Try(f.register(service)).recover({case e => onException(e)}))
   }
 
   override def start() = {
