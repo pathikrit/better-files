@@ -2,7 +2,7 @@ package better.files
 
 import java.nio.file._
 
-import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
   * A thread based implementation of the FileMonitor
@@ -48,7 +48,9 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     } else {
       when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
-    toWatch.foreach(f => Try(f.register(service)).recover({case e => onException(e)}))
+    toWatch foreach {f =>
+      try { f.register(service) } catch {case NonFatal(e) => onException(e)}
+    }
   }
 
   override def start() = {
