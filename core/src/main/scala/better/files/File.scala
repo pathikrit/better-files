@@ -1085,7 +1085,7 @@ object File {
   /**
     * Implement this interface to monitor the root file
     */
-  trait Monitor {
+  trait Monitor extends AutoCloseable {
     val root: File
 
     /**
@@ -1113,6 +1113,6 @@ object File {
 
     def onException(exception: Throwable): Unit
 
-    def stop(): Unit
+    def stop(): Unit = close()
   }
 }

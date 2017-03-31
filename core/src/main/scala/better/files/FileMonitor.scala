@@ -6,12 +6,12 @@ import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 /**
-  * Implementation of File.Monitor (TODO: rename and move this to File.scala)
+  * Implementation of File.Monitor
   *
   * @param root
   * @param maxDepth
   */
-abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
+abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
@@ -62,7 +62,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     executionContext.execute(() => Iterator.continually(service.take()).foreach(process))
   }
 
-  override def stop() = service.close()
+  override def close() = service.close()
 
   // Although this class is abstract, we give provide implementations so user can choose to implement a subset of these
   override def onCreate(file: File) = {}
