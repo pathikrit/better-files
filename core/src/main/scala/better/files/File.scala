@@ -13,6 +13,7 @@ import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext
 import scala.util.Properties
 
 /**
@@ -1084,7 +1085,7 @@ object File {
   /**
     * Implement this interface to monitor the root file
     */
-  trait Monitor {
+  trait Monitor extends AutoCloseable {
     val root: File
 
     /**
@@ -1100,7 +1101,7 @@ object File {
       case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
     }
 
-    def start(): Unit
+    def start()(implicit executionContext: ExecutionContext): Unit
 
     def onCreate(file: File): Unit
 
@@ -1112,6 +1113,6 @@ object File {
 
     def onException(exception: Throwable): Unit
 
-    def stop(): Unit
+    def stop(): Unit = close()
   }
 }

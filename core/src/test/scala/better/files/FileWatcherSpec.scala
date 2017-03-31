@@ -1,6 +1,7 @@
 package better.files
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 class FileWatcherSpec extends CommonSpec {
@@ -14,7 +15,7 @@ class FileWatcherSpec extends CommonSpec {
       log = msg :: log
     }
     /***************************************************************************/
-    val watcher = new ThreadBackedFileMonitor(file) {
+    val watcher = new FileMonitor(file) {
       override def onCreate(file: File) = output(s"$file got created")
       override def onModify(file: File) = output(s"$file got modified")
       override def onDelete(file: File) = output(s"$file got deleted")
@@ -43,7 +44,7 @@ class FileWatcherSpec extends CommonSpec {
     var log = List.empty[String]
     def output(msg: String) = synchronized(log = msg :: log)
 
-    val watcher = new ThreadBackedFileMonitor(dir, maxDepth = 2) {
+    val watcher = new FileMonitor(dir, maxDepth = 2) {
       override def onCreate(file: File) = output(s"Create happened on ${file.name}")
     }
     watcher.start()
