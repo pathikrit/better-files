@@ -13,17 +13,20 @@ import scala.util.control.NonFatal
 abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
-  private[this] val thread = new Thread {
-    override def run() = Iterator.continually(service.take()).foreach(process)
-  }
+  private[this] val thread = new Thread(() => Iterator.continually(service.take()).foreach(process))
   thread.setDaemon(true)
   thread.setUncaughtExceptionHandler((thread, exception) => onException(exception))
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
-  protected[this] def process(key: WatchKey) = {
-    def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target) // if watching non-directory, don't react to siblings
+  /**
+    * If watching non-directory, don't react to siblings
+    * @param target
+    * @return
+    */
+  private[this] def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target)
 
+  protected[this] def process(key: WatchKey) = {
     val path = key.watchable().asInstanceOf[Path]
 
     import scala.collection.JavaConverters._
@@ -49,7 +52,11 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
       when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
     toWatch foreach {f =>
-      try { f.register(service) } catch {case NonFatal(e) => onException(e)}
+      try {
+        f.register(service)
+      } catch {
+        case NonFatal(e) => onException(e)
+      }
     }
   }
 
@@ -63,7 +70,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     thread.interrupt()
   }
 
-  // Although we declare this class as abstract, we give empty implementations here so users can choose to implement a subset of these
+  // Although this class is abstract, we give provide implementations so user can choose to implement a subset of these
   override def onCreate(file: File) = {}
   override def onModify(file: File) = {}
   override def onDelete(file: File) = {}
