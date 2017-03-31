@@ -1,3 +1,8 @@
+## v3.1.0
+
+* [Issue #136](https://github.com/pathikrit/better-files/issues/136): Use execution contexts for file monitoring
+
+
 ## v3.0.0
 
 * [Issue #9](https://github.com/pathikrit/better-files/issues/9): File resource utils

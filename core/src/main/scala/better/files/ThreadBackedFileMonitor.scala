@@ -57,9 +57,9 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     }
   }
 
-  override def start()(implicit ec: ExecutionContext) = {
+  override def start()(implicit executionContext: ExecutionContext) = {
     watch(root, maxDepth)
-    ec.execute(() => Iterator.continually(service.take()).foreach(process))
+    executionContext.execute(() => Iterator.continually(service.take()).foreach(process))
   }
 
   override def stop() = service.close()

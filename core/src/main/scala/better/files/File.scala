@@ -1101,7 +1101,7 @@ object File {
       case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
     }
 
-    def start()(implicit ec: ExecutionContext): Unit
+    def start()(implicit executionContext: ExecutionContext): Unit
 
     def onCreate(file: File): Unit
 
