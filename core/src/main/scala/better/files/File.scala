@@ -13,6 +13,7 @@ import java.util.zip._
 import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext
 import scala.util.Properties
 
 /**
@@ -1100,7 +1101,7 @@ object File {
       case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
     }
 
-    def start(): Unit
+    def start()(implicit ec: ExecutionContext): Unit
 
     def onCreate(file: File): Unit
 

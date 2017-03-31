@@ -21,7 +21,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
     override def onException(exception: Throwable) = self ! Status.Failure(exception)
   }
 
-  override def preStart() = monitor.start()
+  override def preStart() = monitor.start()(ec = context.dispatcher)
 
   override def receive = {
     case Message.NewEvent(event, target) if callbacks contains event => callbacks(event) foreach { f => f(event -> target) }

@@ -2,20 +2,17 @@ package better.files
 
 import java.nio.file._
 
+import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 /**
-  * A thread based implementation of the FileMonitor
+  * Implementation of File.Monitor (TODO: rename and move this to File.scala)
   *
   * @param root
   * @param maxDepth
   */
 abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
-
-  private[this] val thread = new Thread(() => Iterator.continually(service.take()).foreach(process))
-  thread.setDaemon(true)
-  thread.setUncaughtExceptionHandler((thread, exception) => onException(exception))
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
@@ -24,7 +21,7 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     * @param target
     * @return
     */
-  private[this] def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target)
+  protected[this] def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target)
 
   protected[this] def process(key: WatchKey) = {
     val path = key.watchable().asInstanceOf[Path]
@@ -60,15 +57,12 @@ abstract class ThreadBackedFileMonitor(val root: File, maxDepth: Int) extends Fi
     }
   }
 
-  override def start() = {
+  override def start()(implicit ec: ExecutionContext) = {
     watch(root, maxDepth)
-    thread.start()
+    ec.execute(() => Iterator.continually(service.take()).foreach(process))
   }
 
-  override def stop() = {
-    service.close()
-    thread.interrupt()
-  }
+  override def stop() = service.close()
 
   // Although this class is abstract, we give provide implementations so user can choose to implement a subset of these
   override def onCreate(file: File) = {}

@@ -1,6 +1,7 @@
 package better.files
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 class FileWatcherSpec extends CommonSpec {
