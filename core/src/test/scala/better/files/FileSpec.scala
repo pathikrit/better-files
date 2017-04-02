@@ -194,7 +194,8 @@ class FileSpec extends CommonSpec {
     (t1 == t1.contentAsString) shouldBe false
     t1.root shouldEqual fa.root
     file"/tmp/foo.scala.html".extension shouldBe Some(".html")
-    file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo.scala"
+    file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo"
+    file"/tmp/foo.scala.html".nameWithoutExtension(includeAll = false) shouldBe "foo.scala"
     root.name shouldBe ""
   }
 
@@ -466,6 +467,6 @@ class FileSpec extends CommonSpec {
     val expected = java.lang.management.ManagementFactory.getOperatingSystemMXBean
       .asInstanceOf[com.sun.management.UnixOperatingSystemMXBean]
       .getOpenFileDescriptorCount
-    assert(File.numberOfOpenFileDescriptors() === expected)
+    assert((File.numberOfOpenFileDescriptors() - expected).abs < 2)
   }
 }

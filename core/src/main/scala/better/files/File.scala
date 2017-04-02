@@ -49,7 +49,17 @@ class File private(val path: Path) {
     path.getRoot
 
   def nameWithoutExtension: String =
-    if (hasExtension) name.substring(0, name lastIndexOf ".") else name
+    nameWithoutExtension(includeAll = true)
+
+  /**
+    * @param includeAll
+    *         For files with multiple extensions e.g. "bundle.tar.gz"
+    *         nameWithoutExtension(includeAll = true) returns "bundle"
+    *         nameWithoutExtension(includeAll = false) returns "bundle.tar"
+    * @return
+    */
+  def nameWithoutExtension(includeAll: Boolean): String =
+    if (hasExtension) name.take(if (includeAll) name.indexOf(".") else name.lastIndexOf(".")) else name
 
   /**
     * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
@@ -63,14 +73,13 @@ class File private(val path: Path) {
     * @param toLowerCase to lowercase the extension or not e.g. foo.HTML should have .html or .HTML
     * @return extension of this file if it is a regular file and has an extension, else None
     */
-  def extension(includeDot: Boolean = true, includeAll: Boolean = false, toLowerCase: Boolean = true): Option[String] = {
+  def extension(includeDot: Boolean = true, includeAll: Boolean = false, toLowerCase: Boolean = true): Option[String] =
     when(hasExtension) {
       val dot = if (includeAll) name indexOf "." else name lastIndexOf "."
       val index = if (includeDot) dot else dot + 1
       val extension = name.substring(index)
       if (toLowerCase) extension.toLowerCase else extension
     }
-  }
 
   /**
     * Returns the extension if file is a regular file
@@ -80,7 +89,7 @@ class File private(val path: Path) {
     * @return
     */
   def hasExtension: Boolean =
-    (isRegularFile || notExists) && (name contains ".")
+    (isRegularFile || notExists) && name.contains(".")
 
   /**
     * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
