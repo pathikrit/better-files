@@ -59,7 +59,7 @@ class File private(val path: Path) {
     * @return
     */
   def nameWithoutExtension(includeAll: Boolean): String =
-    if (hasExtension) name.take(if (includeAll) name.indexOf(".") else name.lastIndexOf(".")) else name
+    if (hasExtension) name.substring(0, indexOfExtension(includeAll)) else name
 
   /**
     * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
@@ -75,11 +75,14 @@ class File private(val path: Path) {
     */
   def extension(includeDot: Boolean = true, includeAll: Boolean = false, toLowerCase: Boolean = true): Option[String] =
     when(hasExtension) {
-      val dot = if (includeAll) name indexOf "." else name lastIndexOf "."
+      val dot = indexOfExtension(includeAll)
       val index = if (includeDot) dot else dot + 1
       val extension = name.substring(index)
       if (toLowerCase) extension.toLowerCase else extension
     }
+
+  private[this] def indexOfExtension(includeAll: Boolean) =
+    if (includeAll) name.indexOf(".") else name.lastIndexOf(".")
 
   /**
     * Returns the extension if file is a regular file
