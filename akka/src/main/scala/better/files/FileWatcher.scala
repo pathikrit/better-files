@@ -17,14 +17,14 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   protected[this] val callbacks = newMultiMap[Event, Callback]
 
   protected[this] val monitor: File.Monitor = new FileMonitor(file, maxDepth) {
-    override def onEvent(event: Event, file: File) = self ! Message.NewEvent(event, file)
+    override def onEvent(event: Event, file: File, count: Int) = self ! Message.NewEvent(event, file, count)
     override def onException(exception: Throwable) = self ! Status.Failure(exception)
   }
 
   override def preStart() = monitor.start()(executionContext = context.dispatcher)
 
   override def receive = {
-    case Message.NewEvent(event, target) if callbacks contains event => callbacks(event) foreach { f => f(event -> target) }
+    case Message.NewEvent(event, target, count) if callbacks.contains(event) => callbacks(event).foreach(f => f(event -> target))
     case Message.RegisterCallback(events, callback) => events foreach { event => callbacks.addBinding(event, callback) }
     case Message.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
@@ -40,7 +40,7 @@ object FileWatcher {
 
   sealed trait Message
   object Message {
-    case class NewEvent(event: Event, file: File) extends Message
+    case class NewEvent(event: Event, file: File, count: Int) extends Message
     case class RegisterCallback(events: Traversable[Event], callback: Callback) extends Message
     case class RemoveCallback(event: Event, callback: Callback) extends Message
   }

@@ -555,9 +555,9 @@ and nor does it easily allow [watching regular files](http://stackoverflow.com/q
 `better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/File.scala#1100):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
-  override def onCreate(file: File) = println(s"$file got created")
-  override def onModify(file: File) = println(s"$file got modified")
-  override def onDelete(file: File) = println(s"$file got deleted")
+  override def onCreate(file: File, count: Int) = println(s"$file got created")
+  override def onModify(file: File, count: Int) = println(s"$file got modified $count times")
+  override def onDelete(file: File, count: Int) = println(s"$file got deleted")
 }
 watcher.start()
 ```
@@ -566,9 +566,9 @@ Sometimes, instead of overwriting each of the 3 methods above, it is more conven
 import java.nio.file.{Path, StandardWatchEventKinds => EventType, WatchEvent}
 
 val watcher = new FileMonitor(myDir, recursive = true) {
-  override def dispatch(eventType: WatchEvent.Kind[Path], file: File) = eventType match {
+  override def dispatch(eventType: WatchEvent.Kind[Path], file: File, count: Int) = eventType match {
     case EventType.ENTRY_CREATE => println(s"$file got created")
-    case EventType.ENTRY_MODIFY => println(s"$file got modified")
+    case EventType.ENTRY_MODIFY => println(s"$file got modified $count")
     case EventType.ENTRY_DELETE => println(s"$file got deleted")
   }
 }
@@ -592,7 +592,7 @@ watcher ! on(EventType.ENTRY_DELETE) {
 
 // watch for multiple events
 watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {   
-  case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
-  case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
+  case (EventType.ENTRY_CREATE, file, count) => println(s"$file got created")
+  case (EventType.ENTRY_MODIFY, file, count) => println(s"$file got modified $count times")
 }
 ```

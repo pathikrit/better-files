@@ -35,9 +35,9 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
             val depth = root.relativize(target).getNameCount
             watch(target, (maxDepth - depth) max 0) // auto-watch new files in a directory
           }
-          repeat(event.count())(onEvent(event.kind(), target))
+          onEvent(event.kind(), target, event.count())
         }
-      case event => if (reactTo(path)) onUnknownEvent(event)
+      case event => if (reactTo(path)) onUnknownEvent(event, event.count())
     }
     key.reset()
   }
@@ -65,9 +65,9 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   override def close() = service.close()
 
   // Although this class is abstract, we give provide implementations so user can choose to implement a subset of these
-  override def onCreate(file: File) = {}
-  override def onModify(file: File) = {}
-  override def onDelete(file: File) = {}
-  override def onUnknownEvent(event: WatchEvent[_]) = {}
+  override def onCreate(file: File, count: Int) = {}
+  override def onModify(file: File, count: Int) = {}
+  override def onDelete(file: File, count: Int) = {}
+  override def onUnknownEvent(event: WatchEvent[_], count: Int) = {}
   override def onException(exception: Throwable) = {}
 }

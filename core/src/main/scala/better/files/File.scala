@@ -1107,21 +1107,21 @@ object File {
       * @param eventType
       * @param file
       */
-    def onEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
-      case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
-      case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
-      case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
+    def onEvent(eventType: WatchEvent.Kind[Path], file: File, count: Int): Unit = eventType match {
+      case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file, count)
+      case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file, count)
+      case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file, count)
     }
 
     def start()(implicit executionContext: ExecutionContext): Unit
 
-    def onCreate(file: File): Unit
+    def onCreate(file: File, count: Int): Unit
 
-    def onModify(file: File): Unit
+    def onModify(file: File, count: Int): Unit
 
-    def onDelete(file: File): Unit
+    def onDelete(file: File, count: Int): Unit
 
-    def onUnknownEvent(event: WatchEvent[_]): Unit
+    def onUnknownEvent(event: WatchEvent[_], count: Int): Unit
 
     def onException(exception: Throwable): Unit
 
