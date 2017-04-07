@@ -59,7 +59,7 @@ class File private(val path: Path) {
     * @return
     */
   def nameWithoutExtension(includeAll: Boolean): String =
-    if (hasExtension) name.take(if (includeAll) name.indexOf(".") else name.lastIndexOf(".")) else name
+    if (hasExtension) name.substring(0, indexOfExtension(includeAll)) else name
 
   /**
     * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
@@ -75,11 +75,14 @@ class File private(val path: Path) {
     */
   def extension(includeDot: Boolean = true, includeAll: Boolean = false, toLowerCase: Boolean = true): Option[String] =
     when(hasExtension) {
-      val dot = if (includeAll) name indexOf "." else name lastIndexOf "."
+      val dot = indexOfExtension(includeAll)
       val index = if (includeDot) dot else dot + 1
       val extension = name.substring(index)
       if (toLowerCase) extension.toLowerCase else extension
     }
+
+  private[this] def indexOfExtension(includeAll: Boolean) =
+    if (includeAll) name.indexOf(".") else name.lastIndexOf(".")
 
   /**
     * Returns the extension if file is a regular file
@@ -1104,21 +1107,21 @@ object File {
       * @param eventType
       * @param file
       */
-    def onEvent(eventType: WatchEvent.Kind[Path], file: File): Unit = eventType match {
-      case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file)
-      case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file)
-      case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file)
+    def onEvent(eventType: WatchEvent.Kind[Path], file: File, count: Int): Unit = eventType match {
+      case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file, count)
+      case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file, count)
+      case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file, count)
     }
 
     def start()(implicit executionContext: ExecutionContext): Unit
 
-    def onCreate(file: File): Unit
+    def onCreate(file: File, count: Int): Unit
 
-    def onModify(file: File): Unit
+    def onModify(file: File, count: Int): Unit
 
-    def onDelete(file: File): Unit
+    def onDelete(file: File, count: Int): Unit
 
-    def onUnknownEvent(event: WatchEvent[_]): Unit
+    def onUnknownEvent(event: WatchEvent[_], count: Int): Unit
 
     def onException(exception: Throwable): Unit
 
