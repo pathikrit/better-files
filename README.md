@@ -310,8 +310,8 @@ file.clear()      // If directory, deletes all children; if file clears contents
 file.renameTo(newName: String)
 file.moveTo(destination)
 file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
-file.linkTo(destination)                     // ln file destination
-file.symbolicLinkTo(destination)             // ln -s file destination
+file.linkTo(destination)                     // ln destination file
+file.symbolicLinkTo(destination)             // ln -s destination file
 file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
 file.setOwner(user: String)      // chown user file
 file.setGroup(group: String)     // chgrp group file
