@@ -1,12 +1,36 @@
 package better.files
 
-import File.{root, home}
-import Dsl._
+import java.nio.file.FileSystems
+
+import better.files.Dsl._
+import better.files.File.{home, root}
 
 import scala.language.postfixOps
 import scala.util.Try
 
 class FileSpec extends CommonSpec {
+
+  /** try to cope with windows, which will return e.g. c:\ as root */
+  val rootStr = FileSystems.getDefault.getRootDirectories.iterator().next().toString
+  val sep = java.io.File.separator
+  val sepChr = java.io.File.separatorChar
+
+  /**
+    * Helper for unix -> windows path references (as strings).
+    *
+    * @param path as unix path
+    * @return path in native format
+    */
+  def unixToNative(path: String): String = {
+    if (isUnixOS) {
+      path
+    } else {
+      path
+        .replaceFirst("^/", rootStr.replaceAllLiterally("\\", "\\\\")) // we must escape '\' in C:\
+        .replaceAllLiterally("/", sep)
+    }
+  }
+
   var testRoot: File = _    //TODO: Get rid of mutable test vars
   var fa: File = _
   var a1: File = _
@@ -75,29 +99,29 @@ class FileSpec extends CommonSpec {
       f.pathAsString should not include ".."
     }
 
-    root.toString shouldEqual "/"
-    home.toString.count(_ == '/') should be > 1
-    (root/"usr"/"johndoe"/"docs").toString shouldEqual "/usr/johndoe/docs"
+    root.toString shouldEqual rootStr
+    home.toString.count(_ == sepChr) should be > 1
+    (root/"usr"/"johndoe"/"docs").toString shouldEqual unixToNative("/usr/johndoe/docs")
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
   it can "be instantiated with anchor" in {
     // testRoot / a / a1 / t1.txt
     val basedir = a1
-    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
-    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
+    File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (basedir.toString + "/rel/path/to/loc")
-    File(basedir, "../rel/path/to/loc").toString should be (fa.toString + "/rel/path/to/loc")
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (fa.toString + "/rel/path/to/loc")
+    File(basedir, "rel/path/to/loc").toString should be (unixToNative(basedir.toString + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
 
     val baseref = t1
-    File(baseref, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
-    File(baseref, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+    File(baseref, "/abs/path/to/loc").toString should be (unixToNative("/abs/path/to/loc"))
+    File(baseref, "/abs", "path", "to", "loc").toString should be (unixToNative("/abs/path/to/loc"))
 
-    File(baseref, "rel/path/to/loc").toString should be (a1.toString + "/rel/path/to/loc")
-    File(baseref, "../rel/path/to/loc").toString should be (fa.toString + "/rel/path/to/loc")
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (fa.toString + "/rel/path/to/loc")
+    File(baseref, "rel/path/to/loc").toString should be (unixToNative(a1.toString + "/rel/path/to/loc"))
+    File(baseref, "../rel/path/to/loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
   }
 
   it can "be instantiated with non-existing abs anchor" in {
@@ -105,37 +129,37 @@ class FileSpec extends CommonSpec {
     val anchorStr_a = anchorStr + "/a"
     val basedir = File(anchorStr_a + "/last")
 
-    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
-    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
+    File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (anchorStr_a + "/rel/path/to/loc")
-    File(basedir, "../rel/path/to/loc").toString should be (anchorStr + "/rel/path/to/loc")
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (anchorStr + "/rel/path/to/loc")
+    File(basedir, "rel/path/to/loc").toString should be (unixToNative(anchorStr_a + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(anchorStr + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(anchorStr + "/rel/path/to/loc"))
   }
 
   it can "be instantiated with non-existing relative anchor" in {
     val relAnchor = File("rel/anc/b/last")
     val basedir = relAnchor
 
-    File(basedir, "/abs/path/to/loc").toString should be("/abs/path/to/loc")
-    File(basedir, "/abs", "path", "to", "loc").toString should be("/abs/path/to/loc")
+    File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
+    File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (File("rel/anc/b").toString + "/rel/path/to/loc")
-    File(basedir, "../rel/path/to/loc").toString should be (File("rel/anc").toString + "/rel/path/to/loc")
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (File("rel/anc").toString + "/rel/path/to/loc")
+    File(basedir, "rel/path/to/loc").toString should be (unixToNative(File("rel/anc/b").toString + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
   }
 
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
     t1.appendLine() << "world"
-    (t1!) shouldEqual "hello\nworld\n"
-    t1.chars.toStream should contain theSameElementsInOrderAs "hello\nworld\n".toSeq
+    (t1!) shouldEqual String.format("hello%nworld%n")
+    t1.chars.toStream should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
     "foo" `>:` t1
     "bar" >>: t1
-    t1.contentAsString shouldEqual "foobar\n"
+    t1.contentAsString shouldEqual String.format("foobar%n")
     t1.appendLines("hello", "world")
-    t1.contentAsString shouldEqual "foobar\nhello\nworld\n"
+    t1.contentAsString shouldEqual String.format("foobar%nhello%nworld%n")
     t2.writeText("hello").appendText("world").contentAsString shouldEqual "helloworld"
 
     (testRoot/"diary")
@@ -214,7 +238,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "support siblings" in {
-    (file"/tmp/foo.txt" sibling "bar.txt").pathAsString shouldBe "/tmp/bar.txt"
+    (file"/tmp/foo.txt" sibling "bar.txt").pathAsString shouldBe unixToNative("/tmp/bar.txt")
     fa.siblings.toList.map(_.name) shouldBe List("b")
     fb isSiblingOf fa shouldBe true
   }
@@ -398,7 +422,8 @@ class FileSpec extends CommonSpec {
     val actual = (t1 < "hello world").md5
     val h2 = t1.hashCode
     h1 shouldEqual h2
-    import scala.sys.process._, scala.language.postfixOps
+    import scala.language.postfixOps
+    import scala.sys.process._
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
     expected.toUpperCase should include (actual)
     actual should not equal h1
