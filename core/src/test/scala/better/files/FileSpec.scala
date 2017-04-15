@@ -12,8 +12,7 @@ class FileSpec extends CommonSpec {
 
   /** try to cope with windows, which will return e.g. c:\ as root */
   val rootStr = FileSystems.getDefault.getRootDirectories.iterator().next().toString
-  val sep = java.io.File.separator
-  val sepChr = java.io.File.separatorChar
+  import java.io.File.{separator, separatorChar}
 
   /**
     * Helper for unix -> windows path references (as strings).
@@ -27,7 +26,7 @@ class FileSpec extends CommonSpec {
     } else {
       path
         .replaceFirst("^/", rootStr.replaceAllLiterally("\\", "\\\\")) // we must escape '\' in C:\
-        .replaceAllLiterally("/", sep)
+        .replaceAllLiterally("/", separator)
     }
   }
 
@@ -100,7 +99,7 @@ class FileSpec extends CommonSpec {
     }
 
     root.toString shouldEqual rootStr
-    home.toString.count(_ == sepChr) should be > 1
+    home.toString.count(_ == separatorChar) should be > 1
     (root/"usr"/"johndoe"/"docs").toString shouldEqual unixToNative("/usr/johndoe/docs")
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
@@ -422,7 +421,6 @@ class FileSpec extends CommonSpec {
     val actual = (t1 < "hello world").md5
     val h2 = t1.hashCode
     h1 shouldEqual h2
-    import scala.language.postfixOps
     import scala.sys.process._
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
     expected.toUpperCase should include (actual)
