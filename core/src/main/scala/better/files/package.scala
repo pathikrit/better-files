@@ -41,6 +41,11 @@ package object files extends Implicits {
     }
   }
 
+  implicit class BufferedIteratorOps[A](it: BufferedIterator[A]) {
+    def headOption: Option[A] =
+      when(it.hasNext)(it.head) // TODO: https://issues.scala-lang.org/browse/SI-9691
+  }
+
   /**
     * Utility to apply f on all xs skipping over errors
     * Throws the last error that happened
