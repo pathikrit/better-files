@@ -3,8 +3,8 @@ val repo = "better-files"
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.12.1",
-  crossScalaVersions := Seq("2.12.1"),
+  scalaVersion := "2.12.2",
+  crossScalaVersions := Seq("2.12.2", "2.13.0-M1"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions ++= Seq(
@@ -25,7 +25,7 @@ lazy val commonSettings = Seq(
     "-Xexperimental",
     "-Xfuture"
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % Test,
+  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.2" % Test,
   updateImpactOpenBrowser := false
 )
 
@@ -43,7 +43,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.16"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.0"
   )
   .dependsOn(core % "test->test;compile->compile")
 

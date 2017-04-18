@@ -40,12 +40,12 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(  
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.4.16"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.5.0"
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
 
-Although this library is currently only actively developed for Scala 2.12, 
+Although this library is currently only actively developed for Scala 2.12 and 2.13,
 you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
 
 ## Tests [![codecov][codecovImg]][codecovLink]
