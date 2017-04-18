@@ -661,7 +661,7 @@ class File private(val path: Path) {
       if (isDirectory) list.foreach(_.delete(swallowIOExceptions))
       Files.delete(path)
     } catch {
-      case e: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
+      case _: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
     }
     this
   }

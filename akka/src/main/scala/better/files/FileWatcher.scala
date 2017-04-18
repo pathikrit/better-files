@@ -24,8 +24,8 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   override def preStart() = monitor.start()(executionContext = context.dispatcher)
 
   override def receive = {
-    case Message.NewEvent(event, target, count) if callbacks.contains(event) => callbacks(event).foreach(f => f(event -> target))
-    case Message.RegisterCallback(events, callback) => events foreach { event => callbacks.addBinding(event, callback) }
+    case Message.NewEvent(event, target, count) if callbacks.contains(event) => callbacks(event).foreach(f => repeat(count)(f(event -> target)))
+    case Message.RegisterCallback(events, callback) => events.foreach(event => callbacks.addBinding(event, callback))
     case Message.RemoveCallback(event, callback) => callbacks.removeBinding(event, callback)
   }
 
