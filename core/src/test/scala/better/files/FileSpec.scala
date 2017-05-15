@@ -172,7 +172,7 @@ class FileSpec extends CommonSpec {
   it should "handle BOM" in {
     val lines = Seq("Line 1", "Line 2")
     val expectedContent = lines.mkString(start = "", sep = "\n", end = "\n")
-    File.usingTemporaryFile() {file =>
+    File.temporaryFile() foreach {file =>
       file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
       file.contentAsString(charset = "UTF-8") should not equal expectedContent
       file.contentAsString shouldEqual expectedContent
@@ -302,7 +302,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "detect file locks" in {
-    File.usingTemporaryFile() {file =>
+    File.temporaryFile() foreach {file =>
       def lockInfo() = file.isReadLocked() -> file.isWriteLocked()
       // TODO: Why is file.isReadLocked() should be false?
       lockInfo() shouldBe (true -> false)
@@ -479,7 +479,7 @@ class FileSpec extends CommonSpec {
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
-    File.usingTemporaryFile() {f => //serialization round-trip test
+    File.temporaryDirectory() foreach {f => //serialization round-trip test
       assert(f.isEmpty)
       f.writeSerialized(p1)
       assert(f.nonEmpty)

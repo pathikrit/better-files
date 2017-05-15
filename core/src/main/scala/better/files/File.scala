@@ -19,7 +19,7 @@ import scala.util.Properties
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path) {
+class File private(val path: Path) extends AutoCloseable {
   //TODO: LinkOption?
 
   def pathAsString: String =
@@ -890,18 +890,25 @@ class File private(val path: Path) {
     unzipTo(destination = File.newTemporaryDirectory(name), zipFilter)(charset)
 
   /**
-    * Applies the given function on this and then deletes this file
+    * Java's temporary files/directories are not cleaned up by default.
+    * If we explicitly call `.deleteOnExit()`, it gets added to shutdown handler which is not ideal
+    * for long running systems with millions of temporary files as:
+    *   a) it would slowdown shutdown and
+    *   b) occupy unnecessary disk-space during app lifetime
     *
-    * @param f
-    * @tparam U
+    * This util auto-deletes the resource when done using the ManagedResource facility
+    *
+    * Example usage:
+    *   File.managedTemporaryDirectory().foreach(tempDir => doSomething(tempDir)
+    *
     * @return
     */
-  def applyAndDelete[U](f: File => U): U =
-    try {
-      f(this)
-    } finally {
-      val _ = delete(swallowIOExceptions = true)
-    }
+  def toTemporary: ManagedResource[File] =
+    this.deleteOnExit().autoClosed
+
+  override def close() = {
+    val _ = delete(swallowIOExceptions = true)
+  }
 
   //TODO: add features from https://github.com/sbt/io
 }
@@ -948,8 +955,8 @@ object File {
     }
   }
 
-  def usingTemporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): U =
-    newTemporaryDirectory(prefix, parent)(attributes).applyAndDelete(f)
+  def temporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
+    newTemporaryDirectory(prefix, parent)(attributes).toTemporary
 
   def newTemporaryFile(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {
@@ -958,8 +965,8 @@ object File {
     }
   }
 
-  def usingTemporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): U =
-    newTemporaryFile(prefix, suffix, parent)(attributes).applyAndDelete(f)
+  def temporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
+    newTemporaryFile(prefix, suffix, parent)(attributes).toTemporary
 
   implicit def apply(path: Path): File =
     new File(path.toAbsolutePath.normalize())
