@@ -429,7 +429,10 @@ class FileSpec extends CommonSpec {
 
   it should "support file in/out" in {
     t1 < "hello world"
-    t1.newInputStream > t2.newOutputStream
+    for {
+      in <- t1.inputStream
+      out <- t2.outputStream
+    } in.pipeTo(out)
     t2.contentAsString shouldEqual "hello world"
   }
 

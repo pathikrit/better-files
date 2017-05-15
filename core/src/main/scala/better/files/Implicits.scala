@@ -40,23 +40,17 @@ trait Implicits {
   }
 
   implicit class InputStreamOps(in: InputStream) {
-    def >(out: OutputStream): Unit =
-      pipeTo(out)
-
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = defaultBufferSize): Unit =
-      pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): Unit =
+      pipeTo(out, Array.ofDim[Byte](bufferSize))
 
     /**
       * Pipe an input stream to an output stream using a byte buffer
       */
-    @tailrec final def pipeTo(out: OutputStream, closeOutputStream: Boolean, buffer: Array[Byte]): Unit = {
-      in.read(buffer) match {
-        case n if n > 0 =>
-          out.write(buffer, 0, n)
-          pipeTo(out, closeOutputStream, buffer)
-        case _ =>
-          in.close()
-          if (closeOutputStream) out.close()
+    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = {
+      val n = in.read(buffer)
+      if (n > 0) {
+        out.write(buffer, 0, n)
+        pipeTo(out, buffer)
       }
     }
 
@@ -170,7 +164,7 @@ trait Implicits {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
       val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
-      if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
+      if (file.isRegularFile) file.inputStream.foreach(_.pipeTo(out))
       out.closeEntry()
       out
     }
@@ -189,7 +183,7 @@ trait Implicits {
         val result = try {
           f(entry)
         } finally {
-          in.closeEntry()
+          val _ = scala.util.Try(in.closeEntry())
         }
         entry = in.getNextEntry
         result
@@ -207,7 +201,7 @@ trait Implicits {
       */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
       val child = rootDir.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
-      if (!entry.isDirectory) inputStream.pipeTo(child.newOutputStream)
+      if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
       child
     }
   }

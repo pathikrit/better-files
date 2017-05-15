@@ -355,11 +355,11 @@ class File private(val path: Path) {
   def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipOutputStream =
     new ZipOutputStream(newOutputStream(openOptions), charset)
 
-  def zipInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipInputStream] =
-    newZipInputStream(openOptions, charset).autoClosed
+  def zipInputStream(implicit charset: Charset = File.defaultCharset): ManagedResource[ZipInputStream] =
+    newZipInputStream(charset).autoClosed
 
-  def newZipInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipInputStream =
-    new ZipInputStream(newInputStream(openOptions), charset)
+  def newZipInputStream(implicit charset: Charset = File.defaultCharset): ZipInputStream =
+    new ZipInputStream(new FileInputStream(toJava).buffered, charset)
 
   def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
@@ -855,10 +855,10 @@ class File private(val path: Path) {
     * @param destinationDirectory destination folder; Creates this if it does not exist
     * @return The destination where contents are unzipped
     */
-  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): destinationDirectory.type = {
+  def streamedUnzipTo(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = File.defaultCharset): destinationDirectory.type = {
     for {
-      zipIn <- zipInputStream(openOptions, charset)
-    } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn))
+      zipIn <- zipInputStream(charset)
+    } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
     destinationDirectory
   }
 
@@ -930,12 +930,15 @@ object File {
     * Copies a resource into a file
     *
     * @param name
-    * @param out File where resource is copied into, if not specified a temp file is created
+    * @param destination File where resource is copied into, if not specified a temp file is created
     * @return
     */
-  def copyResource(name: String)(out: File = File.newTemporaryFile(prefix = name)): out.type = {
-    resourceAsStream(name) > out.newOutputStream
-    out
+  def copyResource(name: String)(destination: File = File.newTemporaryFile(prefix = name)): destination.type = {
+    for {
+      in <- resourceAsStream(name).autoClosed
+      out <- destination.outputStream
+    } in.pipeTo(out)
+    destination
   }
 
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
