@@ -198,6 +198,13 @@ trait Implicits {
   }
 
   implicit class ZipEntryOps(val entry: ZipEntry) {
+    /**
+      * Extract this ZipEntry under this rootDir
+      *
+      * @param rootDir directory under which this entry is extracted
+      * @param inputStream use this inputStream when this entry is a file
+      * @return the extracted file
+      */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
       val child = rootDir.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
       if (!entry.isDirectory) inputStream.pipeTo(child.newOutputStream)

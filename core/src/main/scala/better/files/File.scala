@@ -849,6 +849,20 @@ class File private(val path: Path) {
   }
 
   /**
+    * Streamed unzipping is slightly slower but supports larger files and more encodings
+    * @see https://github.com/pathikrit/better-files/issues/152
+    *
+    * @param destinationDirectory destination folder; Creates this if it does not exist
+    * @return The destination where contents are unzipped
+    */
+  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): destinationDirectory.type = {
+    for {
+      zipIn <- zipInputStream(openOptions, charset)
+    } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn))
+    destinationDirectory
+  }
+
+  /**
     * Adds these files into this zip file
     * Example usage: File("test.zip").zipIn(Seq(file"hello.txt", file"hello2.txt"))
     *
