@@ -353,7 +353,13 @@ class File private(val path: Path) {
     newOutputStream(openOptions).autoClosed
 
   def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipOutputStream =
-    new ZipOutputStream(newOutputStream, charset)
+    new ZipOutputStream(newOutputStream(openOptions), charset)
+
+  def zipInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipInputStream] =
+    newZipInputStream(openOptions, charset).autoClosed
+
+  def newZipInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipInputStream =
+    new ZipInputStream(newInputStream(openOptions), charset)
 
   def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
