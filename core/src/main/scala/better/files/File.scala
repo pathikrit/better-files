@@ -844,9 +844,7 @@ class File private(val path: Path) {
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
       entry <- zipFile.entries().asScala if zipFilter(entry)
-      file = destination.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
-      if !entry.isDirectory
-    } zipFile.getInputStream(entry) > file.newOutputStream
+    } entry.extractTo(destination, zipFile.getInputStream(entry))
     destination
   }
 

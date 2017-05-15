@@ -8,7 +8,7 @@ import java.nio.file.{Path, PathMatcher}
 import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{Deflater, GZIPInputStream, GZIPOutputStream, ZipEntry, ZipOutputStream}
+import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal
@@ -177,6 +177,32 @@ trait Implicits {
 
     def +=(file: File): out.type =
       add(file, file.name)
+  }
+
+  implicit class ZipInputStreamOps(val in: ZipInputStream) {
+    def mapEntries[A](f: ZipEntry => A): Iterator[A] = new Iterator[A] {
+      private[this] var entry = in.getNextEntry
+
+      override def hasNext = entry != null
+
+      override def next() = {
+        val result = try {
+          f(entry)
+        } finally {
+          in.closeEntry()
+        }
+        entry = in.getNextEntry
+        result
+      }
+    }
+  }
+
+  implicit class ZipEntryOps(val entry: ZipEntry) {
+    def extractTo(rootDir: File, inputStream: => InputStream): File = {
+      val child = rootDir.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
+      if (!entry.isDirectory) inputStream.pipeTo(child.newOutputStream)
+      child
+    }
   }
 
   implicit class CloseableOps[A <: Closeable](resource: A) {
