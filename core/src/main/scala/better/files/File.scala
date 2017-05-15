@@ -353,7 +353,13 @@ class File private(val path: Path) {
     newOutputStream(openOptions).autoClosed
 
   def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipOutputStream =
-    new ZipOutputStream(newOutputStream, charset)
+    new ZipOutputStream(newOutputStream(openOptions), charset)
+
+  def zipInputStream(implicit charset: Charset = File.defaultCharset): ManagedResource[ZipInputStream] =
+    newZipInputStream(charset).autoClosed
+
+  def newZipInputStream(implicit charset: Charset = File.defaultCharset): ZipInputStream =
+    new ZipInputStream(new FileInputStream(toJava).buffered, charset)
 
   def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
@@ -838,10 +844,22 @@ class File private(val path: Path) {
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
       entry <- zipFile.entries().asScala if zipFilter(entry)
-      file = destination.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
-      if !entry.isDirectory
-    } zipFile.getInputStream(entry) > file.newOutputStream
+    } entry.extractTo(destination, zipFile.getInputStream(entry))
     destination
+  }
+
+  /**
+    * Streamed unzipping is slightly slower but supports larger files and more encodings
+    * @see https://github.com/pathikrit/better-files/issues/152
+    *
+    * @param destinationDirectory destination folder; Creates this if it does not exist
+    * @return The destination where contents are unzipped
+    */
+  def streamedUnzipTo(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = File.defaultCharset): destinationDirectory.type = {
+    for {
+      zipIn <- zipInputStream(charset)
+    } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
+    destinationDirectory
   }
 
   /**
@@ -912,12 +930,15 @@ object File {
     * Copies a resource into a file
     *
     * @param name
-    * @param out File where resource is copied into, if not specified a temp file is created
+    * @param destination File where resource is copied into, if not specified a temp file is created
     * @return
     */
-  def copyResource(name: String)(out: File = File.newTemporaryFile(prefix = name)): out.type = {
-    resourceAsStream(name) > out.newOutputStream
-    out
+  def copyResource(name: String)(destination: File = File.newTemporaryFile(prefix = name)): destination.type = {
+    for {
+      in <- resourceAsStream(name).autoClosed
+      out <- destination.outputStream
+    } in.pipeTo(out)
+    destination
   }
 
   def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {

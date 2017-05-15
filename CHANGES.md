@@ -2,7 +2,7 @@
 
 * [Issue #140](https://github.com/pathikrit/better-files/issues/140): Batch up events for file monitoring
 * [Issue #136](https://github.com/pathikrit/better-files/issues/136): Use execution contexts for file monitoring
-
+* [Issue #152](https://github.com/pathikrit/better-files/issues/152): Streamed unzipping
 
 ## v3.0.0
 

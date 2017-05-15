@@ -8,7 +8,7 @@ import java.nio.file.{Path, PathMatcher}
 import java.security.MessageDigest
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
-import java.util.zip.{Deflater, GZIPInputStream, GZIPOutputStream, ZipEntry, ZipOutputStream}
+import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal
@@ -40,23 +40,17 @@ trait Implicits {
   }
 
   implicit class InputStreamOps(in: InputStream) {
-    def >(out: OutputStream): Unit =
-      pipeTo(out)
-
-    def pipeTo(out: OutputStream, closeOutputStream: Boolean = true, bufferSize: Int = defaultBufferSize): Unit =
-      pipeTo(out, closeOutputStream, Array.ofDim[Byte](bufferSize))
+    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): Unit =
+      pipeTo(out, Array.ofDim[Byte](bufferSize))
 
     /**
       * Pipe an input stream to an output stream using a byte buffer
       */
-    @tailrec final def pipeTo(out: OutputStream, closeOutputStream: Boolean, buffer: Array[Byte]): Unit = {
-      in.read(buffer) match {
-        case n if n > 0 =>
-          out.write(buffer, 0, n)
-          pipeTo(out, closeOutputStream, buffer)
-        case _ =>
-          in.close()
-          if (closeOutputStream) out.close()
+    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = {
+      val n = in.read(buffer)
+      if (n > 0) {
+        out.write(buffer, 0, n)
+        pipeTo(out, buffer)
       }
     }
 
@@ -170,13 +164,46 @@ trait Implicits {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
       val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
-      if (file.isRegularFile) file.newInputStream.pipeTo(out, closeOutputStream = false)
+      if (file.isRegularFile) file.inputStream.foreach(_.pipeTo(out))
       out.closeEntry()
       out
     }
 
     def +=(file: File): out.type =
       add(file, file.name)
+  }
+
+  implicit class ZipInputStreamOps(val in: ZipInputStream) {
+    def mapEntries[A](f: ZipEntry => A): Iterator[A] = new Iterator[A] {
+      private[this] var entry = in.getNextEntry
+
+      override def hasNext = entry != null
+
+      override def next() = {
+        val result = try {
+          f(entry)
+        } finally {
+          val _ = scala.util.Try(in.closeEntry())
+        }
+        entry = in.getNextEntry
+        result
+      }
+    }
+  }
+
+  implicit class ZipEntryOps(val entry: ZipEntry) {
+    /**
+      * Extract this ZipEntry under this rootDir
+      *
+      * @param rootDir directory under which this entry is extracted
+      * @param inputStream use this inputStream when this entry is a file
+      * @return the extracted file
+      */
+    def extractTo(rootDir: File, inputStream: => InputStream): File = {
+      val child = rootDir.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
+      if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
+      child
+    }
   }
 
   implicit class CloseableOps[A <: Closeable](resource: A) {
