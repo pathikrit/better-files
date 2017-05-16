@@ -861,6 +861,14 @@ class File private(val path: Path) extends AutoCloseable {
     destinationDirectory
   }
 
+  def unGzipTo(destinationDirectory: File = File.newTemporaryDirectory())(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destinationDirectory.type = {
+    for {
+      in <- inputStream(openOptions)
+      out <- destinationDirectory.outputStream(openOptions)
+    } in.buffered.pipeTo(out.buffered)
+    destinationDirectory
+  }
+
   /**
     * Adds these files into this zip file
     * Example usage: File("test.zip").zipIn(Seq(file"hello.txt", file"hello2.txt"))

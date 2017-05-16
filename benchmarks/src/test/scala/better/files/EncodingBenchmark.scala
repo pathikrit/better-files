@@ -15,13 +15,13 @@ object EncodingBenchmark extends Benchmark {
 
   def testRead(file: File, charset: Charset) = profile {
     for {
-      reader <- file.bufferedReader
+      reader <- file.bufferedReader(charset)
       line <- reader.lines().autoClosed
     } line
   }
 
   def test(charset: Charset) = {
-    File.usingTemporaryFile() {file =>
+    File.temporaryFile() foreach {file =>
       val (_, w) = testWrite(file, charset)
       println(s"Charset=$charset, write=$w ms")
 
