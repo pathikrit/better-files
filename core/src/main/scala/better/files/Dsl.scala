@@ -39,11 +39,11 @@ object Dsl {
     def /(f: File => File): File =
       f(file)
 
-    def <<(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): file.type =
-      file.appendLines(line)(openOptions, charset)
+    def <<(line: String)(implicit charset: Charset = File.defaultCharset): file.type =
+      file.appendLines(line)(charset)
 
-    def >>:(line: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): file.type =
-      file.appendLines(line)(openOptions, charset)
+    def >>:(line: String)(implicit charset: Charset = File.defaultCharset): file.type =
+      file.appendLines(line)(charset)
 
     def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): file.type =
       file.write(text)(openOptions, charset)

@@ -240,31 +240,30 @@ class File private(val path: Path) extends AutoCloseable {
     * For large number of lines that may not fit in memory, use printLines
     *
     * @param lines
-    * @param openOptions
     * @param charset
     * @return
     */
-  def appendLines(lines: String*)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): this.type = {
-    Files.write(path, lines.asJava, charset, openOptions: _*)
+  def appendLines(lines: String*)(implicit charset: Charset = File.defaultCharset): this.type = {
+    Files.write(path, lines.asJava, charset, File.OpenOptions.append: _*)
     this
   }
 
-  def appendLine(line: String = "")(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): this.type =
-    appendLines(line)(openOptions, charset)
+  def appendLine(line: String = "")(implicit charset: Charset = File.defaultCharset): this.type =
+    appendLines(line)(charset)
 
-  def append(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): this.type =
-    appendByteArray(text.getBytes(charset))(openOptions)
+  def append(text: String)(implicit charset: Charset = File.defaultCharset): this.type =
+    appendByteArray(text.getBytes(charset))
 
-  def appendText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.append, charset: Charset = File.defaultCharset): this.type =
-    append(text)(openOptions, charset)
+  def appendText(text: String)(implicit charset: Charset = File.defaultCharset): this.type =
+    append(text)(charset)
 
-  def appendByteArray(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
-    Files.write(path, bytes, openOptions: _*)
+  def appendByteArray(bytes: Array[Byte]): this.type = {
+    Files.write(path, bytes, File.OpenOptions.append: _*)
     this
   }
 
-  def appendBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type =
-    writeBytes(bytes)(openOptions)
+  def appendBytes(bytes: Iterator[Byte]): this.type =
+    writeBytes(bytes)
 
   /**
     * Write byte array to file. For large contents consider using the writeBytes
