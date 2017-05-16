@@ -516,7 +516,7 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
-The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala) e.g.:
+The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
 ```scala
 val in = Scanner("""
   12 Bob True
@@ -534,6 +534,13 @@ assert(out == Seq(
   13 :: "Mary" :: false :: HNil,
   26 :: "Rick" :: true :: HNil
 ))
+```
+
+[and case-classes](https://meta.plasm.us/posts/2015/11/08/type-classes-and-generic-derivation/):
+
+```scala
+case class Person(id: Int, name: String, isMale: Boolean)
+val out2 = Seq.fill(3)(in.next[Person])
 ```
 
 ### File Monitoring
@@ -583,7 +590,7 @@ val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
 watcher ! on(EventType.ENTRY_DELETE) {    
-  case file if file.isDirectory => println(s"$file got deleted") 
+  case file if file.isDirectory => println(s"$file got deleted")
 }
 
 // watch for multiple events

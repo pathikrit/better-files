@@ -5,12 +5,14 @@ import shapeless._
 class ShapelessScannerSpec extends CommonSpec {
   import ShapelessScanner._
 
-  "HList Scanner" should "parse HList" in {
-    val in = Scanner("""
-      12 Bob True
-      13 Mary False
-      26 Rick True
-    """)
+  val text = """
+    12 Bob True
+    13 Mary False
+    26 Rick True
+  """
+
+  "Shapeless Scanner" should "parse HList" in {
+    val in = Scanner(text)
 
     type Row = Int :: String :: Boolean :: HNil
     val out = Seq.fill(3)(in.next[Row])
@@ -19,5 +21,12 @@ class ShapelessScannerSpec extends CommonSpec {
       13 :: "Mary" :: false :: HNil,
       26 :: "Rick" :: true :: HNil
     ))
+  }
+
+  "Shapeless Scanner" should "parse case class" in {
+    val in = Scanner(text)
+
+    case class Person(id: Int, name: String, isMale: Boolean)
+    assert(Seq.fill(3)(in.next[Person]).map(_.id).sum == 51)
   }
 }
