@@ -332,7 +332,7 @@ These files are [not deleted automatically on exit by the JVM](http://stackoverf
 
 A cleaner alternative is to use self-deleting file contexts which deletes the file immediately when done:
 ```scala
-File.tempFile() foreach {tempFile =>
+File.usingTemporaryFile() { tempFile =>
   ...
   // tempFile is auto deleted at the end of this block - even if an exception happens
 }
