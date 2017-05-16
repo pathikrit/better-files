@@ -332,14 +332,10 @@ These files are [not deleted automatically on exit by the JVM](http://stackoverf
 
 A cleaner alternative is to use self-deleting file contexts which deletes the file immediately when done:
 ```scala
-File.usingTempFile() {tempFile =>
+File.tempFile() foreach {tempFile =>
   ...
   // tempFile is auto deleted at the end of this block - even if an exception happens
 }
-
-// or equivalently:
-
-File.newTempFile().applyAndDelete(tempFile =>  ...)
 ```
 
 You can also load resources from your classpath using `File.resource` or `File.copyResource`.

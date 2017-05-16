@@ -479,7 +479,7 @@ class FileSpec extends CommonSpec {
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
-    File.temporaryDirectory() foreach {f => //serialization round-trip test
+    File.temporaryFile() foreach {f => //serialization round-trip test
       assert(f.isEmpty)
       f.writeSerialized(p1)
       assert(f.nonEmpty)
