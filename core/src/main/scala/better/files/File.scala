@@ -908,7 +908,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def toTemporary: ManagedResource[File] =
-    this.deleteOnExit().autoClosed
+    this.autoClosed
 
   override def close() = {
     val _ = delete(swallowIOExceptions = true)
@@ -959,7 +959,7 @@ object File {
     }
   }
 
-  def temporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
+  def temporaryDirectory(prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
     newTemporaryDirectory(prefix, parent)(attributes).toTemporary
 
   def newTemporaryFile(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
