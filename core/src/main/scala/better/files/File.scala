@@ -19,14 +19,14 @@ import scala.util.Properties
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path) extends AutoCloseable {
+class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends AutoCloseable {
   //TODO: LinkOption?
 
   def pathAsString: String =
     path.toString
 
   def toJava: JFile =
-    path.toFile
+    new JFile(path.toAbsolutePath.toString)
 
   /**
     * Name of file
@@ -533,9 +533,6 @@ class File private(val path: Path) extends AutoCloseable {
     */
   def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     walk()(visitOptions).filter(matchFilter)
-
-  def fileSystem: FileSystem =
-    path.getFileSystem
 
   def uri: URI =
     path.toUri
