@@ -462,15 +462,14 @@ class FileSpec extends CommonSpec {
       writer <- (testRoot / "test.gz").newOutputStream.buffered.gzipped.writer.buffered.autoClosed
     } writer.write("Hello world")
 
-    (testRoot / "test.gz").inputStream.flatMap(_.buffered.gzipped.buffered.lines.toSeq) shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").inputStream.map(_.buffered.gzipped.buffered.lines.toSeq) shouldEqual Seq("Hello world")
   }
 
   it should "read bytebuffers" in {
     t1.writeText("hello world")
     for {
-      fileChannel <- t1.newFileChannel.autoClosed
-      buffer = fileChannel.toMappedByteBuffer
-    } buffer.remaining() shouldEqual t1.bytes.length
+      fileChannel <- t1.fileChannel
+    } fileChannel.toMappedByteBuffer.remaining() shouldEqual t1.bytes.length
 
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }

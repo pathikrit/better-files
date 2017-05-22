@@ -219,17 +219,8 @@ trait Implicits {
       *
       * @return
       */
-    def autoClosed: ManagedResource[A] = new Traversable[A] {
-      var isClosed = false
-      override def foreach[U](f: A => U) = try {
-        val _ = f(resource)
-      } finally {
-        if (!isClosed) {
-          resource.close()
-          isClosed = true
-        }
-      }
-    }
+    def autoClosed: ManagedResource[A] =
+      new ManagedResource(resource)
 
     /**
       * Provides an iterator that closes the underlying resource when done

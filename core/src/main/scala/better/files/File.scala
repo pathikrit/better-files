@@ -222,8 +222,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def lineIterator(implicit charset: Charset = File.defaultCharset): Iterator[String] =
     Files.lines(path, charset).toAutoClosedIterator
 
-  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Traversable[String] =
-    bufferedReader(charset).flatMap(_.tokens(config))
+  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Iterator[String] =
+    bufferedReader(charset).map(_.tokens(config))
 
   def contentAsString(implicit charset: Charset = File.defaultCharset): String =
     new String(byteArray, charset)
@@ -398,7 +398,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
-    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A]).head
+    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A])
 
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)

@@ -21,8 +21,6 @@ package object files extends Implicits {
 
   def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name)
 
-  type ManagedResource[A <: Closeable] = Traversable[A]   //TODO: Make this a class so we don't have to call .head
-
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
