@@ -2,7 +2,7 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ManagedResource[A <: Closeable](resource: A) {
+class ManagedResource[A <: Disposable](resource: A) {
   private[this] val isDisposed = new AtomicBoolean(false)
 
   def foreach[U](f: A => U): Unit = {

@@ -15,7 +15,7 @@ package object files extends Implicits {
 
   type Files = Iterator[File]
 
-  type Closeable = {
+  type Disposable = {
     def close(): Unit
   }
 
@@ -30,7 +30,7 @@ package object files extends Implicits {
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
-  private[files] def using[A <: Closeable, U](resource: A)(f: A => U): U = try { f(resource) } finally {resource.close()}
+  private[files] def using[A <: Disposable, U](resource: A)(f: A => U): U = try { f(resource) } finally {resource.close()}
 
   private[files] def produce[A](f: => A) = new {
     def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {

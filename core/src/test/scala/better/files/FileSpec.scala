@@ -468,7 +468,7 @@ class FileSpec extends CommonSpec {
   it should "read bytebuffers" in {
     t1.writeText("hello world")
     for {
-      fileChannel <- t1.fileChannel
+      fileChannel <- t1.newFileChannel.autoClosed
     } fileChannel.toMappedByteBuffer.remaining() shouldEqual t1.bytes.length
 
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString

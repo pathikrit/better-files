@@ -206,7 +206,7 @@ trait Implicits {
     }
   }
 
-  implicit class CloseableOps[A <: Closeable](resource: A) {
+  implicit class CloseableOps[A <: Disposable](resource: A) {
     /**
       * Lightweight automatic resource management
       * Closes the resource when done e.g.
