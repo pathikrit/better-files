@@ -472,13 +472,6 @@ for {
 // or simply:
 file.bufferedReader.foreach(foo)
 ```
-Or use a [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits$CloseableOps.html):
-```scala
-val eof = -1
-val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).map(_.toByte) 
-```
-Note: The `autoClosedIterator` only closes the resource when `hasNext` i.e. `(_ != eof)` returns false. 
-If you only partially use the iterator e.g. `.take(5)`, it may leave the resource open. In those cases, use the managed `autoClosed` version instead.
 
 You can also define your own custom disposable resources e.g.:
 ```scala

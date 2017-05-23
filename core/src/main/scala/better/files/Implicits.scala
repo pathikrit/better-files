@@ -11,7 +11,6 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip._
 
 import scala.annotation.tailrec
-import scala.util.control.NonFatal
 import scala.util.Try
 
 /**
@@ -74,7 +73,7 @@ trait Implicits {
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosedIterator(_.read())(_ != eof).map(_.toByte)
+      in.autoClosed.flatMap(res => Iterator.continually(res.read()).takeWhile(_ != eof).map(_.toByte))
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
@@ -110,7 +109,7 @@ trait Implicits {
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] =
-      reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
+      reader.autoClosed.flatMap(res => Iterator.continually(res.read()).takeWhile(_ != eof).map(_.toChar))
 
     private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) =
       reader.lines().toAutoClosedIterator.map(line => new StringTokenizer(line, config.delimiter, config.includeDelimiters))
@@ -219,43 +218,6 @@ trait Implicits {
       */
     def autoClosed: ManagedResource[A] =
       new ManagedResource(resource)(Disposable.closableDisposer)
-
-    /**
-      * Provides an iterator that closes the underlying resource when done
-      *
-      * e.g.
-      * <pre>
-      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
-      * </pre>
-      *
-      * @param generator      next element from this resource
-      * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
-      * @tparam B
-      * @return An iterator that closes the underlying resource when done
-      */
-    def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
-      var isClosed = false
-      def isOpen(item: B) = {
-        if (!isClosed && !isValidElement(item)) close()
-        !isClosed
-      }
-
-      def close() = try {
-        if (!isClosed) resource.close()
-      } finally {
-        isClosed = true
-      }
-
-      def next() = try {
-        generator(resource)
-      } catch {
-        case NonFatal(e) =>
-          close()
-          throw e
-      }
-
-      Iterator.continually(next()).takeWhile(isOpen)
-    }
   }
 
   implicit class JStreamOps[A](stream: JStream[A]) {

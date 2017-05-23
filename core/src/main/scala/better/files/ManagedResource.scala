@@ -2,7 +2,7 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
   * A typeclass to denote a disposable resource
@@ -32,6 +32,7 @@ object Disposable {
 
 class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
   private[this] val isDisposed = new AtomicBoolean(false)
+  private[this] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.disposeSilently(resource)
 
   def foreach[U](f: A => U): Unit = {
     val _ = map(f)
@@ -39,7 +40,30 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
 
   def map[B](f: A => B): B = {
     val result = Try(f(resource))
-    if (!isDisposed.getAndSet(true)) disposer.disposeSilently(resource)
+    disposeOnce()
     result.get
+  }
+
+  /**
+    * This handles lazy operations (e.g. Iterators)
+    * for which resource needs to be disposed only after iteration is done
+    *
+    * @param f
+    * @tparam B
+    * @return
+    */
+  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
+    new Iterator[B] {
+      val proxy = f(resource)
+      override def hasNext = {
+        val result = Try(proxy.hasNext)
+        result match {
+          case Failure(_) | Success(false) => disposeOnce()
+          case _ =>
+        }
+        result.get
+      }
+      override def next() = proxy.next()
+    }
   }
 }
