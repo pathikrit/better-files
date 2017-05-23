@@ -90,7 +90,7 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
  * Based on a reusable StringBuilder
  */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  val chars = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
+  private[this] val chars = reader.chars
   private[this] val buffer = new StringBuilder()
 
   override def next() = {
@@ -107,7 +107,7 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
  * Scala version of the ArrayBufferScanner
  */
 class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  val chars = reader.chars
+  private[this] val chars = reader.chars
   private[this] var buffer = Array.ofDim[Char](1<<4)
 
   override def next() = {
@@ -130,10 +130,9 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   * Scanner using https://github.com/williamfiset/FastJavaIO
   */
 class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  import fastjavaio.InputReader
   import org.apache.commons.io.input.ReaderInputStream
-  
-  private[this] val fastReader = new InputReader(new ReaderInputStream(reader, File.defaultCharset))
+
+  private[this] val fastReader = new fastjavaio.InputReader(new ReaderInputStream(reader, File.defaultCharset))
 
   override def hasNext = true     //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
   override def next() = fastReader.readStr()
@@ -145,7 +144,7 @@ class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   * Based on the better-files implementation
   */
 class BetterFilesScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  private[this] val scanner = better.files.Scanner(reader)
+  private[this] val scanner = Scanner(reader)
   override def hasNext = scanner.hasNext
   override def next() = scanner.next
   override def nextLine() = scanner.tillEndOfLine()
