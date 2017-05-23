@@ -2,7 +2,7 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import scala.util.control.NonFatal
+import scala.util.Try
 
 /**
   * A typeclass to denote a disposable resource
@@ -11,10 +11,8 @@ import scala.util.control.NonFatal
 trait Disposable[-A]  {
   def dispose(resource: A): Unit
 
-  def disposeSilently(resource: A): Unit = try {
-    dispose(resource)
-  } catch {
-    case NonFatal(_) =>
+  def disposeSilently(resource: A): Unit = {
+    val _ = Try(dispose(resource))
   }
 }
 
@@ -40,10 +38,8 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
   }
 
   def map[B](f: A => B): B = {
-    try {
-      f(resource)
-    } finally {
-      if (!isDisposed.getAndSet(true)) disposer.disposeSilently(resource)
-    }
+    val result = Try(f(resource))
+    if (!isDisposed.getAndSet(true)) disposer.disposeSilently(resource)
+    result.get
   }
 }

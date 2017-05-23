@@ -483,7 +483,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     }
 
   def usingLock[U](mode: File.RandomAccessMode)(f: FileChannel => U): U =
-    using(newRandomAccess(mode).getChannel)(f)
+    newRandomAccess(mode).getChannel.autoClosed.map(f)
 
   def isReadLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.read, position, size, isShared)

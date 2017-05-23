@@ -30,8 +30,6 @@ package object files extends Implicits {
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
-  private[files] def using[A: Disposable, U](resource: A)(f: A => U): U = try { f(resource) } finally {implicitly[Disposable[A]].disposeSilently(resource)}
-
   private[files] def produce[A](f: => A) = new {
     def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {
       override def hasNext = hasMore

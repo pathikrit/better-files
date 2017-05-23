@@ -12,6 +12,7 @@ import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal
+import scala.util.Try
 
 /**
   * Container for various implicits
@@ -180,13 +181,10 @@ trait Implicits {
       override def hasNext = entry != null
 
       override def next() = {
-        val result = try {
-          f(entry)
-        } finally {
-          val _ = scala.util.Try(in.closeEntry())
-        }
+        val result = Try(f(entry))
+        Try(in.closeEntry())
         entry = in.getNextEntry
-        result
+        result.get
       }
     }
   }
