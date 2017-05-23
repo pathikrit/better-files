@@ -2,7 +2,37 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ManagedResource[A <: Disposable](resource: A) {
+import scala.util.control.NonFatal
+
+/**
+  * A typeclass to denote a disposable resource
+  * @tparam A
+  */
+trait Disposable[-A]  {
+  def dispose(): Unit
+
+  def disposeSilently(): Unit = try {
+    dispose()
+  } catch {
+    case NonFatal(_) =>
+  }
+}
+
+object Disposable {
+  def apply[A](disposeMethod: A => Any): Disposable[A] = new Disposable[A] {
+    override def dispose() = {
+      val _ = disposeMethod
+    }
+  }
+
+  implicit val disposeClosable: Disposable[Closeable] =
+    Disposable(_.close())
+
+  implicit val disposeFile: Disposable[File] =
+    Disposable(_.delete(swallowIOExceptions = true))
+}
+
+class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
   private[this] val isDisposed = new AtomicBoolean(false)
 
   def foreach[U](f: A => U): Unit = {
@@ -13,7 +43,7 @@ class ManagedResource[A <: Disposable](resource: A) {
     try {
       f(resource)
     } finally {
-      if (isDisposed.getAndSet(true)) resource.close()
+      if (isDisposed.getAndSet(true)) disposer.disposeSilently()
     }
   }
 }

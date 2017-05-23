@@ -29,14 +29,14 @@ class ScannerSpec extends CommonSpec {
     a[NoSuchElementException] should be thrownBy scanner.next()
     assert(!scanner.hasNext)
     data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
-    data.tokens shouldEqual data.newScanner().toTraversable
+    data.tokens.toSeq shouldEqual data.newScanner().toSeq
   }
 
   it should "parse longs/booleans" in {
     val data = for {
       scanner <- Scanner("10 false").autoClosed
     } yield scanner.next[(Long, Boolean)]
-    data shouldBe Seq(10L -> false)
+    data shouldBe ((10L, false))
   }
 
   it should "parse custom parsers" in {

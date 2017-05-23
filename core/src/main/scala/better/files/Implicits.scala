@@ -206,7 +206,7 @@ trait Implicits {
     }
   }
 
-  implicit class CloseableOps[A <: Disposable](resource: A) {
+  implicit class CloseableOps[A <: Closeable](resource: A) {
     /**
       * Lightweight automatic resource management
       * Closes the resource when done e.g.
@@ -220,7 +220,7 @@ trait Implicits {
       * @return
       */
     def autoClosed: ManagedResource[A] =
-      new ManagedResource(resource)
+      new ManagedResource(resource)(Disposable.disposeClosable)
 
     /**
       * Provides an iterator that closes the underlying resource when done
