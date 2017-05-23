@@ -107,7 +107,7 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
  * Scala version of the ArrayBufferScanner
  */
 class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  val chars = Iterator.continually(reader.read()).takeWhile(_ != -1).map(_.toChar)
+  val chars = reader.chars
   private[this] var buffer = Array.ofDim[Char](1<<4)
 
   override def next() = {
@@ -124,6 +124,21 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
     String.copyValueOf(buffer, 0, pos)
   }
   override def hasNext = chars.hasNext
+}
+
+/**
+  * Scanner using https://github.com/williamfiset/FastJavaIO
+  */
+class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) {
+  import fastjavaio.InputReader
+  import org.apache.commons.io.input.ReaderInputStream
+  
+  private[this] val fastReader = new InputReader(new ReaderInputStream(reader, File.defaultCharset))
+
+  override def hasNext = true     //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
+  override def next() = fastReader.readStr()
+  override def nextInt() = fastReader.readInt()
+  override def nextLine() = fastReader.readLine()
 }
 
 /**
