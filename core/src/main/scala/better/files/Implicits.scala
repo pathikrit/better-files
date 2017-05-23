@@ -40,6 +40,15 @@ trait Implicits {
       File(file.getPath)
   }
 
+  //TODO: Rename all Ops to Extensions
+
+  implicit class IteratorExtensions[A](it: Iterator[A]) {
+    def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
+      override def hasNext = f && it.hasNext
+      override def next() = it.next()
+    }
+  }
+
   implicit class InputStreamOps(in: InputStream) {
     def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): Unit =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
@@ -244,7 +253,7 @@ trait Implicits {
     Charset.forName(charsetName)
 
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
-    produce(s.nextToken()).till(s.hasMoreTokens)
+    Iterator.continually(s.nextToken()).withHasNext(s.hasMoreTokens)
 
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
   //  PosixFilePermissions.asFileAttribute(Set(perm))

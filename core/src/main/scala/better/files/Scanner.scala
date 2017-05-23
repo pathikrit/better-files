@@ -12,7 +12,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 
   def tillEndOfLine(): String = tillDelimiter(Scanner.Config.Delimiters.lines)
 
-  def nonEmptyLines: Iterator[String] = produce(tillEndOfLine()).till(hasNext)
+  def nonEmptyLines: Iterator[String] = Iterator.continually(tillEndOfLine()).withHasNext(hasNext)
 }
 
 /**

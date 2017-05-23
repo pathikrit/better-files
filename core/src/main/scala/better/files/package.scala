@@ -30,13 +30,6 @@ package object files extends Implicits {
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
-  private[files] def produce[A](f: => A) = new {
-    def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {
-      override def hasNext = hasMore
-      override def next() = f
-    }
-  }
-
   /**
     * Utility to apply f on all xs skipping over errors
     * Throws the last error that happened
