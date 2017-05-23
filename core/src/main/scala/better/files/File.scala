@@ -851,7 +851,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destinationDirectory destination folder; Creates this if it does not exist
     * @return The destination where contents are unzipped
     */
-  def streamedUnzipTo(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = File.defaultCharset): destinationDirectory.type = {
+  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = File.defaultCharset): destinationDirectory.type = {
     for {
       zipIn <- zipInputStream(charset)
     } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size

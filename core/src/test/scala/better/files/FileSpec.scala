@@ -441,11 +441,16 @@ class FileSpec extends CommonSpec {
     val zipFile = testRoot.zip()
     zipFile.size should be > 100L
     zipFile.name should endWith (".zip")
-    val destination = zipFile.unzip()
-    (destination/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
-    destination === testRoot shouldBe true
-    (destination/"a"/"a1"/"t1.txt").overwrite("hello")
-    (destination !== testRoot) shouldBe true
+
+    def test(output: File) = {
+      (output/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
+      output === testRoot shouldBe true
+      (output/"a"/"a1"/"t1.txt").overwrite("hello")
+      (output !== testRoot) shouldBe true
+    }
+
+    test(zipFile.unzip())
+    test(zipFile.streamedUnzip())
   }
 
   it should "zip/unzip single files" in {
