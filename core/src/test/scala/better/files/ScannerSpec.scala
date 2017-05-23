@@ -13,21 +13,22 @@ class ScannerSpec extends CommonSpec {
     | 1 2 3
     | Ok 23 football
     """.stripMargin
-    val scanner: Scanner = data.newScanner()
-    assert(scanner.lineNumber() == 0)
-    assert(scanner.next[String] == "Hello")
-    assert(scanner.lineNumber() == 2)
-    assert(scanner.next[String] == "World")
-    assert(scanner.next[Int] == 1)
-    assert(scanner.next[Int] == 2)
-    assert(scanner.lineNumber() == 3)
-    assert(scanner.next[Int] == 3)
-    assert(scanner.next[String] == "Ok")
-    assert(scanner.tillEndOfLine() == " 23 football")
-    assert(!scanner.hasNext)
-    a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
-    a[NoSuchElementException] should be thrownBy scanner.next()
-    assert(!scanner.hasNext)
+    data.scanner() foreach {scanner =>
+      assert(scanner.lineNumber() == 0)
+      assert(scanner.next[String] == "Hello")
+      assert(scanner.lineNumber() == 2)
+      assert(scanner.next[String] == "World")
+      assert(scanner.next[Int] == 1)
+      assert(scanner.next[Int] == 2)
+      assert(scanner.lineNumber() == 3)
+      assert(scanner.next[Int] == 3)
+      assert(scanner.next[String] == "Ok")
+      assert(scanner.tillEndOfLine() == " 23 football")
+      assert(!scanner.hasNext)
+      a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
+      a[NoSuchElementException] should be thrownBy scanner.next()
+      assert(!scanner.hasNext)
+    }
     data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
     data.tokens.toSeq shouldEqual data.newScanner().toSeq
   }
@@ -53,7 +54,8 @@ class ScannerSpec extends CommonSpec {
       val name = scanner.next[String]
       if (name == "Garfield") Cat(name) else Dog(name)
     }
-    val scanner = file.newScanner()
-    Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
+    file.scanner() foreach {scanner =>
+      Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
+    }
   }
 }

@@ -223,7 +223,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     Files.lines(path, charset).toAutoClosedIterator
 
   def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Iterator[String] =
-    bufferedReader(charset).map(_.tokens(config))
+    newBufferedReader(charset).tokens(config)
 
   def contentAsString(implicit charset: Charset = File.defaultCharset): String =
     new String(byteArray, charset)
