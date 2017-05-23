@@ -19,7 +19,7 @@ import scala.util.Properties
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends AutoCloseable {
+class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
   //TODO: LinkOption?
 
   def pathAsString: String =
@@ -222,8 +222,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def lineIterator(implicit charset: Charset = File.defaultCharset): Iterator[String] =
     Files.lines(path, charset).toAutoClosedIterator
 
-  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Traversable[String] =
-    bufferedReader(charset).flatMap(_.tokens(config))
+  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Iterator[String] =
+    newBufferedReader(charset).tokens(config)
 
   def contentAsString(implicit charset: Charset = File.defaultCharset): String =
     new String(byteArray, charset)
@@ -398,7 +398,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
-    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A]).head
+    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A])
 
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)
@@ -483,7 +483,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     }
 
   def usingLock[U](mode: File.RandomAccessMode)(f: FileChannel => U): U =
-    using(newRandomAccess(mode).getChannel)(f)
+    newRandomAccess(mode).getChannel.autoClosed.map(f)
 
   def isReadLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.read, position, size, isShared)
@@ -903,16 +903,12 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * This util auto-deletes the resource when done using the ManagedResource facility
     *
     * Example usage:
-    *   File.managedTemporaryDirectory().foreach(tempDir => doSomething(tempDir)
+    *   File.temporaryDirectory().foreach(tempDir => doSomething(tempDir)
     *
     * @return
     */
   def toTemporary: ManagedResource[File] =
-    this.autoClosed
-
-  override def close() = {
-    val _ = delete(swallowIOExceptions = true)
-  }
+    new ManagedResource(this)(Disposable.fileDisposer)
 
   //TODO: add features from https://github.com/sbt/io
 }

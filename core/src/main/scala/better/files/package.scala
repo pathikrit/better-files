@@ -1,6 +1,6 @@
 package better
 
-import java.io.InputStream
+import java.io.{InputStream, StreamTokenizer}
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
@@ -21,8 +21,6 @@ package object files extends Implicits {
 
   def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name)
 
-  type ManagedResource[A <: Closeable] = Traversable[A]   //TODO: Make this a class so we don't have to call .head
-
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
@@ -32,14 +30,7 @@ package object files extends Implicits {
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
-  private[files] def using[A <: Closeable, U](resource: A)(f: A => U): U = try { f(resource) } finally {resource.close()}
-
-  private[files] def produce[A](f: => A) = new {
-    def till(hasMore: => Boolean): Iterator[A] = new Iterator[A] {
-      override def hasNext = hasMore
-      override def next() = f
-    }
-  }
+  private[files] def eofReader(read: => Int) = Iterator.continually(read).takeWhile(_ != StreamTokenizer.TT_EOF)
 
   /**
     * Utility to apply f on all xs skipping over errors

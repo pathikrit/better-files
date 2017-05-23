@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
+import java.io.{File => JFile, _}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
@@ -11,7 +11,8 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip._
 
 import scala.annotation.tailrec
-import scala.util.control.NonFatal
+import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
   * Container for various implicits
@@ -37,6 +38,15 @@ trait Implicits {
   implicit class FileOps(file: JFile) {
     def toScala: File =
       File(file.getPath)
+  }
+
+  //TODO: Rename all Ops to Extensions
+
+  implicit class IteratorExtensions[A](it: Iterator[A]) {
+    def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
+      override def hasNext = f && it.hasNext
+      override def next() = it.next()
+    }
   }
 
   implicit class InputStreamOps(in: InputStream) {
@@ -73,7 +83,7 @@ trait Implicits {
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosedIterator(_.read())(_ != eof).map(_.toByte)
+      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
@@ -109,7 +119,7 @@ trait Implicits {
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] =
-      reader.autoClosedIterator(_.read())(_ != eof).map(_.toChar)
+      reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
 
     private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) =
       reader.lines().toAutoClosedIterator.map(line => new StringTokenizer(line, config.delimiter, config.includeDelimiters))
@@ -180,13 +190,10 @@ trait Implicits {
       override def hasNext = entry != null
 
       override def next() = {
-        val result = try {
-          f(entry)
-        } finally {
-          val _ = scala.util.Try(in.closeEntry())
-        }
+        val result = Try(f(entry))
+        Try(in.closeEntry())
         entry = in.getNextEntry
-        result
+        result.get
       }
     }
   }
@@ -219,54 +226,8 @@ trait Implicits {
       *
       * @return
       */
-    def autoClosed: ManagedResource[A] = new Traversable[A] {
-      var isClosed = false
-      override def foreach[U](f: A => U) = try {
-        val _ = f(resource)
-      } finally {
-        if (!isClosed) {
-          resource.close()
-          isClosed = true
-        }
-      }
-    }
-
-    /**
-      * Provides an iterator that closes the underlying resource when done
-      *
-      * e.g.
-      * <pre>
-      * inputStream.autoClosedIterator(_.read())(_ != -1).map(_.toByte)
-      * </pre>
-      *
-      * @param generator      next element from this resource
-      * @param isValidElement a function which tells if there is no more B left e.g. certain iterators may return nulls
-      * @tparam B
-      * @return An iterator that closes the underlying resource when done
-      */
-    def autoClosedIterator[B](generator: A => B)(isValidElement: B => Boolean): Iterator[B] = {
-      var isClosed = false
-      def isOpen(item: B) = {
-        if (!isClosed && !isValidElement(item)) close()
-        !isClosed
-      }
-
-      def close() = try {
-        if (!isClosed) resource.close()
-      } finally {
-        isClosed = true
-      }
-
-      def next() = try {
-        generator(resource)
-      } catch {
-        case NonFatal(e) =>
-          close()
-          throw e
-      }
-
-      Iterator.continually(next()).takeWhile(isOpen)
-    }
+    def autoClosed: ManagedResource[A] =
+      new ManagedResource(resource)(Disposable.closableDisposer)
   }
 
   implicit class JStreamOps[A](stream: JStream[A]) {
@@ -276,20 +237,8 @@ trait Implicits {
       *
       * @return
       */
-    def toAutoClosedIterator: Iterator[A] = {
-      val iterator = stream.iterator()
-      var isOpen = true
-      produce(iterator.next()) till {
-        if (isOpen && !iterator.hasNext) {
-          try {
-            stream.close()
-          } finally {
-            isOpen = false
-          }
-        }
-        isOpen
-      }
-    }
+    def toAutoClosedIterator: Iterator[A] =
+      stream.autoClosed.flatMap(_.iterator().asScala)
   }
 
   private[files] implicit class OrderingOps[A](order: Ordering[A]) {
@@ -304,7 +253,7 @@ trait Implicits {
     Charset.forName(charsetName)
 
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
-    produce(s.nextToken()).till(s.hasMoreTokens)
+    Iterator.continually(s.nextToken()).withHasNext(s.hasMoreTokens)
 
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
   //  PosixFilePermissions.asFileAttribute(Set(perm))

@@ -3,7 +3,7 @@ package better.files
 import java.nio.file._
 
 import scala.concurrent.ExecutionContext
-import scala.util.control.NonFatal
+import scala.util.Try
 
 /**
   * Implementation of File.Monitor
@@ -48,13 +48,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
     } else {
       when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
-    toWatch foreach {f =>
-      try {
-        f.register(service)
-      } catch {
-        case NonFatal(e) => onException(e)
-      }
-    }
+    toWatch.foreach(f => Try[Unit](f.register(service)).recover(PartialFunction(onException)).get)
   }
 
   override def start()(implicit executionContext: ExecutionContext) = {
