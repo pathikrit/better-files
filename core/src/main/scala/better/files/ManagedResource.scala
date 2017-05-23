@@ -9,10 +9,10 @@ import scala.util.control.NonFatal
   * @tparam A
   */
 trait Disposable[-A]  {
-  def dispose(): Unit
+  def dispose(resource: A): Unit
 
-  def disposeSilently(): Unit = try {
-    dispose()
+  def disposeSilently(resource: A): Unit = try {
+    dispose(resource)
   } catch {
     case NonFatal(_) =>
   }
@@ -20,8 +20,8 @@ trait Disposable[-A]  {
 
 object Disposable {
   def apply[A](disposeMethod: A => Any): Disposable[A] = new Disposable[A] {
-    override def dispose() = {
-      val _ = disposeMethod
+    override def dispose(resource: A) = {
+      val _ = disposeMethod(resource)
     }
   }
 
@@ -43,7 +43,7 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
     try {
       f(resource)
     } finally {
-      if (isDisposed.getAndSet(true)) disposer.disposeSilently()
+      if (!isDisposed.getAndSet(true)) disposer.disposeSilently(resource)
     }
   }
 }

@@ -480,7 +480,7 @@ val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).m
 Note: The `autoClosedIterator` only closes the resource when `hasNext` i.e. `(_ != eof)` returns false. 
 If you only partially use the iterator e.g. `.take(5)`, it may leave the resource open. In those cases, use the managed `autoClosed` version instead.
 
-You can define your own custom disposable resource:
+You can also define your own custom disposable resources e.g.:
 ```scala
 trait Shutdownable {
   def shutdown(): Unit = ()
