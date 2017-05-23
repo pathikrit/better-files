@@ -10,7 +10,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 
   def tillDelimiter(delimiter: String): String
 
-  def tillEndOfLine() = tillDelimiter(Scanner.Config.Delimiters.lines)
+  def tillEndOfLine(): String = tillDelimiter(Scanner.Config.Delimiters.lines)
 
   def nonEmptyLines: Iterator[String] = produce(tillEndOfLine()).till(hasNext)
 }
@@ -86,7 +86,7 @@ object Scanner {
 }
 
 /**
-  * Implement this trait to make thing parseable
+  * Implement this trait to make thing parsable
   */
 trait Scannable[A] {
   def apply(scanner: Scanner): A

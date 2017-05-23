@@ -903,7 +903,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * This util auto-deletes the resource when done using the ManagedResource facility
     *
     * Example usage:
-    *   File.managedTemporaryDirectory().foreach(tempDir => doSomething(tempDir)
+    *   File.temporaryDirectory().foreach(tempDir => doSomething(tempDir)
     *
     * @return
     */

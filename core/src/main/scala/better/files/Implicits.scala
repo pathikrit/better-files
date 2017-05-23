@@ -270,11 +270,8 @@ trait Implicits {
       var isOpen = true
       produce(iterator.next()) till {
         if (isOpen && !iterator.hasNext) {
-          try {
-            stream.close()
-          } finally {
-            isOpen = false
-          }
+          Try(stream.close())
+          isOpen = false
         }
         isOpen
       }

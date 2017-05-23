@@ -487,7 +487,7 @@ trait Shutdownable {
 }
 
 object Shutdownable {
-  implicit disposable: Disposable[Shutdownable] = Disposable(_.shutdown())
+  implicit val disposable: Disposable[Shutdownable] = Disposable(_.shutdown())
 }
 
 val s: Shutdownable = ....
