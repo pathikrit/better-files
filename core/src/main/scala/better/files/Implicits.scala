@@ -11,6 +11,7 @@ import java.util.stream.{Stream => JStream}
 import java.util.zip._
 
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
@@ -227,17 +228,8 @@ trait Implicits {
       *
       * @return
       */
-    def toAutoClosedIterator: Iterator[A] = {
-      val iterator = stream.iterator()
-      var isOpen = true
-      produce(iterator.next()) till {
-        if (isOpen && !iterator.hasNext) {
-          Try(stream.close())
-          isOpen = false
-        }
-        isOpen
-      }
-    }
+    def toAutoClosedIterator: Iterator[A] =
+      stream.autoClosed.flatMap(_.iterator().asScala)
   }
 
   private[files] implicit class OrderingOps[A](order: Ordering[A]) {
