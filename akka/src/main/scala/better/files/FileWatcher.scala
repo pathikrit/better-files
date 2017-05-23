@@ -45,6 +45,9 @@ object FileWatcher {
     case class RemoveCallback(event: Event, callback: Callback) extends Message
   }
 
+  implicit val disposeActorSystem: Disposable[ActorSystem] =
+    Disposable(_.terminate())
+
   implicit class FileWatcherOps(file: File) {
     def watcherProps(recursive: Boolean): Props =
       Props(new FileWatcher(file, recursive))
