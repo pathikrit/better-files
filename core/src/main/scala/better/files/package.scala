@@ -1,6 +1,6 @@
 package better
 
-import java.io.InputStream
+import java.io.{InputStream, StreamTokenizer}
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
@@ -29,6 +29,8 @@ package object files extends Implicits {
   @inline private[files] def repeat[U](n: Int)(f: => U): Unit = (1 to n).foreach(_ => f)
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
+
+  private[files] def eofReader(read: => Int) = Iterator.continually(read).takeWhile(_ != StreamTokenizer.TT_EOF)
 
   /**
     * Utility to apply f on all xs skipping over errors

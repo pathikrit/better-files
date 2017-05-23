@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{File => JFile, _}, StreamTokenizer.{TT_EOF => eof}
+import java.io.{File => JFile, _}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
@@ -83,7 +83,7 @@ trait Implicits {
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosed.flatMap(res => Iterator.continually(res.read()).takeWhile(_ != eof).map(_.toByte))
+      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
@@ -119,7 +119,7 @@ trait Implicits {
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
     def chars: Iterator[Char] =
-      reader.autoClosed.flatMap(res => Iterator.continually(res.read()).takeWhile(_ != eof).map(_.toChar))
+      reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
 
     private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) =
       reader.lines().toAutoClosedIterator.map(line => new StringTokenizer(line, config.delimiter, config.includeDelimiters))
