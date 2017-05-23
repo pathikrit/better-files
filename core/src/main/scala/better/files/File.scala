@@ -19,7 +19,7 @@ import scala.util.Properties
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends AutoCloseable {
+class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
   //TODO: LinkOption?
 
   def pathAsString: String =
@@ -908,11 +908,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def toTemporary: ManagedResource[File] =
-    this.autoClosed
-
-  override def close() = {
-    val _ = delete(swallowIOExceptions = true)
-  }
+    new ManagedResource(this)(Disposable.fileDisposer)
 
   //TODO: add features from https://github.com/sbt/io
 }

@@ -220,7 +220,7 @@ trait Implicits {
       * @return
       */
     def autoClosed: ManagedResource[A] =
-      new ManagedResource(resource)(Disposable.disposeClosable)
+      new ManagedResource(resource)(Disposable.closableDisposer)
 
     /**
       * Provides an iterator that closes the underlying resource when done

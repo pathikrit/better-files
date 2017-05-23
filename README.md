@@ -470,7 +470,7 @@ for {
 } foo(reader)
 
 // or simply:
-file.bufferedReader.map(foo)
+file.bufferedReader.foreach(foo)
 ```
 Or use a [utility to convert any closeable to an iterator](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits$CloseableOps.html):
 ```scala
@@ -479,6 +479,23 @@ val bytes: Iterator[Byte] = inputStream.autoClosedIterator(_.read())(_ != eof).m
 ```
 Note: The `autoClosedIterator` only closes the resource when `hasNext` i.e. `(_ != eof)` returns false. 
 If you only partially use the iterator e.g. `.take(5)`, it may leave the resource open. In those cases, use the managed `autoClosed` version instead.
+
+You can define your own custom disposable resource:
+```scala
+trait Shutdownable {
+  def shutdown(): Unit = ()
+}
+
+object Shutdownable {
+  implicit disposable: Disposable[Shutdownable] = Disposable(_.shutdown())
+}
+
+val s: Shutdownable = ....
+
+for {
+  instance <- new ManagedResource(s)
+} doSomething(s)  // s is disposed after this
+```
 
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 

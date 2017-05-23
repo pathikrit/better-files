@@ -25,10 +25,10 @@ object Disposable {
     }
   }
 
-  implicit val disposeClosable: Disposable[Closeable] =
+  implicit val closableDisposer: Disposable[Closeable] =
     Disposable(_.close())
 
-  implicit val disposeFile: Disposable[File] =
+  val fileDisposer: Disposable[File] =
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
