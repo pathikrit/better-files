@@ -481,9 +481,13 @@ class FileSpec extends CommonSpec {
 
   it should "convert readers to inputstreams" in {
     File.temporaryFile() foreach {f =>
-      f.writeText("hello world")
+      val text = List.fill(10000)("hello world")
+      for {
+        out <- f.printWriter()
+        line <- text
+      } out.println(line)
       val t = f.bufferedReader.flatMap(_.toInputStream.lines)
-      t.toSeq shouldEqual Seq("hello world")
+      t.toList shouldEqual text
     }
   }
 

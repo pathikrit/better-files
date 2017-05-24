@@ -12,8 +12,12 @@ class ReaderInputStream(reader: Reader, bufferSize: Int = defaultBufferSize)(imp
   private[this] val encoder = charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE)
   private[this] var endOfInput = false
   private[this] val encoderIn = CharBuffer.allocate(bufferSize)
-  private[this] val encoderOut = ByteBuffer.allocate(bufferSize)
+  private[this] val encoderOut = ByteBuffer.allocate(128)
   private[this] var lastCoderResult: CoderResult = null
+
+  encoderIn.flip()
+  encoderOut.flip()
+
 
   private def fillBuffer() = {
     if (!endOfInput && (lastCoderResult == null || lastCoderResult.isUnderflow)) {
@@ -23,8 +27,7 @@ class ReaderInputStream(reader: Reader, bufferSize: Int = defaultBufferSize)(imp
       // to write directly to the underlying char array (the default implementation
       // copies data to a temporary char array).
       val c = reader.read(encoderIn.array, position, encoderIn.remaining)
-      if (c == EOF) endOfInput = true
-      else encoderIn.position(position + c)
+      if (c == EOF) endOfInput = true else encoderIn.position(position + c)
       encoderIn.flip
     }
     encoderOut.compact
