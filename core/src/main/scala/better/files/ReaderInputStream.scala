@@ -15,8 +15,6 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   def this(reader: Reader, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = File.defaultCharset) =
     this(reader = reader, encoder = charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE), bufferSize = bufferSize)
 
-  private[this] var endOfInput = false
-
   /**
     * CharBuffer used as input for the decoder. It should be reasonably
     * large as we read data from the underlying Reader into this buffer.
@@ -30,16 +28,20 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   private[this] val encoderOut = ByteBuffer.allocate(128).flip().asInstanceOf[ByteBuffer]
 
   private[this] var lastCoderResult = CoderResult.UNDERFLOW
+  private[this] var endOfInput = false
 
   private[this] def fillBuffer() = {
     assert(!endOfInput)
     if (lastCoderResult.isUnderflow) {
       val position = encoderIn.compact().position
-      // We don't use Reader#read(CharBuffer) here because it is more efficient
-      // to write directly to the underlying char array (the default implementation
-      // copies data to a temporary char array).
-      val c = reader.read(encoderIn.array, position, encoderIn.remaining)
-      if (c == EOF) endOfInput = true else encoderIn.position(position + c)
+      /**
+        * We don't use Reader#read(CharBuffer) here because it is more efficient to write directly to the underlying char array
+        * since the default implementation copies data to a temporary char array anyway
+        */
+      reader.read(encoderIn.array, position, encoderIn.remaining) match {
+        case EOF => endOfInput = true
+        case c => encoderIn.position(position + c)
+      }
       encoderIn.flip
     }
     lastCoderResult = encoder.encode(encoderIn, encoderOut.compact(), endOfInput)

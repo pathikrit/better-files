@@ -12,20 +12,21 @@ object ScannerBenchmark extends Benchmark {
   }
   val scanners: Seq[BufferedReader => AbstractScanner] = Seq(
     new JavaScanner(_),
-    new StreamingScanner(_),
-    new ArrayBufferScanner(_),
-    new CharBufferScanner(_),
-    new IteratorScanner(_),
-    new IterableScanner(_),
     new StringBuilderScanner(_),
-    new FastJavaIOScanner(_),
-    new BetterFilesScanner(_)
+    new CharBufferScanner(_),
+    new StreamingScanner(_),
+    new IterableScanner(_),
+    new IteratorScanner(_),
+    new BetterFilesScanner(_),
+    new ArrayBufferScanner(_),
+    new FastJavaIOScanner2(_),
+    new FastJavaIOScanner(_)
   )
 
   def test(scanner: AbstractScanner) = {
     val (_, time) = profile(run(scanner))
     scanner.close()
-    println(s"${scanner.getClass.getSimpleName}\t: $time ms")
+    println(f"${scanner.getClass.getSimpleName.padTo(25, ' ')}: $time%4d ms")
   }
 
   def run(scanner: AbstractScanner): Unit = repeat(n) {

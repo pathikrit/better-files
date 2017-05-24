@@ -4,15 +4,16 @@ Benchmarks
 ```
 > sbt "benchmarks/test:run-main better.files.ScannerBenchmark"
 [info] Running better.files.ScannerBenchmark 
-JavaScanner             : 2222 ms
-StreamingScanner        :  249 ms
-ArrayBufferScanner      :  261 ms
-CharBufferScanner       : 1158 ms
-IteratorScanner         :  291 ms
-IterableScanner         :  363 ms
-StringBuilderScanner    : 1161 ms
-FastJavaIOScanner       :  170 ms
-BetterFilesScanner      :  273 ms
+JavaScanner              : 2191 ms
+StringBuilderScanner     : 1325 ms
+CharBufferScanner        : 1117 ms
+StreamingScanner         :  212 ms
+IterableScanner          :  365 ms
+IteratorScanner          :  297 ms
+BetterFilesScanner       :  272 ms
+ArrayBufferScanner       :  220 ms
+FastJavaIOScanner2       :  181 ms
+FastJavaIOScanner        :  179 ms
 ```
 
 ----
