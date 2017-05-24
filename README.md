@@ -265,6 +265,7 @@ val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 ```
+`better-files` also supports [certain conversions that are not supported out of the box by the JDK](https://stackoverflow.com/questions/62241/how-to-convert-a-reader-to-inputstream-and-a-writer-to-outputstream)
 
 [`tee`](http://stackoverflow.com/questions/7987395/) multiple outputstreams:
 ```scala

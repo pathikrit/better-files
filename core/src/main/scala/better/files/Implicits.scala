@@ -115,6 +115,9 @@ trait Implicits {
   implicit class ReaderOps(reader: Reader) {
     def buffered: BufferedReader =
       new BufferedReader(reader)
+
+    def toInputStream(implicit charset: Charset = File.defaultCharset): InputStream =
+      new ReaderInputStream(reader)(charset)
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
