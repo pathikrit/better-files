@@ -91,7 +91,11 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
-    name := s"$repo-benchmarks"
+    name := s"$repo-benchmarks",
+    libraryDependencies ++= Seq(
+      "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar",
+      "commons-io" % "commons-io" % "2.5" //TODO: Remove when this is fixed: https://github.com/pathikrit/better-files/issues/160
+    )
   )
   .dependsOn(core % "test->test;compile->compile")
 

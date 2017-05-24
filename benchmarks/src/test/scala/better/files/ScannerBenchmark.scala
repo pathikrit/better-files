@@ -18,6 +18,7 @@ object ScannerBenchmark extends Benchmark {
     new IteratorScanner(_),
     new IterableScanner(_),
     new StringBuilderScanner(_),
+    new FastJavaIOScanner(_),
     new BetterFilesScanner(_)
   )
 
