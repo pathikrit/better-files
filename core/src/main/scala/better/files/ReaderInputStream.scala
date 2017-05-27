@@ -13,7 +13,7 @@ import scala.annotation.tailrec
 class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int) extends InputStream {
 
   def this(reader: Reader, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = defaultCharset) =
-    this(reader = reader, encoder = charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE), bufferSize = bufferSize)
+    this(reader = reader, encoder = charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE), bufferSize = bufferSize)
 
   /**
     * CharBuffer used as input for the decoder. It should be reasonably
@@ -25,7 +25,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
     * ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
-  private[this] val encoderOut = ByteBuffer.allocate(128).flip().asInstanceOf[ByteBuffer]
+  private[this] val encoderOut = ByteBuffer.allocate(1024).flip().asInstanceOf[ByteBuffer]
 
   private[this] var lastCoderResult = CoderResult.UNDERFLOW
   private[this] var endOfInput = false
@@ -40,10 +40,10 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
         case EOF => endOfInput = true
         case c => encoderIn.position(position + c)
       }
-      encoderIn.flip
+      encoderIn.flip()
     }
     lastCoderResult = encoder.encode(encoderIn, encoderOut.compact(), endOfInput)
-    encoderOut.flip
+    encoderOut.flip()
   }
 
   override def read(b: Array[Byte], off: Int, len: Int) = {

@@ -21,10 +21,10 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     * ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
-  private[this] val decoderIn = ByteBuffer.allocate(128)
+  private[this] val decoderIn = ByteBuffer.allocate(1024)
 
-  def this(writer: Writer, bufferSize: Int = defaultBufferSize, writeImmediately: Boolean = false)(implicit charset: Charset = defaultCharset) =
-    this(writer, charset.newDecoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).replaceWith("?"), bufferSize, writeImmediately)
+  def this(writer: Writer, bufferSize: Int = defaultBufferSize, flushImmediately: Boolean = false)(implicit charset: Charset = defaultCharset) =
+    this(writer = writer, decoder = charset.newDecoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).replaceWith("?"), bufferSize = bufferSize, flushImmediately = flushImmediately)
 
   override def write(b: Array[Byte], off: Int, len: Int) = {
     @tailrec def loop(off: Int, len: Int): Unit = if (len > 0) {
@@ -37,7 +37,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     if (flushImmediately) flushOutput()
   }
 
-  override def write(b: Int) = write(Array[Byte](b.toByte), 0, 1)
+  override def write(b: Int) = write(Array(b.toByte))
 
   override def flush() = {
     flushOutput()
@@ -58,7 +58,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
         flushOutput()
         loop()
       } else {
-        assert(coderResult.isUnderflow) //The decoder is configured to replace malformed input and unmappable characters
+        assert(coderResult.isUnderflow, "decoder is configured to replace malformed input and unmappable characters")
       }
     }
     loop()
