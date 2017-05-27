@@ -479,6 +479,18 @@ class FileSpec extends CommonSpec {
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }
 
+  it should "convert readers to inputstreams and writers to outputstreams" in {
+    File.temporaryFile() foreach {f =>
+      val text = List.fill(10000)("hello world")
+      for {
+        writer <- f.bufferedWriter
+        out <- writer.outputstream.autoClosed
+      } out.write(text.mkString("\n").getBytes)
+      val t = f.bufferedReader.flatMap(_.toInputStream.lines)
+      t.toList shouldEqual text
+    }
+  }
+
   it should "serialize/deserialize" in {
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)

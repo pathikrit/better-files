@@ -6,6 +6,7 @@
 * [Issue #150](https://github.com/pathikrit/better-files/issues/150): `ManagedResource[File]` for temp files
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #126](https://github.com/pathikrit/better-files/pull/159): New Typeclassed approach to ARM
+* [Issue #160](https://github.com/pathikrit/better-files/issues/160): Ability to convert Reader/Writer to Input/Output streams
 
 ## v3.0.0
 

@@ -13,6 +13,8 @@ package object files extends Implicits {
     */
   private[files] val defaultBufferSize = 8192
 
+  val EOF = StreamTokenizer.TT_EOF
+
   type Files = Iterator[File]
 
   type Closeable = {
@@ -30,7 +32,7 @@ package object files extends Implicits {
 
   private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
-  private[files] def eofReader(read: => Int) = Iterator.continually(read).takeWhile(_ != StreamTokenizer.TT_EOF)
+  private[files] def eofReader(read: => Int): Iterator[Int] = Iterator.continually(read).takeWhile(_ != EOF)
 
   /**
     * Utility to apply f on all xs skipping over errors

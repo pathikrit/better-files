@@ -130,14 +130,21 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   * Scanner using https://github.com/williamfiset/FastJavaIO
   */
 class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  import org.apache.commons.io.input.ReaderInputStream
+  protected def is: java.io.InputStream = new org.apache.commons.io.input.ReaderInputStream(reader, File.defaultCharset)
 
-  private[this] val fastReader = new fastjavaio.InputReader(new ReaderInputStream(reader, File.defaultCharset))
+  private[this] val fastReader = new fastjavaio.InputReader(is)
 
   override def hasNext = true     //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
   override def next() = fastReader.readStr()
   override def nextInt() = fastReader.readInt()
   override def nextLine() = fastReader.readLine()
+}
+
+/**
+  * Same as FastJavaIOScanner but uses better-files's Reader => InputStream
+  */
+class FastJavaIOScanner2(reader: BufferedReader) extends FastJavaIOScanner(reader) {
+  override def is = reader.toInputStream
 }
 
 /**
