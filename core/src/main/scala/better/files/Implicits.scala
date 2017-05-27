@@ -134,6 +134,9 @@ trait Implicits {
   implicit class WriterOps(writer: Writer) {
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
+
+    def outputstream(implicit charset: Charset = File.defaultCharset): OutputStream =
+      new WriterOutputStream(writer)(charset)
   }
 
   implicit class FileChannelOps(fc: FileChannel) {

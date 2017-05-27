@@ -479,13 +479,13 @@ class FileSpec extends CommonSpec {
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
   }
 
-  it should "convert readers to inputstreams" in {
+  it should "convert readers to inputstreams and writers to outputstreams" in {
     File.temporaryFile() foreach {f =>
       val text = List.fill(10000)("hello world")
       for {
-        out <- f.printWriter()
-        line <- text
-      } out.println(line)
+        writer <- f.bufferedWriter
+        out <- writer.outputstream.autoClosed
+      } out.write(text.mkString("\n").getBytes)
       val t = f.bufferedReader.flatMap(_.toInputStream.lines)
       t.toList shouldEqual text
     }
