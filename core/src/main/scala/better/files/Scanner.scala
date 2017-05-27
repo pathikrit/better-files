@@ -54,7 +54,7 @@ object Scanner {
     * @param delimiter
     * @param includeDelimiters
     */
-  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val charset: Charset = File.defaultCharset)
+  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val charset: Charset = defaultCharset)
   object Config {
     implicit val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
 

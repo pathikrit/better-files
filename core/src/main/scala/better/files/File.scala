@@ -198,7 +198,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     this
   }
 
-  def chars(implicit charset: Charset = File.defaultCharset): Iterator[Char] =
+  def chars(implicit charset: Charset = defaultCharset): Iterator[Char] =
     newBufferedReader(charset).chars //TODO: ManagedResource here?
 
   /**
@@ -208,7 +208,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param charset
     * @return all lines in this file
     */
-  def lines(implicit charset: Charset = File.defaultCharset): Traversable[String] =
+  def lines(implicit charset: Charset = defaultCharset): Traversable[String] =
     Files.readAllLines(path, charset).asScala
 
   /**
@@ -219,13 +219,13 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param charset
     * @return
     */
-  def lineIterator(implicit charset: Charset = File.defaultCharset): Iterator[String] =
+  def lineIterator(implicit charset: Charset = defaultCharset): Iterator[String] =
     Files.lines(path, charset).toAutoClosedIterator
 
-  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = File.defaultCharset): Iterator[String] =
+  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = defaultCharset): Iterator[String] =
     newBufferedReader(charset).tokens(config)
 
-  def contentAsString(implicit charset: Charset = File.defaultCharset): String =
+  def contentAsString(implicit charset: Charset = defaultCharset): String =
     new String(byteArray, charset)
 
   def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
@@ -243,18 +243,18 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param charset
     * @return
     */
-  def appendLines(lines: String*)(implicit charset: Charset = File.defaultCharset): this.type = {
+  def appendLines(lines: String*)(implicit charset: Charset = defaultCharset): this.type = {
     Files.write(path, lines.asJava, charset, File.OpenOptions.append: _*)
     this
   }
 
-  def appendLine(line: String = "")(implicit charset: Charset = File.defaultCharset): this.type =
+  def appendLine(line: String = "")(implicit charset: Charset = defaultCharset): this.type =
     appendLines(line)(charset)
 
-  def append(text: String)(implicit charset: Charset = File.defaultCharset): this.type =
+  def append(text: String)(implicit charset: Charset = defaultCharset): this.type =
     appendByteArray(text.getBytes(charset))
 
-  def appendText(text: String)(implicit charset: Charset = File.defaultCharset): this.type =
+  def appendText(text: String)(implicit charset: Charset = defaultCharset): this.type =
     append(text)(charset)
 
   def appendByteArray(bytes: Array[Byte]): this.type = {
@@ -281,13 +281,13 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     this
   }
 
-  def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): this.type =
+  def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): this.type =
     writeByteArray(text.getBytes(charset))(openOptions)
 
-  def writeText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): this.type =
+  def writeText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): this.type =
     write(text)(openOptions, charset)
 
-  def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): this.type =
+  def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): this.type =
     write(text)(openOptions, charset)
 
   def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile =
@@ -296,16 +296,16 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): ManagedResource[RandomAccessFile] =
     newRandomAccess(mode).autoClosed //TODO: Mode enum?
 
-  def newBufferedReader(implicit charset: Charset = File.defaultCharset): BufferedReader =
+  def newBufferedReader(implicit charset: Charset = defaultCharset): BufferedReader =
     Files.newBufferedReader(path, charset)
 
-  def bufferedReader(implicit charset: Charset = File.defaultCharset): ManagedResource[BufferedReader] =
+  def bufferedReader(implicit charset: Charset = defaultCharset): ManagedResource[BufferedReader] =
     newBufferedReader(charset).autoClosed
 
-  def newBufferedWriter(implicit charset: Charset = File.defaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): BufferedWriter =
+  def newBufferedWriter(implicit charset: Charset = defaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): BufferedWriter =
     Files.newBufferedWriter(path, charset, openOptions: _*)
 
-  def bufferedWriter(implicit charset: Charset = File.defaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[BufferedWriter] =
+  def bufferedWriter(implicit charset: Charset = defaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[BufferedWriter] =
     newBufferedWriter(charset, openOptions).autoClosed
 
   def newFileReader: FileReader =
@@ -351,16 +351,16 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] =
     newOutputStream(openOptions).autoClosed
 
-  def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ZipOutputStream =
+  def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): ZipOutputStream =
     new ZipOutputStream(newOutputStream(openOptions), charset)
 
-  def zipInputStream(implicit charset: Charset = File.defaultCharset): ManagedResource[ZipInputStream] =
+  def zipInputStream(implicit charset: Charset = defaultCharset): ManagedResource[ZipInputStream] =
     newZipInputStream(charset).autoClosed
 
-  def newZipInputStream(implicit charset: Charset = File.defaultCharset): ZipInputStream =
+  def newZipInputStream(implicit charset: Charset = defaultCharset): ZipInputStream =
     new ZipInputStream(new FileInputStream(toJava).buffered, charset)
 
-  def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): ManagedResource[ZipOutputStream] =
+  def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
 
   def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
@@ -816,7 +816,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destination The destination file; Creates this if it does not exists
     * @return The destination zip file
     */
-  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = File.defaultCharset): destination.type = {
+  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): destination.type = {
     val files = if (isDirectory) children else Iterator(this)
     destination.zipIn(files, compressionLevel)(charset)
   }
@@ -826,7 +826,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     *
     * @return the target directory
     */
-  def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = File.defaultCharset): File =
+  def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): File =
     zipTo(destination = File.newTemporaryFile(name, ".zip"), compressionLevel)(charset)
 
   /**
@@ -836,7 +836,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param zipFilter An optional param to reject or accept unzipping a file
     * @return The destination where contents are unzipped
     */
-  def unzipTo(destination: File, zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = File.defaultCharset): destination.type = {
+  def unzipTo(destination: File, zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = defaultCharset): destination.type = {
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
       entry <- zipFile.entries().asScala if zipFilter(entry)
@@ -851,7 +851,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destinationDirectory destination folder; Creates this if it does not exist
     * @return The destination where contents are unzipped
     */
-  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = File.defaultCharset): destinationDirectory.type = {
+  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = defaultCharset): destinationDirectory.type = {
     for {
       zipIn <- zipInputStream(charset)
     } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
@@ -875,7 +875,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param charset
     * @return this
     */
-  def zipIn(files: Files, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(charset: Charset = File.defaultCharset): this.type = {
+  def zipIn(files: Files, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(charset: Charset = defaultCharset): this.type = {
     for {
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input <- files
@@ -890,7 +890,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     *
     * @return the zip file
     */
-  def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = File.defaultCharset): File =
+  def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = defaultCharset): File =
     unzipTo(destination = File.newTemporaryDirectory(name), zipFilter)(charset)
 
   /**
@@ -914,14 +914,6 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
 }
 
 object File {
-  /**
-    * The default charset used by better-files
-    * Note: It uses java.net.charset.Charset.defaultCharset() in general but if the default supports byte-order markers,
-    *       it uses a more compliant version than the JDK one (see: https://github.com/pathikrit/better-files/issues/107)
-    */
-  implicit val defaultCharset: Charset =
-    UnicodeCharset(Charset.defaultCharset())
-
   /**
     * Get a file from a resource
     * Note: Use resourceToFile instead as this may not actually always load the file

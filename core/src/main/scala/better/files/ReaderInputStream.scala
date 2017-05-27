@@ -12,7 +12,7 @@ import scala.annotation.tailrec
   */
 class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int) extends InputStream {
 
-  def this(reader: Reader, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = File.defaultCharset) =
+  def this(reader: Reader, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = defaultCharset) =
     this(reader = reader, encoder = charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE), bufferSize = bufferSize)
 
   /**
@@ -34,10 +34,8 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
     assert(!endOfInput)
     if (lastCoderResult.isUnderflow) {
       val position = encoderIn.compact().position
-      /**
-        * We don't use Reader#read(CharBuffer) here because it is more efficient to write directly to the underlying char array
-        * since the default implementation copies data to a temporary char array anyway
-        */
+      //  We don't use Reader#read(CharBuffer) here because it is more efficient to write directly to the underlying char array
+      // since the default implementation copies data to a temporary char array anyway
       reader.read(encoderIn.array, position, encoderIn.remaining) match {
         case EOF => endOfInput = true
         case c => encoderIn.position(position + c)

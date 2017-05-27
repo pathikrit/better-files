@@ -1,6 +1,7 @@
 package better
 
 import java.io.{InputStream, StreamTokenizer}
+import java.nio.charset.Charset
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
@@ -12,6 +13,14 @@ package object files extends Implicits {
     * Seems like a good value used by JDK: (see: java.io.BufferedInputStream.DEFAULT_BUFFER_SIZE)
     */
   private[files] val defaultBufferSize = 8192
+
+  /**
+    * The default charset used by better-files
+    * Note: It uses java.net.charset.Charset.defaultCharset() in general but if the default supports byte-order markers,
+    *       it uses a more compliant version than the JDK one (see: https://github.com/pathikrit/better-files/issues/107)
+    */
+  val defaultCharset: Charset =
+    UnicodeCharset(Charset.defaultCharset())
 
   val EOF = StreamTokenizer.TT_EOF
 

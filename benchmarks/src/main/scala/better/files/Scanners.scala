@@ -130,7 +130,7 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   * Scanner using https://github.com/williamfiset/FastJavaIO
   */
 class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) {
-  protected def is: java.io.InputStream = new org.apache.commons.io.input.ReaderInputStream(reader, File.defaultCharset)
+  protected def is: java.io.InputStream = new org.apache.commons.io.input.ReaderInputStream(reader, defaultCharset)
 
   private[this] val fastReader = new fastjavaio.InputReader(is)
 

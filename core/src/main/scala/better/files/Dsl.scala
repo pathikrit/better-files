@@ -39,19 +39,19 @@ object Dsl {
     def /(f: File => File): File =
       f(file)
 
-    def <<(line: String)(implicit charset: Charset = File.defaultCharset): file.type =
+    def <<(line: String)(implicit charset: Charset = defaultCharset): file.type =
       file.appendLines(line)(charset)
 
-    def >>:(line: String)(implicit charset: Charset = File.defaultCharset): file.type =
+    def >>:(line: String)(implicit charset: Charset = defaultCharset): file.type =
       file.appendLines(line)(charset)
 
-    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): file.type =
+    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): file.type =
       file.write(text)(openOptions, charset)
 
-    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = File.defaultCharset): file.type =
+    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): file.type =
       file.write(text)(openOptions, charset)
 
-    def `!`(implicit charset: Charset = File.defaultCharset): String =
+    def `!`(implicit charset: Charset = defaultCharset): String =
       file.contentAsString(charset)
 
     def `===`(that: File): Boolean =
@@ -137,9 +137,9 @@ object Dsl {
   def stat(file: File): PosixFileAttributes =
     file.posixAttributes
 
-  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = File.defaultCharset): destination.type =
+  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = defaultCharset): destination.type =
     zipFile.unzipTo(destination)(charset)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = File.defaultCharset): destination.type =
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(charset)
 }

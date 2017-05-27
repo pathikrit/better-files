@@ -76,10 +76,10 @@ trait Implicits {
     def asObjectInputStream: ObjectInputStream =
       new ObjectInputStream(in)
 
-    def reader(implicit charset: Charset = File.defaultCharset): InputStreamReader =
+    def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
 
-    def lines(implicit charset: Charset = File.defaultCharset): Iterator[String] =
+    def lines(implicit charset: Charset = defaultCharset): Iterator[String] =
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
@@ -93,7 +93,7 @@ trait Implicits {
     def gzipped: GZIPOutputStream =
       new GZIPOutputStream(out)
 
-    def writer(implicit charset: Charset = File.defaultCharset): OutputStreamWriter =
+    def writer(implicit charset: Charset = defaultCharset): OutputStreamWriter =
       new OutputStreamWriter(out, charset)
 
     def printWriter(autoFlush: Boolean = false): PrintWriter =
@@ -116,7 +116,7 @@ trait Implicits {
     def buffered: BufferedReader =
       new BufferedReader(reader)
 
-    def toInputStream(implicit charset: Charset = File.defaultCharset): InputStream =
+    def toInputStream(implicit charset: Charset = defaultCharset): InputStream =
       new ReaderInputStream(reader)(charset)
   }
 
@@ -135,7 +135,7 @@ trait Implicits {
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
 
-    def outputstream(implicit charset: Charset = File.defaultCharset): OutputStream =
+    def outputstream(implicit charset: Charset = defaultCharset): OutputStream =
       new WriterOutputStream(writer)(charset)
   }
 
