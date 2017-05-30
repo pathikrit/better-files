@@ -1,4 +1,4 @@
-# better-files [![License][licenseImg]][licenseLink] [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink]
+# better-files [![License][licenseImg]][licenseLink] [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink] [![Gitter](https://img.shields.io/gitter/room/pathikrit/better-files.svg)](https://gitter.im/pathikrit/better-files)
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
