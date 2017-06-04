@@ -1,6 +1,10 @@
 package better.files
 
+import better.files.Scanner.Read
+
 import shapeless._
+
+import scala.util.Try
 
 object ShapelessScanner {
   implicit val hNilScannable: Scannable[HNil] =
@@ -11,4 +15,10 @@ object ShapelessScanner {
 
   implicit def genericScannable[A, R](implicit gen: Generic.Aux[A, R], reprScannable: Lazy[Scannable[R]]): Scannable[A] =
     Scannable(s => gen.from(reprScannable.value(s)))
+
+  implicit val cnilReader: Read[CNil] =
+    Read(_ => throw new IllegalStateException())
+
+  implicit def coproductReader[H, T <: Coproduct](implicit h: Read[H], t: Read[T]): Read[H :+: T] =
+    Read(s => Try(Inl(h(s))).getOrElse(Inr(t(s))))
 }

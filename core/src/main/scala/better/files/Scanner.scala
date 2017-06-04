@@ -46,7 +46,7 @@ object Scanner {
     override def close() = reader.close()
   }
 
-  val stdin = Scanner(System.in)(Config.default)
+  val stdin: Scanner = Scanner(System.in)(Config.default)
 
   /**
     * Use this to configure your Scanner
