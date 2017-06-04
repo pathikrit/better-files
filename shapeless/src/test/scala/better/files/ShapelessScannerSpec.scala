@@ -27,6 +27,6 @@ class ShapelessScannerSpec extends CommonSpec {
     val in = Scanner(text)
 
     case class Person(id: Int, name: String, isMale: Boolean)
-    assert(Seq.fill(3)(in.next[Person]).map(_.id).sum == 51)
+    assert(in.next[Iterator[Person]].map(_.id).sum == 51)
   }
 }

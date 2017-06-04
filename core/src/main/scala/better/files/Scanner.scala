@@ -92,7 +92,7 @@ trait Scannable[A] {
   def apply(scanner: Scanner): A
 
   def +[B](that: Scannable[B]): Scannable[(A, B)] =
-    Scannable(s => this (s) -> that(s))
+    Scannable(s => this(s) -> that(s))
 }
 
 object Scannable {
@@ -105,4 +105,7 @@ object Scannable {
 
   implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] =
     t1 + t2
+
+  implicit def iterator[A](implicit scanner: Scannable[A]): Scannable[Iterator[A]] =
+    Scannable(s => Iterator.continually(scanner(s)).withHasNext(s.hasNext))
 }
