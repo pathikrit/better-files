@@ -23,7 +23,7 @@ object Disposable {
     }
   }
 
-  implicit val closableDisposer: Disposable[Closeable] =
+  implicit val closableDisposer: Disposable[AutoCloseable] =
     Disposable(_.close())
 
   val fileDisposer: Disposable[File] =
@@ -42,6 +42,11 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
     val result = Try(f(resource))
     disposeOnce()
     result.get
+  }
+
+  def withFilter(f: A => Boolean): this.type = {
+    if (!f(resource)) disposeOnce()
+    this
   }
 
   /**

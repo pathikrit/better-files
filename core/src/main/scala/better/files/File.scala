@@ -1096,7 +1096,7 @@ object File {
       override def escapePath(path: String) = Pattern.quote(path)
     }
 
-    val default = glob
+    val default: PathMatcherSyntax = glob
   }
 
   class RandomAccessMode private(val value: String)

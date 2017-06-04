@@ -26,10 +26,6 @@ package object files extends Implicits {
 
   type Files = Iterator[File]
 
-  type Closeable = {
-    def close(): Unit
-  }
-
   def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name)
 
   // Some utils:
