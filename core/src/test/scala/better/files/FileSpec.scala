@@ -388,8 +388,10 @@ class FileSpec extends CommonSpec {
 
   it should "copy" in {
     (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Hello World")
+    (fb / "t5" / "t5.txt").createIfNotExists(createParents = true).writeText("Scala Awesome")
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
+    (fb / "t5" / "t5.txt").contentAsString shouldEqual "Scala Awesome"
     (fb / "t3").exists shouldBe true
   }
 
