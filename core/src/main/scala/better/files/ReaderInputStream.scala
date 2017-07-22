@@ -25,7 +25,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
     * ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
-  private[this] val encoderOut = ByteBuffer.allocate(1024).flip().asInstanceOf[ByteBuffer]
+  private[this] val encoderOut = ByteBuffer.allocate(bufferSize>>4).flip().asInstanceOf[ByteBuffer]
 
   private[this] var lastCoderResult = CoderResult.UNDERFLOW
   private[this] var endOfInput = false

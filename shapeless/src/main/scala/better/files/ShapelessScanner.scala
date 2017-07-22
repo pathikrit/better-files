@@ -17,7 +17,7 @@ object ShapelessScanner {
     Scannable(s => gen.from(reprScannable.value(s)))
 
   implicit val cnilReader: Read[CNil] =
-    Read(_ => throw new IllegalStateException())
+    Read(s => throw new RuntimeException(s"Could not read $s into this coproduct"))
 
   implicit def coproductReader[H, T <: Coproduct](implicit h: Read[H], t: Read[T]): Read[H :+: T] =
     Read(s => Try(Inl(h(s))).getOrElse(Inr(t(s))))
