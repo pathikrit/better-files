@@ -353,7 +353,7 @@ class FileSpec extends CommonSpec {
     assume(isUnixOS)
     val magicWord = "Hello World"
     t1 writeText magicWord
-    t1.linkTo(t3)
+    t1.linkTo(t3, symbolic = false)
     (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
   }
 
