@@ -353,7 +353,7 @@ class FileSpec extends CommonSpec {
     assume(isUnixOS)
     val magicWord = "Hello World"
     t1 writeText magicWord
-    t1.linkTo(t3, symbolic = false)
+    t1.linkTo(t3)
     (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
   }
 
@@ -391,6 +391,12 @@ class FileSpec extends CommonSpec {
     cp(fb / "t3", fb / "t5")
     (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
     (fb / "t3").exists shouldBe true
+    (fb / "t5" / "t3" / "t1.txt").createIfNotExists(createParents = true).writeText("Will not be overwrited")
+    (fb / "t5" / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Will be overwrited")
+    cp(fb / "t3", fb / "t5")
+    (fb / "t5" / "t3" / "t1.txt").contentAsString shouldEqual "Will not be overwrited"
+    (fb / "t5" / "t3" / "t4.txt").contentAsString shouldEqual "Hello World"
+    (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
   }
 
   it should "move" in {
