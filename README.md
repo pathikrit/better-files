@@ -285,7 +285,7 @@ dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == S
 
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
 ```scala
-val matches = dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.regex)
+val matches = dir.globRegex("^\\w*$".r) //equivalent to dir.glob("^\\w*$")(syntax = File.PathMatcherSyntax.regex)
 ```
 
 By default, glob syntax in `better-files` is [different from](https://github.com/pathikrit/better-files/issues/114)

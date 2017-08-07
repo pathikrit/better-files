@@ -333,7 +333,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     val pattern = (".*" + regexpPathSep + ".*\\.txt").r
 
     val pathsGlob = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
-    val pathsRegex = globTree.regex(pattern)
+    val pathsRegex = globTree.globRegex(pattern)
 
     verify(pathsRegex, pathsGlob.toSeq.map(_.toString), globTree)
 

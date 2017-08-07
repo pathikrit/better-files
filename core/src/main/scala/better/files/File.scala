@@ -537,10 +537,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @see glob
     * @return Set of files that matched
     */
-  //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
-  def regex(pattern: Regex, includePath: Boolean = true)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.regex, visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
-    glob(pattern.regex, includePath)
-  }
+  def globRegex(pattern: Regex, includePath: Boolean = true)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+    glob(pattern.regex, includePath)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
 
   /**
     * More Scala friendly way of doing Files.walk
