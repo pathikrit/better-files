@@ -690,7 +690,6 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     */
   def copyTo(destination: File, overwrite: Boolean = false)(implicit copyOptions: File.CopyOptions = File.CopyOptions(overwrite)): destination.type = {
     if (isDirectory) {//TODO: maxDepth?
-      if (overwrite) destination.delete(swallowIOExceptions = true)
       Files.walkFileTree(path, new SimpleFileVisitor[Path] {
         def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
 

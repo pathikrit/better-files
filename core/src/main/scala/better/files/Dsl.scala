@@ -61,11 +61,21 @@ object Dsl {
       !(file === that)
   }
 
-  def cp(file1: File, file2: File): File =  //todo return file2.type when SI-4751 is fixed
-    file1.copyTo(file2, overwrite = true)
+  def cp(file1: File, file2: File): File = { //todo return file2.type when SI-4751 is fixed
+    if (file2.isDirectory) {
+      file1.copyTo(file2 / file1.name, overwrite = true)
+    } else {
+      file1.copyTo(file2, overwrite = true)
+    }
+  }
 
-  def mv(file1: File, file2: File): File =
-    file1.moveTo(file2, overwrite = true)
+  def mv(file1: File, file2: File): File = {
+    if (file2.isDirectory) {
+      file1.moveTo(file2 / file1.name, overwrite = true)
+    } else {
+      file1.moveTo(file2, overwrite = true)
+    }
+  }
 
   def rm(file: File): File =
     file.delete(swallowIOExceptions = true)
