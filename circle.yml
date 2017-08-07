@@ -8,15 +8,6 @@ test:
   override:
     - sbt +test
 
-# Needed if using a newer SBT than supported by CircleCI: https://circleci.com/docs/1.0/language-scala/
-dependencies:
-  pre:
-    - wget -q https://dl.bintray.com/sbt/debian/sbt-0.13.16.deb
-    - sudo dpkg -i sbt-0.13.16.deb
-  cache_directories:
-    - "~/.ivy2"
-    - "~/.sbt"
-
 deployment:
   master:
     branch: master
