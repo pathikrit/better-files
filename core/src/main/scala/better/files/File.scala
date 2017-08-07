@@ -15,6 +15,7 @@ import javax.xml.bind.DatatypeConverter
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.util.Properties
+import scala.util.matching.Regex
 
 /**
   * Scala wrapper around java.nio.files.Path
@@ -524,8 +525,22 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     *                    e.g. instead of **//*.txt we just use *.txt
     * @return Set of files that matched
     */
+  //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
   def glob(pattern: String, includePath: Boolean = true)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
     pathMatcher(syntax, includePath)(pattern).matches(this)(visitOptions)
+
+  /**
+    * Util to match from this file's path using Regex
+    *
+    * @param includePath If true, we don't need to set path glob patterns
+    *                    e.g. instead of **//*.txt we just use *.txt
+    * @see glob
+    * @return Set of files that matched
+    */
+  //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
+  def regex(pattern: Regex, includePath: Boolean = true)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.regex, visitOptions: File.VisitOptions = File.VisitOptions.default): Files = {
+    glob(pattern.regex, includePath)
+  }
 
   /**
     * More Scala friendly way of doing Files.walk
