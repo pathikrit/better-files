@@ -19,6 +19,8 @@ import scala.util.Try
   */
 trait Implicits {
 
+  //TODO: Rename all Ops to Extensions
+
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File =
       value(args).toFile
@@ -40,7 +42,10 @@ trait Implicits {
       File(file.getPath)
   }
 
-  //TODO: Rename all Ops to Extensions
+  implicit class SymbolExtensions(symbol: Symbol) {
+    def /(child: Symbol): File =
+      File(symbol.name) / child
+  }
 
   implicit class IteratorExtensions[A](it: Iterator[A]) {
     def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
