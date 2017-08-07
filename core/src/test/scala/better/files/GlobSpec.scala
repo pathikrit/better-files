@@ -2,12 +2,11 @@ package better.files
 
 import better.files.Dsl._
 
+import java.io.File.separator
+
 import org.scalatest.BeforeAndAfterAll
 
 class GlobSpec extends CommonSpec with BeforeAndAfterAll {
-  /** this is path sep for regexp, it should be string and regexp escaped */
-  val regexpPathSep = if (isUnixOS) "/" else "\\\\"
-
   var testDir: File = _
   var globTree: File = _
   var specialTree: File = _
@@ -101,8 +100,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   override def afterAll() = {
-    rm(testDir)
-    ()
+    val _ = rm(testDir)
   }
 
   /**
@@ -313,7 +311,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     assert(paths.isEmpty)
   }
 
-  "Regex" should "match all txt-files  under sub-directory (e.g. '.*/.*\\\\.txt')" in {
+  "Regex" should "match all txt-files under sub-directory (e.g. '.*/.*\\\\.txt')" in {
     val refPaths = Seq(
       "a/a.txt",
       "a/x.txt",
@@ -324,13 +322,13 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "b/b.txt",
       "b/a/ba.txt"
     )
-    val paths = globTree.glob(".*" + regexpPathSep + ".*\\.txt")(File.PathMatcherSyntax.regex)
+    val paths = globTree.glob(".*" + separator + ".*\\.txt")(File.PathMatcherSyntax.regex)
 
     verify(paths, refPaths, globTree)
   }
 
   it should "match the same if `Regex` is used" in {
-    val pattern = (".*" + regexpPathSep + ".*\\.txt").r
+    val pattern = (".*" + separator + ".*\\.txt").r
 
     val pathsGlob = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
     val pathsRegex = globTree.globRegex(pattern)
@@ -347,7 +345,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "a/a2/a2.txt",
       "a/a2/x.txt"
     )
-    val paths = globTree.glob("a" + regexpPathSep + ".*\\.txt")(File.PathMatcherSyntax.regex)
+    val paths = globTree.glob("a" + separator + ".*\\.txt")(File.PathMatcherSyntax.regex)
 
     verify(paths, refPaths, globTree)
     assert(globTree.glob("a/.*\\.txt", includePath = false)(File.PathMatcherSyntax.regex).isEmpty)
