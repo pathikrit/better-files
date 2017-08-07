@@ -3,8 +3,8 @@ val repo = "better-files"
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.12.2",
-  crossScalaVersions := Seq("2.12.2"),
+  scalaVersion := "2.12.3",
+  crossScalaVersions := Seq("2.12.3"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions ++= Seq(
@@ -54,7 +54,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-unused:privates",            // Warn if a private member is unused.
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.2" % Test,
+  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % Test,
   updateImpactOpenBrowser := false
 )
 
@@ -72,7 +72,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.0"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.3"
   )
   .dependsOn(core % "test->test;compile->compile")
 
