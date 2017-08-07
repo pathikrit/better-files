@@ -7,6 +7,7 @@
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #126](https://github.com/pathikrit/better-files/pull/159): New Typeclassed approach to ARM
 * [Issue #160](https://github.com/pathikrit/better-files/issues/160): Ability to convert Reader/Writer to Input/Output streams
+* [Issue #77](https://github.com/pathikrit/better-files/issues/77): Better UNIX-y behaviour for `cp` and `mv` DSL utils
 
 ## v3.0.0
 
