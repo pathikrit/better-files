@@ -329,6 +329,16 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     verify(paths, refPaths, globTree)
   }
 
+  it should "match the same if `Regex` is used" in {
+    val pattern = (".*" + regexpPathSep + ".*\\.txt").r
+
+    val pathsGlob = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
+    val pathsRegex = globTree.regex(pattern)
+
+    verify(pathsRegex, pathsGlob.toSeq.map(_.toString), globTree)
+
+  }
+
   it should "use parent dir for matching (e.g. plain 'subdir/*.ext' instead of '**/subdir/*.ext)" in {
     // e.g. check that b nor c are matched, nor b/a
     val refPaths = Seq(
