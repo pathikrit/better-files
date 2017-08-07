@@ -63,7 +63,7 @@ class FileSpec extends CommonSpec {
     t3 = testRoot/"a"/"a1"/"t3.scala.txt"
     fb = testRoot/"b"
     b1 = testRoot/"b"/"b1"
-    b2 = testRoot/"b"/"b2.txt"
+    b2 = testRoot/'b/"b2.txt"
     Seq(a1, a2, fb) foreach mkdirs
     Seq(t1, t2) foreach touch
   }

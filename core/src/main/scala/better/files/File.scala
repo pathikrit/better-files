@@ -125,6 +125,9 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def /(child: String): File =
     path.resolve(child)
 
+  def /(child: Symbol): File =
+    this / child.name
+
   def createChild(child: String, asDirectory: Boolean = false, createParents: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
     (this / child).createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
 

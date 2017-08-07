@@ -118,8 +118,9 @@ val f2: File = "/User/johndoe/Documents".toFile              // convert a string
 val f3: File = new JFile("/User/johndoe/Documents").toScala  // convert a Java file to Scala
 val f4: File = root/"User"/"johndoe"/"Documents"             // using root helper to start from root
 val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
-val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
-val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
+val f6: File = `~` / 'Documents                              // Same as above but using symbols
+val f7: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
+val f8: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
 ``` 
 
 **Note**: Rename the import if you think the usage of the class `File` may confuse your teammates:
