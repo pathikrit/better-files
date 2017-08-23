@@ -15,6 +15,7 @@
 * [Issue #160](https://github.com/pathikrit/better-files/issues/160): Ability to convert Reader/Writer to Input/Output streams
 * [Issue #77](https://github.com/pathikrit/better-files/issues/77): Better UNIX-y behaviour for `cp` and `mv` DSL utils
 * [Issue #169](https://github.com/pathikrit/better-files/issues/169): Support for symbols in file DSL
+* [Issue #171](https://github.com/pathikrit/better-files/issues/171): Handle `createDirectories()` on symlinks to existing directories
 
 ## v3.0.0
 
