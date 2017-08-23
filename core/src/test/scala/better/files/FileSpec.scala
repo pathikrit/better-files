@@ -290,6 +290,13 @@ class FileSpec extends CommonSpec {
     fa.md5 should not equal c1
   }
 
+  it should "create if not exist" in {
+    def doTest(dir: File) = repeat(5) {
+      (dir / "file.txt").createIfNotExists(createParents = true)
+    }
+    noException should be thrownBy File.temporaryDirectory().foreach(doTest)
+  }
+
   it should "support chown/chgrp" in {
     fa.ownerName should not be empty
     fa.groupName should not be empty
