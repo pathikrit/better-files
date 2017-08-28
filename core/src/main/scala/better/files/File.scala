@@ -973,6 +973,9 @@ object File {
   def temporaryDirectory(prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
     newTemporaryDirectory(prefix, parent)(attributes).toTemporary
 
+  def usingTemporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): Unit =
+    temporaryDirectory(prefix, parent, attributes).foreach(f)
+
   def newTemporaryFile(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
     parent match {
       case Some(dir) => Files.createTempFile(dir.path, prefix, suffix, attributes: _*)
@@ -982,6 +985,9 @@ object File {
 
   def temporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
     newTemporaryFile(prefix, suffix, parent)(attributes).toTemporary
+
+  def usingTemporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): Unit =
+    temporaryFile(prefix, suffix, parent, attributes).foreach(f)
 
   implicit def apply(path: Path): File =
     new File(path.toAbsolutePath.normalize())

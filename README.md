@@ -322,6 +322,7 @@ Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must impor
 file.isReadLocked; file.isWriteLocked; file.isLocked
 File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
+You can also load resources from your classpath using `File.resource` or `File.copyResource`.
 
 ### Temporary files
 Utils to create temporary files:
@@ -334,13 +335,26 @@ These files are [not deleted automatically on exit by the JVM](http://stackoverf
 
 A cleaner alternative is to use self-deleting file contexts which deletes the file immediately when done:
 ```scala
-File.tempFile() foreach {tempFile =>
-  ...
-  // tempFile is auto deleted at the end of this block - even if an exception happens
-}
+for {
+ tempFile <- File.temporaryFile()
+} doSomething(tempFile) // tempFile is auto deleted at the end of this block - even if an exception happens
 ```
 
-You can also load resources from your classpath using `File.resource` or `File.copyResource`.
+OR equivalently:
+```scala
+File.usingTemporaryFile() {tempFile =>
+  //do something
+}  // tempFile is auto deleted at the end of this block - even if an exception happens
+```
+
+You can make any files temporary (i.e. deleted when used) by doing this:
+```scala
+val foo = File.home / "Downloads" / "foo.txt"
+
+for {
+ temp <- foo.toTemporary
+} doSomething(temp) // foo is deleted at the end of this block - even if an exception happens
+```
 
 ### UNIX DSL
 All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Dsl$.html) reminiscent of the command line:
