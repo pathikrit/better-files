@@ -54,7 +54,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-unused:privates",            // Warn if a private member is unused.
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % Test,
+  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test,
   updateImpactOpenBrowser := false
 )
 
@@ -72,7 +72,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.3"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.4"
   )
   .dependsOn(core % "test->test;compile->compile")
 
@@ -92,8 +92,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(
     name := s"$repo-benchmarks",
     libraryDependencies ++= Seq(
-      "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar",
-      "commons-io" % "commons-io" % "2.5" //TODO: Remove when this is fixed: https://github.com/pathikrit/better-files/issues/160
+      "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"
     )
   )
   .dependsOn(core % "test->test;compile->compile")
