@@ -37,12 +37,12 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
 
   // This is the Scala equivalent of how javac compiles try-with-resources,
   // Except that fatal exceptions while disposing take precedence over exceptions thrown previously
-  private[this] def disposeOnce(e1: Throwable) = {
+  private[this] def disposeOnceAndThrow(e1: Throwable) = {
     try {
       disposeOnce()
     } catch {
       case NonFatal(e2) => e1.addSuppressed(e2)
-      case e2 =>
+      case e2: Throwable =>
         e2.addSuppressed(e1)
         throw e2
     }
@@ -57,7 +57,7 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
     try {
       f(resource)
     } catch {
-      case e1: Throwable => disposeOnce(e1)
+      case e1: Throwable => disposeOnceAndThrow(e1)
     } finally {
       disposeOnce()
     }
@@ -84,7 +84,7 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
         if (!result) disposeOnce()
         result
       } catch {
-        case e1: Throwable => disposeOnce(e1)
+        case e1: Throwable => disposeOnceAndThrow(e1)
       }
     }
   }

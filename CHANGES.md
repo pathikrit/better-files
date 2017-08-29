@@ -7,7 +7,7 @@
 ## v3.1.1
 
 * [Issue #173](https://github.com/pathikrit/better-files/issues/173): Better ARM handling of fatal errors
-* [Restore File.usingTemp](https://github.com/pathikrit/better-files/commit/35184a642245db3d1e41fc02c7bfbec0b19a43bb) first introduced in d3522e8da63b55c7d3fa14cc9b0b76acd57c60ca
+* [Restore File.usingTemp](https://github.com/pathikrit/better-files/commit/35184a642245db3d1e41fc02c7bfbec0b19a43bb) first introduced in [7c60ca](https://github.com/pathikrit/better-files/commit/d3522e8da63b55c7d3fa14cc9b0b76acd57c60ca)
 
 ## v3.1.0
 
