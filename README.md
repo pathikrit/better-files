@@ -347,7 +347,7 @@ File.usingTemporaryFile() {tempFile =>
 }  // tempFile is auto deleted at the end of this block - even if an exception happens
 ```
 
-You can make any files temporary (i.e. deleted when used) by doing this:
+You can make any files temporary (i.e. delete after use) by doing this:
 ```scala
 val foo = File.home / "Downloads" / "foo.txt"
 

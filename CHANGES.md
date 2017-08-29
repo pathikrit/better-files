@@ -3,6 +3,7 @@
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
+* Remove implicit options from all APIs
 
 ## v3.1.1
 
@@ -15,7 +16,6 @@
 * [Issue #136](https://github.com/pathikrit/better-files/issues/136): Use execution contexts for file monitoring
 * [Issue #152](https://github.com/pathikrit/better-files/issues/152): Streamed unzipping
 * [Issue #150](https://github.com/pathikrit/better-files/issues/150): `ManagedResource[File]` for temp files
-* [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #126](https://github.com/pathikrit/better-files/pull/159): New Typeclassed approach to ARM
 * [Issue #160](https://github.com/pathikrit/better-files/issues/160): Ability to convert Reader/Writer to Input/Output streams
 * [Issue #77](https://github.com/pathikrit/better-files/issues/77): Better UNIX-y behaviour for `cp` and `mv` DSL utils

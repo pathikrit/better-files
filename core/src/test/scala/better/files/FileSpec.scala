@@ -300,6 +300,17 @@ class FileSpec extends CommonSpec {
     noException should be thrownBy File.temporaryDirectory().foreach(doTest)
   }
 
+  it should "create if not exist directory structures" in {
+    File.usingTemporaryDirectory() {dir =>
+      val file = dir / "a" / "b" / "c.txt"
+      assert(file.notExists)
+      assert(file.parent.notExists)
+      file.createIfNotExists(createParents = true)
+      assert(file.exists)
+      assert(file.parent.exists)
+    }
+  }
+
   it should "support chown/chgrp" in {
     fa.ownerName should not be empty
     fa.groupName should not be empty
