@@ -11,19 +11,19 @@ class ManagedResourceSpec extends CommonSpec {
   private class TestDisposable extends AutoCloseable {
     var closeCount = 0
 
-    override def close() =
+    override def close(): Unit =
       closeCount += 1
   }
 
   private class TestDisposableThatThrows extends TestDisposable {
-    override def close() = {
+    override def close(): Unit = {
       super.close()
       throw new TestDisposeException
     }
   }
 
   private class TestDisposableThatThrowsFatal extends TestDisposable {
-    override def close() = {
+    override def close(): Unit = {
       super.close()
       throw new TestDisposeFatalException
     }
@@ -36,7 +36,7 @@ class ManagedResourceSpec extends CommonSpec {
   // Custom matchers
 
   private class HaveSuppressedMatcher(classes: Class[_ <: Throwable]*) extends Matcher[Throwable] {
-    override def apply(left: Throwable) = {
+    override def apply(left: Throwable): MatchResult = {
       MatchResult(
         (classes corresponds left.getSuppressed) {
           (clazz, suppressed) => clazz isInstance suppressed
@@ -57,7 +57,9 @@ class ManagedResourceSpec extends CommonSpec {
   it should "map correctly" in {
     val t = new TestDisposable
 
-    val result = for (tc <- t.autoClosed) yield {
+    val result = for {
+      tc <- t.autoClosed
+    } yield {
       t.closeCount shouldBe 0
       "hello"
     }
@@ -85,7 +87,9 @@ class ManagedResourceSpec extends CommonSpec {
     val t = new TestDisposable
 
     a [TestEvalException] should be thrownBy {
-      for (tc <- t.autoClosed) {
+      for {
+        tc <- t.autoClosed
+      } {
         t.closeCount shouldBe 0
         throw new TestEvalException
       }
@@ -108,21 +112,29 @@ class ManagedResourceSpec extends CommonSpec {
   }
 
   it should "handle disposal exceptions correctly" in {
-    // For some mysterious reason, thrownBy doesn't work here, in this specific test case. No clue why, despite spending an entire day trying to figure it out, including repeatedly stepping through the innards of ScalaTest in a debugger. Catching the exception manually does work, though.
+    // For some mysterious reason, thrownBy doesn't work here, in this specific test case. No clue why, despite spending an entire day trying to figure it out,
+    // including repeatedly stepping through the innards of ScalaTest in a debugger. Catching the exception manually does work, though.
+    val messageNoException = "no exception was thrown"
+    def messageWrongException(e: Throwable): String =
+      s"an exception was thrown, but not a TestDisposeException; instead it's a ${e.getClass.getName}"
+
     val t = new TestDisposableThatThrows
 
     val e1 =
       try {
-        for (tc <- t.autoClosed)
+        for {
+          tc <- t.autoClosed
+        } {
           t.closeCount shouldBe 0
+        }
         None
       }
       catch {
         case e: TestDisposeException =>
           Some(e)
       }
-    assert(e1.nonEmpty, "no exception was thrown")
-    assert(e1.get.isInstanceOf[TestDisposeException], s"an exception was thrown, but not a TestDisposeException; instead it's a ${e1.get.getClass.getName}")
+    assert(e1.nonEmpty, messageNoException)
+    e1 foreach { e1c => assert(e1c.isInstanceOf[TestDisposeException], messageWrongException(e1c)) }
     t.closeCount shouldBe 1
 
     var lastSeen = ""
@@ -144,8 +156,8 @@ class ManagedResourceSpec extends CommonSpec {
           Some(e)
       }
     lastSeen shouldBe "three"
-    assert(e2.nonEmpty, "no exception was thrown")
-    assert(e2.get.isInstanceOf[TestDisposeException], s"an exception was thrown, but not a TestDisposeException; instead it's a ${e2.get.getClass.getName}")
+    assert(e2.nonEmpty, messageNoException)
+    e2 foreach { e2c => assert(e2c.isInstanceOf[TestDisposeException], messageWrongException(e2c)) }
     t.closeCount shouldBe 2
   }
 
@@ -154,7 +166,9 @@ class ManagedResourceSpec extends CommonSpec {
 
     def doTheThing(): String = {
       throw the [ControlThrowable] thrownBy {
-        for (tc <- t.autoClosed) {
+        for {
+          tc <- t.autoClosed
+        } {
           t.closeCount shouldBe 0
           return "hello"
         }
@@ -182,7 +196,9 @@ class ManagedResourceSpec extends CommonSpec {
     val t = new TestDisposableThatThrows
 
     the [TestEvalException] thrownBy {
-      for (tc <- t.autoClosed) {
+      for {
+        tc <- t.autoClosed
+      } {
         t.closeCount shouldBe 0
         throw new TestEvalException
       }
@@ -208,7 +224,9 @@ class ManagedResourceSpec extends CommonSpec {
     val t = new TestDisposableThatThrowsFatal
 
     the [TestDisposeFatalException] thrownBy {
-      for (tc <- t.autoClosed) {
+      for {
+        tc <- t.autoClosed
+      } {
         t.closeCount shouldBe 0
         throw new TestEvalException
       }
