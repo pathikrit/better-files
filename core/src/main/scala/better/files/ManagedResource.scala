@@ -35,36 +35,31 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
   private[this] val isDisposed = new AtomicBoolean(false)
   private[this] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
+  // This is the Scala equivalent of how javac compiles try-with-resources,
+  // Except that fatal exceptions while disposing take precedence over exceptions thrown previously
+  private[this] def disposeOnceAndThrow(e1: Throwable) = {
+    try {
+      disposeOnce()
+    } catch {
+      case NonFatal(e2) => e1.addSuppressed(e2)
+      case e2: Throwable =>
+        e2.addSuppressed(e1)
+        throw e2
+    }
+    throw e1
+  }
+
   def foreach[U](f: A => U): Unit = {
     val _ = map(f)
   }
 
   def map[B](f: A => B): B = {
-    // Avoid using Option here. If an OutOfMemoryError is caught, allocating an Option may cause another one.
-    var e1: Throwable = null
-
-    // This is the Scala equivalent of how javac compiles try-with-resources, except that fatal exceptions while disposing take precedence over exceptions thrown by the provided function.
-    try
+    try {
       f(resource)
-    catch { case e: Throwable =>
-      e1 = e
-      throw e
-    }
-    finally {
-      if (e1 ne null) {
-        try
-          disposeOnce()
-        catch { case e2: Throwable =>
-          if (NonFatal(e2))
-            e1.addSuppressed(e2)
-          else {
-            e2.addSuppressed(e1)
-            throw e2
-          }
-        }
-      }
-      else
-        disposeOnce()
+    } catch {
+      case e1: Throwable => disposeOnceAndThrow(e1)
+    } finally {
+      disposeOnce()
     }
   }
 
@@ -88,20 +83,8 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
         val result = it.hasNext
         if (!result) disposeOnce()
         result
-      }
-      catch { case e1: Throwable =>
-        try
-          disposeOnce()
-        catch { case e2: Throwable =>
-          if (NonFatal(e2))
-            e1.addSuppressed(e2)
-          else {
-            e2.addSuppressed(e1)
-            throw e2
-          }
-        }
-
-        throw e1
+      } catch {
+        case e1: Throwable => disposeOnceAndThrow(e1)
       }
     }
   }
