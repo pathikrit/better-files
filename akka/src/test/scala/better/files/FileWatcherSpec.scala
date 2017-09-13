@@ -3,6 +3,7 @@ package better.files
 import Dsl._
 
 import scala.concurrent.duration._
+import scala.collection.mutable
 import scala.language.postfixOps
 
 class FileWatcherSpec extends CommonSpec {
@@ -10,14 +11,12 @@ class FileWatcherSpec extends CommonSpec {
     assume(isCI)
     File.usingTemporaryDirectory() {dir =>
       (dir / "a" / "b" / "c.txt").createIfNotExists(createParents = true)
-      sleep()
-      assert((dir / "a" / "b" / "c.txt").exists)
 
-      var log = List.empty[String]
+      var actualEvents = List.empty[String]
       def output(file: File, event: String) = synchronized {
         val msg = s"${dir.path relativize file.path} got $event"
         println(msg)
-        log = msg :: log
+        actualEvents = msg :: actualEvents
       }
       /***************************************************************************/
       import java.nio.file.{StandardWatchEventKinds => Events}
@@ -36,21 +35,47 @@ class FileWatcherSpec extends CommonSpec {
       watcher ! on(Events.ENTRY_DELETE)(file => output(file, "deleted"))    // register partial function for single event
       /***************************************************************************/
       sleep(5 seconds)
-      (dir / "a" / "b" / "c.txt").writeText("Hello world"); sleep()
-      rm(dir / "a" / "b"); sleep()
-      mkdir(dir / "d"); sleep()
-      touch(dir / "d" / "e.txt"); sleep()
-      mkdirs(dir / "d" / "f" / "g"); sleep()
-      touch(dir / "d" / "f" / "g" / "e.txt"); sleep()
-      (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt"); sleep()
+
+      val expectedEvents = mutable.ListBuffer.empty[String]
+
+      def doIO[U](logs: String*)(f: => U): Unit = {
+        expectedEvents ++= logs
+        f
+        sleep()
+      }
+
+      doIO("a/b/c.txt got modified") {
+        (dir / "a" / "b" / "c.txt").writeText("Hello world")
+      }
+      doIO("a/b got deleted", "a/b/c.txt got deleted") {
+        rm(dir / "a" / "b")
+      }
+      doIO("d got created") {
+        mkdir(dir / "d")
+      }
+      doIO("d/e.txt got created") {
+        touch(dir / "d" / "e.txt")
+      }
+      doIO("d/f got created") {
+        mkdirs(dir / "d" / "f" / "g")
+      }
+      doIO("d/f/g/e.txt got created") {
+        touch(dir / "d" / "f" / "g" / "e.txt")
+      }
+
+      doIO("a/e.txt got created", "d/f/g/e.txt got deleted") {
+        (dir / "d" / "f" / "g" / "e.txt") moveTo (dir / "a" / "e.txt")
+      }
+
       sleep(10 seconds)
 
-      val expectedEvents = List(
-        "a/e.txt got created", "d/f/g/e.txt got deleted", "d/f/g/e.txt got modified", "d/f/g/e.txt got created", "d/f got created",
-        "d/e.txt got modified", "d/e.txt got created", "d got created", "a/b got deleted", "a/b/c.txt got deleted", "a/b/c.txt got modified"
-      )
+      println(
+        s"""
+           |Expected=${expectedEvents.sorted}
+           |Actual=${actualEvents.sorted}
+           |""".stripMargin)
 
-      expectedEvents.diff(log) shouldBe empty
+      expectedEvents.diff(actualEvents) shouldBe empty
 
       system.terminate()
     }

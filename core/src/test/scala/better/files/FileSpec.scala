@@ -308,6 +308,8 @@ class FileSpec extends CommonSpec {
       file.createIfNotExists(createParents = true)
       assert(file.exists)
       assert(file.parent.exists)
+      file.writeText("Hello world")
+      assert(file.contentAsString === "Hello world")
     }
   }
 
