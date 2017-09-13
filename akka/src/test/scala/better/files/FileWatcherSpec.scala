@@ -10,6 +10,8 @@ class FileWatcherSpec extends CommonSpec {
     assume(isCI)
     File.usingTemporaryDirectory() {dir =>
       (dir / "a" / "b" / "c.txt").createIfNotExists(createParents = true)
+      sleep()
+      assert((dir / "a" / "b" / "c.txt").exists)
 
       var log = List.empty[String]
       def output(file: File, event: String) = synchronized {
@@ -48,7 +50,7 @@ class FileWatcherSpec extends CommonSpec {
         "d/e.txt got modified", "d/e.txt got created", "d got created", "a/b got deleted", "a/b/c.txt got deleted", "a/b/c.txt got modified"
       )
 
-      expectedEvents diff log shouldBe empty
+      expectedEvents.diff(log) shouldBe empty
 
       system.terminate()
     }

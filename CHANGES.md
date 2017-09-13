@@ -3,6 +3,7 @@
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
+* [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
 * Remove implicit options from all APIs
 
 ## v3.1.1
