@@ -611,13 +611,13 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def isGroupExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     testPermission(PosixFilePermission.GROUP_EXECUTE)(linkOptions)
 
-  def isOtherReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+  def isOthersReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     testPermission(PosixFilePermission.OTHERS_READ)(linkOptions)
 
-  def isOtherWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+  def isOthersWritable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     testPermission(PosixFilePermission.OTHERS_WRITE)(linkOptions)
 
-  def isOtherExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+  def isOthersExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     testPermission(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
 
   /**
