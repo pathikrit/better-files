@@ -54,7 +54,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-unused:privates",            // Warn if a private member is unused.
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
   ),
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+  libraryDependencies += Dependencies.scalatest,
   updateImpactOpenBrowser := false
 )
 
@@ -72,7 +72,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.4"
+    libraryDependencies += Dependencies.akka
   )
   .dependsOn(core % "test->test;compile->compile")
 
@@ -82,7 +82,7 @@ lazy val shapelessScanner = (project in file("shapeless"))
   .settings(
     name := s"shapeless-scanner",
     description := "Shapeless Scanner",
-    libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.2"
+    libraryDependencies += Dependencies.shapeless
   )
   .dependsOn(core % "test->test;compile->compile")
 
@@ -92,7 +92,8 @@ lazy val benchmarks = (project in file("benchmarks"))
   .settings(
     name := s"$repo-benchmarks",
     libraryDependencies ++= Seq(
-      "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"
+      Dependencies.commonsio,
+      Dependencies.fastjavaio
     )
   )
   .dependsOn(core % "test->test;compile->compile")
