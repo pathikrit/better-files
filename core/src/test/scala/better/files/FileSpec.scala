@@ -292,11 +292,8 @@ class FileSpec extends CommonSpec {
   }
 
   it should "create if not exist" in {
-    def doTest(dir: File) = {
-      dir.delete().symbolicLinkTo(File.temp)
-      repeat(5) {
-        (dir / "file.txt").createIfNotExists(createParents = true)
-      }
+    def doTest(dir: File) = repeat(5) {
+      (dir / "file.txt").createIfNotExists(createParents = true)
     }
     noException should be thrownBy File.temporaryDirectory().foreach(doTest)
   }
