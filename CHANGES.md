@@ -1,8 +1,15 @@
 better-files follows the following release convention `MAJOR.MINOR.PATCH`:
-- Change in `PATCH` version: Minor functionality changes (usually bug fix); no public API change. New APIs maybe added
-- Change in `MINOR` version: Minor API shape changes (renaming, deprecations) - trivial to modify code to make it compile again; no structural change
-- Change in `MAJOR` version: Significant structural and API changes
-
+- **Changes in `PATCH` version**: 
+    - Minor functionality changes (usually bug fixes)
+    - No breaking public API changes 
+    - New APIs might be added
+- **Change in `MINOR` version**:
+    - In addition to `PATCH` changes
+    - Minor API shape changes e.g. renaming, deprecations 
+    - Trivial to modify code to address compilation issues
+- **Change in `MAJOR` version**:
+    - In addition to `MINOR` changes
+    - Significant structural and API changes
 
 ## v4.0.0
 
@@ -13,9 +20,6 @@ better-files follows the following release convention `MAJOR.MINOR.PATCH`:
 
 ## v3.2.0
 * [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
-
-## v3.1.1
-
 * [Issue #173](https://github.com/pathikrit/better-files/issues/173): Better ARM handling of fatal errors
 * [Restore File.usingTemp](https://github.com/pathikrit/better-files/commit/35184a642245db3d1e41fc02c7bfbec0b19a43bb) first introduced in [7c60ca](https://github.com/pathikrit/better-files/commit/d3522e8da63b55c7d3fa14cc9b0b76acd57c60ca)
 
