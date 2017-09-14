@@ -179,23 +179,24 @@ class FileSpec extends CommonSpec {
     }
   }
 
-  it should "glob" in {
-    assume(isCI)
-    a1.glob("*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
-    //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
-    testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
-    val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
-    File(path).glob("**/*.{txt}").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
-    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq.sorted shouldEqual Seq("ArrayBufferScanner.java",  "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq.sorted shouldEqual Seq("Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
-    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
-    ls("core"/"src"/"test") should have length 1
-    ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
-    ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
-    ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
-    ls_r("core"/"src"/"test") should have length 8
-  }
+// TODO: Do not depend on self-referential tests
+//  it should "glob" in {
+//    assume(isCI)
+//    a1.glob("*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
+//    //a1.glob("*.txt").map(_.name).toSeq shouldEqual Seq("t1.txt", "t2.txt")
+//    testRoot.glob("**/*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
+//    val path = testRoot.path.toString.ensuring(testRoot.path.isAbsolute)
+//    File(path).glob("**/*.{txt}").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")
+//    ("benchmarks"/"src").glob("**/*.{scala,java}").map(_.name).toSeq.sorted shouldEqual Seq("ArrayBufferScanner.java",  "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+//    ("benchmarks"/"src").glob("**/*.{scala}").map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+//    ("benchmarks"/"src").glob("**/*.scala").map(_.name).toSeq.sorted shouldEqual Seq("Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+//    ("benchmarks"/"src").listRecursively.filter(_.extension.contains(".scala")).map(_.name).toSeq.sorted shouldEqual Seq( "Benchmark.scala", "EncodingBenchmark.scala", "ScannerBenchmark.scala", "Scanners.scala")
+//    ls("core"/"src"/"test") should have length 1
+//    ("core"/"src"/"test").walk(maxDepth = 1) should have length 2
+//    ("core"/"src"/"test").walk(maxDepth = 0) should have length 1
+//    ("core"/"src"/"test").walk() should have length (("core"/"src"/"test").listRecursively.length + 1L)
+//    ls_r("core"/"src"/"test") should have length 8
+//  }
 
   it should "support names/extensions" in {
     assume(isCI)
