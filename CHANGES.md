@@ -1,10 +1,18 @@
+better-files follows the following release convention `MAJOR.MINOR.PATCH`:
+- Change in `PATCH` version: Minor functionality changes (usually bug fix); no public API change. New APIs maybe added
+- Change in `MINOR` version: Minor API shape changes (renaming, deprecations) - trivial to modify code to make it compile again; no structural change
+- Change in `MAJOR` version: Significant structural and API changes
+
+
 ## v4.0.0
 
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
-* [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
 * Remove implicit options from all APIs
+
+## v3.2.0
+* [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
 
 ## v3.1.1
 
