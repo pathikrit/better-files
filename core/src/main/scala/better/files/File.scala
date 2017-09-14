@@ -193,20 +193,12 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     loadBytes
 
   def createDirectory()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
-    try {
-      Files.createDirectory(path, attributes: _*)
-    } catch {
-      case _: FileAlreadyExistsException => // We don't really care if it exists already
-    }
+    Files.createDirectory(path, attributes: _*)
     this
   }
 
   def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
-    try {
-      Files.createDirectories(path, attributes: _*)
-    } catch {
-      case _: FileAlreadyExistsException => // We don't really care if it exists already
-    }
+    Files.createDirectories(path, attributes: _*)
     this
   }
 

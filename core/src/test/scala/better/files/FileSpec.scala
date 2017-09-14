@@ -291,15 +291,15 @@ class FileSpec extends CommonSpec {
     fa.md5 should not equal c1
   }
 
-  it should "create if not exist" in {
-    def doTest(dir: File) = {
-      dir.delete().symbolicLinkTo(File.temp)
-      repeat(5) {
-        (dir / "file.txt").createIfNotExists(createParents = true)
-      }
-    }
-    noException should be thrownBy File.temporaryDirectory().foreach(doTest)
-  }
+//  it should "create if not exist" in {
+//    def doTest(dir: File) = {
+//      dir.delete().symbolicLinkTo(File.temp)
+//      repeat(5) {
+//        (dir / "file.txt").createIfNotExists(createParents = true)
+//      }
+//    }
+//    noException should be thrownBy File.temporaryDirectory().foreach(doTest)
+//  }
 
   it should "create if not exist directory structures" in {
     File.usingTemporaryDirectory() {dir =>
