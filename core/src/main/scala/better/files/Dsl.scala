@@ -61,14 +61,20 @@ object Dsl {
       !(file === that)
   }
 
-  def cp(file1: File, file2: File): File = { //todo return file2.type when SI-4751 is fixed
-    val dest = if (file2.isDirectory) file2 / file1.name else file2
-    file1.copyTo(dest, overwrite = true)
+  def cp(from: File, to: File): File = {
+    if (to.isDirectory) {
+      from.copyToDirectory(to)
+    } else {
+      from.copyTo(to, overwrite = true)
+    }
   }
 
-  def mv(file1: File, file2: File): File = {
-    val dest = if (file2.isDirectory) file2 / file1.name else file2
-    file1.moveTo(dest, overwrite = true)
+  def mv(from: File, to: File): File = {
+    if (to.isDirectory) {
+      from.moveToDirectory(to)
+    } else {
+      from.moveTo(to, overwrite = true)
+    }
   }
 
   def rm(file: File): File =
