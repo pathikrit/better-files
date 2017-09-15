@@ -707,6 +707,17 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   }
 
   /**
+    * Moves this file into the given directory
+    * @param directory
+    *
+    * @return the File referencing the new file created under destination
+    */
+  def moveToDirectory(directory: File)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): File = {
+    require(directory.isDirectory(linkOptions), s"$directory must be a directory")
+    moveTo(directory / this.name)
+  }
+
+  /**
     *
     * @param destination
     * @param overwrite
@@ -731,6 +742,17 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
       Files.copy(path, destination.path, copyOptions: _*)
     }
     destination
+  }
+
+  /**
+    * Copies this file into the given directory
+    * @param directory
+    *
+    * @return the File referencing the new file created under destination
+    */
+  def copyToDirectory(directory: File)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default, copyOptions: File.CopyOptions = File.CopyOptions.default): File = {
+    require(directory.isDirectory(linkOptions), s"$directory must be a directory")
+    copyTo(directory / this.name)(copyOptions)
   }
 
   def symbolicLinkTo(destination: File)(implicit attributes: File.Attributes = File.Attributes.default): destination.type = {

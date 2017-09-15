@@ -164,7 +164,7 @@ val bytes: Array[Byte] = file.loadBytes
   .createIfNotExists()  
   .appendLine()
   .appendLines("My name is", "Inigo Montoya")
-  .moveTo(home/"Documents")
+  .moveToDirectory(home/"Documents")
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
   .lines
@@ -311,7 +311,9 @@ file.delete()     // unlike the Java API, also works on directories as expected 
 file.clear()      // If directory, deletes all children; if file clears contents
 file.renameTo(newName: String)
 file.moveTo(destination)
+file.moveToDirectory(destination)
 file.copyTo(destination)       // unlike the default API, also works on directories (copies recursively)
+file.copyToDirectory(destination)
 file.linkTo(destination)                     // ln destination file
 file.symbolicLinkTo(destination)             // ln -s destination file
 file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
