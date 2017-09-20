@@ -275,7 +275,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   }
 
   def appendBytes(bytes: Iterator[Byte]): this.type =
-    writeBytes(bytes)(File.OpenOptions.append)
+    writeBytes(bytes)(openOptions = File.OpenOptions.append)
 
   /**
     * Write byte array to file. For large contents consider using the writeBytes
