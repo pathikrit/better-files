@@ -58,4 +58,9 @@ class ScannerSpec extends CommonSpec {
       Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
     }
   }
+
+  it should "parse empty tokens" in {
+    val scanner = Scanner("hello||world")(Scanner.Config.default.copy(delimiter = "|")(defaultCharset))
+    List.fill(3)(scanner.next[Option[String]]) shouldEqual List(Some("hello"), None, Some("world"))
+  }
 }

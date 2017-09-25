@@ -83,6 +83,7 @@ object Scanner {
     implicit val float            : Read[Float]             = Read(_.toFloat)
     implicit val double           : Read[Double]            = Read(_.toDouble)
     implicit val bigDecimal       : Read[BigDecimal]        = Read(BigDecimal(_))
+    implicit def option[A: Read]  : Read[Option[A]]         = Read(s => when(s.nonEmpty)(implicitly[Read[A]].apply(s)))
 
     // Java's time readers
     import java.time._
