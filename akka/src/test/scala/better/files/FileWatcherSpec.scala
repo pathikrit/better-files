@@ -77,23 +77,23 @@ class FileWatcherSpec extends CommonSpec {
 
       expectedEvents.diff(actualEvents) shouldBe empty
 
-      def checkNotWatching[U](f: => U) = {
-        val before = actualEvents.length
+      def checkNotWatching[U](msg: String)(f: => U) = {
+        val before = List(actualEvents : _*)
         f
         sleep()
-        val after = actualEvents.length
-        assert(before === after)
+        val after = List(actualEvents : _*)
+        assert(before === after, msg)
       }
 
       system.stop(watcher)
-
-      checkNotWatching {
+      sleep()
+      checkNotWatching("stop watching after actor is stopped") {
         mkdirs(dir / "e")
       }
 
       system.terminate()
-
-      checkNotWatching {
+      sleep()
+      checkNotWatching("stop watching after actor-system is stopped") {
         mkdirs(dir / "f")
       }
     }
