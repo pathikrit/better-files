@@ -17,6 +17,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
+* Move Scanner to own module that depends on cats/shapeless
 * Remove implicit options from all APIs
 
 ## v3.2.0

@@ -118,12 +118,11 @@ object Scanner {
 
 /**
   * Implement this trait to make thing parsable
+  * In most cases, use Scanner.Read typeclass when you simply need access to one String token
+  * Use Scannable typeclass if you need access to the full scanner e.g. to detect encodings etc.
   */
 trait Scannable[A] {
   def apply(scanner: Scanner): A
-
-  def +[B](that: Scannable[B]): Scannable[(A, B)] =
-    Scannable(s => this(s) -> that(s))
 }
 
 object Scannable {
@@ -135,7 +134,7 @@ object Scannable {
     Scannable(s => read(s.next()))
 
   implicit def tuple2[T1, T2](implicit t1: Scannable[T1], t2: Scannable[T2]): Scannable[(T1, T2)] =
-    t1 + t2
+    Scannable(s => t1(s) -> t2(s))
 
   implicit def iterator[A](implicit scanner: Scannable[A]): Scannable[Iterator[A]] =
     Scannable(s => Iterator.continually(scanner(s)).withHasNext(s.hasNext))
