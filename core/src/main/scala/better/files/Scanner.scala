@@ -1,7 +1,8 @@
 package better.files
 
-import java.io.{InputStream, BufferedReader, LineNumberReader, Reader, StringReader}
+import java.io.{BufferedReader, InputStream, LineNumberReader, Reader, StringReader}
 import java.nio.charset.Charset
+import java.time.format.DateTimeFormatter
 
 trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
@@ -72,16 +73,46 @@ object Scanner {
     def apply[A](f: String => A): Read[A] = new Read[A] {
       override def apply(s: String) = f(s)
     }
-    implicit val string     : Read[String]     = Read(identity)
-    implicit val boolean    : Read[Boolean]    = Read(_.toBoolean)
-    implicit val byte       : Read[Byte]       = Read(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
-    implicit val short      : Read[Short]      = Read(_.toShort)
-    implicit val int        : Read[Int]        = Read(_.toInt)
-    implicit val long       : Read[Long]       = Read(_.toLong)
-    implicit val bigInt     : Read[BigInt]     = Read(BigInt(_))
-    implicit val float      : Read[Float]      = Read(_.toFloat)
-    implicit val double     : Read[Double]     = Read(_.toDouble)
-    implicit val bigDecimal : Read[BigDecimal] = Read(BigDecimal(_))
+    implicit val string           : Read[String]            = Read(identity)
+    implicit val boolean          : Read[Boolean]           = Read(_.toBoolean)
+    implicit val byte             : Read[Byte]              = Read(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
+    implicit val short            : Read[Short]             = Read(_.toShort)
+    implicit val int              : Read[Int]               = Read(_.toInt)
+    implicit val long             : Read[Long]              = Read(_.toLong)
+    implicit val bigInt           : Read[BigInt]            = Read(BigInt(_))
+    implicit val float            : Read[Float]             = Read(_.toFloat)
+    implicit val double           : Read[Double]            = Read(_.toDouble)
+    implicit val bigDecimal       : Read[BigDecimal]        = Read(BigDecimal(_))
+
+    // Java's time readers
+    import java.time._
+    import java.sql.{Date => SqlDate, Time => SqlTime, Timestamp => SqlTimestamp}
+
+    implicit val duration         : Read[Duration]          = Read(Duration.parse(_))
+    implicit val instant          : Read[Instant]           = Read(Instant.parse(_))
+    implicit val localDateTime    : Read[LocalDateTime]     = Read(LocalDateTime.parse(_))
+    implicit val localDate        : Read[LocalDate]         = Read(LocalDate.parse(_))
+    implicit val monthDay         : Read[MonthDay]          = Read(MonthDay.parse(_))
+    implicit val offsetDateTime   : Read[OffsetDateTime]    = Read(OffsetDateTime.parse(_))
+    implicit val offsetTime       : Read[OffsetTime]        = Read(OffsetTime.parse(_))
+    implicit val period           : Read[Period]            = Read(Period.parse(_))
+    implicit val year             : Read[Year]              = Read(Year.parse(_))
+    implicit val yearMonth        : Read[YearMonth]         = Read(YearMonth.parse(_))
+    implicit val zonedDateTime    : Read[ZonedDateTime]     = Read(ZonedDateTime.parse(_))
+    implicit val sqlDate          : Read[SqlDate]           = Read(SqlDate.valueOf)
+    implicit val sqlTime          : Read[SqlTime]           = Read(SqlTime.valueOf)
+    implicit val sqlTimestamp     : Read[SqlTimestamp]      = Read(SqlTimestamp.valueOf)
+
+    /**
+      * Use this to create custom readers e.g. to read a LocalDate using some custom format
+      * val readLocalDate: Read[LocalDate] = Read.temporalQuery(format = myFormat, query = LocalDate.from)
+      * @param format
+      * @param query
+      * @tparam A
+      * @return
+      */
+    def temporalQuery[A](format: DateTimeFormatter, query: temporal.TemporalQuery[A]): Read[A] =
+      Read(format.parse(_, query))
   }
 }
 
