@@ -55,18 +55,28 @@ trait Implicits {
   }
 
   implicit class InputStreamOps(in: InputStream) {
-    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): Unit =
+    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): out.type = {
       pipeTo(out, Array.ofDim[Byte](bufferSize))
+      out
+    }
 
     /**
       * Pipe an input stream to an output stream using a byte buffer
       */
-    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): Unit = {
+    @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): out.type = {
       val n = in.read(buffer)
       if (n > 0) {
         out.write(buffer, 0, n)
         pipeTo(out, buffer)
+      } else {
+        out
       }
+    }
+
+    def asString(closeStream: Boolean = true)(implicit charset: Charset = defaultCharset): String = {
+      val result = pipeTo(new ByteArrayOutputStream()).toString(charset.displayName())
+      if (closeStream) in.close()
+      result
     }
 
     def buffered: BufferedInputStream =

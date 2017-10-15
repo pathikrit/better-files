@@ -452,6 +452,7 @@ class FileSpec extends CommonSpec {
       out <- t2.outputStream
     } in.pipeTo(out)
     t2.contentAsString shouldEqual "hello world"
+    t2.newInputStream.asString() shouldEqual "hello world"
   }
 
   it should "zip/unzip directories" in {

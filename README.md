@@ -265,6 +265,7 @@ val printer : PrintWriter           = outputstream.printWriter
 val br      : BufferedReader        = reader.buffered
 val bw      : BufferedWriter        = writer.buffered
 val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
+val str     : String                = inputstream.asString  //Read a string from an InputStream
 ```
 `better-files` also supports [certain conversions that are not supported out of the box by the JDK](https://stackoverflow.com/questions/62241/how-to-convert-a-reader-to-inputstream-and-a-writer-to-outputstream)
 
