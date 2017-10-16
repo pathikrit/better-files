@@ -4,7 +4,7 @@ object Dependencies {
   val scalatest   = "org.scalatest"         %% "scalatest"      % "3.0.4"   % Test
 
   // Used in Akka file watcher
-  val akka        = "com.typesafe.akka"     %% "akka-actor"     % "2.5.4"
+  val akka        = "com.typesafe.akka"     %% "akka-actor"     % "2.5.6"
 
   // For shapeless based Reader/Scanner
   val shapeless   = "com.chuusai"           %% "shapeless"      % "2.3.2"
