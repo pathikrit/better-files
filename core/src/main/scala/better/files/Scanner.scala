@@ -131,13 +131,53 @@ trait StringSplitter {
 }
 object StringSplitter {
   val default = StringSplitter.anyOf(" \t\t\n\r")
-  
-  def on(char: Char): StringSplitter =
-    anyOf(delimiters = char.toString)   //TODO: Optimize this
 
+  /**
+    * Split string on this character
+    * This  will return exactly 1 + n number of items where n is the number of occurence of delimiter in String s
+    *
+    * @param delimiter
+    * @return
+    */
+  def on(delimiter: Char): StringSplitter = new StringSplitter {
+    override def split(s: String) = new Iterator[String] {
+      private[this] var i = 0
+      private[this] var j = -1
+      private[this] val c = delimiter.toInt
+      _next()
+
+      private[this] def _next() = {
+        i = j + 1
+        val k = s.indexOf(c, i)
+        j = if (k < 0) s.length else k
+      }
+
+      override def hasNext = i <= s.length
+
+      override def next() = {
+        val res = s.substring(i, j)
+        _next()
+        res
+      }
+    }
+  }
+
+  /**
+    * Split this string using ANY of the characters from delimiters
+    *
+    * @param delimiters
+    * @param includeDelimiters
+    * @return
+    */
   def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter =
     s => new StringTokenizer(s, delimiters, includeDelimiters)
 
+  /**
+    * Split string using a regex pattern
+    *
+    * @param pattern
+    * @return
+    */
   def regex(pattern: String): StringSplitter =
     s => s.split(pattern, -1)
 }

@@ -7,6 +7,22 @@ import scala.language.existentials
 class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
 
+
+  "splitter" should "split" in {
+    val csvSplitter = StringSplitter.on(',')
+    def split(s: String) = csvSplitter.split(s).toList
+
+    assert(split(",") === List("", ""))
+    assert(split("") === List(""))
+    assert(split("Hello World") === List("Hello World"))
+    assert(split("Hello,World") === List("Hello", "World"))
+
+    assert(split(",,") === List("", "", ""))
+    assert(split(",Hello,World,") === List("", "Hello", "World", ""))
+    assert(split(",Hello,World") === List("", "Hello", "World"))
+    assert(split("Hello,World,") === List("Hello", "World", ""))
+  }
+
   "scanner" should "parse files" in {
     val data = t1 << s"""
     | Hello World
