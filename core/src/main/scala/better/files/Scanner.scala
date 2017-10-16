@@ -1,19 +1,18 @@
 package better.files
 
-import java.io.{BufferedReader, InputStream, LineNumberReader, Reader, StringReader}
+import java.io.{InputStream, LineNumberReader, Reader, StringReader}
 import java.nio.charset.Charset
 import java.time.format.DateTimeFormatter
+import java.util.StringTokenizer
 
 trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
 
   def next[A](implicit scan: Scannable[A]): A = scan(this)
 
-  def tillDelimiter(delimiter: String): String
+  def nextLine(): String
 
-  def tillEndOfLine(): String = tillDelimiter(Scanner.Config.Delimiters.lines)
-
-  def nonEmptyLines: Iterator[String] = Iterator.continually(tillEndOfLine()).withHasNext(hasNext)
+  def lines: Iterator[String] = Iterator.continually(nextLine()).withHasNext(hasNext)
 }
 
 /**
@@ -22,48 +21,34 @@ trait Scanner extends Iterator[String] with AutoCloseable {
   */
 object Scanner {
 
-  def apply(str: String)(implicit config: Config): Scanner =
-    Scanner(new StringReader(str))(config)
+  def apply(str: String): Scanner =
+    Scanner(str, StringSplitter.default)
 
-  def apply(reader: Reader)(implicit config: Config): Scanner =
-    Scanner(reader.buffered)(config)
+  def apply(str: String, splitter: StringSplitter): Scanner =
+    Scanner(new StringReader(str), splitter)
 
-  def apply(reader: BufferedReader)(implicit config: Config): Scanner =
-    Scanner(new LineNumberReader(reader))(config)
+  def apply(reader: Reader): Scanner =
+    Scanner(reader, StringSplitter.default)
 
-  def apply(inputStream: InputStream)(implicit config: Config): Scanner =
-    Scanner(inputStream.reader(config.charset))(config)
+  def apply(reader: Reader, splitter: StringSplitter): Scanner =
+    Scanner(new LineNumberReader(reader.buffered), splitter)
 
-  def apply(reader: LineNumberReader)(implicit config: Config): Scanner = new Scanner {
-    private[this] val tokenizers = reader.tokenizers(config).buffered
-    private[this] def tokenizer() = {
-      while (tokenizers.headOption.exists(st => !st.hasMoreTokens)) tokenizers.next()
-      tokenizers.headOption
-    }
+  def apply(inputStream: InputStream)(implicit charset: Charset = defaultCharset): Scanner =
+    Scanner(inputStream, StringSplitter.default)(charset)
+
+  def apply(inputStream: InputStream, splitter: StringSplitter)(implicit charset: Charset): Scanner =
+    Scanner(inputStream.reader(charset), splitter)
+
+  def apply(reader: LineNumberReader, splitter: StringSplitter): Scanner = new Scanner {
+    private[this] val tokens = reader.tokens(splitter)
     override def lineNumber() = reader.getLineNumber
-    override def tillDelimiter(delimiter: String) = tokenizer().get.nextToken(delimiter)
-    override def next() = tokenizer().get.nextToken()
-    override def hasNext = tokenizer().nonEmpty
+    override def nextLine() = reader.readLine()
+    override def next() = tokens.next()
+    override def hasNext = tokens.hasNext
     override def close() = reader.close()
   }
 
-  val stdin: Scanner = Scanner(System.in)(Config.default)
-
-  /**
-    * Use this to configure your Scanner
-    *
-    * @param delimiter
-    * @param includeDelimiters
-    */
-  case class Config(delimiter: String, includeDelimiters: Boolean)(implicit val charset: Charset = defaultCharset)
-  object Config {
-    implicit val default = Config(delimiter = Delimiters.whitespaces, includeDelimiters = false)
-
-    object Delimiters {
-      val lines = "\n\r"
-      val whitespaces = " \t\f" + lines
-    }
-  }
+  val stdin: Scanner = Scanner(System.in)
 
   trait Read[A] {     // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
     def apply(s: String): A
@@ -139,4 +124,20 @@ object Scannable {
 
   implicit def iterator[A](implicit scanner: Scannable[A]): Scannable[Iterator[A]] =
     Scannable(s => Iterator.continually(scanner(s)).withHasNext(s.hasNext))
+}
+
+trait StringSplitter {
+  def split(s: String): TraversableOnce[String]
+}
+object StringSplitter {
+  val default = StringSplitter.anyOf(" \t\t\n\r")
+  
+  def on(char: Char): StringSplitter =
+    anyOf(delimiters = char.toString)   //TODO: Optimize this
+
+  def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter =
+    s => new StringTokenizer(s, delimiters, includeDelimiters)
+
+  def regex(pattern: String): StringSplitter =
+    s => s.split(pattern, -1)
 }

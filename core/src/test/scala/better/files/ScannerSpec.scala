@@ -22,15 +22,12 @@ class ScannerSpec extends CommonSpec {
       assert(scanner.next[Int] == 2)
       assert(scanner.lineNumber() == 3)
       assert(scanner.next[Int] == 3)
-      assert(scanner.next[String] == "Ok")
-      assert(scanner.tillEndOfLine() == " 23 football")
+      assert(scanner.nextLine() == " Ok 23 football")
       assert(!scanner.hasNext)
-      a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
       a[NoSuchElementException] should be thrownBy scanner.next()
       assert(!scanner.hasNext)
     }
-    data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
-    data.tokens.toSeq shouldEqual data.newScanner().toSeq
+    data.tokens().toSeq shouldEqual data.newScanner().toSeq
   }
 
   it should "parse longs/booleans" in {
@@ -60,7 +57,7 @@ class ScannerSpec extends CommonSpec {
   }
 
   it should "parse empty tokens" in {
-    val scanner = Scanner("hello||world")(Scanner.Config.default.copy(delimiter = "|")(defaultCharset))
+    val scanner = Scanner("hello||world", StringSplitter.on('|'))
     List.fill(3)(scanner.next[Option[String]]) shouldEqual List(Some("hello"), None, Some("world"))
   }
 }

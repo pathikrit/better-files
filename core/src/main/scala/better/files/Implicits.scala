@@ -140,11 +140,8 @@ trait Implicits {
     def chars: Iterator[Char] =
       reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
 
-    private[files] def tokenizers(implicit config: Scanner.Config = Scanner.Config.default) =
-      reader.lines().toAutoClosedIterator.map(line => new StringTokenizer(line, config.delimiter, config.includeDelimiters))
-
-    def tokens(implicit config: Scanner.Config = Scanner.Config.default): Iterator[String] =
-      tokenizers(config).flatMap(tokenizerToIterator)
+    def tokens(splitter: StringSplitter = StringSplitter.default): Iterator[String] =
+      reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
 
   implicit class WriterOps(writer: Writer) {
