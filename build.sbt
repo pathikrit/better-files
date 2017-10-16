@@ -103,7 +103,7 @@ lazy val root = (project in file("."))
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(releaseSettings: _*)
-  .aggregate(core, akka, shapelessScanner)
+  .aggregate(core, akka, shapelessScanner, benchmarks)
 
 import UnidocKeys._
 lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(

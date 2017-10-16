@@ -2,7 +2,7 @@ package better.files
 
 import java.io.{BufferedReader, StringReader}
 
-object ScannerBenchmark extends Benchmark {
+class ScannerBenchmark extends Benchmark {
   val file = File.newTemporaryFile()
   val n = 1000
   repeat(n) {
@@ -23,10 +23,10 @@ object ScannerBenchmark extends Benchmark {
     new FastJavaIOScanner(_)
   )
 
-  def test(scanner: AbstractScanner) = {
+  def runTest(scanner: AbstractScanner) = {
     val (_, time) = profile(run(scanner))
     scanner.close()
-    println(f"${scanner.getClass.getSimpleName.padTo(25, ' ')}: $time%4d ms")
+    info(f"${scanner.getClass.getSimpleName.padTo(25, ' ')}: $time%4d ms")
   }
 
   def run(scanner: AbstractScanner): Unit = repeat(n) {
@@ -37,28 +37,30 @@ object ScannerBenchmark extends Benchmark {
     (line, ints, words)
   }
 
-  println("Warming up ...")
-  scanners foreach { scannerBuilder =>
-    val canaryData =
-      """
-        |10 -23
-        |Hello World
-        |Hello World
-        |19
-      """.stripMargin
-    val scanner = scannerBuilder(new BufferedReader(new StringReader(canaryData)))
-    println(s"Testing ${scanner.getClass.getSimpleName} for correctness")
-    assert(scanner.hasNext)
-    assert(scanner.nextInt() == 10)
-    assert(scanner.nextInt() == -23)
-    assert(scanner.next() == "Hello")
-    assert(scanner.next() == "World")
-    val l = scanner.nextLine()
-    assert(l == "Hello World", l)
-    assert(scanner.nextInt() == 19)
-    //assert(!scanner.hasNext)
-  }
+  test("scanner") {
+    info("Warming up ...")
+    scanners foreach { scannerBuilder =>
+      val canaryData =
+        """
+          |10 -23
+          |Hello World
+          |Hello World
+          |19
+        """.stripMargin
+      val scanner = scannerBuilder(new BufferedReader(new StringReader(canaryData)))
+      info(s"Testing ${scanner.getClass.getSimpleName} for correctness")
+      assert(scanner.hasNext)
+      assert(scanner.nextInt() == 10)
+      assert(scanner.nextInt() == -23)
+      assert(scanner.next() == "Hello")
+      assert(scanner.next() == "World")
+      val l = scanner.nextLine()
+      assert(l == "Hello World", l)
+      assert(scanner.nextInt() == 19)
+      //assert(!scanner.hasNext)
+    }
 
-  println("Running benchmark ...")
-  scanners foreach { scanner => test(scanner(file.newBufferedReader)) }
+    info("Running benchmark ...")
+    scanners foreach { scanner => runTest(scanner(file.newBufferedReader)) }
+  }
 }

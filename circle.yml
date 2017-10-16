@@ -6,8 +6,6 @@ machine:
 
 test:
   override:
-    - sbt "benchmarks/test:run-main better.files.ScannerBenchmark"
-    - sbt "benchmarks/test:run-main better.files.EncodingBenchmark"
     - sbt +test
 
 deployment:

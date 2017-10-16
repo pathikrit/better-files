@@ -2,8 +2,7 @@ Benchmarks
 ====
 * [Scanner benchmarks](src/main/scala/better/files/Scanners.scala):
 ```
-> sbt "benchmarks/test:run-main better.files.ScannerBenchmark"
-[info] Running better.files.ScannerBenchmark 
+> sbt "benchmarks/test"
 JavaScanner              : 2191 ms
 StringBuilderScanner     : 1325 ms
 CharBufferScanner        : 1117 ms

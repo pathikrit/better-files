@@ -4,7 +4,7 @@ import java.nio.charset.Charset
 
 import scala.util.Random
 
-object EncodingBenchmark extends Benchmark {
+class EncodingBenchmark extends Benchmark {
 
   def testWrite(file: File, charset: Charset) = profile {
     for {
@@ -20,18 +20,20 @@ object EncodingBenchmark extends Benchmark {
     } line
   }
 
-  def test(charset: Charset) = {
+  def run(charset: Charset) = {
     File.temporaryFile() foreach {file =>
       val (_, w) = testWrite(file, charset)
-      println(s"Charset=$charset, write=$w ms")
+      info(s"Charset=$charset, write=$w ms")
 
       val (_, r) = testRead(file, charset)
-      println(s"Charset=$charset, read=$r ms")
+      info(s"Charset=$charset, read=$r ms")
     }
   }
 
-  val utf8 = Charset.forName("UTF-8")
-  test(charset = utf8)
-  println("-------------")
-  test(charset = UnicodeCharset(utf8))
+  test("encoding") {
+    val utf8 = Charset.forName("UTF-8")
+    run(charset = utf8)
+    info("-------------")
+    run(charset = UnicodeCharset(utf8))
+  }
 }
