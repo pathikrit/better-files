@@ -22,6 +22,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v3.2.0
 * [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
+* [Issue #186](https://github.com/pathikrit/better-files/issues/186): Splitter based Scanner
 * [Issue #173](https://github.com/pathikrit/better-files/issues/173): Better ARM handling of fatal errors
 * [Issue #182](https://github.com/pathikrit/better-files/issues/182): Move and Copy *into* directory utils
 * [Issue #189](https://github.com/pathikrit/better-files/issues/189): Util to read String from an InputStream

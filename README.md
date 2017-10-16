@@ -572,6 +572,17 @@ case class Person(id: Int, name: String, isMale: Boolean)
 val out2 = Seq.fill(3)(in.next[Person])
 ```
 
+Simple CSV reader:
+```scala
+val file = """
+  23,foo
+  42,bar
+"""
+val csvScanner = file.newScanner(StringSpliiter.on(','))
+csvScanner.next[Int]    //23
+csvScanner.next[String] //foo
+```
+
 ### File Monitoring
 Vanilla Java watchers:
 ```scala
