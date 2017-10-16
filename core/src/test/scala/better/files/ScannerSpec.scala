@@ -7,6 +7,22 @@ import scala.language.existentials
 class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
 
+
+  "splitter" should "split" in {
+    val csvSplitter = StringSplitter.on(',')
+    def split(s: String) = csvSplitter.split(s).toList
+
+    assert(split(",") === List("", ""))
+    assert(split("") === List(""))
+    assert(split("Hello World") === List("Hello World"))
+    assert(split("Hello,World") === List("Hello", "World"))
+
+    assert(split(",,") === List("", "", ""))
+    assert(split(",Hello,World,") === List("", "Hello", "World", ""))
+    assert(split(",Hello,World") === List("", "Hello", "World"))
+    assert(split("Hello,World,") === List("Hello", "World", ""))
+  }
+
   "scanner" should "parse files" in {
     val data = t1 << s"""
     | Hello World
@@ -22,15 +38,12 @@ class ScannerSpec extends CommonSpec {
       assert(scanner.next[Int] == 2)
       assert(scanner.lineNumber() == 3)
       assert(scanner.next[Int] == 3)
-      assert(scanner.next[String] == "Ok")
-      assert(scanner.tillEndOfLine() == " 23 football")
+      assert(scanner.nextLine() == " Ok 23 football")
       assert(!scanner.hasNext)
-      a[NoSuchElementException] should be thrownBy scanner.tillEndOfLine()
       a[NoSuchElementException] should be thrownBy scanner.next()
       assert(!scanner.hasNext)
     }
-    data.lineIterator.toSeq.filterNot(_.trim.isEmpty) shouldEqual data.newScanner.nonEmptyLines.toSeq
-    data.tokens.toSeq shouldEqual data.newScanner().toSeq
+    data.tokens().toSeq shouldEqual data.newScanner().toSeq
   }
 
   it should "parse longs/booleans" in {
@@ -57,5 +70,10 @@ class ScannerSpec extends CommonSpec {
     file.scanner() foreach {scanner =>
       Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
     }
+  }
+
+  it should "parse empty tokens" in {
+    val scanner = Scanner("hello||world", StringSplitter.on('|'))
+    List.fill(3)(scanner.next[Option[String]]) shouldEqual List(Some("hello"), None, Some("world"))
   }
 }

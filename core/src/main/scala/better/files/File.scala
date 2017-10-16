@@ -234,8 +234,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def lineIterator(implicit charset: Charset = defaultCharset): Iterator[String] =
     Files.lines(path, charset).toAutoClosedIterator
 
-  def tokens(implicit config: Scanner.Config = Scanner.Config.default, charset: Charset = defaultCharset): Iterator[String] =
-    newBufferedReader(charset).tokens(config)
+  def tokens(splitter: StringSplitter = StringSplitter.default)(implicit charset: Charset = defaultCharset): Iterator[String] =
+    newBufferedReader(charset).tokens(splitter)
 
   def contentAsString(implicit charset: Charset = defaultCharset): String =
     new String(byteArray, charset)
@@ -351,11 +351,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def digestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[DigestInputStream] =
     newDigestInputStream(digest)(openOptions).autoClosed
 
-  def newScanner(implicit config: Scanner.Config = Scanner.Config.default): Scanner =
-    Scanner(newBufferedReader(config.charset))(config)
+  def newScanner(splitter: StringSplitter = StringSplitter.default)(implicit charset: Charset = defaultCharset): Scanner =
+    Scanner(newBufferedReader(charset), splitter)
 
-  def scanner(implicit config: Scanner.Config = Scanner.Config.default): ManagedResource[Scanner] =
-    newScanner(config).autoClosed
+  def scanner(splitter: StringSplitter = StringSplitter.default)(implicit charset: Charset = defaultCharset): ManagedResource[Scanner] =
+    newScanner(splitter)(charset).autoClosed
 
   def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream =
     Files.newOutputStream(path, openOptions: _*)
