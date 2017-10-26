@@ -609,7 +609,7 @@ Sometimes, instead of overwriting each of the 3 methods above, it is more conven
 import java.nio.file.{Path, StandardWatchEventKinds => EventType, WatchEvent}
 
 val watcher = new FileMonitor(myDir, recursive = true) {
-  override def dispatch(eventType: WatchEvent.Kind[Path], file: File, count: Int) = eventType match {
+  override def onEvent(eventType: WatchEvent.Kind[Path], file: File, count: Int) = eventType match {
     case EventType.ENTRY_CREATE => println(s"$file got created")
     case EventType.ENTRY_MODIFY => println(s"$file got modified $count")
     case EventType.ENTRY_DELETE => println(s"$file got deleted")
