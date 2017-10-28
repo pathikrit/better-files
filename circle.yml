@@ -6,15 +6,14 @@ machine:
 
 test:
   override:
-    - sbt +test
+    - sbt clean coverage +test
 
 deployment:
   master:
     branch: master
     owner: pathikrit
     commands:
-      - sbt updateImpactSubmit
-      - sbt clean coverage test coverageReport coverageAggregate
+      - sbt updateImpactSubmit coverageReport coverageAggregate
       - bash <(curl -s https://codecov.io/bash)
       - sbt codacyCoverage
       - git config --global user.email "pathikritbhowmick@msn.com"
