@@ -528,6 +528,6 @@ class FileSpec extends CommonSpec {
     val expected = java.lang.management.ManagementFactory.getOperatingSystemMXBean
       .asInstanceOf[com.sun.management.UnixOperatingSystemMXBean]
       .getOpenFileDescriptorCount
-    assert((File.numberOfOpenFileDescriptors() - expected).abs < 2)
+    assert((File.numberOfOpenFileDescriptors() - expected).abs <= 2)
   }
 }

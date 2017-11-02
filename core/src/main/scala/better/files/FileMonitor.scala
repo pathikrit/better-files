@@ -4,6 +4,7 @@ import java.nio.file._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 /**
   * Implementation of File.Monitor
@@ -43,12 +44,16 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   }
 
   protected[this] def watch(file: File, depth: Int): Unit = {
-    val toWatch: Files = if (file.isDirectory) {
+    def toWatch: Files = if (file.isDirectory) {
       file.walk(depth).filter(f => f.isDirectory && f.exists)
     } else {
       when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
     }
-    toWatch.foreach(f => Try[Unit](f.register(service)).recover(PartialFunction(onException)).get)
+    try {
+      toWatch.foreach(f => Try[Unit](f.register(service)).recover(PartialFunction(onException)).get)
+    } catch {
+      case NonFatal(e) => onException(e)
+    }
   }
 
   override def start()(implicit executionContext: ExecutionContext) = {
