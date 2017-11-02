@@ -148,9 +148,24 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
       createDirectories()(attributes)
     } else {
       if (createParents) parent.createDirectories()(attributes)
-      Files.createFile(path, attributes: _*)
+      try {
+        createFile()(attributes)
+      } catch {
+        case _: FileAlreadyExistsException if isRegularFile(linkOptions) =>  // We don't really care if it exists already
+      }
       this
     }
+  }
+
+  /**
+    * Create this file
+    *
+    * @param attributes
+    * @return
+    */
+  def createFile()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
+    Files.createFile(path, attributes: _*)
+    this
   }
 
   def exists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
@@ -192,21 +207,25 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def byteArray: Array[Byte] =
     loadBytes
 
+  /**
+    * Create this directory
+    *
+    * @param attributes
+    * @return
+    */
   def createDirectory()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
-    try {
-      Files.createDirectory(path, attributes: _*)
-    } catch {
-      case _: FileAlreadyExistsException => // We don't really care if it exists already
-    }
+    Files.createDirectory(path, attributes: _*)
     this
   }
 
+  /**
+    * Create this directory and all its parents
+    *
+    * @param attributes
+    * @return
+    */
   def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
-    try {
-      Files.createDirectories(path, attributes: _*)
-    } catch {
-      case _: FileAlreadyExistsException => // We don't really care if it exists already
-    }
+    Files.createDirectories(path, attributes: _*)
     this
   }
 
