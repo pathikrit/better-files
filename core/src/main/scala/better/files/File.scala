@@ -224,8 +224,12 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param attributes
     * @return
     */
-  def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
-    Files.createDirectories(path, attributes: _*)
+  def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+    try {
+      Files.createDirectories(path, attributes: _*)
+    } catch {
+      case _: FileAlreadyExistsException if Files.isDirectory(path, linkOptions: _*) =>
+    }
     this
   }
 
