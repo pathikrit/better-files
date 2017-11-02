@@ -22,7 +22,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v3.2.1
 * [Issue #193](https://github.com/pathikrit/better-files/issues/193): Handle fast changing directory watching on Windows
-
+* [Issue #195](https://github.com/pathikrit/better-files/issues/195): Do not swallow `FileAlreadyExistsException` when creating directory or file
 
 ## v3.2.0
 * [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
