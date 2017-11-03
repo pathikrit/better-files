@@ -220,6 +220,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
 
   /**
     * Create this directory and all its parents
+    * Unlike the JDK, this by default sanely handles the JDK-8130464 bug
+    * If you want default Java behaviour, use File.LinkOptions.noFollow
     *
     * @param attributes
     * @return
@@ -228,7 +230,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     try {
       Files.createDirectories(path, attributes: _*)
     } catch {
-      case _: FileAlreadyExistsException if Files.isDirectory(path, linkOptions: _*) =>
+      case _: FileAlreadyExistsException if isDirectory(linkOptions) => // work around for JDK-8130464
     }
     this
   }
