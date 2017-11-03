@@ -1,9 +1,9 @@
 package better.files
 
-import java.nio.file.FileSystems
+import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
 
 import better.files.Dsl._
-import better.files.File.{home, root}
+import better.files.File.{LinkOptions, home, root}
 
 import scala.language.postfixOps
 import scala.util.Try
@@ -301,6 +301,19 @@ class FileSpec extends CommonSpec {
       assert(file.parent.exists)
       file.writeText("Hello world")
       assert(file.contentAsString === "Hello world")
+    }
+  }
+
+  it should "treat symlinks transparently in convenience methods" in {
+    File.usingTemporaryDirectory() {dir =>
+      val realDir = dir / "a"
+      val dirSymlink = dir / "b"
+      realDir.createDirectory()
+      JFiles.createSymbolicLink(dirSymlink.path, realDir.path)
+      dirSymlink.createDirectories()
+      assertThrows[FileAlreadyExistsException] {
+        dirSymlink.createDirectories()(linkOptions = LinkOptions.noFollow)
+      }
     }
   }
 
