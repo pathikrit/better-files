@@ -506,31 +506,43 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   /**
    * Check if a file is locked.
    *
-   * Windows throws a `FileNotFoundException` if the file is locked, so we check if the file exists.
-   * We use the `exists` and `notExists` method to check if a file exists, because it's not guaranteed
-   * that `exists` return true even if a file exists.
-   *
-   * @see https://docs.oracle.com/javase/tutorial/essential/io/check.html
-   * @see https://stackoverflow.com/questions/30520179/why-does-file-exists-return-true-even-though-files-exists-in-the-nio-files
-   *
    * @param mode     The random access mode.
    * @param position The position at which the locked region is to start; must be non-negative.
    * @param size     The size of the locked region; must be non-negative, and the sum position + size must be non-negative.
    * @param isShared true to request a shared lock, false to request an exclusive lock.
    * @return True if the file is locked, false otherwise.
    */
-  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false): Boolean =
+  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     try {
       usingLock(mode) {channel =>
         channel.tryLock(position, size, isShared).release()
         false
       }
     } catch {
-      case _: OverlappingFileLockException | _: NonWritableChannelException | _: NonReadableChannelException =>
-        true
-      case _: FileNotFoundException if exists || !notExists =>
-        true
+      case _: OverlappingFileLockException | _: NonWritableChannelException | _: NonReadableChannelException => true
+
+      // Windows throws a `FileNotFoundException` if the file is locked
+      case _: FileNotFoundException if verifiedExists(linkOptions).isDefined => true
     }
+
+  /**
+    * @see https://docs.oracle.com/javase/tutorial/essential/io/check.html
+    * @see https://stackoverflow.com/questions/30520179/why-does-file-exists-return-true-even-though-files-exists-in-the-nio-files
+    *
+    * @return
+    *         Some(true) if file is guaranteed to exist
+    *         Some(false) if file is guaranteed to not exist
+    *         None if the status is unknown e.g. if file is unreadable
+    */
+  def verifiedExists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Option[Boolean] = {
+    if (exists(linkOptions)) {
+      Some(true)
+    } else if(notExists(linkOptions)) {
+      Some(false)
+    } else {
+      None
+    }
+  }
 
   def usingLock[U](mode: File.RandomAccessMode)(f: FileChannel => U): U =
     newRandomAccess(mode).getChannel.autoClosed.map(f)
