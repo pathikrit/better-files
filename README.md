@@ -31,7 +31,7 @@
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink] [![VersionEye][versionEyeImg]][versionEyeLink]
+## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink]
 In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
@@ -64,10 +64,6 @@ you can find reasonably recent versions of this library for Scala 2.10 and 2.11 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
-
-[versionEyeImg2]: https://img.shields.io/versioneye/d/pathikrit/better-files.svg
-[versionEyeImg]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1/badge.svg
-[versionEyeLink]: https://www.versioneye.com/user/projects/55f5e7de3ed894001e0003b1
 
 [codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
 [codacyImg2]: https://api.codacy.com/project/badge/grade/0e2aeb7949bc49e6802afcc43a7a1aa1
