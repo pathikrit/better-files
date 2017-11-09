@@ -527,8 +527,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     } catch {
       case _: OverlappingFileLockException | _: NonWritableChannelException | _: NonReadableChannelException => true
 
-      // Windows throws a `FileNotFoundException` if the file is locked
-      case _: FileNotFoundException if verifiedExists(linkOptions).isDefined => true
+      // Windows throws a `FileNotFoundException` if the file is locked (see: https://github.com/pathikrit/better-files/pull/194)
+      case _: FileNotFoundException if verifiedExists(linkOptions).getOrElse(true) => true
     }
 
   /**
