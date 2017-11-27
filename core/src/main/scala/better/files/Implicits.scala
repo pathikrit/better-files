@@ -74,10 +74,12 @@ trait Implicits {
     }
 
     def asString(closeStream: Boolean = true, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = defaultCharset): String = {
-      val result = new ByteArrayOutputStream(bufferSize).autoClosed
-        .map(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
-      if (closeStream) in.close()
-      result
+      try {
+        new ByteArrayOutputStream(bufferSize).autoClosed
+          .map(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
+      } finally {
+        if (closeStream) in.close()
+      }
     }
 
     def buffered: BufferedInputStream =
