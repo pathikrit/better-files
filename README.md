@@ -463,12 +463,14 @@ assert(directory === someTempDir)
 
 GZIP handling:
 ```scala
-// UnGzip:
-File("countries.gz").newInputStream.gzipped.lines.take(10).foreach(println)
-
-// Gzip
 File("big-data.csv").gzipTo("big-data.csv.gz")
 File("big-data.csv.gz").ungzipTo("big-data.csv")
+
+// GZIP stream handling:
+File("countries.gz").newInputStream.asGzipInputStream().lines.take(10).foreach(println)
+
+def write(out: OutputStream, countries: Seq[String]) =
+  out.asGzipOutputStream().printwriter.map(_.printLines(countries))
 ```
 
 ### Lightweight ARM

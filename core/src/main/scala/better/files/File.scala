@@ -925,7 +925,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return the target directory
     */
   def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): File =
-    zipTo(destination = File.newTemporaryFile(name, ".zip"), compressionLevel)(charset)
+    zipTo(destination = File.newTemporaryFile(prefix = name, suffix = ".zip"), compressionLevel)(charset)
 
   /**
     * Unzips this zip file
@@ -949,14 +949,14 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destinationDirectory destination folder; Creates this if it does not exist
     * @return The destination where contents are unzipped
     */
-  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name))(implicit charset: Charset = defaultCharset): destinationDirectory.type = {
+  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name.stripSuffix(".zip")))(implicit charset: Charset = defaultCharset): destinationDirectory.type = {
     for {
       zipIn <- zipInputStream(charset)
     } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
     destinationDirectory
   }
 
-  def unGzipTo(destination: File = File.newTemporaryFile())(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
+  def unGzipTo(destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
     for {
       in <- inputStream(openOptions)
       out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
@@ -969,7 +969,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destination
     * @return
     */
-  def gzipTo(destination: File = File.newTemporaryFile(suffix = ".gz"))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
+  def gzipTo(destination: File = File.newTemporaryFile(suffix = name + ".gz"))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
     for {
       in <- inputStream(openOptions)
       out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
@@ -1002,7 +1002,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return the zip file
     */
   def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = defaultCharset): File =
-    unzipTo(destination = File.newTemporaryDirectory(name), zipFilter)(charset)
+    unzipTo(destination = File.newTemporaryDirectory(name.stripSuffix(".zip")), zipFilter)(charset)
 
   /**
     * Java's temporary files/directories are not cleaned up by default.
