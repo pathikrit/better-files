@@ -366,6 +366,18 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] =
     newInputStream(openOptions).autoClosed
 
+  def newFileInputStream: FileInputStream =
+    new FileInputStream(toJava)
+
+  def fileInputStream: ManagedResource[FileInputStream] =
+    newFileInputStream.autoClosed
+
+  def newFileOutputStream(append: Boolean = false): FileOutputStream =
+    new FileOutputStream(toJava, append)
+
+  def fileOutputStream(append: Boolean = false): ManagedResource[FileOutputStream] =
+    newFileOutputStream(append).autoClosed
+
   //TODO: Move this to inputstream implicit
   def newDigestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): DigestInputStream =
     new DigestInputStream(newInputStream(openOptions), digest)
@@ -392,7 +404,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     newZipInputStream(charset).autoClosed
 
   def newZipInputStream(implicit charset: Charset = defaultCharset): ZipInputStream =
-    new ZipInputStream(new FileInputStream(toJava).buffered, charset)
+    new ZipInputStream(newFileInputStream.buffered, charset)
 
   def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
@@ -956,10 +968,10 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     destinationDirectory
   }
 
-  def unGzipTo(destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
+  def unGzipTo(destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz"))): destination.type = {
     for {
-      in <- inputStream(openOptions)
-      out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
+      in <- fileInputStream
+      out <- destination.createIfNotExists(createParents = true).fileOutputStream()
     } in.buffered.pipeTo(out.buffered)
     destination
   }
@@ -969,10 +981,10 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destination
     * @return
     */
-  def gzipTo(destination: File = File.newTemporaryFile(suffix = name + ".gz"))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
+  def gzipTo(destination: File = File.newTemporaryFile(suffix = name + ".gz")): destination.type = {
     for {
-      in <- inputStream(openOptions)
-      out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
+      in <- fileInputStream
+      out <- destination.createIfNotExists(createParents = true).fileOutputStream()
     } in.buffered.pipeTo(out.asGzipOutputStream())
     destination
   }
