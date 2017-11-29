@@ -425,7 +425,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def writeSerialized(obj: Serializable)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
-    createIfNotExists().outputStream(openOptions).foreach(_.buffered.asObjectOutputStream.serialize(obj).flush())
+    createIfNotExists().outputStream(openOptions).foreach(_.asObjectOutputStream.serialize(obj).flush())
     this
   }
 
@@ -435,7 +435,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
-    inputStream(openOptions).map(_.buffered.asObjectInputStream.readObject().asInstanceOf[A])
+    inputStream(openOptions).map(_.asObjectInputStream.deserialize[A])
 
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)

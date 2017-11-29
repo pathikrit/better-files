@@ -92,7 +92,7 @@ trait Implicits {
       new GZIPInputStream(in)
 
     def asObjectInputStream: ObjectInputStream =
-      new ObjectInputStream(in)
+      new ObjectInputStream(buffered)
 
     def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
@@ -127,7 +127,7 @@ trait Implicits {
       new TeeOutputStream(out, out2)
 
     def asObjectOutputStream: ObjectOutputStream =
-      new ObjectOutputStream(out)
+      new ObjectOutputStream(buffered)
   }
 
   implicit class ReaderOps(reader: Reader) {
