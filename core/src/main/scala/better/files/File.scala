@@ -959,12 +959,25 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     destinationDirectory
   }
 
-  def unGzipTo(destinationDirectory: File = File.newTemporaryDirectory())(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destinationDirectory.type = {
+  def unGzipTo(destination: File = File.newTemporaryFile())(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
     for {
       in <- inputStream(openOptions)
-      out <- destinationDirectory.outputStream(openOptions)
+      out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
     } in.buffered.pipeTo(out.buffered)
-    destinationDirectory
+    destination
+  }
+
+  /**
+    *
+    * @param destination
+    * @return
+    */
+  def gzipTo(destination: File = File.newTemporaryFile(suffix = ".gz"))(implicit openOptions: File.OpenOptions = File.OpenOptions.default): destination.type = {
+    for {
+      in <- inputStream(openOptions)
+      out <- destination.createIfNotExists(createParents = true).outputStream(openOptions)
+    } in.buffered.pipeTo(out.asGzipOutputStream())
+    destination
   }
 
   /**
@@ -981,7 +994,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input <- files
       file <- input.walk()
-      name = input.parent relativize file
+      name = input.parent.relativize(file)
     } output.add(file, name.toString)
     this
   }
