@@ -495,10 +495,10 @@ class FileSpec extends CommonSpec {
 
   it should "gzip" in {
     for {
-      writer <- (testRoot / "test.gz").newOutputStream.buffered.gzipped.writer.buffered.autoClosed
+      writer <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().writer.buffered.autoClosed
     } writer.write("Hello world")
 
-    (testRoot / "test.gz").inputStream.map(_.buffered.gzipped.buffered.lines.toSeq) shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").inputStream.map(_.buffered.asGzipInputStream().buffered.lines.toSeq) shouldEqual Seq("Hello world")
   }
 
   it should "read bytebuffers" in {
