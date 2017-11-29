@@ -152,4 +152,10 @@ object Dsl {
 
   def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(charset)
+
+  def ungzip(gzipFile: File)(destination: File): File =
+    gzipFile.unGzipTo(destination)
+
+  def gzip(file: File)(destination: File): File =
+    file.gzipTo(destination)
 }
