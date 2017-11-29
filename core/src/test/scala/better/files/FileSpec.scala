@@ -494,11 +494,13 @@ class FileSpec extends CommonSpec {
   }
 
   it should "ungzip" in {
+    val data = Seq("hello", "world")
     for {
-      writer <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().writer.buffered.autoClosed
-    } writer.write("Hello world")
+      pw <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().printWriter().autoClosed
+      line <- data
+    } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.map(_.buffered.asGzipInputStream().buffered.lines.toSeq) shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").inputStream.map(_.asGzipInputStream().lines.toSeq) shouldEqual data
   }
 
   it should "gzip" in {
@@ -507,7 +509,7 @@ class FileSpec extends CommonSpec {
       .unGzipTo()
       .contentAsString
 
-    assert(actual == "hello world")
+    assert(actual === "hello world")
   }
 
   it should "read bytebuffers" in {
