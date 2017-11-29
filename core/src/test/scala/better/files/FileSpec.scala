@@ -533,6 +533,10 @@ class FileSpec extends CommonSpec {
       val p2: Person = f.readDeserialized[Person]
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
+
+      val p3 = f.inputStream.map(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
+      assert(p3.name === p2.name)
+      assert(p3.age === p2.age)
     }
   }
 

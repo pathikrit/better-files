@@ -91,8 +91,29 @@ trait Implicits {
     def gzipped: GZIPInputStream =
       new GZIPInputStream(in)
 
-    def asObjectInputStream: ObjectInputStream =
-      new ObjectInputStream(in)
+    /**
+      * If bufferSize is set to less than or equal to 0, we don't buffer
+      * @param bufferSize
+      * @return
+      */
+    def asObjectInputStream(bufferSize: Int = defaultBufferSize): ObjectInputStream =
+      new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize))
+
+    /**
+      * @param bufferSize If bufferSize is set to less than or equal to 0, we don't buffer
+      *
+      * @return A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
+      * This is useful in dynamic container environments.
+      */
+    def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader, bufferSize: Int = defaultBufferSize): ObjectInputStream =
+      new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize)) {
+        override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
+          try {
+            Class.forName(objectStreamClass.getName, false, classLoader)
+          } catch {
+            case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
+          }
+      }
 
     def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
@@ -107,6 +128,9 @@ trait Implicits {
   implicit class OutputStreamOps(val out: OutputStream) {
     def buffered: BufferedOutputStream =
       new BufferedOutputStream(out)
+
+    def buffered(bufferSize: Int): BufferedOutputStream =
+      new BufferedOutputStream(out, bufferSize)
 
     def gzipped: GZIPOutputStream =
       new GZIPOutputStream(out)
@@ -126,8 +150,13 @@ trait Implicits {
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
 
-    def asObjectOutputStream: ObjectOutputStream =
-      new ObjectOutputStream(out)
+    /**
+      * If bufferSize is set to less than or equal to 0, we don't buffer
+      * @param bufferSize
+      * @return
+      */
+    def asObjectOutputStream(bufferSize: Int = defaultBufferSize): ObjectOutputStream =
+      new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
   }
 
   implicit class ReaderOps(reader: Reader) {
