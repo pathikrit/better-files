@@ -101,7 +101,7 @@ trait Implicits {
       * This is useful in dynamic container environments.
       */
     def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader): ObjectInputStream =
-      new ObjectInputStream(in) {
+      new ObjectInputStream(buffered) {
         override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
           try {
             Class.forName(objectStreamClass.getName, false, classLoader)

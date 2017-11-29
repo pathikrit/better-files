@@ -26,7 +26,7 @@ package object files extends Implicits {
 
   type Files = Iterator[File]
 
-  def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name)
+  def resourceAsStream(name: String): InputStream = currentClassLoader().getResourceAsStream(name).buffered
 
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
