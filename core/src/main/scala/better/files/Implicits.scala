@@ -94,6 +94,22 @@ trait Implicits {
     def asObjectInputStream: ObjectInputStream =
       new ObjectInputStream(buffered)
 
+    /**
+      * @return A special ObjectInputStream that loads a class based on a specified
+      * <code>ClassLoader</code> rather than the system default
+      * <p>
+      * This is useful in dynamic container environments.
+      */
+    def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader): ObjectInputStream =
+      new ObjectInputStream(in) {
+        override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
+          try {
+            Class.forName(objectStreamClass.getName, false, classLoader)
+          } catch {
+            case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
+          }
+      }
+
     def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
 
@@ -167,24 +183,7 @@ trait Implicits {
   implicit class ObjectInputStreamOps(ois: ObjectInputStream) {
     def deserialize[A]: A =
       ois.readObject().asInstanceOf[A]
-
-    /**
-      * @return A special ObjectInputStream that loads a class based on a specified
-      * <code>ClassLoader</code> rather than the system default
-      * <p>
-      * This is useful in dynamic container environments.
-      */
-    def usingClassLoader(classLoader: ClassLoader = getClass.getClassLoader): ObjectInputStream =
-      new ObjectInputStream(ois) {
-        override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
-          try {
-            Class.forName(objectStreamClass.getName, false, classLoader)
-          } catch {
-            case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
-          }
-      }
   }
-
 
   implicit class ObjectOutputStreamOps(val oos: ObjectOutputStream) {
     def serialize(obj: Serializable): oos.type = {
