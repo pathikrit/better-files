@@ -311,7 +311,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   }
 
   def writeBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
-    outputStream(openOptions).foreach(_.buffered write bytes)
+    outputStream(openOptions).foreach(_.buffered.write(bytes))
     this
   }
 
@@ -415,11 +415,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def gzipOutputStream(bufferSize: Int = defaultBufferSize, syncFlush: Boolean = false, append: Boolean = false): ManagedResource[GZIPOutputStream] =
     newGzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append).autoClosed
 
-  def newGzipInputStream(bufferSize: Int = defaultBufferSize)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): GZIPInputStream =
-    new GZIPInputStream(newInputStream(openOptions), bufferSize)
+  def newGzipInputStream(bufferSize: Int = defaultBufferSize): GZIPInputStream =
+    new GZIPInputStream(newFileInputStream, bufferSize)
 
-  def gzipInputStream(bufferSize: Int = defaultBufferSize)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[GZIPInputStream] =
-    newGzipInputStream(bufferSize)(openOptions).autoClosed
+  def gzipInputStream(bufferSize: Int = defaultBufferSize): ManagedResource[GZIPInputStream] =
+    newGzipInputStream(bufferSize).autoClosed
 
   def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
     FileChannel.open(path, openOptions.toSet.asJava, attributes: _*)
@@ -982,9 +982,9 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
 
   def unGzipTo(destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")), append: Boolean = false, bufferSize: Int = defaultBufferSize): destination.type = {
     for {
-      in <- fileInputStream
+      in <- gzipInputStream(bufferSize)
       out <- destination.createIfNotExists(createParents = true).fileOutputStream(append)
-    } in.buffered(bufferSize).pipeTo(out.buffered(bufferSize), bufferSize)
+    } in.pipeTo(out, bufferSize)
     destination
   }
 
