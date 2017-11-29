@@ -159,6 +159,13 @@ trait Implicits {
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
   }
 
+  implicit class PrintWriterOps(pw: PrintWriter) {
+    def printLines(lines: TraversableOnce[_]): PrintWriter = {
+      lines.foreach(pw.println)
+      pw
+    }
+  }
+
   implicit class ReaderOps(reader: Reader) {
     def buffered: BufferedReader =
       new BufferedReader(reader)

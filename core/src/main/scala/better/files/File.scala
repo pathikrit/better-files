@@ -265,11 +265,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def contentAsString(implicit charset: Charset = defaultCharset): String =
     new String(byteArray, charset)
 
-  def printLines(lines: Iterator[Any])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
-    for {
-      pw <- printWriter()(openOptions)
-      line <- lines
-    } pw.println(line)
+  def printLines(lines: TraversableOnce[_])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
+    printWriter()(openOptions).foreach(_.printLines(lines))
     this
   }
 
