@@ -55,10 +55,8 @@ trait Implicits {
   }
 
   implicit class InputStreamOps(in: InputStream) {
-    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): out.type = {
+    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
-      out
-    }
 
     /**
       * Pipe an input stream to an output stream using a byte buffer
@@ -101,6 +99,8 @@ trait Implicits {
 
     /**
       * @param bufferSize If bufferSize is set to less than or equal to 0, we don't buffer
+      * Code adapted from:
+      * https://github.com/apache/commons-io/blob/master/src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java
       *
       * @return A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
       * This is useful in dynamic container environments.
@@ -113,6 +113,17 @@ trait Implicits {
           } catch {
             case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
           }
+
+        override protected def resolveProxyClass(interfaces: Array[String]): Class[_] = {
+          try {
+            java.lang.reflect.Proxy.getProxyClass(
+              classLoader,
+              interfaces.map(interface => Class.forName(interface, false, classLoader)) : _*
+            )
+          } catch {
+            case _: ClassNotFoundException | _: IllegalArgumentException => super.resolveProxyClass(interfaces)
+          }
+        }
       }
 
     def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
