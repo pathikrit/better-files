@@ -217,11 +217,11 @@ val person = new Person("Chris", 24)
 file.newOutputStream.asObjectOutputStream.serialize(obj).flush()
 
 // Read
-val person2 = file.newInputStream.asObjectInputStream.readObject().asInstanceOf[Person]
+val person2 = file.newInputStream.asObjectInputStream.deserialize[Person]
 assert(person == person2)
 
 // Read using custom class loader:
-file.newInputStream.asObjectInputStreamUsingClassLoader(classLoader = myClassLoader).readObject().asInstanceOf[Person]
+file.newInputStream.asObjectInputStreamUsingClassLoader(classLoader = myClassLoader).deserialize[Person]
 ```
 
 The above can be simply written as:

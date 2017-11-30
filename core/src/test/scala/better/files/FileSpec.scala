@@ -551,6 +551,10 @@ class FileSpec extends CommonSpec {
     }
   }
 
+  it should "serialize/deserialize primitives" in {
+    assert(t1.writeSerialized(23).readDeserialized[Int] === 23)
+  }
+
   it should "count number of open file descriptors" in {
     val expected = java.lang.management.ManagementFactory.getOperatingSystemMXBean
       .asInstanceOf[com.sun.management.UnixOperatingSystemMXBean]
