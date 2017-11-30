@@ -3,11 +3,34 @@ val repo = "better-files"
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.12.3",
-  crossScalaVersions := Seq("2.12.3"),
+  scalaVersion := "2.12.4",
+  crossScalaVersions := Seq("2.11.12", "2.12.4"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
-  scalacOptions ++= Seq(
+  scalacOptions ++= scalacOptionsForVersion(scalaVersion.value),
+  libraryDependencies += Dependencies.scalatest,
+  updateImpactOpenBrowser := false
+)
+
+def scalacOptionsForVersion(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
+  case Some((2, 11)) => Seq(              // Copied from https://tpolecat.github.io/2014/04/11/scalac-flags.html
+    "-deprecation",
+    "-encoding", "UTF-8",                 // yes, this is 2 args
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",                  // N.B. doesn't work well with the ??? hole
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture",
+    "-Ywarn-unused-import"               // 2.11 only
+  )
+  case Some((2, 12)) => Seq(             // Copied from https://tpolecat.github.io/2017/04/25/scalac-flags.html
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
     "-encoding", "utf-8",                // Specify character encoding used by source files.
     "-explaintypes",                     // Explain type errors in more detail.
@@ -53,10 +76,8 @@ lazy val commonSettings = Seq(
     "-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused.
     "-Ywarn-unused:privates",            // Warn if a private member is unused.
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
-  ),
-  libraryDependencies += Dependencies.scalatest,
-  updateImpactOpenBrowser := false
-)
+  )
+}
 
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
