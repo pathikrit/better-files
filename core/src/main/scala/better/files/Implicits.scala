@@ -55,7 +55,7 @@ trait Implicits {
   }
 
   implicit class InputStreamOps(in: InputStream) {
-    def pipeTo(out: OutputStream, bufferSize: Int = defaultBufferSize): out.type =
+    def pipeTo(out: OutputStream, bufferSize: Int = DefaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
 
     /**
@@ -71,7 +71,7 @@ trait Implicits {
       }
     }
 
-    def asString(closeStream: Boolean = true, bufferSize: Int = defaultBufferSize)(implicit charset: Charset = defaultCharset): String = {
+    def asString(closeStream: Boolean = true, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): String = {
       try {
         new ByteArrayOutputStream(bufferSize).autoClosed
           .map(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
@@ -86,7 +86,7 @@ trait Implicits {
     def buffered(bufferSize: Int): BufferedInputStream =
       new BufferedInputStream(in, bufferSize)
 
-    def asGzipInputStream(bufferSize: Int = defaultBufferSize): GZIPInputStream =
+    def asGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
       new GZIPInputStream(in, bufferSize)
 
     /**
@@ -94,7 +94,7 @@ trait Implicits {
       * @param bufferSize
       * @return
       */
-    def asObjectInputStream(bufferSize: Int = defaultBufferSize): ObjectInputStream =
+    def asObjectInputStream(bufferSize: Int = DefaultBufferSize): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize))
 
     /**
@@ -105,7 +105,7 @@ trait Implicits {
       * @return A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
       * This is useful in dynamic container environments.
       */
-    def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader, bufferSize: Int = defaultBufferSize): ObjectInputStream =
+    def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader, bufferSize: Int = DefaultBufferSize): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize)) {
         override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
           try {
@@ -126,10 +126,10 @@ trait Implicits {
         }
       }
 
-    def reader(implicit charset: Charset = defaultCharset): InputStreamReader =
+    def reader(implicit charset: Charset = DefaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
 
-    def lines(implicit charset: Charset = defaultCharset): Iterator[String] =
+    def lines(implicit charset: Charset = DefaultCharset): Iterator[String] =
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
@@ -143,16 +143,16 @@ trait Implicits {
     def buffered(bufferSize: Int): BufferedOutputStream =
       new BufferedOutputStream(out, bufferSize)
 
-    def asGzipOutputStream(bufferSize: Int = defaultBufferSize, syncFlush: Boolean = false): GZIPOutputStream =
+    def asGzipOutputStream(bufferSize: Int = DefaultBufferSize, syncFlush: Boolean = false): GZIPOutputStream =
       new GZIPOutputStream(out, bufferSize, syncFlush)
 
-    def writer(implicit charset: Charset = defaultCharset): OutputStreamWriter =
+    def writer(implicit charset: Charset = DefaultCharset): OutputStreamWriter =
       new OutputStreamWriter(out, charset)
 
     def printWriter(autoFlush: Boolean = false): PrintWriter =
       new PrintWriter(out, autoFlush)
 
-    def write(bytes: Iterator[Byte], bufferSize: Int = defaultBufferSize): out.type = {
+    def write(bytes: Iterator[Byte], bufferSize: Int = DefaultBufferSize): out.type = {
       bytes.grouped(bufferSize).foreach(buffer => out.write(buffer.toArray))
       out.flush()
       out
@@ -166,7 +166,7 @@ trait Implicits {
       * @param bufferSize
       * @return
       */
-    def asObjectOutputStream(bufferSize: Int = defaultBufferSize): ObjectOutputStream =
+    def asObjectOutputStream(bufferSize: Int = DefaultBufferSize): ObjectOutputStream =
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
   }
 
@@ -181,7 +181,7 @@ trait Implicits {
     def buffered: BufferedReader =
       new BufferedReader(reader)
 
-    def toInputStream(implicit charset: Charset = defaultCharset): InputStream =
+    def toInputStream(implicit charset: Charset = DefaultCharset): InputStream =
       new ReaderInputStream(reader)(charset)
   }
 
@@ -189,7 +189,7 @@ trait Implicits {
     def chars: Iterator[Char] =
       reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
 
-    def tokens(splitter: StringSplitter = StringSplitter.default): Iterator[String] =
+    def tokens(splitter: StringSplitter = StringSplitter.Default): Iterator[String] =
       reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
 
@@ -197,7 +197,7 @@ trait Implicits {
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
 
-    def outputstream(implicit charset: Charset = defaultCharset): OutputStream =
+    def outputstream(implicit charset: Charset = DefaultCharset): OutputStream =
       new WriterOutputStream(writer)(charset)
   }
 

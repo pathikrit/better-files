@@ -214,11 +214,14 @@ case class Person(name: String, age: Int)
 val person = new Person("Chris", 24)
 
 // Write
-file.newOutputStream.buffered.asObjectOutputStream.serialize(obj).flush()
+file.newOutputStream.asObjectOutputStream.serialize(obj).flush()
 
 // Read
-val person2 = file.newInputStream.buffered.asObjectInputStream.readObject().asInstanceOf[Person]
+val person2 = file.newInputStream.asObjectInputStream.readObject().asInstanceOf[Person]
 assert(person == person2)
+
+// Read using custom class loader:
+file.newInputStream.asObjectInputStreamUsingClassLoader(classLoader = myClassLoader).readObject().asInstanceOf[Person]
 ```
 
 The above can be simply written as:
@@ -460,6 +463,7 @@ val zipFile = File("countries.zip").zipIn(file"usa.txt", file"russia.txt")
 val someTempZipFile: File = directory.zip()
 val someTempDir: File = zipFile.unzip()
 assert(directory === someTempDir)
+```
 
 GZIP handling:
 ```scala

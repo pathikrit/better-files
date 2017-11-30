@@ -23,7 +23,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     */
   private[this] val decoderIn = ByteBuffer.allocate(bufferSize>>4)
 
-  def this(writer: Writer, bufferSize: Int = defaultBufferSize, flushImmediately: Boolean = false)(implicit charset: Charset = defaultCharset) =
+  def this(writer: Writer, bufferSize: Int = DefaultBufferSize, flushImmediately: Boolean = false)(implicit charset: Charset = DefaultCharset) =
     this(writer = writer, decoder = charset.newDecoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).replaceWith("?"), bufferSize = bufferSize, flushImmediately = flushImmediately)
 
   override def write(b: Array[Byte], off: Int, len: Int) = {

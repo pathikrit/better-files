@@ -22,19 +22,19 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 object Scanner {
 
   def apply(str: String): Scanner =
-    Scanner(str, StringSplitter.default)
+    Scanner(str, StringSplitter.Default)
 
   def apply(str: String, splitter: StringSplitter): Scanner =
     Scanner(new StringReader(str), splitter)
 
   def apply(reader: Reader): Scanner =
-    Scanner(reader, StringSplitter.default)
+    Scanner(reader, StringSplitter.Default)
 
   def apply(reader: Reader, splitter: StringSplitter): Scanner =
     Scanner(new LineNumberReader(reader.buffered), splitter)
 
-  def apply(inputStream: InputStream)(implicit charset: Charset = defaultCharset): Scanner =
-    Scanner(inputStream, StringSplitter.default)(charset)
+  def apply(inputStream: InputStream)(implicit charset: Charset = DefaultCharset): Scanner =
+    Scanner(inputStream, StringSplitter.Default)(charset)
 
   def apply(inputStream: InputStream, splitter: StringSplitter)(implicit charset: Charset): Scanner =
     Scanner(inputStream.reader(charset), splitter)
@@ -130,7 +130,7 @@ trait StringSplitter {
   def split(s: String): TraversableOnce[String]
 }
 object StringSplitter {
-  val default = StringSplitter.anyOf(" \t\t\n\r")
+  val Default = StringSplitter.anyOf(" \t\t\n\r")
 
   /**
     * Split string on this character

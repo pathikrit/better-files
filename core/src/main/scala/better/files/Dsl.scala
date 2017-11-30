@@ -39,19 +39,19 @@ object Dsl {
     def /(f: File => File): File =
       f(file)
 
-    def <<(line: String)(implicit charset: Charset = defaultCharset): file.type =
+    def <<(line: String)(implicit charset: Charset = DefaultCharset): file.type =
       file.appendLines(line)(charset)
 
-    def >>:(line: String)(implicit charset: Charset = defaultCharset): file.type =
+    def >>:(line: String)(implicit charset: Charset = DefaultCharset): file.type =
       file.appendLines(line)(charset)
 
-    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): file.type =
+    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): file.type =
       file.write(text)(openOptions, charset)
 
-    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = defaultCharset): file.type =
+    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): file.type =
       file.write(text)(openOptions, charset)
 
-    def `!`(implicit charset: Charset = defaultCharset): String =
+    def `!`(implicit charset: Charset = DefaultCharset): String =
       file.contentAsString(charset)
 
     def `===`(that: File): Boolean =
@@ -147,10 +147,10 @@ object Dsl {
   def stat(file: File): PosixFileAttributes =
     file.posixAttributes
 
-  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = defaultCharset): destination.type =
+  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = DefaultCharset): destination.type =
     zipFile.unzipTo(destination)(charset)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = defaultCharset): destination.type =
+  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = DefaultCharset): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(charset)
 
   def ungzip(gzipFile: File)(destination: File): File =
