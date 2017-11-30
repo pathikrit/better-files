@@ -13,6 +13,21 @@ lazy val commonSettings = Seq(
 )
 
 def scalacOptionsForVersion(scalaVersion: String) = CrossVersion.partialVersion(scalaVersion) match {
+  case Some((2, 10)) => Seq(
+    "-deprecation",
+    "-encoding", "UTF-8",
+    "-feature",
+    "-language:implicitConversions",
+    "-language:reflectiveCalls",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yinline-warnings",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",
+    //"-Ywarn-numeric-widen",             // bugs in 2.10
+    "-Xfuture"
+  )
   case Some((2, 11)) => Seq(              // Copied from https://tpolecat.github.io/2014/04/11/scalac-flags.html
     "-deprecation",
     "-encoding", "UTF-8",                 // yes, this is 2 args
