@@ -26,7 +26,7 @@ def scalacOptionsForVersion(scalaVersion: String) = CrossVersion.partialVersion(
     "-Yno-adapted-args",
     "-Ywarn-dead-code",                  // N.B. doesn't work well with the ??? hole
     "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
+    //"-Ywarn-value-discard",            // This is broken in 2.11 for Unit types
     "-Xfuture",
     "-Ywarn-unused-import"               // 2.11 only
   )
