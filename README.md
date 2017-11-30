@@ -45,8 +45,8 @@ libraryDependencies ++= Seq(
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
 
-Although this library is currently only actively developed for Scala 2.12 and 2.13,
-you can find reasonably recent versions of this library for Scala 2.10 and 2.11 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
+Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
+you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
 
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)

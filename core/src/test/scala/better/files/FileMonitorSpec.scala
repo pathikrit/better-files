@@ -42,7 +42,9 @@ class FileMonitorSpec extends CommonSpec {
     val dir = File.newTemporaryDirectory()
     (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
     var log = List.empty[String]
-    def output(msg: String) = synchronized(log = msg :: log)
+    def output(msg: String) = synchronized {
+      log = msg :: log
+    }
 
     val watcher = new FileMonitor(dir, maxDepth = 2) {
       override def onCreate(file: File, count: Int) = output(s"Create happened on ${file.name} $count times")

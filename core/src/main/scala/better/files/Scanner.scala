@@ -169,8 +169,9 @@ object StringSplitter {
     * @param includeDelimiters
     * @return
     */
-  def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter =
-    s => new StringTokenizer(s, delimiters, includeDelimiters)
+  def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter = new StringSplitter {
+    override def split(s: String) = new StringTokenizer(s, delimiters, includeDelimiters)
+  }
 
   /**
     * Split string using a regex pattern
@@ -178,6 +179,7 @@ object StringSplitter {
     * @param pattern
     * @return
     */
-  def regex(pattern: String): StringSplitter =
-    s => s.split(pattern, -1)
+  def regex(pattern: String): StringSplitter = new StringSplitter {
+    override def split(s: String) = s.split(pattern, -1)
+  }
 }

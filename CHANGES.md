@@ -20,6 +20,9 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Move Scanner to own module that depends on cats/shapeless
 * Remove implicit options from all APIs
 
+## v3.3.1
+* [Issue #146](https://github.com/pathikrit/better-files/issues/146): Release for Scala 2.11
+
 ## v3.3.0
 * [Issue #193](https://github.com/pathikrit/better-files/issues/193): Handle fast changing directory watching on Windows
 * [Issue #195](https://github.com/pathikrit/better-files/issues/195): Do not swallow `FileAlreadyExistsException` when creating directory or file
