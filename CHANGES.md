@@ -20,12 +20,13 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Move Scanner to own module that depends on cats/shapeless
 * Remove implicit options from all APIs
 
-## v3.2.1
+## v3.3.0
 * [Issue #193](https://github.com/pathikrit/better-files/issues/193): Handle fast changing directory watching on Windows
 * [Issue #195](https://github.com/pathikrit/better-files/issues/195): Do not swallow `FileAlreadyExistsException` when creating directory or file
 * [Add](https://github.com/pathikrit/better-files/commit/00f27867ebd0cddec1ace7835dcc2375869fb3ae) method to check verified file existence (or non-existence)
 * [Issue #198](https://github.com/pathikrit/better-files/issues/198): `InputStreamOps#asString` doesn't close the stream on exception
 * [PR #199](https://github.com/pathikrit/better-files/pull/199): Utils for Object I/O
+* [PR #200](https://github.com/pathikrit/better-files/pull/200): GZIP APIs
 
 ## v3.2.0
 * [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs

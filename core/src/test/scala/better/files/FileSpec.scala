@@ -493,12 +493,23 @@ class FileSpec extends CommonSpec {
     (destination/"t1.txt").contentAsString shouldEqual "hello world"
   }
 
-  it should "gzip" in {
+  it should "ungzip" in {
+    val data = Seq("hello", "world")
     for {
-      writer <- (testRoot / "test.gz").newOutputStream.buffered.gzipped.writer.buffered.autoClosed
-    } writer.write("Hello world")
+      pw <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().printWriter().autoClosed
+      line <- data
+    } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.map(_.buffered.gzipped.buffered.lines.toSeq) shouldEqual Seq("Hello world")
+    (testRoot / "test.gz").inputStream.map(_.asGzipInputStream().lines.toSeq) shouldEqual data
+  }
+
+  it should "gzip" in {
+    val actual = t1.writeText("hello world")
+      .gzipTo()
+      .unGzipTo()
+      .contentAsString
+
+    assert(actual === "hello world")
   }
 
   it should "read bytebuffers" in {

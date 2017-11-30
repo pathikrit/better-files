@@ -25,7 +25,7 @@
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
   0. [File comparison](#file-comparison)
-  0. [Zip/Unzip](#zip-apis)
+  0. [Zip/GZip](#zip-apis)
   0. [Automatic Resource Management](#lightweight-arm)
   0. [Scanner](#scanner)
   0. [File Monitoring](#file-monitoring)
@@ -380,6 +380,8 @@ chmod_-(permission, files)  // remove permission
 md5(file); sha1(file); sha256(file); sha512(file)
 unzip(zipFile)(targetDir)
 zip(file*)(targetZipFile)
+ungzip(gzipFile)(targetFile)
+gzip(file)(targetGZipFile)
 ```
 
 ### File attributes
@@ -442,7 +444,7 @@ files.sorted(File.Order.byDirectoriesFirst)
 ```
 
 ### Zip APIs
-You don't have to lookup on StackOverflow "[How to zip/unzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
+You don't have to lookup on StackOverflow "[How to zip/unzip/gzip in Java/Scala?](http://stackoverflow.com/questions/9324933/)":
 ```scala
 // Unzipping:
 val zipFile: File = file"path/to/research.zip"
@@ -459,8 +461,16 @@ val someTempZipFile: File = directory.zip()
 val someTempDir: File = zipFile.unzip()
 assert(directory === someTempDir)
 
-// Gzip handling:
-File("countries.gz").newInputStream.gzipped.lines.take(10).foreach(println)
+GZIP handling:
+```scala
+File("big-data.csv").gzipTo("big-data.csv.gz")
+File("big-data.csv.gz").ungzipTo("big-data.csv")
+
+// GZIP stream handling:
+File("countries.gz").newInputStream.asGzipInputStream().lines.take(10).foreach(println)
+
+def write(out: OutputStream, countries: Seq[String]) =
+  out.asGzipOutputStream().printwriter.map(_.printLines(countries))
 ```
 
 ### Lightweight ARM

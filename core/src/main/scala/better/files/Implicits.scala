@@ -86,8 +86,8 @@ trait Implicits {
     def buffered(bufferSize: Int): BufferedInputStream =
       new BufferedInputStream(in, bufferSize)
 
-    def gzipped: GZIPInputStream =
-      new GZIPInputStream(in)
+    def asGzipInputStream(bufferSize: Int = defaultBufferSize): GZIPInputStream =
+      new GZIPInputStream(in, bufferSize)
 
     /**
       * If bufferSize is set to less than or equal to 0, we don't buffer
@@ -143,8 +143,8 @@ trait Implicits {
     def buffered(bufferSize: Int): BufferedOutputStream =
       new BufferedOutputStream(out, bufferSize)
 
-    def gzipped: GZIPOutputStream =
-      new GZIPOutputStream(out)
+    def asGzipOutputStream(bufferSize: Int = defaultBufferSize, syncFlush: Boolean = false): GZIPOutputStream =
+      new GZIPOutputStream(out, bufferSize, syncFlush)
 
     def writer(implicit charset: Charset = defaultCharset): OutputStreamWriter =
       new OutputStreamWriter(out, charset)
@@ -168,6 +168,13 @@ trait Implicits {
       */
     def asObjectOutputStream(bufferSize: Int = defaultBufferSize): ObjectOutputStream =
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
+  }
+
+  implicit class PrintWriterOps(pw: PrintWriter) {
+    def printLines(lines: TraversableOnce[_]): PrintWriter = {
+      lines.foreach(pw.println)
+      pw
+    }
   }
 
   implicit class ReaderOps(reader: Reader) {
