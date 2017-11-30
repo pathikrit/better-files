@@ -58,7 +58,9 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
 
   override def start()(implicit executionContext: ExecutionContext) = {
     watch(root, maxDepth)
-    executionContext.execute(() => Iterator.continually(service.take()).foreach(process))
+    executionContext.execute(new Runnable {
+      override def run() = Iterator.continually(service.take()).foreach(process)
+    })
   }
 
   override def close() = service.close()
