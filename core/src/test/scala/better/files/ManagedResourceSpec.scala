@@ -64,7 +64,7 @@ class ManagedResourceSpec extends CommonSpec {
       "hello"
     }
 
-    result shouldBe "hello"
+    result.get() shouldBe "hello"
     t.closeCount shouldBe 1
   }
 
@@ -257,22 +257,21 @@ class ManagedResourceSpec extends CommonSpec {
 
     File.usingTemporaryFile() {f =>
       for {
-        out <- f.outputStream(File.OpenOptions.append)
-        pw = out.printWriter()
-        row <- data
+        pw <- f.printWriter()
+        header :: rows = data
+        row <- rows
       } pw.println(row.mkString(","))
 
-      for {
-        pw <- f.printWriter()
-        row <- data
-      } pw.println(row.mkString(","))
+      val expected = data.tail.map(_.mkString(","))
+
+      assert(f.contentAsString === expected.mkString("", "\n", "\n"))
 
       val actual = for {
         reader <- f.bufferedReader
-        line <- reader.lines()
+        line <- reader.lines().toAutoClosedIterator
       } yield line
 
-      assert(actual === Seq("key,value", "hello,0", "world,1", "hello,0", "world,1"))
+      assert(actual.toSeq === expected)
     }
   }
 }

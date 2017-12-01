@@ -2,6 +2,7 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
+import scala.collection.GenTraversableOnce
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -51,6 +52,8 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
 
   /**
     * Apply f to the resource and return it after closing the resource
+    * If you don't wish to close the resource, use flatMap instead
+    *
     * @param f
     * @tparam B
     * @return
@@ -104,27 +107,30 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
     * @tparam B
     * @return
     */
-//  def flatMap[M[_], B](f: A => M[B]): M[B] =
-//    apply(f)
+  def flatMap[B](f: A => GenTraversableOnce[B]): Traversable[B] =
+    (new Traversable[A] {
+      override def foreach[U](f2: A => U) = {
+        val _ = apply(f2)
+      }
+    }).flatMap(f)
 
-//  /**
-//    * This handles lazy operations (e.g. Iterators)
-//    * for which resource needs to be disposed only after iteration is done
-//    *
-//    * @param f
-//    * @tparam B
-//    * @return
-//    */
-//  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
-//    val it = f(resource)
-//    it withHasNext {
-//      try {
-//        val result = it.hasNext
-//        if (!result) disposeOnce()
-//        result
-//      } catch {
-//        case e1: Throwable => disposeOnceAndThrow(e1)
-//      }
-//    }
-//  }
+  /**
+    * This handles lazy operations (e.g. Iterators) for which resource needs to be disposed only after iteration is done
+    *
+    * @param f
+    * @tparam B
+    * @return
+    */
+  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
+    val it = f(resource)
+    it withHasNext {
+      try {
+        val result = it.hasNext
+        if (!result) disposeOnce()
+        result
+      } catch {
+        case e1: Throwable => disposeOnceAndThrow(e1)
+      }
+    }
+  }
 }

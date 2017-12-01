@@ -500,7 +500,7 @@ class FileSpec extends CommonSpec {
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.map(_.asGzipInputStream().lines.toSeq) shouldEqual data
+    (testRoot / "test.gz").inputStream.apply(_.asGzipInputStream().lines.toSeq) shouldEqual data
   }
 
   it should "gzip" in {
@@ -528,7 +528,7 @@ class FileSpec extends CommonSpec {
         writer <- f.bufferedWriter
         out <- writer.outputstream.autoClosed
       } out.write(text.mkString("\n").getBytes)
-      val t = f.bufferedReader.apply(_.toInputStream.lines)
+      val t = f.bufferedReader.flatMap(_.toInputStream.lines)
       t.toList shouldEqual text
     }
   }

@@ -183,12 +183,12 @@ trait Implicits {
 
     def toInputStream(implicit charset: Charset = DefaultCharset): InputStream =
       new ReaderInputStream(reader)(charset)
-
-    def chars: Iterator[Char] =
-      reader.autoClosed.apply(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
+    def chars: Iterator[Char] =
+      reader.autoClosed.apply(res => eofReader(res.read()).map(_.toChar))
+
     def tokens(splitter: StringSplitter = StringSplitter.Default): Iterator[String] =
       reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
