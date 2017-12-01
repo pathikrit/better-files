@@ -92,6 +92,7 @@ def scalacOptionsForVersion(scalaVersion: String) = CrossVersion.partialVersion(
     "-Ywarn-unused:privates",            // Warn if a private member is unused.
     "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
   )
+  case _ => throw new IllegalArgumentException(s"No scalacOptions found for Scala $scalaVersion")
 }
 
 lazy val core = (project in file("core"))
@@ -135,6 +136,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .dependsOn(core % "test->test;compile->compile")
 
 lazy val root = (project in file("."))
+  .settings(name := repo)
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
@@ -181,19 +183,14 @@ lazy val publishSettings = Seq(
   apiURL := Some(url(s"https://$username.github.io/$repo/latest/api/")),
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  developers := List(
+    Developer(id = username, name = "Pathikrit Bhowmick", email = "pathikritbhowmick@msn.com", url = new URL(s"http://github.com/${username}"))
+  ),
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
   credentials ++= (for {
     username <- sys.env.get("SONATYPE_USERNAME")
     password <- sys.env.get("SONATYPE_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq,
-  pomExtra :=
-    <developers>
-      <developer>
-        <id>{username}</id>
-        <name>Pathikrit Bhowmick</name>
-        <url>http://github.com/{username}</url>
-      </developer>
-    </developers>
+  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
 )
