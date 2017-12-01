@@ -101,28 +101,14 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
   }
 
   /**
-    * Composes managed resources correctly by closing the outer one after apply f and returning the new inner managed resource
-    *
-    * @param f
-    * @tparam B
-    * @return
-    */
-  def flatMap[B](f: A => GenTraversableOnce[B]): Traversable[B] =
-    (new Traversable[A] {
-      override def foreach[U](f2: A => U) = {
-        val _ = apply(f2)
-      }
-    }).flatMap(f)
-
-  /**
     * This handles lazy operations (e.g. Iterators) for which resource needs to be disposed only after iteration is done
     *
     * @param f
     * @tparam B
     * @return
     */
-  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
-    val it = f(resource)
+  def flatMap[B](f: A => GenTraversableOnce[B]): Iterator[B] = {
+    val it = f(resource).toIterator
     it withHasNext {
       try {
         val result = it.hasNext

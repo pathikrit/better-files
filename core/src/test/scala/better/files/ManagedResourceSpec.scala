@@ -253,22 +253,22 @@ class ManagedResourceSpec extends CommonSpec {
       List("key", "value"),
       List("hello", 0),
       List("world", 1)
-    )
+    ).map(_.mkString(","))
 
     File.usingTemporaryFile() {f =>
       for {
         pw <- f.printWriter()
         header :: rows = data
         row <- rows
-      } pw.println(row.mkString(","))
+      } pw.println(row)
 
-      val expected = data.tail.map(_.mkString(","))
+      val expected = data.tail
 
       assert(f.contentAsString === expected.mkString("", "\n", "\n"))
 
       val actual = for {
         reader <- f.bufferedReader
-        line <- reader.lines().toAutoClosedIterator
+        line <- reader.lines().toAutoClosedIterator.toList
       } yield line
 
       assert(actual.toSeq === expected)
