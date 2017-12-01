@@ -46,10 +46,8 @@ class ScannerSpec extends CommonSpec {
   }
 
   it should "parse longs/booleans" in {
-    val data = for {
-      scanner <- Scanner("10 false").autoClosed
-    } yield scanner.next[(Long, Boolean)]
-    data.get() shouldBe ((10L, false))
+    val data = Scanner("10 false").autoClosed.apply(_.next[(Long, Boolean)])
+    data shouldBe ((10L, false))
   }
 
   it should "parse custom parsers" in {

@@ -20,6 +20,9 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Move Scanner to own module that depends on cats/shapeless
 * Remove implicit options from all APIs
 
+## v3.4.0
+* [PR #202](https://github.com/pathikrit/better-files/pull/202): for-comprehension friendly ARM
+
 ## v3.3.1
 * [Issue #146](https://github.com/pathikrit/better-files/issues/146): Release for Scala 2.11
 

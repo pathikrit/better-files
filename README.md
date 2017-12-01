@@ -502,6 +502,19 @@ for {
 file.bufferedReader.foreach(foo)
 ```
 
+Similarly:
+```scala
+for {
+ reader <- file.bufferedReader
+} yield foo(reader)
+
+// Simpler
+file.bufferedReader.map(foo).get()
+
+// Even simpler
+file.bufferedReader.apply(foo)
+```
+
 You can also define your own custom disposable resources e.g.:
 ```scala
 trait Shutdownable {
