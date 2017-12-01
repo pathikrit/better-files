@@ -247,4 +247,34 @@ class ManagedResourceSpec extends CommonSpec {
     t.closeCount shouldBe 2
     lastSeen shouldBe "two"
   }
+
+  it should "support for-comprehension" in {
+    val data = List(
+      List("key", "value"),
+      List("hello", 0),
+      List("world", 1)
+    )
+
+    File.usingTemporaryFile() {f =>
+      for {
+        out <- f.outputStream(File.OpenOptions.append)
+        pw = out.printWriter()
+        row <- data
+      } pw.println(row.mkString(","))
+
+      for {
+        pw <- f.printWriter()
+        row <- data
+      } pw.println(row.mkString(","))
+
+      assert(f.contentAsString ===
+        s"""
+           |key,value
+           |hello,0
+           |world,1
+           |hello,0
+           |world,1
+         """.stripMargin)
+    }
+  }
 }
