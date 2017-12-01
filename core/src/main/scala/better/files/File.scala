@@ -1282,7 +1282,7 @@ object File {
 
     def onDelete(file: File, count: Int): Unit
 
-    def onUnknownEvent(event: WatchEvent[_], count: Int): Unit
+    def onUnknownEvent(event: WatchEvent[_]): Unit
 
     def onException(exception: Throwable): Unit
 

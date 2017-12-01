@@ -38,7 +38,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
           }
           onEvent(event.kind(), target, event.count())
         }
-      case event => if (reactTo(path)) onUnknownEvent(event, event.count())
+      case event => if (reactTo(path)) onUnknownEvent(event)
     }
     key.reset()
   }
@@ -69,6 +69,6 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   override def onCreate(file: File, count: Int) = {}
   override def onModify(file: File, count: Int) = {}
   override def onDelete(file: File, count: Int) = {}
-  override def onUnknownEvent(event: WatchEvent[_], count: Int) = {}
+  override def onUnknownEvent(event: WatchEvent[_]) = {}
   override def onException(exception: Throwable) = {}
 }
