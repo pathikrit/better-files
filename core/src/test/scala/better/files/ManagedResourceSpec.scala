@@ -267,14 +267,12 @@ class ManagedResourceSpec extends CommonSpec {
         row <- data
       } pw.println(row.mkString(","))
 
-      assert(f.contentAsString ===
-        s"""
-           |key,value
-           |hello,0
-           |world,1
-           |hello,0
-           |world,1
-         """.stripMargin)
+      val actual = for {
+        reader <- f.bufferedReader
+        line <- reader.lines()
+      } yield line
+
+      assert(actual === Seq("key,value", "hello,0", "world,1", "hello,0", "world,1"))
     }
   }
 }

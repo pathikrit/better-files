@@ -528,7 +528,7 @@ class FileSpec extends CommonSpec {
         writer <- f.bufferedWriter
         out <- writer.outputstream.autoClosed
       } out.write(text.mkString("\n").getBytes)
-      val t = f.bufferedReader.flatMap(_.toInputStream.lines)
+      val t = f.bufferedReader.apply(_.toInputStream.lines)
       t.toList shouldEqual text
     }
   }
@@ -546,7 +546,7 @@ class FileSpec extends CommonSpec {
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
 
-      val p3 = f.inputStream.map(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
+      val p3 = f.inputStream.apply(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
       assert(p3.name === p2.name)
       assert(p3.age === p2.age)
     }

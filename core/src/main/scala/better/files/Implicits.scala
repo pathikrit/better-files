@@ -74,7 +74,7 @@ trait Implicits {
     def asString(closeStream: Boolean = true, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): String = {
       try {
         new ByteArrayOutputStream(bufferSize).autoClosed
-          .map(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
+          .apply(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
       } finally {
         if (closeStream) in.close()
       }
@@ -133,7 +133,7 @@ trait Implicits {
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
+      in.autoClosed.apply(res => eofReader(res.read()).map(_.toByte))
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
@@ -185,7 +185,7 @@ trait Implicits {
       new ReaderInputStream(reader)(charset)
 
     def chars: Iterator[Char] =
-      reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
+      reader.autoClosed.apply(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
@@ -306,7 +306,7 @@ trait Implicits {
       * @return
       */
     def toAutoClosedIterator: Iterator[A] =
-      stream.autoClosed.flatMap(_.iterator().asScala)
+      stream.autoClosed.apply(_.iterator().asScala)
   }
 
   private[files] implicit class OrderingOps[A](order: Ordering[A]) {

@@ -31,7 +31,7 @@ object Disposable {
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
-class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
+class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
   private[this] val isDisposed = new AtomicBoolean(false)
   private[this] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
@@ -49,11 +49,13 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
     throw e1
   }
 
-  def foreach[U](f: A => U): Unit = {
-    val _ = map(f)
-  }
-
-  def map[B](f: A => B): B = {
+  /**
+    * Apply f to the resource and return it after closing the resource
+    * @param f
+    * @tparam B
+    * @return
+    */
+  def apply[B](f: A => B): B =
     try {
       f(resource)
     } catch {
@@ -61,7 +63,34 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
     } finally {
       disposeOnce()
     }
+
+  /**
+    * Dispose this resource and return it
+    * Note: If you are using map followed by get, consider using apply instead
+    * @return
+    */
+  def get(): A =
+    apply(identity)
+
+  /**
+    * This will immediately apply f on the resource and close the resource
+    *
+    * @param f
+    * @tparam U
+    */
+  def foreach[U](f: A => U): Unit = {
+    val _ = apply(f)
   }
+
+  /**
+    * This will apply f on the resource while it is open
+    *
+    * @param f
+    * @tparam B
+    * @return
+    */
+  def map[B](f: A => B): ManagedResource[B] =
+    new ManagedResource[B](f(resource))(Disposable(_ => disposer.dispose(resource)))
 
   def withFilter(f: A => Boolean): this.type = {
     if (!f(resource)) disposeOnce()
@@ -69,23 +98,33 @@ class ManagedResource[A](resource: A)(implicit disposer: Disposable[A]) {
   }
 
   /**
-    * This handles lazy operations (e.g. Iterators)
-    * for which resource needs to be disposed only after iteration is done
+    * Composes managed resources correctly by closing the outer one after apply f and returning the new inner managed resource
     *
     * @param f
     * @tparam B
     * @return
     */
-  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
-    val it = f(resource)
-    it withHasNext {
-      try {
-        val result = it.hasNext
-        if (!result) disposeOnce()
-        result
-      } catch {
-        case e1: Throwable => disposeOnceAndThrow(e1)
-      }
-    }
-  }
+//  def flatMap[M[_], B](f: A => M[B]): M[B] =
+//    apply(f)
+
+//  /**
+//    * This handles lazy operations (e.g. Iterators)
+//    * for which resource needs to be disposed only after iteration is done
+//    *
+//    * @param f
+//    * @tparam B
+//    * @return
+//    */
+//  def flatMap[B](f: A => Iterator[B]): Iterator[B] = {
+//    val it = f(resource)
+//    it withHasNext {
+//      try {
+//        val result = it.hasNext
+//        if (!result) disposeOnce()
+//        result
+//      } catch {
+//        case e1: Throwable => disposeOnceAndThrow(e1)
+//      }
+//    }
+//  }
 }
