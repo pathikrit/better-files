@@ -274,4 +274,50 @@ class ManagedResourceSpec extends CommonSpec {
       assert(actual.toSeq === expected)
     }
   }
+
+  it should "handle multiple managed resources" in {
+    var log = List.empty[String]
+
+    def dummyClosable(msg: String): AutoCloseable =
+      new AutoCloseable {override def close() = log = msg :: log}
+
+     for {
+      t1 <- dummyClosable("outer").autoClosed
+      t2 <- dummyClosable("inner").autoClosed
+    } ()
+
+    assert(log === "outer" :: "inner" :: Nil)
+  }
+
+  it should "handle multiple managed resources in a flatmap" in {
+    var log = List.empty[String]
+
+    def dummyClosable(msg: String): AutoCloseable =
+      new AutoCloseable {override def close() = log = msg :: log}
+
+    val x = for {
+      t1 <- dummyClosable("outer").autoClosed
+      t2 <- dummyClosable("inner").autoClosed
+    } yield 8
+
+    assert(log.isEmpty)
+    assert(x.get() === 8)
+    assert(log === "outer" :: "inner" :: Nil)
+  }
+
+  it should "handle multiple operations on managed resources" in {
+    var log = List.empty[String]
+
+    def dummyClosable(msg: String): AutoCloseable =
+      new AutoCloseable {override def close() = log = msg :: log}
+
+    def doSomething(c1: AutoCloseable, c2: AutoCloseable): Unit = println(s"$c1 $c2")
+
+    for {
+      t1 <- dummyClosable("outer").autoClosed
+      t2 <- dummyClosable("inner").autoClosed
+    } doSomething(t1, t2)
+
+    assert(log === "outer" :: "inner" :: Nil)
+  }
 }

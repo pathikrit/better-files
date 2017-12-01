@@ -19,11 +19,14 @@ trait Disposable[-A]  {
 }
 
 object Disposable {
-  def apply[A](disposeMethod: A => Any): Disposable[A] = new Disposable[A] {
+  def apply[A](disposeFunction: A => Any): Disposable[A] = new Disposable[A] {
     override def dispose(resource: A) = {
-      val _ = disposeMethod(resource)
+      val _ = disposeFunction(resource)
     }
   }
+
+  def apply[A](disposeMethod: => Unit): Disposable[A] =
+    Disposable(_ => disposeMethod)
 
   implicit val closableDisposer: Disposable[AutoCloseable] =
     Disposable(_.close())
@@ -49,6 +52,15 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
     }
     throw e1
   }
+
+  private[ManagedResource] def withAdditionalDisposeTask[U](f: => U): ManagedResource[A] =
+    new ManagedResource[A](resource)(Disposable {
+      try {
+        disposeOnce()
+      } finally {
+        val _ = f
+      }
+    })
 
   /**
     * Apply f to the resource and return it after closing the resource
@@ -93,12 +105,22 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
     * @return
     */
   def map[B](f: A => B): ManagedResource[B] =
-    new ManagedResource[B](f(resource))(Disposable(_ => disposer.dispose(resource)))
+    new ManagedResource[B](f(resource))(Disposable(disposeOnce()))
 
   def withFilter(f: A => Boolean): this.type = {
     if (!f(resource)) disposeOnce()
     this
   }
+
+  /**
+    * Compose multiple managed resources
+    *
+    * @param f
+    * @tparam B
+    * @return
+    */
+  def flatMap[B](f: A => ManagedResource[B]): ManagedResource[B] =
+    f(resource).withAdditionalDisposeTask(disposeOnce())
 
   /**
     * This handles lazy operations (e.g. Iterators) for which resource needs to be disposed only after iteration is done
@@ -108,7 +130,11 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
     * @return
     */
   def flatMap[B](f: A => GenTraversableOnce[B]): Iterator[B] = {
-    val it = f(resource).toIterator
+    val it = try {
+      f(resource).toIterator
+    } catch {
+      case NonFatal(e) => disposeOnceAndThrow(e)
+    }
     it withHasNext {
       try {
         val result = it.hasNext
