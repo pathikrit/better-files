@@ -515,6 +515,20 @@ file.bufferedReader.map(foo).get()
 file.bufferedReader.apply(foo)
 ```
 
+If `foo` itself is lazy and depends on `reader` being open, you should `flatMap` instead of `apply`:
+```scala
+def lines(reader: BufferedReader): Iterator[String] = ???
+
+
+for {
+  reader <- file.bufferedReader
+  line <- lines(reader)
+} yield line
+
+// or simply
+file.bufferedReader.flatMap(lines)
+```
+
 You can also define your own custom disposable resources e.g.:
 ```scala
 trait Shutdownable {
