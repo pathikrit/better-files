@@ -17,7 +17,10 @@ import scala.util.Try
 /**
   * Container for various implicits
   */
-trait Implicits extends ManagedResource.FlatMapImplicits {
+trait Implicits
+  extends ManagedResource.FlatMap.Implicits
+  with Scanner.Read.Implicits
+  with Scanner.Source.Implicits {
 
   //TODO: Rename all Ops to Extensions
 
