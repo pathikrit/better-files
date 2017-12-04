@@ -7,7 +7,6 @@ import scala.language.existentials
 class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
 
-
   "splitter" should "split" in {
     val csvSplitter = StringSplitter.on(',')
     def split(s: String) = csvSplitter.split(s).toList
@@ -50,7 +49,7 @@ class ScannerSpec extends CommonSpec {
     val data = for {
       scanner <- Scanner("10 false").autoClosed
     } yield scanner.next[(Long, Boolean)]
-    data shouldBe ((10L, false))
+    data.get() shouldBe ((10L, false))
   }
 
   it should "parse custom parsers" in {

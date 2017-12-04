@@ -17,7 +17,7 @@ import scala.util.Try
 /**
   * Container for various implicits
   */
-trait Implicits {
+trait Implicits extends ManagedResource.FlatMapImplicits {
 
   //TODO: Rename all Ops to Extensions
 
@@ -74,7 +74,7 @@ trait Implicits {
     def asString(closeStream: Boolean = true, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): String = {
       try {
         new ByteArrayOutputStream(bufferSize).autoClosed
-          .map(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
+          .apply(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
       } finally {
         if (closeStream) in.close()
       }
@@ -185,7 +185,7 @@ trait Implicits {
       new ReaderInputStream(reader)(charset)
 
     def chars: Iterator[Char] =
-      reader.autoClosed.flatMap(res => eofReader(res.read()).map(_.toChar))
+      new ManagedResource(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {

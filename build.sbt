@@ -136,7 +136,7 @@ lazy val benchmarks = (project in file("benchmarks"))
   .dependsOn(core % "test->test;compile->compile")
 
 lazy val root = (project in file("."))
-  .settings(name := repo)
+  .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)

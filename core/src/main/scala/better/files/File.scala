@@ -456,7 +456,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @return
     */
   def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
-    inputStream(openOptions).map(_.asObjectInputStream().deserialize[A])
+    inputStream(openOptions).apply(_.asObjectInputStream().deserialize[A])
 
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)
@@ -572,7 +572,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   }
 
   def usingLock[U](mode: File.RandomAccessMode)(f: FileChannel => U): U =
-    newRandomAccess(mode).getChannel.autoClosed.map(f)
+    newRandomAccess(mode).getChannel.autoClosed.apply(f)
 
   def isReadLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.read, position, size, isShared)

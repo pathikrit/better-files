@@ -500,7 +500,7 @@ class FileSpec extends CommonSpec {
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.map(_.asGzipInputStream().lines.toSeq) shouldEqual data
+    (testRoot / "test.gz").inputStream.flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
   }
 
   it should "gzip" in {
@@ -546,7 +546,7 @@ class FileSpec extends CommonSpec {
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
 
-      val p3 = f.inputStream.map(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
+      val p3 = f.inputStream.apply(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
       assert(p3.name === p2.name)
       assert(p3.age === p2.age)
     }
