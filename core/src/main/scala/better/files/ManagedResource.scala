@@ -35,13 +35,13 @@ object Disposable {
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
-class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
-  private[this] val isDisposed = new AtomicBoolean(false)
-  private[this] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
+class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disposer: Disposable[A]) {
+  private[ManagedResource] val isDisposed = new AtomicBoolean(false)
+  private[ManagedResource] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
   // This is the Scala equivalent of how javac compiles try-with-resources,
   // Except that fatal exceptions while disposing take precedence over exceptions thrown previously
-  private[this] def disposeOnceAndThrow(e1: Throwable) = {
+  private[ManagedResource] def disposeOnceAndThrow(e1: Throwable) = {
     try {
       disposeOnce()
     } catch {
@@ -64,7 +64,7 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
 
   /**
     * Apply f to the resource and return it after closing the resource
-    * If you don't wish to close the resource, use flatMap instead
+    * If you don't wish to close the resource (e.g. if you are creating an iterator on file contents), use flatMap instead
     *
     * @param f
     * @tparam B
@@ -113,35 +113,55 @@ class ManagedResource[A](resource: => A)(implicit disposer: Disposable[A]) {
   }
 
   /**
-    * Compose multiple managed resources
+    * This keeps the resource open during the context of this flatMap and closes when done
     *
     * @param f
+    * @param fv
     * @tparam B
+    * @tparam F
     * @return
     */
-  def flatMap[B](f: A => ManagedResource[B]): ManagedResource[B] =
-    f(resource).withAdditionalDisposeTask(disposeOnce())
+  def flatMap[B, F[_]](f: A => F[B])(implicit fv: ManagedResource.FlatMap[F]): fv.Output[B] =
+    fv.apply(this)(f)
+}
 
-  /**
-    * This handles lazy operations (e.g. Iterators) for which resource needs to be disposed only after iteration is done
-    *
-    * @param f
-    * @tparam B
-    * @return
-    */
-  def flatMap[B](f: A => GenTraversableOnce[B]): Iterator[B] = {
-    val it = try {
-      f(resource).toIterator
-    } catch {
-      case NonFatal(e) => disposeOnceAndThrow(e)
+object ManagedResource {
+  // Hack to get around issue in Scala 2.11: https://stackoverflow.com/questions/47598333/
+  sealed trait FlatMap[-F[_]] {
+    type Output[_]
+    def apply[A, B](a: ManagedResource[A])(f: A => F[B]): Output[B]
+  }
+
+  trait FlatMapImplicits {
+    /**
+      * Compose this managed resource with another managed resource closing the outer one after the inner one
+      */
+    implicit object managedResourceFlatMap extends FlatMap[ManagedResource] {
+      override type Output[X] = ManagedResource[X]
+      override def apply[A, B](m: ManagedResource[A])(f: A => ManagedResource[B]) =
+        f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
     }
-    it withHasNext {
-      try {
-        val result = it.hasNext
-        if (!result) disposeOnce()
-        result
-      } catch {
-        case e1: Throwable => disposeOnceAndThrow(e1)
+
+    /**
+      * Use the current managed resource as a generator needed to create another sequence
+      */
+    implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
+      override type Output[X] = Iterator[X]
+      override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]) = {
+        val it = try {
+          f(m.resource).toIterator
+        } catch {
+          case NonFatal(e) => m.disposeOnceAndThrow(e)
+        }
+        it withHasNext {
+          try {
+            val result = it.hasNext
+            if (!result) m.disposeOnce()
+            result
+          } catch {
+            case e1: Throwable => m.disposeOnceAndThrow(e1)
+          }
+        }
       }
     }
   }

@@ -17,7 +17,7 @@ import scala.util.Try
 /**
   * Container for various implicits
   */
-trait Implicits {
+trait Implicits extends ManagedResource.FlatMapImplicits {
 
   //TODO: Rename all Ops to Extensions
 
@@ -133,7 +133,7 @@ trait Implicits {
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosed.apply(res => eofReader(res.read()).map(_.toByte))
+      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
@@ -183,12 +183,12 @@ trait Implicits {
 
     def toInputStream(implicit charset: Charset = DefaultCharset): InputStream =
       new ReaderInputStream(reader)(charset)
+
+    def chars: Iterator[Char] =
+      new ManagedResource(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
-    def chars: Iterator[Char] =
-      reader.autoClosed.apply(res => eofReader(res.read()).map(_.toChar))
-
     def tokens(splitter: StringSplitter = StringSplitter.Default): Iterator[String] =
       reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
@@ -306,7 +306,7 @@ trait Implicits {
       * @return
       */
     def toAutoClosedIterator: Iterator[A] =
-      stream.autoClosed.apply(_.iterator().asScala)
+      stream.autoClosed.flatMap(_.iterator().asScala)
   }
 
   private[files] implicit class OrderingOps[A](order: Ordering[A]) {

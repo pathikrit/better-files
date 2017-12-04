@@ -500,7 +500,7 @@ class FileSpec extends CommonSpec {
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.apply(_.asGzipInputStream().lines.toSeq) shouldEqual data
+    (testRoot / "test.gz").inputStream.flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
   }
 
   it should "gzip" in {
