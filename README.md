@@ -519,7 +519,6 @@ If `foo` itself is lazy and depends on `reader` being open, you should `flatMap`
 ```scala
 def lines(reader: BufferedReader): Iterator[String] = ???
 
-
 for {
   reader <- file.bufferedReader
   line <- lines(reader)

@@ -22,6 +22,8 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v3.4.0
 * [PR #202](https://github.com/pathikrit/better-files/pull/202): for-comprehension friendly ARM
+* [PR #203](https://github.com/pathikrit/better-files/pull/203): Type-class for Scanner construction
+* Remove [redundant `count` param](https://github.com/pathikrit/better-files/commit/8cc66d0e8ac6517597eeb1db1814903f2256b805) from `File.Monitor#onUnknownEvent`
 
 ## v3.3.1
 * [Issue #146](https://github.com/pathikrit/better-files/issues/146): Release for Scala 2.11
