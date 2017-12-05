@@ -132,34 +132,36 @@ object ManagedResource {
     def apply[A, B](a: ManagedResource[A])(f: A => F[B]): Output[B]
   }
 
-  trait FlatMapImplicits {
-    /**
-      * Compose this managed resource with another managed resource closing the outer one after the inner one
-      */
-    implicit object managedResourceFlatMap extends FlatMap[ManagedResource] {
-      override type Output[X] = ManagedResource[X]
-      override def apply[A, B](m: ManagedResource[A])(f: A => ManagedResource[B]) =
-        f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
-    }
+  object FlatMap {
+    trait Implicits {
+      /**
+        * Compose this managed resource with another managed resource closing the outer one after the inner one
+        */
+      implicit object managedResourceFlatMap extends FlatMap[ManagedResource] {
+        override type Output[X] = ManagedResource[X]
+        override def apply[A, B](m: ManagedResource[A])(f: A => ManagedResource[B]) =
+          f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
+      }
 
-    /**
-      * Use the current managed resource as a generator needed to create another sequence
-      */
-    implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
-      override type Output[X] = Iterator[X]
-      override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]) = {
-        val it = try {
-          f(m.resource).toIterator
-        } catch {
-          case NonFatal(e) => m.disposeOnceAndThrow(e)
-        }
-        it withHasNext {
-          try {
-            val result = it.hasNext
-            if (!result) m.disposeOnce()
-            result
+      /**
+        * Use the current managed resource as a generator needed to create another sequence
+        */
+      implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
+        override type Output[X] = Iterator[X]
+        override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]) = {
+          val it = try {
+            f(m.resource).toIterator
           } catch {
-            case e1: Throwable => m.disposeOnceAndThrow(e1)
+            case NonFatal(e) => m.disposeOnceAndThrow(e)
+          }
+          it withHasNext {
+            try {
+              val result = it.hasNext
+              if (!result) m.disposeOnce()
+              result
+            } catch {
+              case e1: Throwable => m.disposeOnceAndThrow(e1)
+            }
           }
         }
       }
