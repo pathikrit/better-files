@@ -6,8 +6,8 @@ machine:
 
 dependencies:
   pre:
-    - wget -q https://dl.bintray.com/sbt/debian/sbt-0.13.16.deb
-    - sudo dpkg -i sbt-0.13.16.deb
+    - wget -q https://dl.bintray.com/sbt/debian/sbt-1.0.4.deb
+    - sudo dpkg -i sbt-1.0.4.deb
 # see https://circleci.com/docs/1.0/language-scala/#using-a-custom-version-of-sbt
 # Remove above three lines when CircleCI supports newer SBT versions
   post:

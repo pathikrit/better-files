@@ -141,14 +141,16 @@ lazy val root = (project in file("."))
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(releaseSettings: _*)
+  .enablePlugins(ScalaUnidocPlugin)
+  .enablePlugins(GhpagesPlugin)
   .aggregate(core, akka, shapelessScanner, benchmarks)
 
-import UnidocKeys._
-lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
+lazy val docSettings = Seq(
   autoAPIMappings := true,
   unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
-  SiteKeys.siteSourceDirectory := file("site"),
-  site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+  siteSourceDirectory := baseDirectory.value / "site",
+  siteSubdirName in ScalaUnidoc := "latest/api",
+  addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
   git.remoteRepo := s"git@github.com:$username/$repo.git"
 )
 
@@ -171,8 +173,8 @@ lazy val releaseSettings = Seq(
 )
 
 lazy val noPublishSettings = Seq(
-  publish := (),
-  publishLocal := (),
+  publish := ((): Unit),
+  publishLocal := ((): Unit),
   publishArtifact := false
 )
 
