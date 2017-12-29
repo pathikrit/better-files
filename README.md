@@ -4,7 +4,7 @@
 
 ## Talks [![Gitter][gitterImg]][gitterLink]
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
-    
+
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
     <img src="site/tech_talk_preview.png" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
   </a>
@@ -14,7 +14,7 @@
 
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
-  0. [Simple I/O](#file-readwrite)  
+  0. [Simple I/O](#file-readwrite)
   0. [Streams](#streams)
   0. [Encodings](#encodings)
   0. [Java serialization utils](#java-serialization-utils)
@@ -38,7 +38,7 @@ libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
 To use the [Akka based file monitor](akka), also add this:
 ```scala
-libraryDependencies ++= Seq(  
+libraryDependencies ++= Seq(
   "com.github.pathikrit"  %% "better-files-akka"  % version,
   "com.typesafe.akka"     %% "akka-actor"         % "2.5.6"
 )
@@ -101,8 +101,8 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 [scalæByTheBay2016Video]: https://www.youtube.com/watch?v=bLiCE6NGjrk&t=251s
 [scalæByTheBay2016Slides]: https://slides.com/pathikrit/better-files/
 
-------- 
-### Instantiation 
+-------
+### Instantiation
 The following are all equivalent:
 ```scala
 import better.files._
@@ -117,7 +117,7 @@ val f5: File = `~` / "Documents"                             // also equivalent 
 val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
 val f7: File = "/User"/'johndoe/'Documents                   // same as above but using Symbols instead of Strings
 val f8: File = home/"Documents"/"presentations"/`..`         // use `..` to navigate up to parent
-``` 
+```
 
 **Note**: Rename the import if you think the usage of the class `File` may confuse your teammates:
 ```scala
@@ -157,7 +157,7 @@ val bytes: Array[Byte] = file.loadBytes
 [Fluent Interface](https://en.wikipedia.org/wiki/Fluent_interface):
 ```scala
  (root/"tmp"/"diary.txt")
-  .createIfNotExists()  
+  .createIfNotExists()
   .appendLine()
   .appendLines("My name is", "Inigo Montoya")
   .moveToDirectory(home/"Documents")
@@ -173,7 +173,7 @@ val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
 val lines  : Iterator[String]          = file.lineIterator      //file.lines loads all lines in memory
 ```
-Note: The above APIs can be traversed at most once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`. 
+Note: The above APIs can be traversed at most once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`.
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
 
 You can write an `Iterator[Byte]` or an `Iterator[String]` back to a file:
@@ -196,15 +196,15 @@ file.write("hello world")(charset = "US-ASCII")
  ```
 
 Note: By default, `better-files` [correctly handles BOMs while decoding](core/src/main/scala/better/files/UnicodeCharset.scala).
-If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058), 
+If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058),
 you would need to supply Java's UTF-8 charset e.g.:
 ```scala
-file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect JDK behaviour for UTF-8 (see: JDK-4508058) 
+file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect JDK behaviour for UTF-8 (see: JDK-4508058)
 ```
 
 If you also wish to write BOMs while encoding, you would need to supply it as:
 ```scala
-file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true)) 
+file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
 ```
 
 ### Java serialization utils
@@ -229,7 +229,7 @@ The above can be simply written as:
 val person2: Person = file.writeSerialized(person).readDeserialized[Person]
 assert(person == person2)
 ```
- 
+
 ### Java interoperability
 You can always access the Java I/O classes:
 ```scala
@@ -237,9 +237,9 @@ val file: File = tmp / "hello.txt"
 val javaFile     : java.io.File                 = file.toJava
 val uri          : java.net.URI                 = file.uri
 val url          : java.net.URL                 = file.url
-val reader       : java.io.BufferedReader       = file.newBufferedReader 
-val outputstream : java.io.OutputStream         = file.newOutputStream 
-val writer       : java.io.BufferedWriter       = file.newBufferedWriter 
+val reader       : java.io.BufferedReader       = file.newBufferedReader
+val outputstream : java.io.OutputStream         = file.newOutputStream
+val writer       : java.io.BufferedWriter       = file.newBufferedWriter
 val inputstream  : java.io.InputStream          = file.newInputStream
 val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
@@ -256,8 +256,8 @@ System.in > file2.out             // pipes an inputstream to an outputstream
 src.pipeTo(sink)                  // if you don't like symbols
 
 val bytes   : Iterator[Byte]        = inputstream.bytes
-val bis     : BufferedInputStream   = inputstream.buffered  
-val bos     : BufferedOutputStream  = outputstream.buffered   
+val bis     : BufferedInputStream   = inputstream.buffered
+val bos     : BufferedOutputStream  = outputstream.buffered
 val reader  : InputStreamReader     = inputstream.reader
 val writer  : OutputStreamWriter    = outputstream.writer
 val printer : PrintWriter           = outputstream.printWriter
@@ -280,7 +280,7 @@ No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.
 val dir = "src"/"test"
 val matches: Iterator[File] = dir.glob("*.{java,scala}")
 // above code is equivalent to:
-dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala")) 
+dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala"))
 ```
 
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
@@ -329,10 +329,10 @@ You can also load resources from your classpath using `File.resource` or `File.c
 ### Temporary files
 Utils to create temporary files:
 ```scala
-File.newTemporaryDirectory() 
+File.newTemporaryDirectory()
 File.newTemporaryFile()
 ```
-The above APIs allow optional specifications of `prefix`, `suffix` and `parentDir`. 
+The above APIs allow optional specifications of `prefix`, `suffix` and `parentDir`.
 These files are [not deleted automatically on exit by the JVM](http://stackoverflow.com/questions/16691437/when-are-java-temporary-files-deleted) (you have to set `deleteOnExit` which adds to `shutdownHook`).
 
 A cleaner alternative is to use self-deleting file contexts which deletes the file immediately when done:
@@ -394,7 +394,7 @@ file.name       // simpler than java.io.File#getName
 file.extension
 file.contentType
 file.lastModifiedTime     // returns JSR-310 time
-file.owner 
+file.owner
 file.group
 file.isDirectory; file.isSymbolicLink; file.isRegularFile
 file.isHidden
@@ -439,10 +439,10 @@ file1 !== file2   // equivalent to `!file1.isSameContentAs(file2)`
 There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Order$.html) included, e.g.:
 ```scala
 val files = myDir.list.toSeq
-files.sorted(File.Order.byName) 
-files.max(File.Order.bySize) 
-files.min(File.Order.byDepth) 
-files.max(File.Order.byModificationTime) 
+files.sorted(File.Order.byName)
+files.max(File.Order.bySize)
+files.min(File.Order.byDepth)
+files.max(File.Order.byModificationTime)
 files.sorted(File.Order.byDirectoriesFirst)
 ```
 
@@ -451,7 +451,7 @@ You don't have to lookup on StackOverflow "[How to zip/unzip/gzip in Java/Scala?
 ```scala
 // Unzipping:
 val zipFile: File = file"path/to/research.zip"
-val research: File = zipFile.unzipTo(destination = home/"Documents"/"research") 
+val research: File = zipFile.unzipTo(destination = home/"Documents"/"research")
 
 // Zipping:
 val zipFile: File = directory.zipTo(destination = home/"Desktop"/"toEmail.zip")
@@ -546,22 +546,23 @@ for {
 ```
 
 ### Scanner
-Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives. 
+Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives.
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
-`better-files` provides a [faster](benchmarks#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html) 
+`better-files` provides a [faster](benchmarks#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html)
 that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
-val data = t1 << s"""
-  | Hello World
-  | 1 true 2 3
-""".stripMargin
+val f1 = File("/tmp/temp.txt")
+val data = f1.overwrite(s"""Hello World
+  | 1 true
+  | 2 3
+""".stripMargin)
 val scanner: Scanner = data.newScanner()
 assert(scanner.next[String] == "Hello")
 assert(scanner.lineNumber == 1)
 assert(scanner.next[String] == "World")
 assert(scanner.next[(Int, Boolean)] == (1, true))
-assert(scanner.tillEndOfLine() == " 2 3")
+assert(scanner.nextLine() == " 2 3")
 assert(!scanner.hasNext)
 ```
 If you are simply interested in tokens, you can use `file.tokens()`
@@ -654,7 +655,7 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 ```
 
 ### Akka File Watcher
-`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala) 
+`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala)
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
@@ -665,12 +666,12 @@ implicit val system = ActorSystem("mySystem")
 val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
-watcher ! on(EventType.ENTRY_DELETE) {    
+watcher ! on(EventType.ENTRY_DELETE) {
   case file if file.isDirectory => println(s"$file got deleted")
 }
 
 // watch for multiple events
-watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {   
+watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
   case (EventType.ENTRY_CREATE, file, count) => println(s"$file got created")
   case (EventType.ENTRY_MODIFY, file, count) => println(s"$file got modified $count times")
 }
