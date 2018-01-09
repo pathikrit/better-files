@@ -1,0 +1,53 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: aa8y/sbt:ci
+    working_directory: /usr/src/app
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - build-dependencies-{{ checksum "build.sbt" }}
+          - sbt-dependencies--{{ checksum "project/build.properties" }}
+      - run: sbt compile test:compile
+      - save_cache:
+          paths:
+            - ~/.ivy2/cache
+            - ~/.m2
+          key: build-dependencies--{{ checksum "build.sbt" }}
+      - save_cache:
+          paths:
+            - ~/.sbt
+          key: sbt-dependencies--{{ checksum "project/build.properties" }}
+      - run: sbt coverage +test
+  coverage:
+    docker:
+      - image: aa8y/sbt:ci
+    steps:
+      - run: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
+      - run: bash <(curl -s https://codecov.io/bash)
+  deploy:
+    docker:
+      - image: aa8y/sbt:ci
+    environment:
+      SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
+    steps:
+      - run: git config --global user.email "pathikritbhowmick@msn.com"
+      - run: git config --global user.name "circle-ci"
+      - run: git config --global push.default simple
+      - run: sbt ghpagesPushSite +publish
+workflows:
+  version: 2
+  build-coverage-deploy:
+    jobs:
+      - build
+      - coverage:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - coverage
