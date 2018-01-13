@@ -21,10 +21,6 @@ jobs:
             - ~/.sbt
           key: sbt-dependencies--{{ checksum "project/build.properties" }}
       - run: sbt coverage +test
-  coverage:
-    docker:
-      - image: aa8y/sbt:ci
-    steps:
       - run: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
       - run: bash <(curl -s https://codecov.io/bash)
   deploy:
@@ -33,6 +29,11 @@ jobs:
     environment:
       SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
     steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - build-dependencies-{{ checksum "build.sbt" }}
+          - sbt-dependencies--{{ checksum "project/build.properties" }}
       - run: git config --global user.email "pathikritbhowmick@msn.com"
       - run: git config --global user.name "circle-ci"
       - run: git config --global push.default simple
@@ -42,12 +43,9 @@ workflows:
   build-coverage-deploy:
     jobs:
       - build
-      - coverage:
+      - deploy:
           requires:
             - build
           filters:
             branches:
               only: master
-      - deploy:
-          requires:
-            - coverage
