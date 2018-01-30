@@ -49,7 +49,7 @@ object Scanner {
     private[this] val reader = implicitly[Source[A]].apply(a)
     private[this] val tokens = reader.tokens(splitter)
     override def lineNumber() = reader.getLineNumber
-    override def nextLine() = reader.readLine()
+    override def nextLine() = Option(reader.readLine()).getOrElse(throw new NoSuchElementException("End of file"))
     override def next() = tokens.next()
     override def hasNext = tokens.hasNext
     override def close() = reader.close()

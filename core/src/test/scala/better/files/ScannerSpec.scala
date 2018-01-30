@@ -40,6 +40,7 @@ class ScannerSpec extends CommonSpec {
       assert(scanner.nextLine() == " Ok 23 football")
       assert(!scanner.hasNext)
       a[NoSuchElementException] should be thrownBy scanner.next()
+      a[NoSuchElementException] should be thrownBy scanner.nextLine()
       assert(!scanner.hasNext)
     }
     data.tokens().toSeq shouldEqual data.newScanner().toSeq
