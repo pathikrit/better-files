@@ -12,7 +12,7 @@ lazy val commonSettings = Seq(
   updateImpactOpenBrowser := false
 )
 
-// We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken
+/** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def ignoreScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((2, 10)) => Seq("-Ywarn-numeric-widen") // buggy in 2.10
   case Some((2, 11)) => Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
