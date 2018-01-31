@@ -10,7 +10,7 @@ jobs:
           keys:
           - build-dependencies-{{ checksum "build.sbt" }}
           - sbt-dependencies--{{ checksum "project/build.properties" }}
-      - run: sbt compile test:compile
+      - run: sbt clean coverage +test
       - save_cache:
           paths:
             - ~/.ivy2/cache
