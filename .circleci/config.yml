@@ -40,6 +40,7 @@ jobs:
       - run: git config --global user.email "pathikritbhowmick@msn.com"
       - run: git config --global user.name "circle-ci"
       - run: git config --global push.default simple
+      - run: mkdir ~/.ssh && ssh-keyscan github.com > ~/.ssh/known_hosts
       - run: sbt ghpagesPushSite +publish
 workflows:
   version: 2
