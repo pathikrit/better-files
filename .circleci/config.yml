@@ -1,16 +1,19 @@
+defaults: &defaults
+  working_directory: /usr/src/app
+  docker:
+    - image: aa8y/sbt:ci
+
 version: 2
 jobs:
   build:
-    docker:
-      - image: aa8y/sbt:ci
-    working_directory: /usr/src/app
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
           keys:
           - build-dependencies-{{ checksum "build.sbt" }}
           - sbt-dependencies--{{ checksum "project/build.properties" }}
-      - run: sbt compile test:compile
+      - run: sbt clean coverage +test
       - save_cache:
           paths:
             - ~/.ivy2/cache
@@ -20,23 +23,24 @@ jobs:
           paths:
             - ~/.sbt
           key: sbt-dependencies--{{ checksum "project/build.properties" }}
+      - persist_to_workspace:
+          root: /usr/src
+          paths:
+            - app
+
   deploy:
-    docker:
-      - image: aa8y/sbt:ci
-    working_directory: /usr/src/app
+    <<: *defaults
     environment:
       SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - build-dependencies-{{ checksum "build.sbt" }}
-          - sbt-dependencies--{{ checksum "project/build.properties" }}
-      - run: sbt coverage +test updateImpactSubmit coverageReport coverageAggregate codacyCoverage
-      - run: bash <(curl -s https://codecov.io/bash)
+      - attach_workspace:
+          at: /usr/src
+      - run: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
+      - run: bash <(wget --quiet https://codecov.io/bash)
       - run: git config --global user.email "pathikritbhowmick@msn.com"
       - run: git config --global user.name "circle-ci"
       - run: git config --global push.default simple
+      - run: mkdir ~/.ssh && ssh-keyscan github.com > ~/.ssh/known_hosts
       - run: sbt ghpagesPushSite +publish
 workflows:
   version: 2
