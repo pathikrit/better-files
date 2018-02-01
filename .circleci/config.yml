@@ -36,7 +36,7 @@ jobs:
       - attach_workspace:
           at: /usr/src
       - run: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(wget --quiet https://codecov.io/bash)
       - run: git config --global user.email "pathikritbhowmick@msn.com"
       - run: git config --global user.name "circle-ci"
       - run: git config --global push.default simple
