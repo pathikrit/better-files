@@ -9,7 +9,7 @@ import scala.language.postfixOps
 class FileWatcherSpec extends CommonSpec {
   "file watcher" should "watch directories" in {
     assume(isCI)
-    File.usingTemporaryDirectory() {dir =>
+    File.usingTemporaryDirectory() { dir =>
       (dir / "a" / "b" / "c.txt").createIfNotExists(createParents = true)
 
       var actualEvents = List.empty[String]
@@ -18,6 +18,7 @@ class FileWatcherSpec extends CommonSpec {
         println(msg)
         actualEvents = msg :: actualEvents
       }
+
       /***************************************************************************/
       import java.nio.file.{StandardWatchEventKinds => Events}
       import FileWatcher._
@@ -27,12 +28,12 @@ class FileWatcherSpec extends CommonSpec {
 
       val watcher: ActorRef = dir.newWatcher()
 
-      watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) {   // watch for multiple events
+      watcher ! when(events = Events.ENTRY_CREATE, Events.ENTRY_MODIFY) { // watch for multiple events
         case (Events.ENTRY_CREATE, file) => output(file, "created")
         case (Events.ENTRY_MODIFY, file) => output(file, "modified")
       }
 
-      watcher ! on(Events.ENTRY_DELETE)(file => output(file, "deleted"))    // register partial function for single event
+      watcher ! on(Events.ENTRY_DELETE)(file => output(file, "deleted")) // register partial function for single event
       /***************************************************************************/
       sleep(5 seconds)
 
@@ -69,8 +70,7 @@ class FileWatcherSpec extends CommonSpec {
 
       sleep(10 seconds)
 
-      println(
-        s"""
+      println(s"""
            |Expected=${expectedEvents.sorted}
            |Actual=${actualEvents.sorted}
            |""".stripMargin)
@@ -78,10 +78,10 @@ class FileWatcherSpec extends CommonSpec {
       expectedEvents.diff(actualEvents) shouldBe empty
 
       def checkNotWatching[U](msg: String)(f: => U) = {
-        val before = List(actualEvents : _*)
+        val before = List(actualEvents: _*)
         f
         sleep()
-        val after = List(actualEvents : _*)
+        val after = List(actualEvents: _*)
         assert(before === after, msg)
       }
 

@@ -13,7 +13,12 @@ import scala.annotation.tailrec
 class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int) extends InputStream {
 
   def this(reader: Reader, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset) =
-    this(reader = reader, encoder = charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE), bufferSize = bufferSize)
+    this(
+      reader = reader,
+      encoder =
+        charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE),
+      bufferSize = bufferSize
+    )
 
   /**
     * CharBuffer used as input for the decoder. It should be reasonably
@@ -25,10 +30,10 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
     * ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
-  private[this] val encoderOut = ByteBuffer.allocate(bufferSize>>4).flip().asInstanceOf[ByteBuffer]
+  private[this] val encoderOut = ByteBuffer.allocate(bufferSize >> 4).flip().asInstanceOf[ByteBuffer]
 
   private[this] var lastCoderResult = CoderResult.UNDERFLOW
-  private[this] var endOfInput = false
+  private[this] var endOfInput      = false
 
   private[this] def fillBuffer() = {
     assert(!endOfInput)
@@ -38,7 +43,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
       // since the default implementation copies data to a temporary char array anyway
       reader.read(encoderIn.array, position, encoderIn.remaining) match {
         case EOF => endOfInput = true
-        case c => encoderIn.position(position + c)
+        case c   => encoderIn.position(position + c)
       }
       encoderIn.flip()
     }
@@ -47,7 +52,8 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   }
 
   override def read(b: Array[Byte], off: Int, len: Int) = {
-    if (len < 0 || off < 0 || (off + len) > b.length) throw new IndexOutOfBoundsException("Array Size=" + b.length + ", offset=" + off + ", length=" + len)
+    if (len < 0 || off < 0 || (off + len) > b.length)
+      throw new IndexOutOfBoundsException("Array Size=" + b.length + ", offset=" + off + ", length=" + len)
     if (len == 0) {
       0 // Always return 0 if len == 0
     } else {

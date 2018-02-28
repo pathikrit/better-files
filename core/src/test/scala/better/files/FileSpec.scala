@@ -30,40 +30,39 @@ class FileSpec extends CommonSpec {
     }
   }
 
-  var testRoot: File = _    //TODO: Get rid of mutable test vars
-  var fa: File = _
-  var a1: File = _
-  var a2: File = _
-  var t1: File = _
-  var t2: File = _
-  var t3: File = _
-  var fb: File = _
-  var b1: File = _
-  var b2: File = _
+  var testRoot: File = _ //TODO: Get rid of mutable test vars
+  var fa: File       = _
+  var a1: File       = _
+  var a2: File       = _
+  var t1: File       = _
+  var t2: File       = _
+  var t3: File       = _
+  var fb: File       = _
+  var b1: File       = _
+  var b2: File       = _
 
   /**
-   * Setup the following directory structure under root
-   * /a
-   *  /a1
-   *  /a2
-   *    a21.txt
-   *    a22.txt
-   * /b
-   *    b1/ --> ../a1
-   *    b2.txt --> ../a2/a22.txt
-   */
-
+    * Setup the following directory structure under root
+    * /a
+    *  /a1
+    *  /a2
+    *    a21.txt
+    *    a22.txt
+    * /b
+    *    b1/ --> ../a1
+    *    b2.txt --> ../a2/a22.txt
+    */
   override def beforeEach() = {
     testRoot = File.newTemporaryDirectory("better-files")
-    fa = testRoot/"a"
-    a1 = testRoot/"a"/"a1"
-    a2 = testRoot/"a"/"a2"
-    t1 = testRoot/"a"/"a1"/"t1.txt"
-    t2 = testRoot/"a"/"a1"/"t2.txt"
-    t3 = testRoot/"a"/"a1"/"t3.scala.txt"
-    fb = testRoot/"b"
-    b1 = testRoot/"b"/"b1"
-    b2 = testRoot/'b/"b2.txt"
+    fa = testRoot / "a"
+    a1 = testRoot / "a" / "a1"
+    a2 = testRoot / "a" / "a2"
+    t1 = testRoot / "a" / "a1" / "t1.txt"
+    t2 = testRoot / "a" / "a1" / "t2.txt"
+    t3 = testRoot / "a" / "a1" / "t3.scala.txt"
+    fb = testRoot / "b"
+    b1 = testRoot / "b" / "b1"
+    b2 = testRoot / 'b / "b2.txt"
     Seq(a1, a2, fb) foreach mkdirs
     Seq(t1, t2) foreach touch
   }
@@ -83,24 +82,24 @@ class FileSpec extends CommonSpec {
   "files" can "be instantiated" in {
     import java.io.{File => JFile}
 
-    val f = File("/User/johndoe/Documents")                      // using constructor
-    val f1: File = file"/User/johndoe/Documents"                 // using string interpolator
-    val f2: File = "/User/johndoe/Documents".toFile              // convert a string path to a file
-    val f3: File = new JFile("/User/johndoe/Documents").toScala  // convert a Java file to Scala
-    val f4: File = root/"User"/"johndoe"/"Documents"             // using root helper to start from root
+    val f        = File("/User/johndoe/Documents") // using constructor
+    val f1: File = file"/User/johndoe/Documents" // using string interpolator
+    val f2: File = "/User/johndoe/Documents".toFile // convert a string path to a file
+    val f3: File = new JFile("/User/johndoe/Documents").toScala // convert a Java file to Scala
+    val f4: File = root / "User" / "johndoe" / "Documents" // using root helper to start from root
     //val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
-    val f6: File = "/User"/"johndoe"/"Documents"                 // using file separator DSL
-    val f7: File = home/"Documents"/"presentations"/`..`         // Use `..` to navigate up to parent
-    val f8: File = root/"User"/"johndoe"/"Documents"/ `.`
-    val f9: File = File(f.uri)
-    val f10: File = File("../a")                                 // using a relative path
-    Seq(f, f1, f2, f3, f4,/* f5,*/ f6, f7, f8, f9, f10) foreach {f =>
+    val f6: File  = "/User" / "johndoe" / "Documents" // using file separator DSL
+    val f7: File  = home / "Documents" / "presentations" / `..` // Use `..` to navigate up to parent
+    val f8: File  = root / "User" / "johndoe" / "Documents" / `.`
+    val f9: File  = File(f.uri)
+    val f10: File = File("../a") // using a relative path
+    Seq(f, f1, f2, f3, f4, /* f5,*/ f6, f7, f8, f9, f10) foreach { f =>
       f.pathAsString should not include ".."
     }
 
     root.toString shouldEqual rootStr
     home.toString.count(_ == separatorChar) should be > 1
-    (root/"usr"/"johndoe"/"docs").toString shouldEqual unixToNative("/usr/johndoe/docs")
+    (root / "usr" / "johndoe" / "docs").toString shouldEqual unixToNative("/usr/johndoe/docs")
     Seq(f, f1, f2, f4, /*f5,*/ f6, f8, f9).map(_.toString).toSet shouldBe Set(f.toString)
   }
 
@@ -110,49 +109,50 @@ class FileSpec extends CommonSpec {
     File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
     File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (unixToNative(basedir.toString + "/rel/path/to/loc"))
-    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(basedir, "rel/path/to/loc").toString should be(unixToNative(basedir.toString + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be(unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be(unixToNative(fa.toString + "/rel/path/to/loc"))
 
     val baseref = t1
-    File(baseref, "/abs/path/to/loc").toString should be (unixToNative("/abs/path/to/loc"))
-    File(baseref, "/abs", "path", "to", "loc").toString should be (unixToNative("/abs/path/to/loc"))
+    File(baseref, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
+    File(baseref, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(baseref, "rel/path/to/loc").toString should be (unixToNative(a1.toString + "/rel/path/to/loc"))
-    File(baseref, "../rel/path/to/loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(baseref, "rel/path/to/loc").toString should be(unixToNative(a1.toString + "/rel/path/to/loc"))
+    File(baseref, "../rel/path/to/loc").toString should be(unixToNative(fa.toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be(unixToNative(fa.toString + "/rel/path/to/loc"))
   }
 
   it can "be instantiated with non-existing abs anchor" in {
-    val anchorStr = "/abs/to/nowhere"
+    val anchorStr   = "/abs/to/nowhere"
     val anchorStr_a = anchorStr + "/a"
-    val basedir = File(anchorStr_a + "/last")
+    val basedir     = File(anchorStr_a + "/last")
 
     File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
     File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (unixToNative(anchorStr_a + "/rel/path/to/loc"))
-    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(anchorStr + "/rel/path/to/loc"))
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(anchorStr + "/rel/path/to/loc"))
+    File(basedir, "rel/path/to/loc").toString should be(unixToNative(anchorStr_a + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be(unixToNative(anchorStr + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be(unixToNative(anchorStr + "/rel/path/to/loc"))
   }
 
   it can "be instantiated with non-existing relative anchor" in {
     val relAnchor = File("rel/anc/b/last")
-    val basedir = relAnchor
+    val basedir   = relAnchor
 
     File(basedir, "/abs/path/to/loc").toString should be(unixToNative("/abs/path/to/loc"))
     File(basedir, "/abs", "path", "to", "loc").toString should be(unixToNative("/abs/path/to/loc"))
 
-    File(basedir, "rel/path/to/loc").toString should be (unixToNative(File("rel/anc/b").toString + "/rel/path/to/loc"))
-    File(basedir, "../rel/path/to/loc").toString should be (unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
-    File(basedir, "../", "rel", "path", "to", "loc").toString should be (unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
+    File(basedir, "rel/path/to/loc").toString should be(unixToNative(File("rel/anc/b").toString + "/rel/path/to/loc"))
+    File(basedir, "../rel/path/to/loc").toString should be(unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
+    File(basedir, "../", "rel", "path", "to", "loc").toString should be(
+      unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
   }
 
   it should "do basic I/O" in {
     t1 < "hello"
     t1.contentAsString shouldEqual "hello"
     t1.appendLine() << "world"
-    (t1!) shouldEqual String.format("hello%nworld%n")
+    (t1 !) shouldEqual String.format("hello%nworld%n")
     t1.chars.toStream should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
     "foo" `>:` t1
     "bar" >>: t1
@@ -161,18 +161,19 @@ class FileSpec extends CommonSpec {
     t1.contentAsString shouldEqual String.format("foobar%nhello%nworld%n")
     t2.writeText("hello").appendText("world").contentAsString shouldEqual "helloworld"
 
-    (testRoot/"diary")
+    (testRoot / "diary")
       .createIfNotExists()
       .appendLine()
       .appendLines("My name is", "Inigo Montoya")
       .printLines(Iterator("x", 1))
-      .lines.toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
+      .lines
+      .toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
   it should "handle BOM" in {
-    val lines = Seq("Line 1", "Line 2")
+    val lines           = Seq("Line 1", "Line 2")
     val expectedContent = lines.mkString(start = "", sep = "\n", end = "\n")
-    File.temporaryFile() foreach {file =>
+    File.temporaryFile() foreach { file =>
       file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
       file.contentAsString(charset = "UTF-8") should not equal expectedContent
       file.contentAsString shouldEqual expectedContent
@@ -279,8 +280,8 @@ class FileSpec extends CommonSpec {
 //  }
 
   it should "support equality" in {
-    fa shouldEqual (testRoot/"a")
-    fa shouldNot equal (testRoot/"b")
+    fa shouldEqual (testRoot / "a")
+    fa shouldNot equal(testRoot / "b")
     val c1 = fa.md5
     fa.md5 shouldEqual c1
     t1 < "hello"
@@ -294,7 +295,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "create if not exist directory structures" in {
-    File.usingTemporaryDirectory() {dir =>
+    File.usingTemporaryDirectory() { dir =>
       val file = dir / "a" / "b" / "c.txt"
       assert(file.notExists)
       assert(file.parent.notExists)
@@ -307,14 +308,16 @@ class FileSpec extends CommonSpec {
   }
 
   it should "treat symlinks transparently in convenience methods" in {
-    File.usingTemporaryDirectory() {dir =>
-      val realDir = dir / "a"
+    File.usingTemporaryDirectory() { dir =>
+      val realDir    = dir / "a"
       val dirSymlink = dir / "b"
       realDir.createDirectory()
       JFiles.createSymbolicLink(dirSymlink.path, realDir.path)
       dirSymlink.createDirectories()
-      a[FileAlreadyExistsException] should be thrownBy dirSymlink.createDirectories()(linkOptions = File.LinkOptions.noFollow)
-      /*a[FileAlreadyExistsException] shouldNot be thrownBy*/ dirSymlink.createDirectories()
+      a[FileAlreadyExistsException] should be thrownBy dirSymlink.createDirectories()(
+        linkOptions = File.LinkOptions.noFollow)
+      /*a[FileAlreadyExistsException] shouldNot be thrownBy*/
+      dirSymlink.createDirectories()
     }
   }
 
@@ -330,12 +333,12 @@ class FileSpec extends CommonSpec {
   }
 
   it should "detect file locks" in {
-    File.temporaryFile() foreach {file =>
+    File.temporaryFile() foreach { file =>
       def lockInfo() = file.isReadLocked() -> file.isWriteLocked()
       // TODO: Why is file.isReadLocked() should be false?
       lockInfo() shouldBe (true -> false)
       val channel = file.newRandomAccess(File.RandomAccessMode.readWrite).getChannel
-      val lock = channel.tryLock()
+      val lock    = channel.tryLock()
       lockInfo() shouldBe (true -> true)
       lock.release()
       channel.close()
@@ -449,20 +452,20 @@ class FileSpec extends CommonSpec {
   }
 
   it should "md5" in {
-    val h1 = t1.hashCode
+    val h1     = t1.hashCode
     val actual = (t1 < "hello world").md5
-    val h2 = t1.hashCode
+    val h2     = t1.hashCode
     h1 shouldEqual h2
     import scala.sys.process._
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
-    expected.toUpperCase should include (actual)
+    expected.toUpperCase should include(actual)
     actual should not equal h1
   }
 
   it should "support file in/out" in {
     t1 < "hello world"
     for {
-      in <- t1.inputStream
+      in  <- t1.inputStream
       out <- t2.outputStream
     } in.pipeTo(out)
     t2.contentAsString shouldEqual "hello world"
@@ -473,12 +476,12 @@ class FileSpec extends CommonSpec {
     t1.writeText("hello world")
     val zipFile = testRoot.zip()
     zipFile.size should be > 100L
-    zipFile.name should endWith (".zip")
+    zipFile.name should endWith(".zip")
 
     def test(output: File) = {
-      (output/"a"/"a1"/"t1.txt").contentAsString shouldEqual "hello world"
+      (output / "a" / "a1" / "t1.txt").contentAsString shouldEqual "hello world"
       output === testRoot shouldBe true
-      (output/"a"/"a1"/"t1.txt").overwrite("hello")
+      (output / "a" / "a1" / "t1.txt").overwrite("hello")
       (output !== testRoot) shouldBe true
     }
 
@@ -490,15 +493,15 @@ class FileSpec extends CommonSpec {
     t1.writeText("hello world")
     val zipFile = t1.zip()
     zipFile.size should be > 100L
-    zipFile.name should endWith (".zip")
+    zipFile.name should endWith(".zip")
     val destination = unzip(zipFile)(File.newTemporaryDirectory())
-    (destination/"t1.txt").contentAsString shouldEqual "hello world"
+    (destination / "t1.txt").contentAsString shouldEqual "hello world"
   }
 
   it should "ungzip" in {
     val data = Seq("hello", "world")
     for {
-      pw <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().printWriter().autoClosed
+      pw   <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().printWriter().autoClosed
       line <- data
     } pw.println(line)
 
@@ -506,7 +509,8 @@ class FileSpec extends CommonSpec {
   }
 
   it should "gzip" in {
-    val actual = t1.writeText("hello world")
+    val actual = t1
+      .writeText("hello world")
       .gzipTo()
       .unGzipTo()
       .contentAsString
@@ -524,11 +528,11 @@ class FileSpec extends CommonSpec {
   }
 
   it should "convert readers to inputstreams and writers to outputstreams" in {
-    File.temporaryFile() foreach {f =>
+    File.temporaryFile() foreach { f =>
       val text = List.fill(10000)("hello world")
       for {
         writer <- f.bufferedWriter
-        out <- writer.outputstream.autoClosed
+        out    <- writer.outputstream.autoClosed
       } out.write(text.mkString("\n").getBytes)
       val t = f.bufferedReader.flatMap(_.toInputStream.lines)
       t.toList shouldEqual text
@@ -540,7 +544,7 @@ class FileSpec extends CommonSpec {
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
-    File.temporaryFile() foreach {f => //serialization round-trip test
+    File.temporaryFile() foreach { f => //serialization round-trip test
       assert(f.isEmpty)
       f.writeSerialized(p1)
       assert(f.nonEmpty)

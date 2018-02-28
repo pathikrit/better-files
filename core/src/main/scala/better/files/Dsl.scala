@@ -19,10 +19,10 @@ object Dsl {
   def cwd: File =
     pwd
 
-  val `..`: File => File =
+  val `..` : File => File =
     _.parent
 
-  val  `.`: File => File =
+  val `.` : File => File =
     identity
 
   /**
@@ -30,6 +30,7 @@ object Dsl {
     * @param file
     */
   implicit class SymbolicOperations(val file: File) {
+
     /**
       * Allows navigation up e.g. file / .. / ..
       *
@@ -45,10 +46,20 @@ object Dsl {
     def >>:(line: String)(implicit charset: Charset = DefaultCharset): file.type =
       file.appendLines(line)(charset)
 
-    def <(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): file.type =
+    def <(
+        text: String
+      )(implicit
+        openOptions: File.OpenOptions = File.OpenOptions.default,
+        charset: Charset = DefaultCharset
+      ): file.type =
       file.write(text)(openOptions, charset)
 
-    def `>:`(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): file.type =
+    def `>:`(
+        text: String
+      )(implicit
+        openOptions: File.OpenOptions = File.OpenOptions.default,
+        charset: Charset = DefaultCharset
+      ): file.type =
       file.write(text)(openOptions, charset)
 
     def `!`(implicit charset: Charset = DefaultCharset): String =
@@ -150,7 +161,13 @@ object Dsl {
   def unzip(zipFile: File)(destination: File)(implicit charset: Charset = DefaultCharset): destination.type =
     zipFile.unzipTo(destination)(charset)
 
-  def zip(files: File*)(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = DefaultCharset): destination.type =
+  def zip(
+      files: File*
+    )(destination: File,
+      compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(charset)
 
   def ungzip(gzipFile: File)(destination: File): File =

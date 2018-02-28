@@ -16,11 +16,12 @@ class ShapelessScannerSpec extends CommonSpec {
 
     type Row = Int :: String :: Boolean :: HNil
     val out = Seq.fill(3)(in.next[Row])
-    assert(out == Seq(
-      12 :: "Bob" :: true :: HNil,
-      13 :: "Mary" :: false :: HNil,
-      26 :: "Rick" :: true :: HNil
-    ))
+    assert(
+      out == Seq(
+        12 :: "Bob" :: true :: HNil,
+        13 :: "Mary" :: false :: HNil,
+        26 :: "Rick" :: true :: HNil
+      ))
   }
 
   "Shapeless Scanner" should "parse case class" in {

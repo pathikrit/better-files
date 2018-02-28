@@ -35,7 +35,8 @@ package object files extends Implicits {
     currentClassLoader().getResourceAsStream(name).buffered(bufferSize)
 
   // Some utils:
-  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] = new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
+  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =
+    new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 

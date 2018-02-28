@@ -12,9 +12,10 @@ import scala.collection.JavaConverters._
   * @param writeByteOrderMarkers If set, write BOMs while encoding
   */
 class UnicodeCharset(underlyingCharset: Charset, writeByteOrderMarkers: Boolean)
-  extends Charset(underlyingCharset.name(), underlyingCharset.aliases().asScala.toArray) {
+    extends Charset(underlyingCharset.name(), underlyingCharset.aliases().asScala.toArray) {
   override def newDecoder() = new UnicodeDecoder(underlyingCharset)
-  override def newEncoder() = if (writeByteOrderMarkers) new BomEncoder(underlyingCharset) else underlyingCharset.newEncoder()
+  override def newEncoder() =
+    if (writeByteOrderMarkers) new BomEncoder(underlyingCharset) else underlyingCharset.newEncoder()
   override def contains(cs: Charset) = underlyingCharset.contains(cs)
 }
 
@@ -43,8 +44,8 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
       inferredCharset = candidates.headOption.ensuring(candidates.size == 1, "Ambiguous BOMs found")
       decode(in, out)
     } else {
-      val idx = in.position()
-      val byte = in.get()
+      val idx                          = in.position()
+      val byte                         = in.get()
       def isPossible(charset: Charset) = bomTable(charset).lift(idx).contains(byte)
       decode(in, out, candidates.filter(isPossible))
     }
@@ -58,7 +59,8 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
 
   override def implReset() = inferredCharset = None
 
-  override def detectedCharset() = inferredCharset.getOrElse(throw new IllegalStateException("Insufficient bytes read to determine charset"))
+  override def detectedCharset() =
+    inferredCharset.getOrElse(throw new IllegalStateException("Insufficient bytes read to determine charset"))
 }
 
 /**
@@ -66,7 +68,9 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
   * @param charset
   */
 class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
-  private[this] val bom = UnicodeCharset.bomTable.getOrElse(charset, throw new IllegalArgumentException(s"$charset does not support BOMs")).toArray
+  private[this] val bom = UnicodeCharset.bomTable
+    .getOrElse(charset, throw new IllegalArgumentException(s"$charset does not support BOMs"))
+    .toArray
   private[this] var isBomWritten = false
 
   override def encodeLoop(in: CharBuffer, out: ByteBuffer): CoderResult = {
@@ -92,8 +96,10 @@ object UnicodeCharset {
     "UTF-16LE" -> IndexedSeq(0xFF, 0xFE),
     "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xFE, 0xFF),
     "UTF-32LE" -> IndexedSeq(0xFF, 0xFE, 0x00, 0x00)
-  ).collect{case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)}
-   .ensuring(_.nonEmpty, "No unicode charset detected")
+  ).collect {
+      case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)
+    }
+    .ensuring(_.nonEmpty, "No unicode charset detected")
 
   def apply(charset: Charset, writeByteOrderMarkers: Boolean = false): Charset =
     if (bomTable.contains(charset)) new UnicodeCharset(charset, writeByteOrderMarkers) else charset

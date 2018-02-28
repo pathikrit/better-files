@@ -1,5 +1,5 @@
 val username = "pathikrit"
-val repo = "better-files"
+val repo     = "better-files"
 
 val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
 val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
@@ -125,7 +125,10 @@ lazy val publishSettings = Seq(
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   developers := List(
-    Developer(id = username, name = "Pathikrit Bhowmick", email = "pathikritbhowmick@msn.com", url = new URL(s"http://github.com/${username}"))
+    Developer(id = username,
+              name = "Pathikrit Bhowmick",
+              email = "pathikritbhowmick@msn.com",
+              url = new URL(s"http://github.com/${username}"))
   ),
   publishMavenStyle := true,
   publishArtifact in Test := false,

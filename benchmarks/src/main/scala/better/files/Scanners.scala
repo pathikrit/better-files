@@ -3,24 +3,24 @@ package better.files
 import java.io.BufferedReader
 
 /**
- * Base interface to test
- */
+  * Base interface to test
+  */
 abstract class AbstractScanner(protected[this] val reader: BufferedReader) {
   def hasNext: Boolean
   def next(): String
-  def nextInt() = next().toInt
+  def nextInt()  = next().toInt
   def nextLine() = reader.readLine()
-  def close() = reader.close()
+  def close()    = reader.close()
 }
 
 /**
- * Based on java.util.Scanner
- */
+  * Based on java.util.Scanner
+  */
 class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] val scanner = new java.util.Scanner(reader)
-  override def hasNext = scanner.hasNext
-  override def next() = scanner.next()
-  override def nextInt() = scanner.nextInt()
+  override def hasNext      = scanner.hasNext
+  override def next()       = scanner.next()
+  override def nextInt()    = scanner.nextInt()
   override def nextLine() = {
     scanner.nextLine()
     scanner.nextLine()
@@ -29,18 +29,19 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
 }
 
 /**
- * Based on StringTokenizer + resetting the iterator
- */
+  * Based on StringTokenizer + resetting the iterator
+  */
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
-  override def iterator = for {
-    line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
-    tokenizer = new java.util.StringTokenizer(line)
-    _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
-  } yield tokenizer.nextToken()
+  override def iterator =
+    for {
+      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
+      tokenizer = new java.util.StringTokenizer(line)
+      _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
+    } yield tokenizer.nextToken()
 
   private[this] var current = iterator
-  override def hasNext = current.hasNext
-  override def next() = current.next()
+  override def hasNext      = current.hasNext
+  override def next()       = current.next()
   override def nextLine() = {
     current = iterator
     super.nextLine()
@@ -48,11 +49,12 @@ class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
 }
 
 /**
- * Based on a mutating var StringTokenizer
- */
+  * Based on a mutating var StringTokenizer
+  */
 class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.util.StringTokenizer
-  private[this] val tokenizers = Iterator.continually(reader.readLine()).takeWhile(_ != null).map(new StringTokenizer(_)).filter(_.hasMoreTokens)
+  private[this] val tokenizers =
+    Iterator.continually(reader.readLine()).takeWhile(_ != null).map(new StringTokenizer(_)).filter(_.hasMoreTokens)
   private[this] var current: Option[StringTokenizer] = None
 
   @inline private[this] def tokenizer(): Option[StringTokenizer] = current.find(_.hasMoreTokens) orElse {
@@ -60,7 +62,7 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
     current
   }
   override def hasNext = tokenizer().nonEmpty
-  override def next() = tokenizer().get.nextToken()
+  override def next()  = tokenizer().get.nextToken()
   override def nextLine() = {
     current = None
     super.nextLine()
@@ -68,8 +70,8 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
 }
 
 /**
- * Based on java.io.StreamTokenizer
- */
+  * Based on java.io.StreamTokenizer
+  */
 class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.io.StreamTokenizer
   private[this] val in = new StreamTokenizer(reader)
@@ -87,10 +89,10 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
 }
 
 /**
- * Based on a reusable StringBuilder
- */
+  * Based on a reusable StringBuilder
+  */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  private[this] val chars = reader.chars
+  private[this] val chars  = reader.chars
   private[this] val buffer = new StringBuilder()
 
   override def next() = {
@@ -104,11 +106,11 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
 }
 
 /**
- * Scala version of the ArrayBufferScanner
- */
+  * Scala version of the ArrayBufferScanner
+  */
 class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  private[this] val chars = reader.chars
-  private[this] var buffer = Array.ofDim[Char](1<<4)
+  private[this] val chars  = reader.chars
+  private[this] var buffer = Array.ofDim[Char](1 << 4)
 
   override def next() = {
     var pos = 0
@@ -134,9 +136,9 @@ class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) 
 
   private[this] val fastReader = new fastjavaio.InputReader(is)
 
-  override def hasNext = true     //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
-  override def next() = fastReader.readStr()
-  override def nextInt() = fastReader.readInt()
+  override def hasNext    = true //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
+  override def next()     = fastReader.readStr()
+  override def nextInt()  = fastReader.readInt()
   override def nextLine() = fastReader.readLine()
 }
 
@@ -152,7 +154,7 @@ class FastJavaIOScanner2(reader: BufferedReader) extends FastJavaIOScanner(reade
   */
 class BetterFilesScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] val scanner = Scanner(reader)
-  override def hasNext = scanner.hasNext
-  override def next() = scanner.next
-  override def nextLine() = scanner.nextLine()
+  override def hasNext      = scanner.hasNext
+  override def next()       = scanner.next
+  override def nextLine()   = scanner.nextLine()
 }

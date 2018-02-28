@@ -20,7 +20,7 @@ import scala.util.matching.Regex
 /**
   * Scala wrapper around java.nio.files.Path
   */
-class File private(val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
+class File private (val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
   //TODO: LinkOption?
 
   def pathAsString: String =
@@ -76,8 +76,8 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     */
   def extension(includeDot: Boolean = true, includeAll: Boolean = false, toLowerCase: Boolean = true): Option[String] =
     when(hasExtension) {
-      val dot = indexOfExtension(includeAll)
-      val index = if (includeDot) dot else dot + 1
+      val dot       = indexOfExtension(includeAll)
+      val index     = if (includeDot) dot else dot + 1
       val extension = name.substring(index)
       if (toLowerCase) extension.toLowerCase else extension
     }
@@ -129,7 +129,14 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def /(child: Symbol): File =
     this / child.name
 
-  def createChild(child: String, asDirectory: Boolean = false, createParents: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): File =
+  def createChild(
+      child: String,
+      asDirectory: Boolean = false,
+      createParents: Boolean = false
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): File =
     (this / child).createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
 
   /**
@@ -141,7 +148,13 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param linkOptions
     * @return
     */
-  def createIfNotExists(asDirectory: Boolean = false, createParents: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+  def createIfNotExists(
+      asDirectory: Boolean = false,
+      createParents: Boolean = false
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type = {
     if (exists(linkOptions)) {
       this
     } else if (asDirectory) {
@@ -151,7 +164,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
       try {
         createFile()(attributes)
       } catch {
-        case _: FileAlreadyExistsException if isRegularFile(linkOptions) =>  // We don't really care if it exists already
+        case _: FileAlreadyExistsException if isRegularFile(linkOptions) => // We don't really care if it exists already
       }
       this
     }
@@ -226,7 +239,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param attributes
     * @return
     */
-  def createDirectories()(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+  def createDirectories(
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type = {
     try {
       Files.createDirectories(path, attributes: _*)
     } catch {
@@ -259,13 +276,21 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def lineIterator(implicit charset: Charset = DefaultCharset): Iterator[String] =
     Files.lines(path, charset).toAutoClosedIterator
 
-  def tokens(splitter: StringSplitter = StringSplitter.Default)(implicit charset: Charset = DefaultCharset): Iterator[String] =
+  def tokens(
+      splitter: StringSplitter = StringSplitter.Default
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): Iterator[String] =
     newBufferedReader(charset).tokens(splitter)
 
   def contentAsString(implicit charset: Charset = DefaultCharset): String =
     new String(byteArray, charset)
 
-  def printLines(lines: TraversableOnce[_])(implicit openOptions: File.OpenOptions = File.OpenOptions.append): this.type = {
+  def printLines(
+      lines: TraversableOnce[_]
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.append
+    ): this.type = {
     printWriter()(openOptions).foreach(_.printLines(lines))
     this
   }
@@ -305,23 +330,46 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param bytes
     * @return this
     */
-  def writeByteArray(bytes: Array[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
+  def writeByteArray(
+      bytes: Array[Byte]
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): this.type = {
     Files.write(path, bytes, openOptions: _*)
     this
   }
 
-  def writeBytes(bytes: Iterator[Byte])(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
+  def writeBytes(
+      bytes: Iterator[Byte]
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): this.type = {
     outputStream(openOptions).foreach(_.buffered.write(bytes))
     this
   }
 
-  def write(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): this.type =
+  def write(
+      text: String
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      charset: Charset = DefaultCharset
+    ): this.type =
     writeByteArray(text.getBytes(charset))(openOptions)
 
-  def writeText(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): this.type =
+  def writeText(
+      text: String
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      charset: Charset = DefaultCharset
+    ): this.type =
     write(text)(openOptions, charset)
 
-  def overwrite(text: String)(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): this.type =
+  def overwrite(
+      text: String
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      charset: Charset = DefaultCharset
+    ): this.type =
     write(text)(openOptions, charset)
 
   def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile =
@@ -336,10 +384,18 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def bufferedReader(implicit charset: Charset = DefaultCharset): ManagedResource[BufferedReader] =
     newBufferedReader(charset).autoClosed
 
-  def newBufferedWriter(implicit charset: Charset = DefaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): BufferedWriter =
+  def newBufferedWriter(
+      implicit
+      charset: Charset = DefaultCharset,
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): BufferedWriter =
     Files.newBufferedWriter(path, charset, openOptions: _*)
 
-  def bufferedWriter(implicit charset: Charset = DefaultCharset, openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[BufferedWriter] =
+  def bufferedWriter(
+      implicit
+      charset: Charset = DefaultCharset,
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): ManagedResource[BufferedWriter] =
     newBufferedWriter(charset, openOptions).autoClosed
 
   def newFileReader: FileReader =
@@ -354,10 +410,18 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def fileWriter(append: Boolean = false): ManagedResource[FileWriter] =
     newFileWriter(append).autoClosed
 
-  def newPrintWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): PrintWriter =
+  def newPrintWriter(
+      autoFlush: Boolean = false
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): PrintWriter =
     new PrintWriter(newOutputStream(openOptions), autoFlush)
 
-  def printWriter(autoFlush: Boolean = false)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[PrintWriter] =
+  def printWriter(
+      autoFlush: Boolean = false
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): ManagedResource[PrintWriter] =
     newPrintWriter(autoFlush)(openOptions).autoClosed
 
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream =
@@ -379,16 +443,32 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     newFileOutputStream(append).autoClosed
 
   //TODO: Move this to inputstream implicit
-  def newDigestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): DigestInputStream =
+  def newDigestInputStream(
+      digest: MessageDigest
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): DigestInputStream =
     new DigestInputStream(newInputStream(openOptions), digest)
 
-  def digestInputStream(digest: MessageDigest)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[DigestInputStream] =
+  def digestInputStream(
+      digest: MessageDigest
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): ManagedResource[DigestInputStream] =
     newDigestInputStream(digest)(openOptions).autoClosed
 
-  def newScanner(splitter: StringSplitter = StringSplitter.Default)(implicit charset: Charset = DefaultCharset): Scanner =
+  def newScanner(
+      splitter: StringSplitter = StringSplitter.Default
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): Scanner =
     Scanner(newBufferedReader(charset), splitter)
 
-  def scanner(splitter: StringSplitter = StringSplitter.Default)(implicit charset: Charset = DefaultCharset): ManagedResource[Scanner] =
+  def scanner(
+      splitter: StringSplitter = StringSplitter.Default
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): ManagedResource[Scanner] =
     newScanner(splitter)(charset).autoClosed
 
   def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream =
@@ -397,7 +477,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] =
     newOutputStream(openOptions).autoClosed
 
-  def newZipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): ZipOutputStream =
+  def newZipOutputStream(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      charset: Charset = DefaultCharset
+    ): ZipOutputStream =
     new ZipOutputStream(newOutputStream(openOptions), charset)
 
   def zipInputStream(implicit charset: Charset = DefaultCharset): ManagedResource[ZipInputStream] =
@@ -406,13 +490,25 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def newZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
     new ZipInputStream(newFileInputStream.buffered, charset)
 
-  def zipOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default, charset: Charset = DefaultCharset): ManagedResource[ZipOutputStream] =
+  def zipOutputStream(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      charset: Charset = DefaultCharset
+    ): ManagedResource[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
 
-  def newGzipOutputStream(bufferSize: Int = DefaultBufferSize, syncFlush: Boolean = false, append: Boolean = false): GZIPOutputStream =
+  def newGzipOutputStream(
+      bufferSize: Int = DefaultBufferSize,
+      syncFlush: Boolean = false,
+      append: Boolean = false
+    ): GZIPOutputStream =
     new GZIPOutputStream(newFileOutputStream(append), bufferSize, syncFlush)
 
-  def gzipOutputStream(bufferSize: Int = DefaultBufferSize, syncFlush: Boolean = false, append: Boolean = false): ManagedResource[GZIPOutputStream] =
+  def gzipOutputStream(
+      bufferSize: Int = DefaultBufferSize,
+      syncFlush: Boolean = false,
+      append: Boolean = false
+    ): ManagedResource[GZIPOutputStream] =
     newGzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append).autoClosed
 
   def newGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
@@ -421,16 +517,30 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def gzipInputStream(bufferSize: Int = DefaultBufferSize): ManagedResource[GZIPInputStream] =
     newGzipInputStream(bufferSize).autoClosed
 
-  def newFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): FileChannel =
+  def newFileChannel(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      attributes: File.Attributes = File.Attributes.default
+    ): FileChannel =
     FileChannel.open(path, openOptions.toSet.asJava, attributes: _*)
 
-  def fileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default, attributes: File.Attributes = File.Attributes.default): ManagedResource[FileChannel] =
+  def fileChannel(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default,
+      attributes: File.Attributes = File.Attributes.default
+    ): ManagedResource[FileChannel] =
     newFileChannel(openOptions, attributes).autoClosed
 
-  def newAsynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): AsynchronousFileChannel =
+  def newAsynchronousFileChannel(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): AsynchronousFileChannel =
     AsynchronousFileChannel.open(path, openOptions: _*)
 
-  def asynchronousFileChannel(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[AsynchronousFileChannel] =
+  def asynchronousFileChannel(
+      implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): ManagedResource[AsynchronousFileChannel] =
     newAsynchronousFileChannel(openOptions).autoClosed
 
   def newWatchService: WatchService =
@@ -445,7 +555,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param obj
     * @return
     */
-  def writeSerialized(obj: Serializable)(implicit openOptions: File.OpenOptions = File.OpenOptions.default): this.type = {
+  def writeSerialized(
+      obj: Serializable
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): this.type = {
     createIfNotExists().outputStream(openOptions).foreach(_.asObjectOutputStream().serialize(obj).flush())
     this
   }
@@ -466,7 +580,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def digest(algorithm: MessageDigest): Array[Byte] = {
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path.resolve(relativePath)
-      if(file.isDirectory) {
+      if (file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
         file.digestInputStream(algorithm).foreach(_.pipeTo(NullOutputStream))
@@ -483,8 +597,13 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param linkOptions
     * @return
     */
-  def update(attribute: String, value: Any)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
-    Files.setAttribute(path, attribute, value, linkOptions : _*)
+  def update(
+      attribute: String,
+      value: Any
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type = {
+    Files.setAttribute(path, attribute, value, linkOptions: _*)
     this
   }
 
@@ -531,17 +650,24 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     Files.isHidden(path)
 
   /**
-   * Check if a file is locked.
-   *
-   * @param mode     The random access mode.
-   * @param position The position at which the locked region is to start; must be non-negative.
-   * @param size     The size of the locked region; must be non-negative, and the sum position + size must be non-negative.
-   * @param isShared true to request a shared lock, false to request an exclusive lock.
-   * @return True if the file is locked, false otherwise.
-   */
-  def isLocked(mode: File.RandomAccessMode, position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+    * Check if a file is locked.
+    *
+    * @param mode     The random access mode.
+    * @param position The position at which the locked region is to start; must be non-negative.
+    * @param size     The size of the locked region; must be non-negative, and the sum position + size must be non-negative.
+    * @param isShared true to request a shared lock, false to request an exclusive lock.
+    * @return True if the file is locked, false otherwise.
+    */
+  def isLocked(
+      mode: File.RandomAccessMode,
+      position: Long = 0L,
+      size: Long = Long.MaxValue,
+      isShared: Boolean = false
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): Boolean =
     try {
-      usingLock(mode) {channel =>
+      usingLock(mode) { channel =>
         channel.tryLock(position, size, isShared).release()
         false
       }
@@ -564,7 +690,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def verifiedExists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Option[Boolean] = {
     if (exists(linkOptions)) {
       Some(true)
-    } else if(notExists(linkOptions)) {
+    } else if (notExists(linkOptions)) {
       Some(false)
     } else {
       None
@@ -607,22 +733,33 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     *
     *
     * @param includePath If true, we don't need to set path glob patterns
-    *                    e.g. instead of **//*.txt we just use *.txt
-    * @return Set of files that matched
-    */
+    *                    e.g. instead of **/ /*.txt we just use *.txt
+   * @return Set of files that matched
+   */
   //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
-  def glob(pattern: String, includePath: Boolean = true)(implicit syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default, visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+  def glob(
+      pattern: String,
+      includePath: Boolean = true
+    )(implicit
+      syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default,
+      visitOptions: File.VisitOptions = File.VisitOptions.default
+    ): Files =
     pathMatcher(syntax, includePath)(pattern).matches(this)(visitOptions)
 
   /**
     * Util to match from this file's path using Regex
     *
     * @param includePath If true, we don't need to set path glob patterns
-    *                    e.g. instead of **//*.txt we just use *.txt
-    * @see glob
-    * @return Set of files that matched
-    */
-  def globRegex(pattern: Regex, includePath: Boolean = true)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+    *                    e.g. instead of **/ /*.txt we just use *.txt
+   * @see glob
+   * @return Set of files that matched
+   */
+  def globRegex(
+      pattern: Regex,
+      includePath: Boolean = true
+    )(implicit
+      visitOptions: File.VisitOptions = File.VisitOptions.default
+    ): Files =
     glob(pattern.regex, includePath)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
 
   /**
@@ -632,7 +769,11 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param matchFilter
     * @return
     */
-  def collectChildren(matchFilter: File => Boolean)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+  def collectChildren(
+      matchFilter: File => Boolean
+    )(implicit
+      visitOptions: File.VisitOptions = File.VisitOptions.default
+    ): Files =
     walk()(visitOptions).filter(matchFilter)
 
   def uri: URI =
@@ -658,16 +799,28 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     this
   }
 
-  def addPermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type =
+  def addPermission(
+      permission: PosixFilePermission
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type =
     setPermissions(permissions(linkOptions) + permission)
 
-  def removePermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type =
+  def removePermission(
+      permission: PosixFilePermission
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type =
     setPermissions(permissions(linkOptions) - permission)
 
   /**
     * test if file has this permission
     */
-  def testPermission(permission: PosixFilePermission)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
+  def testPermission(
+      permission: PosixFilePermission
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): Boolean =
     permissions(linkOptions)(permission)
 
   def isOwnerReadable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
@@ -746,7 +899,12 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   /**
     * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
     */
-  def touch(time: Instant = Instant.now())(implicit attributes: File.Attributes = File.Attributes.default, linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+  def touch(
+      time: Instant = Instant.now()
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type = {
     Files.setLastModifiedTime(createIfNotExists()(attributes, linkOptions).path, FileTime.from(time))
     this
   }
@@ -800,21 +958,29 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param overwrite
     * @return destination
     */
-  def copyTo(destination: File, overwrite: Boolean = false)(implicit copyOptions: File.CopyOptions = File.CopyOptions(overwrite)): destination.type = {
-    if (isDirectory) {//TODO: maxDepth?
-      Files.walkFileTree(path, new SimpleFileVisitor[Path] {
-        def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
+  def copyTo(
+      destination: File,
+      overwrite: Boolean = false
+    )(implicit
+      copyOptions: File.CopyOptions = File.CopyOptions(overwrite)
+    ): destination.type = {
+    if (isDirectory) { //TODO: maxDepth?
+      Files.walkFileTree(
+        path,
+        new SimpleFileVisitor[Path] {
+          def newPath(subPath: Path): Path = destination.path.resolve(path.relativize(subPath))
 
-        override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
-          Files.createDirectories(newPath(dir))
-          super.preVisitDirectory(dir, attrs)
-        }
+          override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes) = {
+            Files.createDirectories(newPath(dir))
+            super.preVisitDirectory(dir, attrs)
+          }
 
-        override def visitFile(file: Path, attrs: BasicFileAttributes) = {
-          Files.copy(file, newPath(file), copyOptions: _*)
-          super.visitFile(file, attrs)
+          override def visitFile(file: Path, attrs: BasicFileAttributes) = {
+            Files.copy(file, newPath(file), copyOptions: _*)
+            super.visitFile(file, attrs)
+          }
         }
-      })
+      )
     } else {
       Files.copy(path, destination.path, copyOptions: _*)
     }
@@ -827,17 +993,31 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     *
     * @return the File referencing the new file created under destination
     */
-  def copyToDirectory(directory: File)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default, copyOptions: File.CopyOptions = File.CopyOptions.default): File = {
+  def copyToDirectory(
+      directory: File
+    )(implicit
+      linkOptions: File.LinkOptions = File.LinkOptions.default,
+      copyOptions: File.CopyOptions = File.CopyOptions.default
+    ): File = {
     require(directory.isDirectory(linkOptions), s"$directory must be a directory")
     copyTo(directory / this.name)(copyOptions)
   }
 
-  def symbolicLinkTo(destination: File)(implicit attributes: File.Attributes = File.Attributes.default): destination.type = {
+  def symbolicLinkTo(
+      destination: File
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default
+    ): destination.type = {
     Files.createSymbolicLink(path, destination.path, attributes: _*)
     destination
   }
 
-  def linkTo(destination: File, symbolic: Boolean = false)(implicit attributes: File.Attributes = File.Attributes.default): destination.type = {
+  def linkTo(
+      destination: File,
+      symbolic: Boolean = false
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default
+    ): destination.type = {
     if (symbolic) {
       symbolicLinkTo(destination)(attributes)
     } else {
@@ -865,7 +1045,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   def isSameContentAs(that: File): Boolean =
     isSimilarContentAs(that)
 
-   /**
+  /**
     * Almost same as isSameContentAs but uses faster md5 hashing to compare (and thus small chance of false positive)
     * Also works for directories
     *
@@ -878,7 +1058,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
   override def equals(obj: Any) = {
     obj match {
       case file: File => isSamePathAs(file)
-      case _ => false
+      case _          => false
     }
   }
 
@@ -938,7 +1118,12 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destination The destination file; Creates this if it does not exists
     * @return The destination zip file
     */
-  def zipTo(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = DefaultCharset): destination.type = {
+  def zipTo(
+      destination: File,
+      compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): destination.type = {
     val files = if (isDirectory) children else Iterator(this)
     destination.zipIn(files, compressionLevel)(charset)
   }
@@ -958,10 +1143,15 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param zipFilter An optional param to reject or accept unzipping a file
     * @return The destination where contents are unzipped
     */
-  def unzipTo(destination: File, zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = DefaultCharset): destination.type = {
+  def unzipTo(
+      destination: File,
+      zipFilter: ZipEntry => Boolean = _ => true
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): destination.type = {
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
-      entry <- zipFile.entries().asScala if zipFilter(entry)
+      entry   <- zipFile.entries().asScala if zipFilter(entry)
     } entry.extractTo(destination, zipFile.getInputStream(entry))
     destination
   }
@@ -973,16 +1163,24 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destinationDirectory destination folder; Creates this if it does not exist
     * @return The destination where contents are unzipped
     */
-  def streamedUnzip(destinationDirectory: File = File.newTemporaryDirectory(name.stripSuffix(".zip")))(implicit charset: Charset = DefaultCharset): destinationDirectory.type = {
+  def streamedUnzip(
+      destinationDirectory: File = File.newTemporaryDirectory(name.stripSuffix(".zip"))
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): destinationDirectory.type = {
     for {
       zipIn <- zipInputStream(charset)
     } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
     destinationDirectory
   }
 
-  def unGzipTo(destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")), append: Boolean = false, bufferSize: Int = DefaultBufferSize): destination.type = {
+  def unGzipTo(
+      destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")),
+      append: Boolean = false,
+      bufferSize: Int = DefaultBufferSize
+    ): destination.type = {
     for {
-      in <- gzipInputStream(bufferSize)
+      in  <- gzipInputStream(bufferSize)
       out <- destination.createIfNotExists(createParents = true).fileOutputStream(append)
     } in.pipeTo(out, bufferSize)
     destination
@@ -993,10 +1191,17 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param destination
     * @return
     */
-  def gzipTo(destination: File = File.newTemporaryFile(suffix = name + ".gz"), bufferSize: Int = DefaultBufferSize, syncFlush: Boolean = false, append: Boolean = false): destination.type = {
+  def gzipTo(
+      destination: File = File.newTemporaryFile(suffix = name + ".gz"),
+      bufferSize: Int = DefaultBufferSize,
+      syncFlush: Boolean = false,
+      append: Boolean = false
+    ): destination.type = {
     for {
       in <- fileInputStream
-      out <- destination.createIfNotExists(createParents = true).gzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append)
+      out <- destination
+        .createIfNotExists(createParents = true)
+        .gzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append)
     } in.buffered(bufferSize).pipeTo(out, bufferSize)
     destination
   }
@@ -1010,11 +1215,15 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
     * @param charset
     * @return this
     */
-  def zipIn(files: Files, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(charset: Charset = DefaultCharset): this.type = {
+  def zipIn(
+      files: Files,
+      compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
+    )(charset: Charset = DefaultCharset
+    ): this.type = {
     for {
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
-      input <- files
-      file <- input.walk()
+      input  <- files
+      file   <- input.walk()
       name = input.parent.relativize(file)
     } output.add(file, name.toString)
     this
@@ -1049,6 +1258,7 @@ class File private(val path: Path)(implicit val fileSystem: FileSystem = path.ge
 }
 
 object File {
+
   /**
     * Get a file from a resource
     * Note: Use resourceToFile instead as this may not actually always load the file
@@ -1069,36 +1279,67 @@ object File {
     */
   def copyResource(name: String)(destination: File = File.newTemporaryFile(prefix = name)): destination.type = {
     for {
-      in <- resourceAsStream(name).autoClosed
+      in  <- resourceAsStream(name).autoClosed
       out <- destination.outputStream
     } in.pipeTo(out)
     destination
   }
 
-  def newTemporaryDirectory(prefix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
+  def newTemporaryDirectory(
+      prefix: String = "",
+      parent: Option[File] = None
+    )(implicit
+      attributes: Attributes = Attributes.default
+    ): File = {
     parent match {
       case Some(dir) => Files.createTempDirectory(dir.path, prefix, attributes: _*)
-      case _ => Files.createTempDirectory(prefix, attributes: _*)
+      case _         => Files.createTempDirectory(prefix, attributes: _*)
     }
   }
 
-  def temporaryDirectory(prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
+  def temporaryDirectory(
+      prefix: String = "",
+      parent: Option[File] = None,
+      attributes: Attributes = Attributes.default
+    ): ManagedResource[File] =
     newTemporaryDirectory(prefix, parent)(attributes).toTemporary
 
-  def usingTemporaryDirectory[U](prefix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): Unit =
+  def usingTemporaryDirectory[U](
+      prefix: String = "",
+      parent: Option[File] = None,
+      attributes: Attributes = Attributes.default
+    )(f: File => U
+    ): Unit =
     temporaryDirectory(prefix, parent, attributes).foreach(f)
 
-  def newTemporaryFile(prefix: String = "", suffix: String = "", parent: Option[File] = None)(implicit attributes: Attributes = Attributes.default): File = {
+  def newTemporaryFile(
+      prefix: String = "",
+      suffix: String = "",
+      parent: Option[File] = None
+    )(implicit
+      attributes: Attributes = Attributes.default
+    ): File = {
     parent match {
       case Some(dir) => Files.createTempFile(dir.path, prefix, suffix, attributes: _*)
-      case _ => Files.createTempFile(prefix, suffix, attributes: _*)
+      case _         => Files.createTempFile(prefix, suffix, attributes: _*)
     }
   }
 
-  def temporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default): ManagedResource[File] =
+  def temporaryFile[U](
+      prefix: String = "",
+      suffix: String = "",
+      parent: Option[File] = None,
+      attributes: Attributes = Attributes.default
+    ): ManagedResource[File] =
     newTemporaryFile(prefix, suffix, parent)(attributes).toTemporary
 
-  def usingTemporaryFile[U](prefix: String = "", suffix: String = "", parent: Option[File] = None, attributes: Attributes = Attributes.default)(f: File => U): Unit =
+  def usingTemporaryFile[U](
+      prefix: String = "",
+      suffix: String = "",
+      parent: Option[File] = None,
+      attributes: Attributes = Attributes.default
+    )(f: File => U
+    ): Unit =
     temporaryFile(prefix, suffix, parent, attributes).foreach(f)
 
   implicit def apply(path: Path): File =
@@ -1108,22 +1349,22 @@ object File {
     Paths.get(path, fragments: _*)
 
   /**
-   * Get File to path with help of reference anchor.
-   *
-   * Anchor is used as a reference in case that path is not absolute.
-   * Anchor could be path to directory or path to file.
-   * If anchor is file, then file's parent dir is used as an anchor.
-   *
-   * If anchor itself is relative, then anchor is used together with current working directory.
-   *
-   * NOTE: If anchor is non-existing path on filesystem, then it's always treated as file,
-   * e.g. it's last component is removed when it is used as an anchor.
-   *
-   * @param anchor path to be used as anchor
-   * @param path as string
-   * @param fragments optional path fragments
-   * @return absolute, normalize path
-   */
+    * Get File to path with help of reference anchor.
+    *
+    * Anchor is used as a reference in case that path is not absolute.
+    * Anchor could be path to directory or path to file.
+    * If anchor is file, then file's parent dir is used as an anchor.
+    *
+    * If anchor itself is relative, then anchor is used together with current working directory.
+    *
+    * NOTE: If anchor is non-existing path on filesystem, then it's always treated as file,
+    * e.g. it's last component is removed when it is used as an anchor.
+    *
+    * @param anchor path to be used as anchor
+    * @param path as string
+    * @param fragments optional path fragments
+    * @return absolute, normalize path
+    */
   def apply(anchor: File, path: String, fragments: String*): File = {
     val p = Paths.get(path, fragments: _*)
     if (p.isAbsolute) {
@@ -1158,49 +1399,52 @@ object File {
 
   type Attributes = Seq[FileAttribute[_]]
   object Attributes {
-    val default   : Attributes = Seq.empty
+    val default: Attributes = Seq.empty
   }
 
   type CopyOptions = Seq[CopyOption]
   object CopyOptions {
-    def apply(overwrite: Boolean) : CopyOptions = (if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else default) ++ LinkOptions.default
-    val default                   : CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
+    def apply(overwrite: Boolean): CopyOptions =
+      (if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else default) ++ LinkOptions.default
+    val default: CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
   }
 
   type Events = Seq[WatchEvent.Kind[_]]
   object Events {
-    val all     : Events = Seq(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE)
-    val default : Events = all
+    val all: Events = Seq(StandardWatchEventKinds.ENTRY_CREATE,
+                          StandardWatchEventKinds.ENTRY_MODIFY,
+                          StandardWatchEventKinds.ENTRY_DELETE)
+    val default: Events = all
   }
 
   type OpenOptions = Seq[OpenOption]
   object OpenOptions {
-    val append  : OpenOptions = Seq(StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-    val default : OpenOptions = Seq.empty
+    val append: OpenOptions  = Seq(StandardOpenOption.APPEND, StandardOpenOption.CREATE)
+    val default: OpenOptions = Seq.empty
   }
 
   type LinkOptions = Seq[LinkOption]
   object LinkOptions {
-    val follow    : LinkOptions = Seq.empty
-    val noFollow  : LinkOptions = Seq(LinkOption.NOFOLLOW_LINKS)
-    val default   : LinkOptions = follow
+    val follow: LinkOptions   = Seq.empty
+    val noFollow: LinkOptions = Seq(LinkOption.NOFOLLOW_LINKS)
+    val default: LinkOptions  = follow
   }
 
   type VisitOptions = Seq[FileVisitOption]
   object VisitOptions {
-    val follow    : VisitOptions = Seq(FileVisitOption.FOLLOW_LINKS)
-    val default   : VisitOptions = Seq.empty
+    val follow: VisitOptions  = Seq(FileVisitOption.FOLLOW_LINKS)
+    val default: VisitOptions = Seq.empty
   }
 
   type Order = Ordering[File]
   object Order {
-    val bySize              : Order = Ordering.by(_.size)
-    val byName              : Order = Ordering.by(_.name)
-    val byDepth             : Order = Ordering.by(_.path.getNameCount)
-    val byModificationTime  : Order = Ordering.by(_.lastModifiedTime)
-    val byDirectoriesLast   : Order = Ordering.by(_.isDirectory)
-    val byDirectoriesFirst  : Order = byDirectoriesLast.reverse
-    val default             : Order = byDirectoriesFirst.andThenBy(byName)
+    val bySize: Order             = Ordering.by(_.size)
+    val byName: Order             = Ordering.by(_.name)
+    val byDepth: Order            = Ordering.by(_.path.getNameCount)
+    val byModificationTime: Order = Ordering.by(_.lastModifiedTime)
+    val byDirectoriesLast: Order  = Ordering.by(_.isDirectory)
+    val byDirectoriesFirst: Order = byDirectoriesLast.reverse
+    val default: Order            = byDirectoriesFirst.andThenBy(byName)
   }
 
   abstract class PathMatcherSyntax(name: String) {
@@ -1211,9 +1455,9 @@ object File {
       * @param file
       * @param pattern
       * @param includePath If this is true, no need to include path matchers
-      *                    e.g. instead of "**//*.txt" we can simply use *.txt
-      * @return
-      */
+      *                    e.g. instead of "**/ /*.txt" we can simply use *.txt
+     * @return
+     */
     def apply(file: File, pattern: String, includePath: Boolean): PathMatcher = {
       val escapedPath = if (includePath) escapePath(file.path.toString + file.fileSystem.getSeparator) else ""
       file.fileSystem.getPathMatcher(s"$name:$escapedPath$pattern")
@@ -1223,14 +1467,15 @@ object File {
   }
   object PathMatcherSyntax {
     val glob: PathMatcherSyntax = new PathMatcherSyntax("glob") {
-      override def escapePath(path: String) = path
-        .replaceAllLiterally("\\", "\\\\")
-        .replaceAllLiterally("*", "\\*")
-        .replaceAllLiterally("?", "\\?")
-        .replaceAllLiterally("{", "\\{")
-        .replaceAllLiterally("}", "\\}")
-        .replaceAllLiterally("[", "\\[")
-        .replaceAllLiterally("]", "\\]")
+      override def escapePath(path: String) =
+        path
+          .replaceAllLiterally("\\", "\\\\")
+          .replaceAllLiterally("*", "\\*")
+          .replaceAllLiterally("?", "\\?")
+          .replaceAllLiterally("{", "\\{")
+          .replaceAllLiterally("}", "\\}")
+          .replaceAllLiterally("[", "\\[")
+          .replaceAllLiterally("]", "\\]")
     }
 
     val regex: PathMatcherSyntax = new PathMatcherSyntax("regex") {
@@ -1240,17 +1485,16 @@ object File {
     val default: PathMatcherSyntax = glob
   }
 
-  class RandomAccessMode private(val value: String)
+  class RandomAccessMode private (val value: String)
   object RandomAccessMode {
-    val read = new RandomAccessMode("r")
-    val readWrite = new RandomAccessMode("rw")
+    val read                         = new RandomAccessMode("r")
+    val readWrite                    = new RandomAccessMode("rw")
     val readWriteMetadataSynchronous = new RandomAccessMode("rws")
-    val readWriteContentSynchronous = new RandomAccessMode("rwd")
+    val readWriteContentSynchronous  = new RandomAccessMode("rwd")
   }
 
   def numberOfOpenFileDescriptors(): Long = {
-    java.lang.management.ManagementFactory
-      .getPlatformMBeanServer
+    java.lang.management.ManagementFactory.getPlatformMBeanServer
       .getAttribute(new javax.management.ObjectName("java.lang:type=OperatingSystem"), "OpenFileDescriptorCount")
       .asInstanceOf[Long]
   }

@@ -7,12 +7,12 @@ import java.io.File.separator
 import org.scalatest.BeforeAndAfterAll
 
 class GlobSpec extends CommonSpec with BeforeAndAfterAll {
-  var testDir: File = _
-  var globTree: File = _
+  var testDir: File     = _
+  var globTree: File    = _
   var specialTree: File = _
 
   var regexWildcardPath: File = _
-  var globWildcardPath: File = _
+  var globWildcardPath: File  = _
   //
   //  Test target for glob
   //
@@ -51,7 +51,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     globTree = testDir / "globtree"
 
     mkdir(globTree)
-    val a = mkdir(globTree / "a" )
+    val a = mkdir(globTree / "a")
     mkdir(globTree / "a" / "a2")
     touch(globTree / "a" / "a2" / "a2.txt")
     touch(globTree / "a" / "a2" / "x.txt")
@@ -59,16 +59,16 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     touch(globTree / "a" / "a.txt")
     touch(globTree / "a" / "x.txt")
 
-    mkdir(globTree / "b" )
+    mkdir(globTree / "b")
     mkdir(globTree / "b" / "a")
     touch(globTree / "b" / "a" / "ba.txt")
     touch(globTree / "b" / "b.txt")
 
-    mkdir(globTree / "c" )
+    mkdir(globTree / "c")
     touch(globTree / "c" / "c.txt")
     touch(globTree / "c" / "x.txt")
 
-    mkdir(globTree / "empty" )
+    mkdir(globTree / "empty")
 
     if (isUnixOS) {
       ln_s(globTree / "link_to_a", a)
@@ -104,8 +104,8 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   /**
-   * Helper in case something goes wrong...
-   */
+    * Helper in case something goes wrong...
+    */
   private def debugPaths(files: Seq[File]): String = {
     files
       .sortBy(_.path)
@@ -114,23 +114,23 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   /**
-   * Verity if candidates are equal with references.
-   * Does not accept empty sets, use assert(paths.isEmpty) for that.
-   *
-   * @param pathsIt candidates
-   * @param refPaths references
-   * @param baseDir basedir to for creating full path of references
-   */
+    * Verity if candidates are equal with references.
+    * Does not accept empty sets, use assert(paths.isEmpty) for that.
+    *
+    * @param pathsIt candidates
+    * @param refPaths references
+    * @param baseDir basedir to for creating full path of references
+    */
   private def verify(pathsIt: Files, refPaths: Seq[String], baseDir: File) = {
     val paths = pathsIt.toSeq
     val refs = refPaths
-      .map(refPath => baseDir/refPath)
+      .map(refPath => baseDir / refPath)
       .sortBy(_.path)
 
     withClue("Result: " + debugPaths(paths) + "Reference: " + debugPaths(refs)) {
       assert(paths.length === refPaths.length)
       assert(paths.nonEmpty)
-      paths.sortBy(_.path).zip(refs).foreach({case (path, refPath) => assert(path === refPath)})
+      paths.sortBy(_.path).zip(refs).foreach({ case (path, refPath) => assert(path === refPath) })
     }
   }
 
@@ -272,7 +272,8 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "one.txt",
       "readme.md",
       "three.txt",
-      "two.txt") ++
+      "two.txt"
+    ) ++
       when(isUnixOS)("link_to_a")
 
     val paths = testDir.glob("globtree/**")
@@ -305,7 +306,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
 
   it should "not use dir name as wildcard (e.g. dirname is **)" in {
     assume(isUnixOS)
-    val d = globWildcardPath // "path" / "with" / "**"
+    val d     = globWildcardPath // "path" / "with" / "**"
     val paths = d.glob("*.txt")
 
     assert(paths.isEmpty)
@@ -330,7 +331,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   it should "match the same if `Regex` is used" in {
     val pattern = (".*" + separator + ".*\\.txt").r
 
-    val pathsGlob = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
+    val pathsGlob  = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
     val pathsRegex = globTree.globRegex(pattern)
 
     verify(pathsRegex, pathsGlob.toSeq.map(_.toString), globTree)
@@ -353,7 +354,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
 
   it should "not use dir name as wildcard (e.g. dirname is .*)" in {
     assume(isUnixOS)
-    val d = regexWildcardPath // "path" / "with" / ".*"
+    val d     = regexWildcardPath // "path" / "with" / ".*"
     val paths = d.glob("a\\.txt")(File.PathMatcherSyntax.regex)
     assert(paths.isEmpty)
   }

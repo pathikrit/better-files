@@ -10,7 +10,7 @@ import scala.util.control.NonFatal
   * A typeclass to denote a disposable resource
   * @tparam A
   */
-trait Disposable[-A]  {
+trait Disposable[-A] {
   def dispose(resource: A): Unit
 
   def disposeSilently(resource: A): Unit = {
@@ -36,7 +36,7 @@ object Disposable {
 }
 
 class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disposer: Disposable[A]) {
-  private[ManagedResource] val isDisposed = new AtomicBoolean(false)
+  private[ManagedResource] val isDisposed    = new AtomicBoolean(false)
   private[ManagedResource] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
   // This is the Scala equivalent of how javac compiles try-with-resources,
@@ -134,6 +134,7 @@ object ManagedResource {
 
   object FlatMap {
     trait Implicits {
+
       /**
         * Compose this managed resource with another managed resource closing the outer one after the inner one
         */
