@@ -8,7 +8,7 @@ class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
 
   "splitter" should "split" in {
-    val csvSplitter = StringSplitter.on(',')
+    val csvSplitter      = StringSplitter.on(',')
     def split(s: String) = csvSplitter.split(s).toList
 
     assert(split(",") === List("", ""))
@@ -28,7 +28,7 @@ class ScannerSpec extends CommonSpec {
     | 1 2 3
     | Ok 23 football
     """.stripMargin
-    data.scanner() foreach {scanner =>
+    data.scanner() foreach { scanner =>
       assert(scanner.lineNumber() == 0)
       assert(scanner.next[String] == "Hello")
       assert(scanner.lineNumber() == 2)
@@ -63,11 +63,11 @@ class ScannerSpec extends CommonSpec {
     case class Dog(name: String) extends Animal
     case class Cat(name: String) extends Animal
 
-    implicit val animalParser: Scannable[Animal] = Scannable {scanner =>
+    implicit val animalParser: Scannable[Animal] = Scannable { scanner =>
       val name = scanner.next[String]
       if (name == "Garfield") Cat(name) else Dog(name)
     }
-    file.scanner() foreach {scanner =>
+    file.scanner() foreach { scanner =>
       Seq.fill(2)(scanner.next[Animal]) should contain theSameElementsInOrderAs Seq(Cat("Garfield"), Dog("Woofer"))
     }
   }

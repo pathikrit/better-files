@@ -44,11 +44,12 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   }
 
   protected[this] def watch(file: File, depth: Int): Unit = {
-    def toWatch: Files = if (file.isDirectory) {
-      file.walk(depth).filter(f => f.isDirectory && f.exists)
-    } else {
-      when(file.exists)(file.parent).iterator  // There is no way to watch a regular file; so watch its parent instead
-    }
+    def toWatch: Files =
+      if (file.isDirectory) {
+        file.walk(depth).filter(f => f.isDirectory && f.exists)
+      } else {
+        when(file.exists)(file.parent).iterator // There is no way to watch a regular file; so watch its parent instead
+      }
     try {
       toWatch.foreach(f => Try[Unit](f.register(service)).recover(PartialFunction(onException)).get)
     } catch {
@@ -66,9 +67,9 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   override def close() = service.close()
 
   // Although this class is abstract, we give provide implementations so user can choose to implement a subset of these
-  override def onCreate(file: File, count: Int) = {}
-  override def onModify(file: File, count: Int) = {}
-  override def onDelete(file: File, count: Int) = {}
+  override def onCreate(file: File, count: Int)     = {}
+  override def onModify(file: File, count: Int)     = {}
+  override def onDelete(file: File, count: Int)     = {}
   override def onUnknownEvent(event: WatchEvent[_]) = {}
-  override def onException(exception: Throwable) = {}
+  override def onException(exception: Throwable)    = {}
 }

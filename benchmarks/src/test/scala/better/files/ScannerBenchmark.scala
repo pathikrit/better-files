@@ -4,9 +4,10 @@ import java.io.{BufferedReader, StringReader}
 
 class ScannerBenchmark extends Benchmark {
   val file = File.newTemporaryFile()
-  val n = 1000
+  val n    = 1000
   repeat(n) {
-    file.appendLine(-n to n mkString " ")
+    file
+      .appendLine(-n to n mkString " ")
       .appendLine("hello " * n)
       .appendLine("world " * n)
   }
@@ -31,8 +32,8 @@ class ScannerBenchmark extends Benchmark {
 
   def run(scanner: AbstractScanner): Unit = repeat(n) {
     assert(scanner.hasNext)
-    val ints = List.fill(2 * n + 1)(scanner.nextInt())
-    val line = "" //scanner.nextLine()
+    val ints  = List.fill(2 * n + 1)(scanner.nextInt())
+    val line  = "" //scanner.nextLine()
     val words = IndexedSeq.fill(2 * n)(scanner.next())
     (line, ints, words)
   }
@@ -57,10 +58,12 @@ class ScannerBenchmark extends Benchmark {
       val l = scanner.nextLine()
       assert(l == "Hello World", l)
       assert(scanner.nextInt() == 19)
-      //assert(!scanner.hasNext)
+    //assert(!scanner.hasNext)
     }
 
     info("Running benchmark ...")
-    scanners foreach { scanner => runTest(scanner(file.newBufferedReader)) }
+    scanners foreach { scanner =>
+      runTest(scanner(file.newBufferedReader))
+    }
   }
 }

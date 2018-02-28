@@ -22,7 +22,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
 object Scanner {
   val stdin: Scanner = Scanner(System.in)
 
-  trait Source[A] {self =>
+  trait Source[A] { self =>
     def apply(a: A): LineNumberReader
     def contramap[B](f: B => A): Source[B] = new Source[B] {
       override def apply(b: B) = self.apply(f(b))
@@ -35,10 +35,11 @@ object Scanner {
     }
 
     trait Implicits {
-      implicit val lineNumberReaderSource : Source[LineNumberReader]  = Source(identity)
-      implicit val bufferedReaderSource   : Source[BufferedReader]    = lineNumberReaderSource.contramap(new LineNumberReader(_))
-      implicit val readerSource           : Source[Reader]            = bufferedReaderSource.contramap(_.buffered)
-      implicit val stringSource           : Source[String]            = readerSource.contramap(new StringReader(_))
+      implicit val lineNumberReaderSource: Source[LineNumberReader] = Source(identity)
+      implicit val bufferedReaderSource: Source[BufferedReader] =
+        lineNumberReaderSource.contramap(new LineNumberReader(_))
+      implicit val readerSource: Source[Reader] = bufferedReaderSource.contramap(_.buffered)
+      implicit val stringSource: Source[String] = readerSource.contramap(new StringReader(_))
 
       implicit def inputstreamSource(implicit charset: Charset = DefaultCharset): Source[InputStream] =
         readerSource.contramap(_.reader(charset))
@@ -46,16 +47,16 @@ object Scanner {
   }
 
   def apply[A: Source](a: A, splitter: StringSplitter = StringSplitter.Default): Scanner = new Scanner {
-    private[this] val reader = implicitly[Source[A]].apply(a)
-    private[this] val tokens = reader.tokens(splitter)
+    private[this] val reader  = implicitly[Source[A]].apply(a)
+    private[this] val tokens  = reader.tokens(splitter)
     override def lineNumber() = reader.getLineNumber
-    override def nextLine() = Option(reader.readLine()).getOrElse(throw new NoSuchElementException("End of file"))
-    override def next() = tokens.next()
-    override def hasNext = tokens.hasNext
-    override def close() = reader.close()
+    override def nextLine()   = Option(reader.readLine()).getOrElse(throw new NoSuchElementException("End of file"))
+    override def next()       = tokens.next()
+    override def hasNext      = tokens.hasNext
+    override def close()      = reader.close()
   }
 
-  trait Read[A] {     // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
+  trait Read[A] { // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
     def apply(s: String): A
   }
 
@@ -65,36 +66,36 @@ object Scanner {
     }
 
     trait Implicits {
-      implicit val stringRead           : Read[String]            = Read(identity)
-      implicit val booleanRead          : Read[Boolean]           = Read(_.toBoolean)
-      implicit val byteRead             : Read[Byte]              = Read(_.toByte)  //TODO: https://issues.scala-lang.org/browse/SI-9706
-      implicit val shortRead            : Read[Short]             = Read(_.toShort)
-      implicit val intRead              : Read[Int]               = Read(_.toInt)
-      implicit val longRead             : Read[Long]              = Read(_.toLong)
-      implicit val bigIntRead           : Read[BigInt]            = Read(BigInt(_))
-      implicit val floatRead            : Read[Float]             = Read(_.toFloat)
-      implicit val doubleRead           : Read[Double]            = Read(_.toDouble)
-      implicit val bigDecimalRead       : Read[BigDecimal]        = Read(BigDecimal(_))
-      implicit def optionRead[A: Read]  : Read[Option[A]]         = Read(s => when(s.nonEmpty)(implicitly[Read[A]].apply(s)))
+      implicit val stringRead: Read[String]             = Read(identity)
+      implicit val booleanRead: Read[Boolean]           = Read(_.toBoolean)
+      implicit val byteRead: Read[Byte]                 = Read(_.toByte) //TODO: https://issues.scala-lang.org/browse/SI-9706
+      implicit val shortRead: Read[Short]               = Read(_.toShort)
+      implicit val intRead: Read[Int]                   = Read(_.toInt)
+      implicit val longRead: Read[Long]                 = Read(_.toLong)
+      implicit val bigIntRead: Read[BigInt]             = Read(BigInt(_))
+      implicit val floatRead: Read[Float]               = Read(_.toFloat)
+      implicit val doubleRead: Read[Double]             = Read(_.toDouble)
+      implicit val bigDecimalRead: Read[BigDecimal]     = Read(BigDecimal(_))
+      implicit def optionRead[A: Read]: Read[Option[A]] = Read(s => when(s.nonEmpty)(implicitly[Read[A]].apply(s)))
 
       // Java's time readers
       import java.time._
       import java.sql.{Date => SqlDate, Time => SqlTime, Timestamp => SqlTimestamp}
 
-      implicit val durationRead         : Read[Duration]          = Read(Duration.parse(_))
-      implicit val instantRead          : Read[Instant]           = Read(Instant.parse(_))
-      implicit val localDateTimeRead    : Read[LocalDateTime]     = Read(LocalDateTime.parse(_))
-      implicit val localDateRead        : Read[LocalDate]         = Read(LocalDate.parse(_))
-      implicit val monthDayRead         : Read[MonthDay]          = Read(MonthDay.parse(_))
-      implicit val offsetDateTimeRead   : Read[OffsetDateTime]    = Read(OffsetDateTime.parse(_))
-      implicit val offsetTimeRead       : Read[OffsetTime]        = Read(OffsetTime.parse(_))
-      implicit val periodRead           : Read[Period]            = Read(Period.parse(_))
-      implicit val yearRead             : Read[Year]              = Read(Year.parse(_))
-      implicit val yearMonthRead        : Read[YearMonth]         = Read(YearMonth.parse(_))
-      implicit val zonedDateTimeRead    : Read[ZonedDateTime]     = Read(ZonedDateTime.parse(_))
-      implicit val sqlDateRead          : Read[SqlDate]           = Read(SqlDate.valueOf)
-      implicit val sqlTimeRead          : Read[SqlTime]           = Read(SqlTime.valueOf)
-      implicit val sqlTimestampRead     : Read[SqlTimestamp]      = Read(SqlTimestamp.valueOf)
+      implicit val durationRead: Read[Duration]             = Read(Duration.parse(_))
+      implicit val instantRead: Read[Instant]               = Read(Instant.parse(_))
+      implicit val localDateTimeRead: Read[LocalDateTime]   = Read(LocalDateTime.parse(_))
+      implicit val localDateRead: Read[LocalDate]           = Read(LocalDate.parse(_))
+      implicit val monthDayRead: Read[MonthDay]             = Read(MonthDay.parse(_))
+      implicit val offsetDateTimeRead: Read[OffsetDateTime] = Read(OffsetDateTime.parse(_))
+      implicit val offsetTimeRead: Read[OffsetTime]         = Read(OffsetTime.parse(_))
+      implicit val periodRead: Read[Period]                 = Read(Period.parse(_))
+      implicit val yearRead: Read[Year]                     = Read(Year.parse(_))
+      implicit val yearMonthRead: Read[YearMonth]           = Read(YearMonth.parse(_))
+      implicit val zonedDateTimeRead: Read[ZonedDateTime]   = Read(ZonedDateTime.parse(_))
+      implicit val sqlDateRead: Read[SqlDate]               = Read(SqlDate.valueOf)
+      implicit val sqlTimeRead: Read[SqlTime]               = Read(SqlTime.valueOf)
+      implicit val sqlTimestampRead: Read[SqlTimestamp]     = Read(SqlTimestamp.valueOf)
 
       /**
         * Use this to create custom readers e.g. to read a LocalDate using some custom format

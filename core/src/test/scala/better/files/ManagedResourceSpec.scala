@@ -29,8 +29,8 @@ class ManagedResourceSpec extends CommonSpec {
     }
   }
 
-  private class TestEvalException extends Exception
-  private class TestDisposeException extends Exception
+  private class TestEvalException         extends Exception
+  private class TestDisposeException      extends Exception
   private class TestDisposeFatalException extends Exception with ControlThrowable
 
   // Custom matchers
@@ -38,8 +38,8 @@ class ManagedResourceSpec extends CommonSpec {
   private class HaveSuppressedMatcher(classes: Class[_ <: Throwable]*) extends Matcher[Throwable] {
     override def apply(left: Throwable): MatchResult = {
       MatchResult(
-        (classes corresponds left.getSuppressed) {
-          (clazz, suppressed) => clazz isInstance suppressed
+        (classes corresponds left.getSuppressed) { (clazz, suppressed) =>
+          clazz isInstance suppressed
         },
         s"had suppressed exceptions of types ${classes.map(_.getSimpleName).mkString(", ")}",
         s"had not suppressed exceptions of types ${classes.map(_.getSimpleName).mkString(", ")}"
@@ -73,7 +73,7 @@ class ManagedResourceSpec extends CommonSpec {
 
     val result = (for {
       tc <- t.autoClosed
-      v <- Iterator("one", "two", "three")
+      v  <- Iterator("one", "two", "three")
     } yield {
       t.closeCount shouldBe 0
       v
@@ -86,7 +86,7 @@ class ManagedResourceSpec extends CommonSpec {
   it should "handle exceptions correctly" in {
     val t = new TestDisposable
 
-    a [TestEvalException] should be thrownBy {
+    a[TestEvalException] should be thrownBy {
       for {
         tc <- t.autoClosed
       } {
@@ -97,10 +97,10 @@ class ManagedResourceSpec extends CommonSpec {
     t.closeCount shouldBe 1
 
     var lastSeen = ""
-    a [TestEvalException] should be thrownBy {
+    a[TestEvalException] should be thrownBy {
       for {
         tc <- t.autoClosed
-        v <- Iterator("one", "two", "three")
+        v  <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
@@ -128,13 +128,14 @@ class ManagedResourceSpec extends CommonSpec {
           t.closeCount shouldBe 0
         }
         None
-      }
-      catch {
+      } catch {
         case e: TestDisposeException =>
           Some(e)
       }
     assert(e1.nonEmpty, messageNoException)
-    e1 foreach { e1c => assert(e1c.isInstanceOf[TestDisposeException], messageWrongException(e1c)) }
+    e1 foreach { e1c =>
+      assert(e1c.isInstanceOf[TestDisposeException], messageWrongException(e1c))
+    }
     t.closeCount shouldBe 1
 
     var lastSeen = ""
@@ -142,7 +143,7 @@ class ManagedResourceSpec extends CommonSpec {
       try {
         val i = for {
           tc <- t.autoClosed
-          v <- Iterator("one", "two", "three")
+          v  <- Iterator("one", "two", "three")
         } yield {
           t.closeCount shouldBe 1
           lastSeen = v
@@ -150,14 +151,15 @@ class ManagedResourceSpec extends CommonSpec {
         }
         while (i.hasNext) i.next()
         None
-      }
-      catch {
+      } catch {
         case e: TestDisposeException =>
           Some(e)
       }
     lastSeen shouldBe "three"
     assert(e2.nonEmpty, messageNoException)
-    e2 foreach { e2c => assert(e2c.isInstanceOf[TestDisposeException], messageWrongException(e2c)) }
+    e2 foreach { e2c =>
+      assert(e2c.isInstanceOf[TestDisposeException], messageWrongException(e2c))
+    }
     t.closeCount shouldBe 2
   }
 
@@ -165,7 +167,7 @@ class ManagedResourceSpec extends CommonSpec {
     val t = new TestDisposable
 
     def doTheThing(): String = {
-      throw the [ControlThrowable] thrownBy {
+      throw the[ControlThrowable] thrownBy {
         for {
           tc <- t.autoClosed
         } {
@@ -178,10 +180,10 @@ class ManagedResourceSpec extends CommonSpec {
     t.closeCount shouldBe 1
 
     def doTheThings(): String = {
-      throw the [ControlThrowable] thrownBy {
+      throw the[ControlThrowable] thrownBy {
         for {
           tc <- t.autoClosed
-          v <- Iterator("one", "two", "three")
+          v  <- Iterator("one", "two", "three")
         } {
           t.closeCount shouldBe 1
           if (v == "two") return v
@@ -195,27 +197,27 @@ class ManagedResourceSpec extends CommonSpec {
   it should "handle multiple exceptions correctly" in {
     val t = new TestDisposableThatThrows
 
-    the [TestEvalException] thrownBy {
+    the[TestEvalException] thrownBy {
       for {
         tc <- t.autoClosed
       } {
         t.closeCount shouldBe 0
         throw new TestEvalException
       }
-    } should haveSuppressed [TestDisposeException]
+    } should haveSuppressed[TestDisposeException]
     t.closeCount shouldBe 1
 
     var lastSeen = ""
-    the [TestEvalException] thrownBy {
+    the[TestEvalException] thrownBy {
       for {
         tc <- t.autoClosed
-        v <- Iterator("one", "two", "three")
+        v  <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
         if (v == "two") throw new TestEvalException
       }
-    } should haveSuppressed [TestDisposeException]
+    } should haveSuppressed[TestDisposeException]
     lastSeen shouldBe "two"
     t.closeCount shouldBe 2
   }
@@ -223,27 +225,27 @@ class ManagedResourceSpec extends CommonSpec {
   it should "give fatal exceptions precedence" in {
     val t = new TestDisposableThatThrowsFatal
 
-    the [TestDisposeFatalException] thrownBy {
+    the[TestDisposeFatalException] thrownBy {
       for {
         tc <- t.autoClosed
       } {
         t.closeCount shouldBe 0
         throw new TestEvalException
       }
-    } should haveSuppressed [TestEvalException]
+    } should haveSuppressed[TestEvalException]
     t.closeCount shouldBe 1
 
     var lastSeen = ""
-    the [TestDisposeFatalException] thrownBy {
+    the[TestDisposeFatalException] thrownBy {
       for {
         tc <- t.autoClosed
-        v <- Iterator("one", "two", "three")
+        v  <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
         if (v == "two") throw new TestEvalException
       }
-    } should haveSuppressed [TestEvalException]
+    } should haveSuppressed[TestEvalException]
     t.closeCount shouldBe 2
     lastSeen shouldBe "two"
   }
@@ -255,7 +257,7 @@ class ManagedResourceSpec extends CommonSpec {
       List("world", 1)
     ).map(_.mkString(","))
 
-    File.usingTemporaryFile() {f =>
+    File.usingTemporaryFile() { f =>
       for {
         pw <- f.printWriter()
         header :: rows = data
@@ -268,7 +270,7 @@ class ManagedResourceSpec extends CommonSpec {
 
       val actual = for {
         reader <- f.bufferedReader
-        line <- reader.lines().toAutoClosedIterator.toList
+        line   <- reader.lines().toAutoClosedIterator.toList
       } yield line
 
       assert(actual.toSeq === expected)
@@ -279,9 +281,9 @@ class ManagedResourceSpec extends CommonSpec {
     var log = List.empty[String]
 
     def dummyClosable(msg: String): AutoCloseable =
-      new AutoCloseable {override def close() = log = msg :: log}
+      new AutoCloseable { override def close() = log = msg :: log }
 
-     for {
+    for {
       t1 <- dummyClosable("outer").autoClosed
       t2 <- dummyClosable("inner").autoClosed
     } ()
@@ -293,7 +295,7 @@ class ManagedResourceSpec extends CommonSpec {
     var log = List.empty[String]
 
     def dummyClosable(msg: String): AutoCloseable =
-      new AutoCloseable {override def close() = log = msg :: log}
+      new AutoCloseable { override def close() = log = msg :: log }
 
     val x = for {
       t1 <- dummyClosable("outer").autoClosed
@@ -309,7 +311,7 @@ class ManagedResourceSpec extends CommonSpec {
     var log = List.empty[String]
 
     def dummyClosable(msg: String): AutoCloseable =
-      new AutoCloseable {override def close() = log = msg :: log}
+      new AutoCloseable { override def close() = log = msg :: log }
 
     def doSomething(c1: AutoCloseable, c2: AutoCloseable): Unit = println(s"$c1 $c2")
 

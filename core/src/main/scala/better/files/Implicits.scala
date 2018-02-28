@@ -17,10 +17,7 @@ import scala.util.Try
 /**
   * Container for various implicits
   */
-trait Implicits
-  extends ManagedResource.FlatMap.Implicits
-  with Scanner.Read.Implicits
-  with Scanner.Source.Implicits {
+trait Implicits extends ManagedResource.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
   //TODO: Rename all Ops to Extensions
 
@@ -53,7 +50,7 @@ trait Implicits
   implicit class IteratorExtensions[A](it: Iterator[A]) {
     def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
       override def hasNext = f && it.hasNext
-      override def next() = it.next()
+      override def next()  = it.next()
     }
   }
 
@@ -74,7 +71,12 @@ trait Implicits
       }
     }
 
-    def asString(closeStream: Boolean = true, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): String = {
+    def asString(
+        closeStream: Boolean = true,
+        bufferSize: Int = DefaultBufferSize
+      )(implicit
+        charset: Charset = DefaultCharset
+      ): String = {
       try {
         new ByteArrayOutputStream(bufferSize).autoClosed
           .apply(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
@@ -108,7 +110,10 @@ trait Implicits
       * @return A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
       * This is useful in dynamic container environments.
       */
-    def asObjectInputStreamUsingClassLoader(classLoader: ClassLoader = getClass.getClassLoader, bufferSize: Int = DefaultBufferSize): ObjectInputStream =
+    def asObjectInputStreamUsingClassLoader(
+        classLoader: ClassLoader = getClass.getClassLoader,
+        bufferSize: Int = DefaultBufferSize
+      ): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize)) {
         override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
           try {
@@ -121,7 +126,7 @@ trait Implicits
           try {
             java.lang.reflect.Proxy.getProxyClass(
               classLoader,
-              interfaces.map(interface => Class.forName(interface, false, classLoader)) : _*
+              interfaces.map(interface => Class.forName(interface, false, classLoader)): _*
             )
           } catch {
             case _: ClassNotFoundException | _: IllegalArgumentException => super.resolveProxyClass(interfaces)
@@ -243,7 +248,7 @@ trait Implicits
 
     def add(file: File, name: String): out.type = {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
-      val entryName = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
+      val entryName    = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
       if (file.isRegularFile) file.inputStream.foreach(_.pipeTo(out))
       out.closeEntry()
@@ -270,6 +275,7 @@ trait Implicits
   }
 
   implicit class ZipEntryOps(val entry: ZipEntry) {
+
     /**
       * Extract this ZipEntry under this rootDir
       *
@@ -285,6 +291,7 @@ trait Implicits
   }
 
   implicit class CloseableOps[A <: AutoCloseable](resource: A) {
+
     /**
       * Lightweight automatic resource management
       * Closes the resource when done e.g.
@@ -302,6 +309,7 @@ trait Implicits
   }
 
   implicit class JStreamOps[A](stream: JStream[A]) {
+
     /**
       * Closes this stream when iteration is complete
       * It will NOT close the stream if it is not depleted!

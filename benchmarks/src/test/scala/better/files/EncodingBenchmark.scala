@@ -8,7 +8,7 @@ class EncodingBenchmark extends Benchmark {
 
   def testWrite(file: File, charset: Charset) = profile {
     for {
-      writer <- file.bufferedWriter(charset)
+      writer  <- file.bufferedWriter(charset)
       content <- Iterator.continually(Random.nextString(10000)).take(1000)
     } writer.write(content + "\n")
   }
@@ -16,12 +16,12 @@ class EncodingBenchmark extends Benchmark {
   def testRead(file: File, charset: Charset) = profile {
     for {
       reader <- file.bufferedReader(charset)
-      line <- reader.lines().autoClosed
+      line   <- reader.lines().autoClosed
     } line
   }
 
   def run(charset: Charset) = {
-    File.temporaryFile() foreach {file =>
+    File.temporaryFile() foreach { file =>
       val (_, w) = testWrite(file, charset)
       info(s"Charset=$charset, write=$w ms")
 

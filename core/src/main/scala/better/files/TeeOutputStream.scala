@@ -8,11 +8,11 @@ import java.io.OutputStream
   * @param outs
   */
 class TeeOutputStream(outs: OutputStream*) extends OutputStream {
-  override def write(b: Int) = tryAll(outs)(_.write(b))
-  override def flush() = tryAll(outs)(_.flush())
-  override def write(b: Array[Byte]) = tryAll(outs)(_.write(b))
+  override def write(b: Int)                             = tryAll(outs)(_.write(b))
+  override def flush()                                   = tryAll(outs)(_.flush())
+  override def write(b: Array[Byte])                     = tryAll(outs)(_.write(b))
   override def write(b: Array[Byte], off: Int, len: Int) = tryAll(outs)(_.write(b, off, len))
-  override def close() = tryAll(outs)(_.close())
+  override def close()                                   = tryAll(outs)(_.close())
 }
 
 /**

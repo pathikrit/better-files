@@ -14,6 +14,7 @@ class FileMonitorSpec extends CommonSpec {
       println(msg)
       log = msg :: log
     }
+
     /***************************************************************************/
     val watcher = new FileMonitor(file) {
       override def onCreate(file: File, count: Int) = output(s"$file got created $count time(s)")
@@ -21,6 +22,7 @@ class FileMonitorSpec extends CommonSpec {
       override def onDelete(file: File, count: Int) = output(s"$file got deleted $count time(s)")
     }
     watcher.start()
+
     /***************************************************************************/
     sleep(5 seconds)
     file.writeText("hello world"); sleep()
@@ -40,7 +42,7 @@ class FileMonitorSpec extends CommonSpec {
   ignore should "watch directories to configurable depth" in {
     assume(isCI)
     val dir = File.newTemporaryDirectory()
-    (dir/"a"/"b"/"c"/"d"/"e").createDirectories()
+    (dir / "a" / "b" / "c" / "d" / "e").createDirectories()
     var log = List.empty[String]
     def output(msg: String) = synchronized {
       log = msg :: log
@@ -52,8 +54,8 @@ class FileMonitorSpec extends CommonSpec {
     watcher.start()
 
     sleep(5 seconds)
-    (dir/"a"/"b"/"t1").touch().writeText("hello world"); sleep()
-    (dir/"a"/"b"/"c"/"d"/"t1").touch().writeText("hello world"); sleep()
+    (dir / "a" / "b" / "t1").touch().writeText("hello world"); sleep()
+    (dir / "a" / "b" / "c" / "d" / "t1").touch().writeText("hello world"); sleep()
     sleep(10 seconds)
 
     withClue(log) {

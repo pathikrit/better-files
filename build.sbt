@@ -1,5 +1,8 @@
 val username = "pathikrit"
-val repo = "better-files"
+val repo     = "better-files"
+
+val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
+val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
@@ -9,7 +12,19 @@ lazy val commonSettings = Seq(
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
   libraryDependencies += Dependencies.scalatest,
-  updateImpactOpenBrowser := false
+  updateImpactOpenBrowser := false,
+  compile in Compile := (compile in Compile).dependsOn(formatAll).value,
+  test in Test := (test in Test).dependsOn(checkFormat).value,
+  formatAll := {
+    (scalafmt in Compile).value
+    (scalafmt in Test).value
+    (scalafmtSbt in Compile).value
+  },
+  checkFormat := {
+    (scalafmtCheck in Compile).value
+    (scalafmtCheck in Test).value
+    (scalafmtSbtCheck in Compile).value
+  }
 )
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
@@ -110,7 +125,10 @@ lazy val publishSettings = Seq(
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   developers := List(
-    Developer(id = username, name = "Pathikrit Bhowmick", email = "pathikritbhowmick@msn.com", url = new URL(s"http://github.com/${username}"))
+    Developer(id = username,
+              name = "Pathikrit Bhowmick",
+              email = "pathikritbhowmick@msn.com",
+              url = new URL(s"http://github.com/${username}"))
   ),
   publishMavenStyle := true,
   publishArtifact in Test := false,
