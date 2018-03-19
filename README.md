@@ -106,6 +106,7 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 The following are all equivalent:
 ```scala
 import better.files._
+import File._
 import java.io.{File => JFile}
 
 val f = File("/User/johndoe/Documents")                      // using constructor
