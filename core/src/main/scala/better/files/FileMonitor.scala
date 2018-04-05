@@ -2,7 +2,7 @@ package better.files
 
 import java.nio.file._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{blocking, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -60,7 +60,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   override def start()(implicit executionContext: ExecutionContext) = {
     watch(root, maxDepth)
     executionContext.execute(new Runnable {
-      override def run() = Iterator.continually(service.take()).foreach(process)
+      override def run() = blocking { Iterator.continually(service.take()).foreach(process) }
     })
   }
 
