@@ -1,5 +1,7 @@
 package better.files
 
+import java.io.InputStream
+import java.nio.charset.StandardCharsets.US_ASCII
 import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
 
 import better.files.Dsl._
@@ -567,5 +569,28 @@ class FileSpec extends CommonSpec {
       .asInstanceOf[com.sun.management.UnixOperatingSystemMXBean]
       .getOpenFileDescriptorCount
     assert((File.numberOfOpenFileDescriptors() - expected).abs <= 10)
+  }
+
+  it should "load class loader resources correctly" in {
+    val expectedText = "This is the test-file.txt file."
+
+    def check(f: File) = {
+      val text = f.contentAsString(US_ASCII).substring(0, expectedText.length)
+      assert(text === expectedText)
+    }
+
+    check(File.resource("better/files/test-file.txt"))
+
+    def checkStream(in: InputStream) = {
+      try {
+        val chars = new Array[Char](expectedText.length)
+        in.reader(US_ASCII).read(chars)
+        val text = new String(chars)
+
+        assert(text === expectedText)
+      } finally in.close()
+    }
+
+    checkStream(resourceAsStream("better/files/test-file.txt"))
   }
 }
