@@ -592,5 +592,14 @@ class FileSpec extends CommonSpec {
     }
 
     checkStream(resourceAsStream("better/files/test-file.txt"))
+
+    {
+      // Also verify that copyTo works properly with File.resource. This is needed because the deprecation message for File.copyResource says to use that instead.
+      val tmpFile = File.newTemporaryFile("test-file.txt")
+      try {
+        File.resource("better/files/test-file.txt") copyTo (tmpFile, overwrite = true)
+        check(tmpFile)
+      } finally tmpFile.delete()
+    }
   }
 }

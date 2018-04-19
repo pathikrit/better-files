@@ -12,4 +12,6 @@ object Dependencies {
   // Used in Benchmarks only
   val commonsio  = "commons-io" % "commons-io" % "2.6"
   val fastjavaio = "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"
+
+  def scalaReflect(version: String) = "org.scala-lang" % "scala-reflect" % version
 }
