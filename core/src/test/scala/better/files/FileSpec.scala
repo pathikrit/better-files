@@ -576,9 +576,5 @@ class FileSpec extends CommonSpec {
 
     assert(Resource.asFile(testResource).contentAsString startsWith expectedText)
     assert(Resource(testResource).asString() startsWith expectedText)
-
-    File.usingTemporaryFile() { tempFile =>
-      assert(Resource.asFile(testResource).copyTo(tempFile).contentAsString startsWith expectedText)
-    }
   }
 }
