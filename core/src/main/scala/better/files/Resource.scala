@@ -1,6 +1,7 @@
 package better.files
 
 import java.io.InputStream
+import java.net.URL
 
 import scala.reflect.macros.blackbox
 
@@ -12,13 +13,8 @@ object Resource {
   def apply(name: String): InputStream =
     macro Macros.applyImpl
 
-  /**
-    * If bufferSize is set to less than or equal to 0, we don't buffer
-    * @param bufferSize
-    * @return
-    */
-  def apply(name: String, bufferSize: Int): InputStream =
-    macro Macros.applyBufferedImpl
+  def url(name: String): URL =
+    macro Macros.urlImpl
 
   /**
     * Get a file from a resource
@@ -44,9 +40,9 @@ object Resource {
       q"_root_.better.files.File($threadContextClassLoader.getResource($name))"
 
     def applyImpl(name: Tree): Tree =
-      applyBufferedImpl(name, q"_root_.better.files.DefaultBufferSize") //Macros do not support default params
+      q"$threadContextClassLoader.getResourceAsStream($name)"
 
-    def applyBufferedImpl(name: Tree, bufferSize: Tree): Tree =
-      q"$threadContextClassLoader.getResourceAsStream($name).buffered($bufferSize)"
+    def urlImpl(name: Tree): Tree =
+      q"$threadContextClassLoader.getResource($name)"
   }
 }
