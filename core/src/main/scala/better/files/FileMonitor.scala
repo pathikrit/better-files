@@ -51,7 +51,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
         when(file.exists)(file.parent).iterator // There is no way to watch a regular file; so watch its parent instead
       }
     try {
-      toWatch.foreach(f => Try[Unit](f.register(service)).recover(PartialFunction(onException)).get)
+      toWatch.foreach(f => Try[Unit](f.register(service)).recover { case e => onException(e) }.get)
     } catch {
       case NonFatal(e) => onException(e)
     }
