@@ -1,6 +1,6 @@
 package better
 
-import java.io.{InputStream, StreamTokenizer}
+import java.io.StreamTokenizer
 import java.nio.charset.Charset
 
 import scala.collection.mutable
@@ -25,17 +25,6 @@ package object files extends Implicits {
   val EOF = StreamTokenizer.TT_EOF
 
   type Files = Iterator[File]
-
-  def resourceAsStream(name: String): InputStream =
-    macro Resource.stream
-
-  /**
-    * If bufferSize is set to less than or equal to 0, we don't buffer
-    * @param bufferSize
-    * @return
-    */
-  def resourceAsStream(name: String, bufferSize: Int): InputStream =
-    macro Resource.streamBuffered
 
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =

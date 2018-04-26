@@ -15,6 +15,7 @@
 ## Tutorial [![Scaladoc][scaladocImg]][scaladocLink]
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)
+  0. [Resource APIs](#resource-apis)
   0. [Streams](#streams)
   0. [Encodings](#encodings)
   0. [Java serialization utils](#java-serialization-utils)
@@ -165,6 +166,15 @@ val bytes: Array[Byte] = file.loadBytes
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
   .lines
+```
+
+### Resource APIs
+Confused by the [various ways to load resources in Java](https://stackoverflow.com/questions/3861989/preferred-way-of-loading-resources-in-java)?
+Worry no more:
+```scala
+val resource        : InputStream   = Resource("foo.txt") //Same as this.getClass().getResource("foo.txt")
+val resourceURL     : java.net.URL  = Resource.url("foo.txt")
+val resourceAsAFile : File          = Resource.asFile("foo.txt")
 ```
 
 ### Streams
@@ -325,7 +335,6 @@ Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must impor
 file.isReadLocked; file.isWriteLocked; file.isLocked
 File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
-You can also load resources from your classpath using `File.resource` or `File.copyResource`.
 
 ### Temporary files
 Utils to create temporary files:
