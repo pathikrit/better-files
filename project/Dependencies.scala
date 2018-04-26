@@ -1,13 +1,13 @@
 import sbt._
 
 object Dependencies {
-  val scalatest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
+  val scalatest = "org.scalatest" %% "scalatest" % "3.0.5" % Test
 
   // Used in Akka file watcher
-  val akka = "com.typesafe.akka" %% "akka-actor" % "2.5.8"
+  val akka = "com.typesafe.akka" %% "akka-actor" % "2.5.12"
 
   // For shapeless based Reader/Scanner
-  val shapeless = "com.chuusai" %% "shapeless" % "2.3.2"
+  val shapeless = "com.chuusai" %% "shapeless" % "2.3.3"
 
   // Used in Benchmarks only
   val commonsio  = "commons-io" % "commons-io" % "2.6"
