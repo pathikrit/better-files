@@ -1252,12 +1252,15 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return
     */
   def toTemporary: ManagedResource[File] =
-    new ManagedResource(this)(Disposable.fileDisposer)
+    new ManagedResource(this)(File.fileDisposer)
 
   //TODO: add features from https://github.com/sbt/io
 }
 
 object File {
+
+  private val fileDisposer: Disposable[File] =
+    Disposable(_.delete(swallowIOExceptions = true))
 
   /**
     * Get a file from a resource

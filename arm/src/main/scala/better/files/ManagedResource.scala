@@ -30,9 +30,6 @@ object Disposable {
 
   implicit val closableDisposer: Disposable[AutoCloseable] =
     Disposable(_.close())
-
-  val fileDisposer: Disposable[File] =
-    Disposable(_.delete(swallowIOExceptions = true))
 }
 
 class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disposer: Disposable[A]) {
@@ -149,13 +146,13 @@ object ManagedResource {
         */
       implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
         override type Output[X] = Iterator[X]
-        override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]) = {
+        override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]): Output[B] = {
           val it = try {
             f(m.resource).toIterator
           } catch {
             case NonFatal(e) => m.disposeOnceAndThrow(e)
           }
-          it withHasNext {
+          def withHasNext = {
             try {
               val result = it.hasNext
               if (!result) m.disposeOnce()
@@ -164,8 +161,31 @@ object ManagedResource {
               case e1: Throwable => m.disposeOnceAndThrow(e1)
             }
           }
+          new Iterator[B] {
+            def hasNext = withHasNext && it.hasNext
+            def next()  = it.next()
+          }
         }
       }
+    }
+  }
+  object Implicits extends FlatMap.Implicits {
+    implicit class CloseableOps[A <: AutoCloseable](resource: A) {
+
+      /**
+        * Lightweight automatic resource management
+        * Closes the resource when done e.g.
+        * <pre>
+        * for {
+        * in <- file.newInputStream.autoClosed
+        * } in.write(bytes)
+        * // in is closed now
+        * </pre>
+        *
+        * @return
+        */
+      def autoClosed: ManagedResource[A] =
+        new ManagedResource(resource)(Disposable.closableDisposer)
     }
   }
 }

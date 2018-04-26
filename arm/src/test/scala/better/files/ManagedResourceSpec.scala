@@ -1,9 +1,14 @@
 package better.files
 
+import java.io.PrintWriter
+import java.nio.file.{Files, Path}
+
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 import scala.reflect.ClassTag
 import scala.util.control.ControlThrowable
+import ManagedResource.Implicits._
+import scala.collection.JavaConverters._
 
 class ManagedResourceSpec extends CommonSpec {
   // Test classes
@@ -257,20 +262,26 @@ class ManagedResourceSpec extends CommonSpec {
       List("world", 1)
     ).map(_.mkString(","))
 
-    File.usingTemporaryFile() { f =>
+    new ManagedResource(
+      Files.createTempFile("", "")
+    )(
+      Disposable { path: Path =>
+        Files.delete(path)
+      }
+    ).foreach { f =>
       for {
-        pw <- f.printWriter()
+        pw <- new PrintWriter(Files.newOutputStream(f)).autoClosed
         header :: rows = data
         row <- rows
       } pw.println(row)
 
       val expected = data.tail
 
-      assert(f.contentAsString === expected.mkString("", "\n", "\n"))
+      assert(new String(Files.readAllBytes(f)) === expected.mkString("", "\n", "\n"))
 
       val actual = for {
-        reader <- f.bufferedReader
-        line   <- reader.lines().toAutoClosedIterator.toList
+        reader <- Files.newBufferedReader(f).autoClosed
+        line   <- reader.lines().autoClosed.flatMap(_.iterator().asScala).toList
       } yield line
 
       assert(actual.toSeq === expected)
