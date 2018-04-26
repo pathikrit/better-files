@@ -1,5 +1,6 @@
 machine:
   environment:
+    SBT_OPTS: "-XX:+CMSClassUnloadingEnabled -XX:PermSize=256M -XX:MaxPermSize=512M -Xmx2G"
     SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
   java:
     version: oraclejdk8
