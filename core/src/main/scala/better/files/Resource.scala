@@ -36,13 +36,13 @@ object Resource {
     private[this] def threadContextClassLoader =
       q"_root_.java.lang.Thread.currentThread.getContextClassLoader"
 
-    def asFileImpl(name: Tree): Tree =
+    def asFileImpl(name: c.Expr[String]): Tree =
       q"_root_.better.files.File($threadContextClassLoader.getResource($name))"
 
-    def applyImpl(name: Tree): Tree =
+    def applyImpl(name: c.Expr[String]): Tree =
       q"$threadContextClassLoader.getResourceAsStream($name)"
 
-    def urlImpl(name: Tree): Tree =
+    def urlImpl(name: c.Expr[String]): Tree =
       q"$threadContextClassLoader.getResource($name)"
   }
 }
