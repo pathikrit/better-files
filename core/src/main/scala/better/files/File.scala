@@ -1268,7 +1268,7 @@ object File {
     * @return
     */
   def resource(name: String): File =
-    File(currentClassLoader().getResource(name))
+    macro _class_resources.Macros.file
 
   /**
     * Copies a resource into a file
@@ -1277,9 +1277,13 @@ object File {
     * @param destination File where resource is copied into, if not specified a temp file is created
     * @return
     */
+  @deprecated(
+    "Use `File.resource(name) copyTo destination` instead. This method is likely to fail if the resource is in a Java module, even if this method is called from inside that same module.\n\nNote that, unlike this method, copyTo does not overwrite by default. Use `File.resource(name) copyTo (destination, overwrite=true)` if you want to overwrite the destination file.",
+    "3.4.1"
+  )
   def copyResource(name: String)(destination: File = File.newTemporaryFile(prefix = name)): destination.type = {
     for {
-      in  <- resourceAsStream(name).autoClosed
+      in  <- Thread.currentThread.getContextClassLoader.getResourceAsStream(name).autoClosed
       out <- destination.outputStream
     } in.pipeTo(out)
     destination
