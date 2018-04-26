@@ -20,6 +20,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Move Scanner to own module that depends on cats/shapeless
 * Remove implicit options from all APIs
 
+## 3.4.1
+* [PR #227](https://github.com/pathikrit/better-files/pull/227): Module safe File.resource APIs
+* [Issue #224](https://github.com/pathikrit/better-files/issues/224): FileMonitor should not block threads
+
 ## v3.4.0
 * [PR #202](https://github.com/pathikrit/better-files/pull/202): for-comprehension friendly ARM
 * [PR #203](https://github.com/pathikrit/better-files/pull/203): Type-class for Scanner construction

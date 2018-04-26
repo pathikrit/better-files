@@ -1,7 +1,5 @@
 package better.files
 
-import java.io.InputStream
-import java.nio.charset.StandardCharsets.US_ASCII
 import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
 
 import better.files.Dsl._
@@ -572,34 +570,15 @@ class FileSpec extends CommonSpec {
   }
 
   it should "load class loader resources correctly" in {
-    val expectedText = "This is the test-file.txt file."
+    implicit val charset = java.nio.charset.StandardCharsets.US_ASCII
+    val expectedText     = "This is the test-file.txt file."
+    val testResource     = "better/files/test-file.txt"
 
-    def check(f: File) = {
-      val text = f.contentAsString(US_ASCII).substring(0, expectedText.length)
-      assert(text === expectedText)
-    }
+    assert(File.resource(testResource).contentAsString startsWith expectedText)
+    assert(resourceAsStream(testResource).asString() startsWith expectedText)
 
-    check(File.resource("better/files/test-file.txt"))
-
-    def checkStream(in: InputStream) = {
-      try {
-        val chars = new Array[Char](expectedText.length)
-        in.reader(US_ASCII).read(chars)
-        val text = new String(chars)
-
-        assert(text === expectedText)
-      } finally in.close()
-    }
-
-    checkStream(resourceAsStream("better/files/test-file.txt"))
-
-    {
-      // Also verify that copyTo works properly with File.resource. This is needed because the deprecation message for File.copyResource says to use that instead.
-      val tmpFile = File.newTemporaryFile("test-file.txt")
-      try {
-        File.resource("better/files/test-file.txt") copyTo (tmpFile, overwrite = true)
-        check(tmpFile)
-      } finally tmpFile.delete()
+    File.usingTemporaryFile() { tempFile =>
+      assert(File.resource(testResource).copyTo(tempFile).contentAsString startsWith expectedText)
     }
   }
 }

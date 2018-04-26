@@ -40,7 +40,6 @@ lazy val core = (project in file("core"))
   .settings(
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
-    (scalacOptions in doc) ++= Seq("-skip-packages better.files._class_resources"),
     libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % Provided
   )
 
