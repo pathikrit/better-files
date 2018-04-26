@@ -1268,22 +1268,7 @@ object File {
     * @return
     */
   def resource(name: String): File =
-    File(currentClassLoader().getResource(name))
-
-  /**
-    * Copies a resource into a file
-    *
-    * @param name
-    * @param destination File where resource is copied into, if not specified a temp file is created
-    * @return
-    */
-  def copyResource(name: String)(destination: File = File.newTemporaryFile(prefix = name)): destination.type = {
-    for {
-      in  <- resourceAsStream(name).autoClosed
-      out <- destination.outputStream
-    } in.pipeTo(out)
-    destination
-  }
+    macro Resource.file
 
   def newTemporaryDirectory(
       prefix: String = "",

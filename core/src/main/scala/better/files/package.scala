@@ -26,13 +26,16 @@ package object files extends Implicits {
 
   type Files = Iterator[File]
 
+  def resourceAsStream(name: String): InputStream =
+    macro Resource.stream
+
   /**
     * If bufferSize is set to less than or equal to 0, we don't buffer
     * @param bufferSize
     * @return
     */
-  def resourceAsStream(name: String, bufferSize: Int = DefaultBufferSize): InputStream =
-    currentClassLoader().getResourceAsStream(name).buffered(bufferSize)
+  def resourceAsStream(name: String, bufferSize: Int): InputStream =
+    macro Resource.streamBuffered
 
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =

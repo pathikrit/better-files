@@ -39,7 +39,8 @@ lazy val core = (project in file("core"))
   .settings(publishSettings: _*)
   .settings(
     name := repo,
-    description := "Simple, safe and intuitive I/O in Scala"
+    description := "Simple, safe and intuitive I/O in Scala",
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % Provided
   )
 
 lazy val akka = (project in file("akka"))
