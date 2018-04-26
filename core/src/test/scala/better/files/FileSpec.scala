@@ -574,11 +574,11 @@ class FileSpec extends CommonSpec {
     val expectedText     = "This is the test-file.txt file."
     val testResource     = "better/files/test-file.txt"
 
-    assert(File.resource(testResource).contentAsString startsWith expectedText)
-    assert(resourceAsStream(testResource).asString() startsWith expectedText)
+    assert(Resource.asFile(testResource).contentAsString startsWith expectedText)
+    assert(Resource(testResource).asString() startsWith expectedText)
 
     File.usingTemporaryFile() { tempFile =>
-      assert(File.resource(testResource).copyTo(tempFile).contentAsString startsWith expectedText)
+      assert(Resource.asFile(testResource).copyTo(tempFile).contentAsString startsWith expectedText)
     }
   }
 }

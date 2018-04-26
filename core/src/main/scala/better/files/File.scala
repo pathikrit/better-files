@@ -1259,17 +1259,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
 
 object File {
 
-  /**
-    * Get a file from a resource
-    * Note: Use resourceToFile instead as this may not actually always load the file
-    * See: http://stackoverflow.com/questions/676250/different-ways-of-loading-a-file-as-an-inputstream
-    *
-    * @param name
-    * @return
-    */
-  def resource(name: String): File =
-    macro Resource.file
-
   def newTemporaryDirectory(
       prefix: String = "",
       parent: Option[File] = None
