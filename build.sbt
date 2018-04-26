@@ -34,6 +34,14 @@ def ignoreScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partia
   case _             => Nil
 }
 
+lazy val arm = (project in file("arm"))
+  .settings(commonSettings: _*)
+  .settings(publishSettings: _*)
+  .settings(
+    name := "arm",
+    description := "Lightweight ARM (Auto Resource Management) in Scala"
+  )
+
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(publishSettings: _*)
@@ -41,6 +49,7 @@ lazy val core = (project in file("core"))
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala"
   )
+  .dependsOn(arm % "test->test;compile->compile")
 
 lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
@@ -82,7 +91,7 @@ lazy val root = (project in file("."))
   .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka, shapelessScanner, benchmarks)
+  .aggregate(arm, core, akka, shapelessScanner, benchmarks)
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,
