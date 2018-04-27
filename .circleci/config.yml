@@ -13,7 +13,8 @@ jobs:
           keys:
           - build-dependencies-{{ checksum "build.sbt" }}
           - sbt-dependencies--{{ checksum "project/build.properties" }}
-      - run: sbt clean coverage +test
+      # Resource of Docker Executor - 2 vCPUs and 4GB
+      - run: sbt -mem 3072 clean coverage +test
       - save_cache:
           paths:
             - ~/.ivy2/cache
