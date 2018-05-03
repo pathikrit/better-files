@@ -33,6 +33,9 @@ final class ResourceSpec extends CommonSpec {
     assert(Resource.my.asFile(testFileRel).contentAsString startsWith testFileText)
     assert(Resource.my(testFileRel).asString() startsWith testFileText)
     assert(File(Resource.my.url(testFileRel)).contentAsString startsWith testFileText)
+
+    // This tests that Resource.my uses the correct call site when called from outside the better.files package.
+    assert((new ResourceSpecHelper).myTestFile.contentAsString startsWith altTestFileText)
   }
 
   it can "look up from a statically-known type" in {
@@ -57,9 +60,5 @@ final class ResourceSpec extends CommonSpec {
 
   "Resource.at" should "require a concrete type" in {
     """def foo[T] = better.files.Resource.at[T]("foo")""" shouldNot typeCheck
-  }
-
-  "Resource.my" should "look up from the call site" in {
-    assert((new ResourceSpecHelper).myTestFile.contentAsString startsWith altTestFileText)
   }
 }
