@@ -40,7 +40,8 @@ lazy val core = (project in file("core"))
   .settings(
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % Provided
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % "provided,optional",
+    libraryDependencies ++= Dependencies.silencer,
   )
 
 lazy val akka = (project in file("akka"))

@@ -1,0 +1,3 @@
+This is the another-test-file.txt file.
+
+It is used to verify that loading of class loader resources works correctly.
