@@ -11,6 +11,7 @@ lazy val commonSettings = Seq(
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
+  scalacOptions in (Compile,doc) += "-groups",
   libraryDependencies += Dependencies.scalatest,
   updateImpactOpenBrowser := false,
   compile in Compile := (compile in Compile).dependsOn(formatAll).value,

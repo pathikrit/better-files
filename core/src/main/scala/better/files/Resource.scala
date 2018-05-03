@@ -9,22 +9,81 @@ import scala.annotation.compileTimeOnly
 import scala.reflect.macros.{ReificationException, blackbox}
 
 /**
-  * Class to encapsulate resource related APIs
-  * See: https://stackoverflow.com/questions/3861989/preferred-way-of-loading-resources-in-java
+  * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
+  *
+  * The ''lookup methods'' `apply`, `url`, and `asFile` look up a resource, by name. They are different in what they return: `apply` returns an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]], `url` returns a [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]], and `asFile` returns a [[File]].
+  *
+  * By default, resources are looked up using the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]]. The ''modifier methods'' `at`, `from`, and `my` change this: `at` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]], `from` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html ClassLoader]], and `my` searches from the class, trait, or object surrounding the call.
+  *
+  * To use a modifier method, call it, then call a lookup method on the object returned by the modifier method. See the documentation of the modifier methods for details and examples.
+  *
+  * @example {{{
+  *          // Get an InputStream for reading META-INF/example.txt.
+  *          val in: InputStream = Resource("META-INF/example.txt")
+  *
+  *          // Look up app.conf from the package that the caller class
+  *          // is in, and get a File representing it.
+  *          val confFile: File = Resource.my.asFile("app.conf")
+  *          }}}
+  *
+  * @see [[https://stackoverflow.com/questions/676250/different-ways-of-loading-a-file-as-an-inputstream Different ways of loading a file as an InputStream]]
+  * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
+  * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]]
+  * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
+  * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String) ClassLoader#getResourceAsStream]]
+  *
+  * @note As of Java SE 9, loading of class resources (using the `at` or `my` modifiers) is affected by which module is attempting to load them (that is, it's ''caller-sensitive''), in that the package that the resource is in must be [[https://docs.oracle.com/javase/10/docs/api/java/lang/Module.html#isOpen(java.lang.String,java.lang.Module) open]] to the calling module. For this reason, the lookup methods are implemented as macros, so that underlying calls to [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]] or [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]] appear in the caller's module, rather than in the module containing the better-files library.
+  *
+  * @groupname lookup Lookup Methods
+  * @groupdesc lookup Find and load resources.
+  * @groupprio lookup 1
+  *
+  * @groupname modifier Modifier Methods
+  * @groupdesc modifier Select where the lookup methods search.
+  * @groupprio modifier 2
+  *
+  * @define thisMethodCanBeModified By default, this method searches for the resource using the current thread's context class loader. This behavior can be changed using the ''modifier methods''. For details, please see the main documentation for [[Resource$ Resource]].
   */
 object Resource {
+
+  /**
+    * Look up a resource by name, and open an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]] for reading it.
+    *
+    * $thisMethodCanBeModified
+    *
+    * @param name Name of the resource to search for.
+    * @return InputStream for reading the found resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String) ClassLoader#getResourceAsStream]]
+    * @group lookup
+    */
   def apply(name: String): InputStream =
     macro Macros.applyImpl
 
+  /**
+    * Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
+    *
+    * $thisMethodCanBeModified
+    *
+    * @param name Name of the resource to search for.
+    * @return URL of the requested resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
+    * @group lookup
+    */
   def url(name: String): URL =
     macro Macros.urlImpl
 
   /**
-    * Get a file from a resource
-    * Note: Use resourceToFile instead as this may not actually always load the file
+    * Look up a resource by name, and get a [[File]] representing it.
     *
-    * @param name
-    * @return
+    * $thisMethodCanBeModified
+    *
+    * @param name Name of the resource to search for.
+    * @return File representing the requested resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
+    * @group lookup
     */
   def asFile(name: String): File =
     macro Macros.asFileImpl
@@ -56,6 +115,7 @@ object Resource {
     *       The reason for this is that this method exists only to be seen by the macros implementing the lookup methods. The macros look whether this method was called, and change their behavior accordingly. If called by run-time reflection, this method does nothing.
     * @tparam T The class to look up from.
     * @return This object. Call apply, url, or asFile on the returned object.
+    * @group modifier
     */
   // These are stub methods, so ignore warnings about their parameters being unused.
   @compileTimeOnly("you must directly call apply, url, or asFile on the returned object")
@@ -80,6 +140,7 @@ object Resource {
     *       The reason for this is that this method exists only to be seen by the macros implementing the lookup methods. The macros look whether this method was called, and change their behavior accordingly. If called by run-time reflection, this method does nothing.
     * @param lookupClass The class to look up from.
     * @return This object. Call apply, url, or asFile on the returned object.
+    * @group modifier
     */
   @compileTimeOnly("you must directly call apply, url, or asFile on the returned object")
   def at(@silent lookupClass: Class[_]): this.type = this
@@ -100,6 +161,7 @@ object Resource {
     *
     *       The reason for this is that this method exists only to be seen by the macros implementing the lookup methods. The macros look whether this method was called, and change their behavior accordingly. If called by run-time reflection, this method does nothing.
     * @return This object. Call apply, url, or asFile on the returned object.
+    * @group modifier
     */
   @compileTimeOnly("you must directly call apply, url, or asFile on the returned object")
   def my: this.type = this
@@ -118,6 +180,7 @@ object Resource {
     *
     *       The reason for this is that this method exists only to be seen by the macros implementing the lookup methods. The macros look whether this method was called, and change their behavior accordingly. If called by run-time reflection, this method does nothing.
     * @return This object. Call apply, url, or asFile on the returned object.
+    * @group modifier
     */
   @compileTimeOnly("you must directly call apply, url, or asFile on the returned object")
   def from(@silent cl: ClassLoader): this.type = this
