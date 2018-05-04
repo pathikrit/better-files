@@ -568,13 +568,4 @@ class FileSpec extends CommonSpec {
       .getOpenFileDescriptorCount
     assert((File.numberOfOpenFileDescriptors() - expected).abs <= 10)
   }
-
-  it should "load class loader resources correctly" in {
-    implicit val charset = java.nio.charset.StandardCharsets.US_ASCII
-    val expectedText     = "This is the test-file.txt file."
-    val testResource     = "better/files/test-file.txt"
-
-    assert(Resource.asFile(testResource).contentAsString startsWith expectedText)
-    assert(Resource(testResource).asString() startsWith expectedText)
-  }
 }

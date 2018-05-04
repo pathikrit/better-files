@@ -11,6 +11,7 @@ lazy val commonSettings = Seq(
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
+  scalacOptions in (Compile, doc) += "-groups",
   libraryDependencies += Dependencies.scalatest,
   updateImpactOpenBrowser := false,
   compile in Compile := (compile in Compile).dependsOn(formatAll).value,
@@ -40,7 +41,8 @@ lazy val core = (project in file("core"))
   .settings(
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % Provided
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % "provided,optional",
+    libraryDependencies ++= Dependencies.silencer
   )
 
 lazy val akka = (project in file("akka"))
