@@ -3,6 +3,44 @@ package better.files
 import java.io.InputStream
 import java.net.URL
 
+import scala.reflect.ClassTag
+
+case class Resource(classLoader: ClassLoader = ContextClassLoader()) {
+
+  /**
+    * Look up a resource by name, and open an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]] for reading it.
+    *
+    * @param name Name of the resource to search for.
+    * @return InputStream for reading the found resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String) ClassLoader#getResourceAsStream]]
+    */
+  def apply(name: String): InputStream =
+    classLoader.getResourceAsStream(name)
+
+  /**
+    * Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
+    *
+    * @param name Name of the resource to search for.
+    * @return URL of the requested resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
+    */
+  def url(name: String): URL =
+    classLoader.getResource(name)
+
+  /**
+    * Look up a resource by name, and get a [[File]] representing it.
+    *
+    * @param name Name of the resource to search for.
+    * @return File representing the requested resource.
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
+    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
+    */
+  def asFile(name: String): File =
+    File(url(name))
+}
+
 /**
   * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
   *
@@ -16,36 +54,18 @@ import java.net.URL
   */
 object Resource {
 
-  /**
-    * Look up a resource by name, and open an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]] for reading it.
-    *
-    * @param name Name of the resource to search for.
-    * @return InputStream for reading the found resource.
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]]
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String) ClassLoader#getResourceAsStream]]
-    */
-  def apply(name: String, classLoader: ClassLoader = ContextClassLoader()): InputStream =
-    classLoader.getResourceAsStream(name)
+  def apply(name: String): InputStream =
+    Resource()(name)
 
-  /**
-    * Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
-    *
-    * @param name Name of the resource to search for.
-    * @return URL of the requested resource.
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
-    */
-  def url(name: String, classLoader: ClassLoader = ContextClassLoader()): URL =
-    classLoader.getResource(name)
+  def url(name: String): URL =
+    Resource().url(name)
 
-  /**
-    * Look up a resource by name, and get a [[File]] representing it.
-    *
-    * @param name Name of the resource to search for.
-    * @return File representing the requested resource.
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
-    * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
-    */
-  def asFile(name: String, classLoader: ClassLoader = ContextClassLoader()): File =
-    File(url(name, classLoader))
+  def asFile(name: String): File =
+    Resource().asFile(name)
+
+  def at[A: ClassTag]: Resource =
+    Resource(ContextClassLoader.of[A])
+
+  def at(clazz: Class[_]): Resource =
+    Resource(ContextClassLoader(clazz))
 }
