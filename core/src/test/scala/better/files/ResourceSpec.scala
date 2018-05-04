@@ -20,19 +20,19 @@ final class ResourceSpec extends CommonSpec {
   }
 
   it can "look up from a specified class loader" in {
-    val clURL = new URL(Resource.my.url("ResourceSpec.class"), "../")
+    val clURL = new URL(Resource.url("ResourceSpec.class"), "../")
     assert(clURL.toExternalForm endsWith "/")
     val cl = new URLClassLoader(Array(clURL))
 
-    assert(Resource.from(cl).asFile(testFileFromCL).contentAsString startsWith testFileText)
-    assert(Resource.from(cl)(testFileFromCL).asString() startsWith testFileText)
-    assert(File(Resource.from(cl).url(testFileFromCL)).contentAsString startsWith testFileText)
+    assert(Resource(cl).asFile(testFileFromCL).contentAsString startsWith testFileText)
+    assert(Resource(cl)(testFileFromCL).asString() startsWith testFileText)
+    assert(File(Resource(cl).url(testFileFromCL)).contentAsString startsWith testFileText)
   }
 
   it can "look up from the call site" in {
-    assert(Resource.my.asFile(testFileRel).contentAsString startsWith testFileText)
-    assert(Resource.my(testFileRel).asString() startsWith testFileText)
-    assert(File(Resource.my.url(testFileRel)).contentAsString startsWith testFileText)
+    assert(Resource.asFile(testFileRel).contentAsString startsWith testFileText)
+    assert(Resource(testFileRel).asString() startsWith testFileText)
+    assert(File(Resource.url(testFileRel)).contentAsString startsWith testFileText)
 
     // This tests that Resource.my uses the correct call site when called from outside the better.files package.
     assert((new ResourceSpecHelper).myTestFile.contentAsString startsWith altTestFileText)
@@ -40,7 +40,7 @@ final class ResourceSpec extends CommonSpec {
 
   it can "look up from a statically-known type" in {
     assert(Resource.at[FileSpec].asFile(testFileRel).contentAsString startsWith testFileText)
-    assert(Resource.at[FileSpec](testFileRel).asString() startsWith testFileText)
+    assert(Resource.at[FileSpec].apply(testFileRel).asString() startsWith testFileText)
     assert(File(Resource.at[FileSpec].url(testFileRel)).contentAsString startsWith testFileText)
   }
 
@@ -54,7 +54,7 @@ final class ResourceSpec extends CommonSpec {
 
   it can "look up a file in another package" in {
     assert(Resource.at[ResourceSpecHelper].asFile(testFileAltRel).contentAsString startsWith altTestFileText)
-    assert(Resource.at[ResourceSpecHelper](testFileAltRel).asString() startsWith altTestFileText)
+    assert(Resource.at[ResourceSpecHelper].apply(testFileAltRel).asString() startsWith altTestFileText)
     assert(File(Resource.at[ResourceSpecHelper].url(testFileAltRel)).contentAsString startsWith altTestFileText)
   }
 

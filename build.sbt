@@ -40,10 +40,9 @@ lazy val core = (project in file("core"))
   .settings(publishSettings: _*)
   .settings(
     name := repo,
-    description := "Simple, safe and intuitive I/O in Scala",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value) % "provided,optional",
-    libraryDependencies ++= Dependencies.silencer
+    description := "Simple, safe and intuitive I/O in Scala"
   )
+  .dependsOn(macros)
 
 lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
@@ -76,6 +75,14 @@ lazy val benchmarks = (project in file("benchmarks"))
     )
   )
   .dependsOn(core % "test->test;compile->compile")
+
+lazy val macros = (project in file("macros"))
+  .settings(commonSettings: _*)
+  .settings(noPublishSettings: _*)
+  .settings(
+    name := s"$repo-macros",
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value),
+  )
 
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")

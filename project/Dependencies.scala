@@ -13,13 +13,5 @@ object Dependencies {
   val commonsio  = "commons-io" % "commons-io" % "2.6"
   val fastjavaio = "fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"
 
-  def scalaReflect(version: String) = "org.scala-lang" % "scala-reflect" % version
-
-  val silencer = {
-    val silencerVersion = "0.6"
-    Seq(
-      compilerPlugin("com.github.ghik" %% "silencer-plugin" % silencerVersion),
-      "com.github.ghik" %% "silencer-lib" % silencerVersion % "provided,optional"
-    )
-  }
+  def scalaReflect(version: String) = "org.scala-lang" % "scala-reflect" % version % "provided,optional"
 }

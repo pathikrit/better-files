@@ -176,6 +176,10 @@ val resource        : InputStream   = Resource("foo.txt") //Same as this.getClas
 val resourceURL     : java.net.URL  = Resource.url("foo.txt")
 val resourceAsAFile : File          = Resource.asFile("foo.txt")
 ```
+Tha above APIs can load from custom `ClassLoader`s too:
+```scala
+val resource        : InputStream   = Resource.at[MyClass]("foo.txt")
+``` 
 
 ### Streams
 Various ways to slurp a file without loading the contents into memory:
