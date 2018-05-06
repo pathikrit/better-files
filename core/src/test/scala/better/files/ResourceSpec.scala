@@ -3,7 +3,9 @@ package better.files
 import java.net.{URL, URLClassLoader}
 
 import better.files.test_pkg.ResourceSpecHelper
+import org.scalatest._
 
+@Ignore
 final class ResourceSpec extends CommonSpec {
   implicit val charset = java.nio.charset.StandardCharsets.US_ASCII
   val testFileText     = "This is the test-file.txt file."
