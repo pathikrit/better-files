@@ -1,6 +1,8 @@
 package better.files
 package test_pkg
 
+import java.io.InputStream
+
 class ResourceSpecHelper {
-  def myTestFile = Resource.asFile("another-test-file.txt")
+  def openTestStream(): InputStream = Resource.my.asStream("another-test-file.txt").get
 }

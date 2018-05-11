@@ -40,9 +40,16 @@ lazy val core = (project in file("core"))
   .settings(publishSettings: _*)
   .settings(
     name := repo,
-    description := "Simple, safe and intuitive I/O in Scala"
+    description := "Simple, safe and intuitive I/O in Scala",
+    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value),
+    // src/main/scala-2.12+ contains sources that should be used in Scala 2.12 and newer Scala 2 versions. Sbt doesn't automatically pick this up, so we tell it to explicitly.
+    // Note that sbt *does* know what to do with src/main/scala-2.11 out of the box, so we don't need to add it.
+    unmanagedSourceDirectories in Compile ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, n)) if n >= 12 =>
+        Seq((baseDirectory in Compile).value / "src" / "main" / "scala-2.12+")
+      case _ => Nil
+    })
   )
-  .dependsOn(macros)
 
 lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
@@ -75,14 +82,6 @@ lazy val benchmarks = (project in file("benchmarks"))
     )
   )
   .dependsOn(core % "test->test;compile->compile")
-
-lazy val macros = (project in file("macros"))
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
-  .settings(
-    name := s"$repo-macros",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value),
-  )
 
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
