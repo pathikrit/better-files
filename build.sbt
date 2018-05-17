@@ -6,8 +6,8 @@ val checkFormat = taskKey[Unit]("Check all the source code which includes src, t
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.12.5",
-  crossScalaVersions := Seq("2.11.12", "2.12.5"),
+  scalaVersion := "2.12.6",
+  crossScalaVersions := Seq("2.11.12", "2.12.6"),
   crossVersion := CrossVersion.binary,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
