@@ -28,6 +28,11 @@ script:
       ${LibreSSL_HOME}/bin/openssl aes-256-cbc -K ${fill.your.key} -iv ${fill.your.iv} -in .travis/travisci-deploy-key.enc -out .travis/travisci-deploy-key -d
       chmod 600 .travis/travisci-deploy-key
       cp .travis/travisci-deploy-key $HOME/.ssh/
+      sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
+      bash <(curl -s https://codecov.io/bash)
+      git config --global user.email "pathikritbhowmick@msn.com"
+      git config --global user.name "travis-ci"
+      git config --global push.default simple
       sbt ghpagesPushSite +publish
     fi
 
