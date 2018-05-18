@@ -5,7 +5,7 @@ env:
   global:
     - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
     - LibreSSL_VERSION=2.2.7
-    - LibreSSL_HOME=$HOME/.bin/libressl-${LibreSSL_VERSION}
+    - LibreSSL_HOME=$HOME/.bin/libressl/${LibreSSL_VERSION}
 
 
 script:
@@ -18,10 +18,10 @@ script:
       if [ ! -f "${libressl_bin}" ]; then
         wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LibreSSL_VERSION}.tar.gz -P $HOME
         tar -xvf $HOME/libressl-${LibreSSL_VERSION}.tar.gz -C $HOME
-        rm $HOME/libressl-${LibreSSL_VERSION}.tar.gz
         cd $HOME/libressl-${LibreSSL_VERSION}
         ./configure --prefix=${LibreSSL_HOME} --with-openssldir=${LibreSSL_HOME} && make -j3 && make install
         cd $OLDPWD
+        rm $HOME/libressl-${LibreSSL_VERSION}.tar.gz && rm -rf $HOME/libressl-${LibreSSL_VERSION}
       fi
       ${LibreSSL_HOME}/bin/openssl version
       echo -e "Host github.com\n\tStrictHostKeyChecking no\nIdentityFile ~/.ssh/travisci-deploy-key\n" >> ~/.ssh/config
@@ -45,6 +45,7 @@ cache:
 
 before_cache:
   # Cleanup the cached directories to avoid unnecessary cache updates
-  - find $HOME/.ivy2/cache  -name "ivydata-*.properties" -print -delete
-  - find $HOME/.sbt         -name "*.lock"               -print -delete
-  - find $HOME/.sbt/ghpages -type d                      -print -delete
+  - find $HOME/.ivy2/cache    -name "ivydata-*.properties"      -print -delete
+  - find $HOME/.sbt           -name "*.lock"                    -print -delete
+  - find $HOME/.sbt/ghpages   -type d                           -print -delete
+  - find $HOME/.bin/libressl  -type d ! -path ${LibreSSL_HOME}  -print -delete
