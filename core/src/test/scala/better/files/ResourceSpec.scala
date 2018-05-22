@@ -18,11 +18,11 @@ final class ResourceSpec extends CommonSpec {
   }
 
   it can "look up from a specified class loader" in {
-    val clURL = new URL(Resource.my.url("ResourceSpec.class").get, "../")
+    val clURL = new URL(Resource.my.getUrl("ResourceSpec.class"), "../")
     assert(clURL.toExternalForm endsWith "/")
     val cl = new URLClassLoader(Array(clURL))
 
-    assert(Resource.from(cl).asStream(testFileFromCL).get.asString() startsWith testFileText)
+    assert(Resource.from(cl).getAsString(testFileFromCL) startsWith testFileText)
   }
 
   it can "look up from the call site" in {
@@ -33,18 +33,18 @@ final class ResourceSpec extends CommonSpec {
   }
 
   it can "look up from a statically-known type" in {
-    assert(Resource.at[ResourceSpec].asStream(testFileRel).get.asString() startsWith testFileText)
-    assert(Resource.at[Resource.type].asStream(testFileRel).get.asString() startsWith testFileText)
+    assert(Resource.at[ResourceSpec].getAsString(testFileRel) startsWith testFileText)
+    assert(Resource.at[Resource.type].getAsString(testFileRel) startsWith testFileText)
   }
 
   it can "look up from a java.lang.Class" in {
     def testClass: Class[_] = Class forName "better.files.File"
 
-    assert(Resource.at(testClass).asStream(testFileRel).get.asString() startsWith testFileText)
+    assert(Resource.at(testClass).getAsString(testFileRel) startsWith testFileText)
   }
 
   it can "look up a file in another package" in {
-    assert(Resource.at[ResourceSpecHelper].asStream(testFileAltRel).get.asString() startsWith altTestFileText)
+    assert(Resource.at[ResourceSpecHelper].getAsString(testFileAltRel) startsWith altTestFileText)
   }
 
   "Resource.at" should "require a concrete type" in {

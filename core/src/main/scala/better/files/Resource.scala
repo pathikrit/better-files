@@ -34,7 +34,6 @@ trait Resource {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String) Class#getResourceAsStream]]
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String) ClassLoader#getResourceAsStream]]
     */
-  // This should have @throws IOException, but Scaladoc doesn't currently know how to link into Javadoc.
   @throws[IOException]
   def asStream(name: String): Option[InputStream] =
     url(name).map(_.openStream())
@@ -42,14 +41,12 @@ trait Resource {
   /**
     * Same as asStream but throws a NoSuchElementException if resource is not found
     */
-  @throws[NoSuchElementException]
   def getAsStream(name: String): InputStream =
     asStream(name).getOrElse(Resource.notFound(name))
 
   def asString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset): Option[String] =
     asStream(name).map(_.asString(bufferSize = bufferSize)(charset))
 
-  @throws[NoSuchElementException]
   def getAsString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset): String =
     asString(name, bufferSize)(charset).getOrElse(Resource.notFound(name))
 
@@ -63,7 +60,6 @@ trait Resource {
     */
   def url(name: String): Option[URL]
 
-  @throws[NoSuchElementException]
   def getUrl(name: String): URL =
     url(name).getOrElse(Resource.notFound(name))
 }
@@ -80,7 +76,8 @@ trait Resource {
   */
 object Resource extends Resource {
 
-  private[Resource] def notFound(name: String): Nothing =
+  @throws[NoSuchElementException]
+  def notFound(name: String): Nothing =
     throw new NoSuchElementException(s"Could not find resource=${name}")
 
   override def url(name: String): Option[URL] =
