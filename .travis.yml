@@ -11,7 +11,8 @@ script: sbt clean coverage +test
 deploy:
   - provider: script
     skip_cleanup: true
-    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+    #script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite
+    script: sbt updateImpactSubmit coverageReport coverageAggregate makeSite
     on:
       branch: master
 
