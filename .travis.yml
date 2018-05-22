@@ -9,9 +9,25 @@ env:
 script: sbt clean coverage +test
 
 deploy:
-  skip_cleanup: true
   provider: script
-  script: bash deploy.sh
+  skip_cleanup: true
+  script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage ghpagesPushSite +publish
+  on:
+    branch: master
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: bash <(curl -s https://codecov.io/bash)
+  on:
+    branch: master
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: site/
+  verbose: true
   on:
     branch: master
 
