@@ -11,8 +11,9 @@ script: sbt clean coverage +test
 deploy:
   - provider: script
     skip_cleanup: true
-    #script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite
-    script: sbt updateImpactSubmit coverageReport coverageAggregate makeSite
+    # Disabling codacyCoverage until this is fixed: https://github.com/codacy/sbt-codacy-coverage/issues/51
+    #script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+    script: sbt updateImpactSubmit coverageReport coverageAggregate makeSite +publish
 
   - provider: pages
     skip_cleanup: true
@@ -23,10 +24,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
-
-  - provider: script
-    skip_cleanup: true
-    script: sbt +publish
 
 # Copied from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
