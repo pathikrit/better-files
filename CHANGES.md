@@ -16,6 +16,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 ## v4.0.0
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
+* [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to AutoDisposed
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
 * Remove implicit options from all APIs
 

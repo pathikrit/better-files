@@ -22,7 +22,7 @@ deploy:
 
   - provider: script
     skip_cleanup: true
-    script: "bash <(curl -s https://codecov.io/bash)"
+    script: curl -s https://codecov.io/bash | bash
 
   - provider: script
     skip_cleanup: true
