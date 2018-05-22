@@ -10,6 +10,7 @@ script: sbt clean coverage +test
 
 deploy:
   provider: script
+  skip_cleanup: true
   script: bash deploy.sh
   on:
     branch: master

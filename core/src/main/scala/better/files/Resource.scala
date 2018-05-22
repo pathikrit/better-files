@@ -3,6 +3,8 @@ package better.files
 import java.io.{IOException, InputStream}
 import java.net.URL
 
+import scala.reflect.macros.{ReificationException, blackbox}
+
 /**
   * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) class resources]] or [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
   *
@@ -75,7 +77,7 @@ object Resource extends ResourceLoader {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
     */
   def at[T]: ResourceLoader =
-    macro ResourceMacros.atStaticImpl[T]
+    macro Macros.atStaticImpl[T]
 
   /**
     * Look up class resource files.
@@ -92,7 +94,7 @@ object Resource extends ResourceLoader {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
     */
   def at(clazz: Class[_]): ResourceLoader =
-    macro ResourceMacros.atDynamicImpl
+    macro Macros.atDynamicImpl
 
   /**
     * Look up own resource files.
@@ -104,7 +106,7 @@ object Resource extends ResourceLoader {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
     */
   def my: ResourceLoader =
-    macro ResourceMacros.myImpl
+    macro Macros.myImpl
 
   /**
     * Look up resource files using the specified ClassLoader.
@@ -121,4 +123,39 @@ object Resource extends ResourceLoader {
       override def url(name: String): Option[URL] =
         Option(cl.getResource(name))
     }
+
+  /**
+    * Implementations of the `Resource.at` macros. This is needed because `Class#getResource` is caller-sensitive; calls to it must appear in user code, ''not'' in better-files.
+    */
+  private[Resource] final class Macros(val c: blackbox.Context) {
+    import c.universe._
+    import c.Expr
+
+    def atStaticImpl[T](implicit T: WeakTypeTag[T]): Expr[ResourceLoader] = {
+      val rtc = Expr[Class[_]] {
+        try {
+          c.reifyRuntimeClass(T.tpe, concrete = true)
+        } catch {
+          case _: ReificationException => c.abort(c.enclosingPosition, s"${T.tpe} is not a concrete type")
+        }
+      }
+      atDynamicImpl(rtc)
+    }
+
+    def atDynamicImpl(clazz: Expr[Class[_]]): Expr[ResourceLoader] =
+      reify {
+        new ResourceLoader {
+          override def url(name: String) = Option(clazz.splice.getResource(name))
+        }
+      }
+
+    def myImpl: Expr[ResourceLoader] = {
+      val rtc = c.reifyEnclosingRuntimeClass
+      if (rtc.isEmpty) {
+        // The documentation for reifyEnclosingRuntimeClass claims that this is somehow possible!?
+        c.abort(c.enclosingPosition, "this location doesn't correspond to a Java class file")
+      }
+      atDynamicImpl(Expr[Class[_]](rtc))
+    }
+  }
 }
