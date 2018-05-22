@@ -9,20 +9,15 @@ env:
 script: sbt clean coverage +test
 
 deploy:
-  provider: script
   skip_cleanup: true
+  provider: script
   script: bash deploy.sh
   on:
     branch: master
 
+# Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
   directories:
   - $HOME/.sbt
-  - $HOME/.ivy2
+  - $HOME/.ivy2/cache
   - $HOME/.m2
-
-before_cache:
-  # Cleanup the cached directories to avoid unnecessary cache updates
-  - find $HOME/.ivy2/cache    -name "ivydata-*.properties"      -print -delete
-  - find $HOME/.sbt           -name "*.lock"                    -print -delete
-  - find $HOME/.sbt/ghpages   -type d                           -print -delete
