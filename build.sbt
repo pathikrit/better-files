@@ -41,7 +41,11 @@ lazy val core = (project in file("core"))
   .settings(
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
-    libraryDependencies += Dependencies.scalaReflect(scalaVersion.value)
+    libraryDependencies ++= Seq(
+      Dependencies.scalaReflect(scalaVersion.value),
+      Dependencies.commonsio,
+      Dependencies.fastjavaio
+    )
   )
 
 lazy val akka = (project in file("akka"))
@@ -64,18 +68,6 @@ lazy val shapelessScanner = (project in file("shapeless"))
   )
   .dependsOn(core % "test->test;compile->compile")
 
-lazy val benchmarks = (project in file("benchmarks"))
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
-  .settings(
-    name := s"$repo-benchmarks",
-    libraryDependencies ++= Seq(
-      Dependencies.commonsio,
-      Dependencies.fastjavaio
-    )
-  )
-  .dependsOn(core % "test->test;compile->compile")
-
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
@@ -84,7 +76,7 @@ lazy val root = (project in file("."))
   .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka, shapelessScanner, benchmarks)
+  .aggregate(core, akka, shapelessScanner)
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,

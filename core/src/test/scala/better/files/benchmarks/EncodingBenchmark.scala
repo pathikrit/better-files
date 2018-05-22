@@ -1,4 +1,6 @@
-package better.files
+package better.files.benchmarks
+
+import better.files._
 
 import java.nio.charset.Charset
 

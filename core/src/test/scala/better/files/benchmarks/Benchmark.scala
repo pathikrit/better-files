@@ -1,4 +1,4 @@
-package better.files
+package better.files.benchmarks
 
 import org.scalatest.FunSuite
 
