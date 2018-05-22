@@ -60,7 +60,7 @@ trait ResourceLoader {
 object Resource extends ResourceLoader {
 
   override def url(name: String): Option[URL] =
-    Option(Thread.currentThread.getContextClassLoader.getResource(name))
+    from(Thread.currentThread.getContextClassLoader).url(name)
 
   /**
     * Look up class resource files.
@@ -117,5 +117,8 @@ object Resource extends ResourceLoader {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
     */
   def from(cl: ClassLoader): ResourceLoader =
-    ResourceHelpers.from(cl)
+    new ResourceLoader {
+      override def url(name: String): Option[URL] =
+        Option(cl.getResource(name))
+    }
 }
