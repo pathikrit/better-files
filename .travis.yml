@@ -6,10 +6,10 @@ env:
     - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
     - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
 
-script:
-  - sbt clean checkFormat coverage +test
+script: sbt clean checkFormat coverage +test
 
 deploy:
+  provider: script
   script:
     - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
     - bash <(curl -s https://codecov.io/bash)
@@ -31,4 +31,3 @@ before_cache:
   - find $HOME/.ivy2/cache    -name "ivydata-*.properties"      -print -delete
   - find $HOME/.sbt           -name "*.lock"                    -print -delete
   - find $HOME/.sbt/ghpages   -type d                           -print -delete
-
