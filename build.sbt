@@ -63,7 +63,7 @@ lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
-  .settings(noPublishSettings: _*)
+  .settings(skip in publish := true)
   .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
@@ -94,12 +94,6 @@ lazy val releaseSettings = Seq(
     releaseStepCommand("sonatypeReleaseAll"),
     pushChanges
   )
-)
-
-lazy val noPublishSettings = Seq(
-  publish := ((): Unit),
-  publishLocal := ((): Unit),
-  publishArtifact := false
 )
 
 lazy val publishSettings = Seq(
