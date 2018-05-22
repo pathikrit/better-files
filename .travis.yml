@@ -6,21 +6,29 @@ env:
     - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
     - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
 
-script: sbt clean coverage +test
+#script: sbt clean coverage +test
+script: sbt test
 
 deploy:
-  skip_cleanup: true
   - provider: script
+    skip-cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage ghpagesPushSite +publish
+    on:
+      branch: master
+
   - provider: script
+    skip_cleanup: true
     script: bash <(curl -s https://codecov.io/bash)
+    on:
+      branch: master
+
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
     local-dir: site/
     verbose: true
-  on:
-    branch: master
+    on:
+      branch: master
 
 # Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
