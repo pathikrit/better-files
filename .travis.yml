@@ -4,48 +4,31 @@ jdk: oraclejdk8
 env:
   global:
     - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
-    - LibreSSL_VERSION=2.2.7
-    - LibreSSL_HOME=$HOME/.bin/libressl/${LibreSSL_VERSION}
-
+    - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
 
 script:
-  - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
-  - sbt checkFormat clean coverage +test
-  - |
-    if [ "$TRAVIS_BRANCH" == "master" ]; then
-      libressl_bin=${LibreSSL_HOME}/bin/openssl
-      # install LibreSSL
-      if [ ! -f "${libressl_bin}" ]; then
-        wget https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LibreSSL_VERSION}.tar.gz -P $HOME
-        tar -xvf $HOME/libressl-${LibreSSL_VERSION}.tar.gz -C $HOME
-        cd $HOME/libressl-${LibreSSL_VERSION}
-        ./configure --prefix=${LibreSSL_HOME} --with-openssldir=${LibreSSL_HOME} && make -j3 && make install
-        cd $OLDPWD
-        rm $HOME/libressl-${LibreSSL_VERSION}.tar.gz && rm -rf $HOME/libressl-${LibreSSL_VERSION}
-      fi
-      ${LibreSSL_HOME}/bin/openssl version
-      echo -e "Host github.com\n\tStrictHostKeyChecking no\nIdentityFile ~/.ssh/travisci-deploy-key\n" >> ~/.ssh/config
-      ${LibreSSL_HOME}/bin/openssl aes-256-cbc -K ${fill.your.key} -iv ${fill.your.iv} -in .travis/travisci-deploy-key.enc -out .travis/travisci-deploy-key -d
-      chmod 600 .travis/travisci-deploy-key
-      cp .travis/travisci-deploy-key $HOME/.ssh/
-      sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
-      bash <(curl -s https://codecov.io/bash)
-      git config --global user.email "pathikritbhowmick@msn.com"
-      git config --global user.name "travis-ci"
-      git config --global push.default simple
-      sbt ghpagesPushSite +publish
-    fi
+  - sbt clean checkFormat coverage +test
+
+deploy:
+  script:
+    - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
+    - bash <(curl -s https://codecov.io/bash)
+    - git config --global user.email "pathikritbhowmick@msn.com"
+    - git config --global user.name "travis-ci"
+    - git config --global push.default simple
+    - sbt ghpagesPushSite +publish
+  on:
+    branch: master
 
 cache:
   directories:
   - $HOME/.sbt
   - $HOME/.ivy2
   - $HOME/.m2
-  - ${LibreSSL_HOME}
 
 before_cache:
   # Cleanup the cached directories to avoid unnecessary cache updates
   - find $HOME/.ivy2/cache    -name "ivydata-*.properties"      -print -delete
   - find $HOME/.sbt           -name "*.lock"                    -print -delete
   - find $HOME/.sbt/ghpages   -type d                           -print -delete
-  - find $HOME/.bin/libressl  -type d ! -path ${LibreSSL_HOME}  -print -delete
+

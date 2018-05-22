@@ -1,4 +1,4 @@
-# better-files [![License][licenseImg]][licenseLink] [![CircleCI][circleCiImg]][circleCiLink] [![Codacy][codacyImg]][codacyLink]
+# better-files [![License][licenseImg]][licenseLink] [![TravisCI][travisCiImg]][travisCiLink] [![Codacy][codacyImg]][codacyLink]
 
 `better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
@@ -58,9 +58,9 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
 
-[circleCiImg]: https://img.shields.io/circleci/project/pathikrit/better-files/master.svg
-[circleCiImg2]: https://circleci.com/gh/pathikrit/better-files/tree/master.svg
-[circleCiLink]: https://circleci.com/gh/pathikrit/better-files
+[travisCiImg]: https://img.shields.io/travis/pathikrit/better-files/master.svg
+[travisCiImg2]: https://travis-ci.org/pathikrit/better-files.svg?branch=master
+[travisCiLink]: https://travis-ci.org/pathikrit/better-files
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
