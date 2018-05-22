@@ -11,9 +11,7 @@ script: sbt clean coverage +test
 deploy:
   - provider: script
     skip_cleanup: true
-    # Disabling codacyCoverage until this is fixed: https://github.com/codacy/sbt-codacy-coverage/issues/51
-    #script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
-    script: sbt updateImpactSubmit coverageReport coverageAggregate makeSite +publish
+    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
 
   - provider: pages
     skip_cleanup: true
