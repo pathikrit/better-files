@@ -6,17 +6,13 @@ env:
     - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
     - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
 
-script: sbt clean checkFormat coverage +test
+script: sbt clean coverage +test
 
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage
-      bash <(curl -s https://codecov.io/bash)
-      git config --global user.email "pathikritbhowmick@msn.com"
-      git config --global user.name "travis-ci"
-      git config --global push.default simple
-      sbt ghpagesPushSite +publish
-    fi
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+    branch: master
 
 cache:
   directories:
