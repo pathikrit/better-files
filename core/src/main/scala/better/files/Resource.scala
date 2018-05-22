@@ -2,6 +2,7 @@ package better.files
 
 import java.io.{IOException, InputStream}
 import java.net.URL
+import java.nio.charset.Charset
 
 import scala.reflect.macros.{ReificationException, blackbox}
 
@@ -39,6 +40,20 @@ trait Resource {
     url(name).map(_.openStream())
 
   /**
+    * Same as asStream but throws a NoSuchElementException if resource is not found
+    */
+  @throws[NoSuchElementException]
+  def getAsStream(name: String): InputStream =
+    asStream(name).getOrElse(Resource.notFound(name))
+
+  def asString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset): Option[String] =
+    asStream(name).map(_.asString(bufferSize = bufferSize)(charset))
+
+  @throws[NoSuchElementException]
+  def getAsString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset): String =
+    asString(name, bufferSize)(charset).getOrElse(Resource.notFound(name))
+
+  /**
     * Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
     *
     * @param name Name of the resource to search for.
@@ -47,6 +62,10 @@ trait Resource {
     * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
     */
   def url(name: String): Option[URL]
+
+  @throws[NoSuchElementException]
+  def getUrl(name: String): URL =
+    url(name).getOrElse(Resource.notFound(name))
 }
 
 /**
@@ -60,6 +79,9 @@ trait Resource {
   * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
   */
 object Resource extends Resource {
+
+  private[Resource] def notFound(name: String): Nothing =
+    throw new NoSuchElementException(s"Could not find resource=${name}")
 
   override def url(name: String): Option[URL] =
     from(Thread.currentThread.getContextClassLoader).url(name)

@@ -172,13 +172,13 @@ val bytes: Array[Byte] = file.loadBytes
 Confused by the [various ways to load resources in Java](https://stackoverflow.com/questions/3861989/preferred-way-of-loading-resources-in-java)?
 Worry no more:
 ```scala
-val resource        : InputStream   = Resource("foo.txt") //Same as this.getClass().getResource("foo.txt")
-val resourceURL     : java.net.URL  = Resource.url("foo.txt")
-val resourceAsAFile : File          = Resource.asFile("foo.txt")
+val resource        : InputStream   = Resource.getAsStream("foo.txt") //Same as this.getClass().getResource("foo.txt")
+val resourceURL     : java.net.URL  = Resource.getUrl("foo.txt")
+val resourceAsStr   : String        = Resource.getAsString("foo.txt")
 ```
 Tha above APIs can load from custom `ClassLoader`s too:
 ```scala
-val resource        : InputStream   = Resource.at[MyClass]("foo.txt")
+val resource        : InputStream   = Resource.at[MyClass].getAsStream("foo.txt")
 ``` 
 
 ### Streams
