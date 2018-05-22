@@ -22,12 +22,18 @@ deploy:
       branch: master
 
   - provider: pages
-      skip_cleanup: true
-      github-token: $GITHUB_TOKEN
-      local-dir: target/site
-      verbose: true
-      on:
-        branch: master
+    skip_cleanup: true
+    github-token: $GITHUB_TOKEN
+    local-dir: target/site
+    verbose: true
+    on:
+      branch: master
+
+  - provider: script
+    skip_cleanup: true
+    script: sbt +publish
+    on:
+      branch: master
 
 # Copied from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
