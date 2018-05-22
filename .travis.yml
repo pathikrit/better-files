@@ -11,7 +11,7 @@ script: sbt clean coverage +test
 deploy:
   - provider: script
     skip_cleanup: true
-    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage ghpagesPushSite +publish
+    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
       branch: master
 
@@ -22,14 +22,14 @@ deploy:
       branch: master
 
   - provider: pages
-    skip_cleanup: true
-    github-token: $GITHUB_TOKEN
-    local-dir: site/
-    verbose: true
-    on:
-      branch: master
+      skip_cleanup: true
+      github-token: $GITHUB_TOKEN
+      local-dir: target/site
+      verbose: true
+      on:
+        branch: master
 
-# Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
+# Copied from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
   directories:
   - $HOME/.sbt

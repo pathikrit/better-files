@@ -563,7 +563,7 @@ for {
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives.
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
-`better-files` provides a [faster](benchmarks#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html)
+`better-files` provides a [faster](#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html)
 that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val f1 = File("/tmp/temp.txt")
