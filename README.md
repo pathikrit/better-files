@@ -596,7 +596,7 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
-The [shapeless-scanner](shapeless/src/main/scala/better/files/ShapelessScanner.scala) module lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
+The [shapeless-scanner](core/src/test/scala/better/files/ShapelessScannerSpec.scala) lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
 ```scala
 val in = Scanner("""
   12 Bob True

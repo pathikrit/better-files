@@ -10,7 +10,7 @@ script: sbt clean coverage +test
 
 deploy:
   - provider: script
-    skip-cleanup: true
+    skip_cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage ghpagesPushSite +publish
     on:
       branch: master
@@ -22,7 +22,7 @@ deploy:
       branch: master
 
   - provider: pages
-    skip-cleanup: true
+    skip_cleanup: true
     github-token: $GITHUB_TOKEN
     local-dir: site/
     verbose: true

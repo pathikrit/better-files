@@ -44,7 +44,8 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= Seq(
       Dependencies.scalaReflect(scalaVersion.value),
       Dependencies.commonsio,
-      Dependencies.fastjavaio
+      Dependencies.fastjavaio,
+      Dependencies.shapeless
     )
   )
 
@@ -58,16 +59,6 @@ lazy val akka = (project in file("akka"))
   )
   .dependsOn(core % "test->test;compile->compile")
 
-lazy val shapelessScanner = (project in file("shapeless"))
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
-  .settings(
-    name := s"shapeless-scanner",
-    description := "Shapeless Scanner",
-    libraryDependencies += Dependencies.shapeless
-  )
-  .dependsOn(core % "test->test;compile->compile")
-
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
@@ -76,7 +67,7 @@ lazy val root = (project in file("."))
   .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka, shapelessScanner)
+  .aggregate(core, akka)
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,
