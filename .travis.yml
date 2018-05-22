@@ -22,16 +22,6 @@ deploy:
   on:
     branch: master
 
-deploy:
-
-  on:
-    branch: master
-
-deploy:
-
-  on:
-    branch: master
-
 # Taken from https://github.com/typelevel/cats/blob/master/.travis.yml
 cache:
   directories:
