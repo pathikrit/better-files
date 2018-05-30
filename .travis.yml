@@ -1,10 +1,6 @@
 language: scala
 jdk: oraclejdk8
 
-env:
-  global:
-    - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
-
 script: sbt clean coverage +test
 
 deploy:
