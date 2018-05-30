@@ -75,7 +75,8 @@ lazy val docSettings = Seq(
   siteSourceDirectory := baseDirectory.value / "site",
   siteSubdirName in ScalaUnidoc := "latest/api",
   addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
-  git.remoteRepo := s"git@github.com:$username/$repo.git"
+  git.remoteRepo := s"git@github.com:$username/$repo.git",
+  envVars in ghpagesPushSite += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
 )
 
 import ReleaseTransformations._

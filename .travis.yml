@@ -3,7 +3,6 @@ jdk: oraclejdk8
 
 env:
   global:
-    - SBT_GHPAGES_COMMIT_MESSAGE='Publishing Scaladoc [ci skip]'
     - SBT_OPTS="-XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M -Xmx2G"
 
 script: sbt clean coverage +test
