@@ -41,7 +41,7 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.5.6"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.5.12"
 )
 ```
 Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
@@ -52,7 +52,7 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 ## Tests [![codecov][codecovImg]][codecovLink]
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
-* [Benchmarks](benchmarks/)
+* [Benchmarks](#benchmarks)
 
 [licenseImg]: https://img.shields.io/github/license/pathikrit/better-files.svg
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg

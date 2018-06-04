@@ -1068,7 +1068,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     */
   def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
     if (isDirectory(linkOptions)) {
-      children.isEmpty
+      Files.list(path).count() == 0     //Do not use children.isEmpty as it may leave stream open
     } else if (isRegularFile(linkOptions)) {
       toJava.length() == 0
     } else {

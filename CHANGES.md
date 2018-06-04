@@ -20,7 +20,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
 * Remove implicit options from all APIs
 
-## 3.5.0
+## v3.5.1
+* [Issue #241](https://github.com/pathikrit/better-files/issues/241): Remove resource leak from directory empty check
+
+## v3.5.0
 * [PR #230](https://github.com/pathikrit/better-files/pull/230): New Resource APIs with [module safety](https://github.com/pathikrit/better-files/pull/227)
 * [Issue #224](https://github.com/pathikrit/better-files/issues/224): FileMonitor should not block threads
 
