@@ -1,9 +1,6 @@
 val username = "pathikrit"
 val repo     = "better-files"
 
-val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
-val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
-
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := "2.12.6",
@@ -78,6 +75,9 @@ lazy val docSettings = Seq(
   git.remoteRepo := s"git@github.com:$username/$repo.git",
   envVars in ghpagesPushSite += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
 )
+
+lazy val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
+lazy val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
 
 import ReleaseTransformations._
 lazy val releaseSettings = Seq(
