@@ -32,10 +32,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [PR #203](https://github.com/pathikrit/better-files/pull/203): Type-class for Scanner construction
 * Remove [redundant `count` param](https://github.com/pathikrit/better-files/commit/8cc66d0e8ac6517597eeb1db1814903f2256b805) from `File.Monitor#onUnknownEvent`
 
-## [v3.3.1]((https://github.com/pathikrit/better-files/releases/tag/v3.3.1)
+## [v3.3.1](https://github.com/pathikrit/better-files/releases/tag/v3.3.1)
 * [Issue #146](https://github.com/pathikrit/better-files/issues/146): Release for Scala 2.11
 
-## [v3.3.0]((https://github.com/pathikrit/better-files/releases/tag/v3.3.0)
+## [v3.3.0](https://github.com/pathikrit/better-files/releases/tag/v3.3.0)
 * [Issue #193](https://github.com/pathikrit/better-files/issues/193): Handle fast changing directory watching on Windows
 * [Issue #195](https://github.com/pathikrit/better-files/issues/195): Do not swallow `FileAlreadyExistsException` when creating directory or file
 * [Add](https://github.com/pathikrit/better-files/commit/00f27867ebd0cddec1ace7835dcc2375869fb3ae) method to check verified file existence (or non-existence)
@@ -64,7 +64,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #169](https://github.com/pathikrit/better-files/issues/169): Support for symbols in file DSL
 * [Issue #171](https://github.com/pathikrit/better-files/issues/171): Handle `createDirectories()` on symlinks to existing directories
 
-## [v3.0.0]((https://github.com/pathikrit/better-files/releases/tag/v3.0.0)
+## [v3.0.0](https://github.com/pathikrit/better-files/releases/tag/v3.0.0)
 * [Issue #9](https://github.com/pathikrit/better-files/issues/9): File resource utils
 * [Issue #114](https://github.com/pathikrit/better-files/issues/114): Glob with automatic path
 * [Issue #107](https://github.com/pathikrit/better-files/issues/107): Handle Byte-order markers
@@ -81,7 +81,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #80](https://github.com/pathikrit/better-files/issues/80): Unzip filters
 * [PR #107](https://github.com/pathikrit/better-files/pull/127): Java serialization utils
 
-## [v2.17.1]((https://github.com/pathikrit/better-files/releases/tag/v2.17.1)
+## [v2.17.1](https://github.com/pathikrit/better-files/releases/tag/v2.17.1)
 * [PR #99](https://github.com/pathikrit/better-files/pull/99): Release for Scala 2.12
 
 ## [v2.17.0](https://github.com/pathikrit/better-files/releases/tag/v2.17.0)
