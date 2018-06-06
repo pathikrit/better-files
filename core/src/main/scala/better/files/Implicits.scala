@@ -17,7 +17,7 @@ import scala.util.Try
 /**
   * Container for various implicits
   */
-trait Implicits extends ManagedResource.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
+trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
   //TODO: Rename all Ops to Extensions
 
@@ -193,7 +193,7 @@ trait Implicits extends ManagedResource.FlatMap.Implicits with Scanner.Read.Impl
       new ReaderInputStream(reader)(charset)
 
     def chars: Iterator[Char] =
-      new ManagedResource(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
+      new Dispose(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderOps(reader: BufferedReader) {
@@ -304,8 +304,8 @@ trait Implicits extends ManagedResource.FlatMap.Implicits with Scanner.Read.Impl
       *
       * @return
       */
-    def autoClosed: ManagedResource[A] =
-      new ManagedResource(resource)(Disposable.closableDisposer)
+    def autoClosed: Dispose[A] =
+      new Dispose(resource)(Disposable.closableDisposer)
   }
 
   implicit class JStreamOps[A](stream: JStream[A]) {

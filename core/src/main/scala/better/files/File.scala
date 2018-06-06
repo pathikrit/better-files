@@ -212,7 +212,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     contains(child)
 
   def bytes: Iterator[Byte] =
-    newInputStream.buffered.bytes //TODO: ManagedResource here?
+    newInputStream.buffered.bytes //TODO: Dispose here?
 
   def loadBytes: Array[Byte] =
     Files.readAllBytes(path)
@@ -253,7 +253,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   }
 
   def chars(implicit charset: Charset = DefaultCharset): Iterator[Char] =
-    newBufferedReader(charset).chars //TODO: ManagedResource here?
+    newBufferedReader(charset).chars //TODO: Dispose here?
 
   /**
     * Load all lines from this file
@@ -375,13 +375,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile =
     new RandomAccessFile(toJava, mode.value)
 
-  def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): ManagedResource[RandomAccessFile] =
+  def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): Dispose[RandomAccessFile] =
     newRandomAccess(mode).autoClosed //TODO: Mode enum?
 
   def newBufferedReader(implicit charset: Charset = DefaultCharset): BufferedReader =
     Files.newBufferedReader(path, charset)
 
-  def bufferedReader(implicit charset: Charset = DefaultCharset): ManagedResource[BufferedReader] =
+  def bufferedReader(implicit charset: Charset = DefaultCharset): Dispose[BufferedReader] =
     newBufferedReader(charset).autoClosed
 
   def newBufferedWriter(
@@ -395,19 +395,19 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       charset: Charset = DefaultCharset,
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): ManagedResource[BufferedWriter] =
+    ): Dispose[BufferedWriter] =
     newBufferedWriter(charset, openOptions).autoClosed
 
   def newFileReader: FileReader =
     new FileReader(toJava)
 
-  def fileReader: ManagedResource[FileReader] =
+  def fileReader: Dispose[FileReader] =
     newFileReader.autoClosed
 
   def newFileWriter(append: Boolean = false): FileWriter =
     new FileWriter(toJava, append)
 
-  def fileWriter(append: Boolean = false): ManagedResource[FileWriter] =
+  def fileWriter(append: Boolean = false): Dispose[FileWriter] =
     newFileWriter(append).autoClosed
 
   def newPrintWriter(
@@ -421,25 +421,25 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       autoFlush: Boolean = false
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): ManagedResource[PrintWriter] =
+    ): Dispose[PrintWriter] =
     newPrintWriter(autoFlush)(openOptions).autoClosed
 
   def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream =
     Files.newInputStream(path, openOptions: _*)
 
-  def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[InputStream] =
+  def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): Dispose[InputStream] =
     newInputStream(openOptions).autoClosed
 
   def newFileInputStream: FileInputStream =
     new FileInputStream(toJava)
 
-  def fileInputStream: ManagedResource[FileInputStream] =
+  def fileInputStream: Dispose[FileInputStream] =
     newFileInputStream.autoClosed
 
   def newFileOutputStream(append: Boolean = false): FileOutputStream =
     new FileOutputStream(toJava, append)
 
-  def fileOutputStream(append: Boolean = false): ManagedResource[FileOutputStream] =
+  def fileOutputStream(append: Boolean = false): Dispose[FileOutputStream] =
     newFileOutputStream(append).autoClosed
 
   //TODO: Move this to inputstream implicit
@@ -454,7 +454,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       digest: MessageDigest
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): ManagedResource[DigestInputStream] =
+    ): Dispose[DigestInputStream] =
     newDigestInputStream(digest)(openOptions).autoClosed
 
   def newScanner(
@@ -468,13 +468,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       splitter: StringSplitter = StringSplitter.Default
     )(implicit
       charset: Charset = DefaultCharset
-    ): ManagedResource[Scanner] =
+    ): Dispose[Scanner] =
     newScanner(splitter)(charset).autoClosed
 
   def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream =
     Files.newOutputStream(path, openOptions: _*)
 
-  def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): ManagedResource[OutputStream] =
+  def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): Dispose[OutputStream] =
     newOutputStream(openOptions).autoClosed
 
   def newZipOutputStream(
@@ -484,7 +484,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): ZipOutputStream =
     new ZipOutputStream(newOutputStream(openOptions), charset)
 
-  def zipInputStream(implicit charset: Charset = DefaultCharset): ManagedResource[ZipInputStream] =
+  def zipInputStream(implicit charset: Charset = DefaultCharset): Dispose[ZipInputStream] =
     newZipInputStream(charset).autoClosed
 
   def newZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
@@ -494,7 +494,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default,
       charset: Charset = DefaultCharset
-    ): ManagedResource[ZipOutputStream] =
+    ): Dispose[ZipOutputStream] =
     newZipOutputStream(openOptions, charset).autoClosed
 
   def newGzipOutputStream(
@@ -508,13 +508,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       bufferSize: Int = DefaultBufferSize,
       syncFlush: Boolean = false,
       append: Boolean = false
-    ): ManagedResource[GZIPOutputStream] =
+    ): Dispose[GZIPOutputStream] =
     newGzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append).autoClosed
 
   def newGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
     new GZIPInputStream(newFileInputStream, bufferSize)
 
-  def gzipInputStream(bufferSize: Int = DefaultBufferSize): ManagedResource[GZIPInputStream] =
+  def gzipInputStream(bufferSize: Int = DefaultBufferSize): Dispose[GZIPInputStream] =
     newGzipInputStream(bufferSize).autoClosed
 
   def newFileChannel(
@@ -528,7 +528,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default,
       attributes: File.Attributes = File.Attributes.default
-    ): ManagedResource[FileChannel] =
+    ): Dispose[FileChannel] =
     newFileChannel(openOptions, attributes).autoClosed
 
   def newAsynchronousFileChannel(
@@ -540,13 +540,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def asynchronousFileChannel(
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): ManagedResource[AsynchronousFileChannel] =
+    ): Dispose[AsynchronousFileChannel] =
     newAsynchronousFileChannel(openOptions).autoClosed
 
   def newWatchService: WatchService =
     fileSystem.newWatchService()
 
-  def watchService: ManagedResource[WatchService] =
+  def watchService: Dispose[WatchService] =
     newWatchService.autoClosed
 
   /**
@@ -1244,15 +1244,15 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *   a) it would slowdown shutdown and
     *   b) occupy unnecessary disk-space during app lifetime
     *
-    * This util auto-deletes the resource when done using the ManagedResource facility
+    * This util auto-deletes the resource when done using the Dispose facility
     *
     * Example usage:
     *   File.temporaryDirectory().foreach(tempDir => doSomething(tempDir)
     *
     * @return
     */
-  def toTemporary: ManagedResource[File] =
-    new ManagedResource(this)(Disposable.fileDisposer)
+  def toTemporary: Dispose[File] =
+    new Dispose(this)(Disposable.fileDisposer)
 
   //TODO: add features from https://github.com/sbt/io
 }
@@ -1275,7 +1275,7 @@ object File {
       prefix: String = "",
       parent: Option[File] = None,
       attributes: Attributes = Attributes.default
-    ): ManagedResource[File] =
+    ): Dispose[File] =
     newTemporaryDirectory(prefix, parent)(attributes).toTemporary
 
   def usingTemporaryDirectory[U](
@@ -1304,7 +1304,7 @@ object File {
       suffix: String = "",
       parent: Option[File] = None,
       attributes: Attributes = Attributes.default
-    ): ManagedResource[File] =
+    ): Dispose[File] =
     newTemporaryFile(prefix, suffix, parent)(attributes).toTemporary
 
   def usingTemporaryFile[U](

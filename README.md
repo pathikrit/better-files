@@ -197,6 +197,12 @@ file.writeBytes(bytes)
 file.printLines(lines)
 ```
 
+[`tee`](http://stackoverflow.com/questions/7987395/) multiple outputstreams:
+```scala
+val s3 = s1 tee s2
+s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
+```
+
 ### Encodings
 You can supply your own charset too for anything that does a read/write (it assumes `java.nio.charset.Charset.defaultCharset()` if you don't provide one):
 ```scala
@@ -282,12 +288,6 @@ val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
 val str     : String                = inputstream.asString  //Read a string from an InputStream
 ```
 `better-files` also supports [certain conversions that are not supported out of the box by the JDK](https://stackoverflow.com/questions/62241/how-to-convert-a-reader-to-inputstream-and-a-writer-to-outputstream)
-
-[`tee`](http://stackoverflow.com/questions/7987395/) multiple outputstreams:
-```scala
-val s3 = s1 tee s2
-s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
-```
 
 ### Globbing
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
@@ -509,7 +509,7 @@ for {
 You can write:
 ```scala
 for {
- reader <- file.bufferedReader    // returns ManagedResource[BufferedReader]
+ reader <- file.bufferedReader    // returns Dispose[BufferedReader]
 } foo(reader)
 
 // or simply:
@@ -555,7 +555,7 @@ object Shutdownable {
 val s: Shutdownable = ....
 
 for {
-  instance <- new ManagedResource(s)
+  instance <- new Dispose(s)
 } doSomething(s)  // s is disposed after this
 ```
 
@@ -693,8 +693,8 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
 
 ## Benchmarks
 * [Scanner benchmarks](core/src/test/scala/better/files/benchmarks/Scanners.scala):
-```
-> sbt "benchmarks/test"
+```shell
+> sbt "core/testOnly better.files.benchmarks.*"
 JavaScanner              : 2191 ms
 StringBuilderScanner     : 1325 ms
 CharBufferScanner        : 1117 ms

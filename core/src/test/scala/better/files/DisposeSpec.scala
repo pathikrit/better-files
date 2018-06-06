@@ -5,7 +5,7 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 import scala.reflect.ClassTag
 import scala.util.control.ControlThrowable
 
-class ManagedResourceSpec extends CommonSpec {
+class DisposeSpec extends CommonSpec {
   // Test classes
 
   private class TestDisposable extends AutoCloseable {

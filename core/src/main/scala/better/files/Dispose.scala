@@ -35,13 +35,13 @@ object Disposable {
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
-class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disposer: Disposable[A]) {
-  private[ManagedResource] val isDisposed    = new AtomicBoolean(false)
-  private[ManagedResource] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
+class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable[A]) {
+  private[Dispose] val isDisposed    = new AtomicBoolean(false)
+  private[Dispose] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
   // This is the Scala equivalent of how javac compiles try-with-resources,
   // Except that fatal exceptions while disposing take precedence over exceptions thrown previously
-  private[ManagedResource] def disposeOnceAndThrow(e1: Throwable) = {
+  private[Dispose] def disposeOnceAndThrow(e1: Throwable) = {
     try {
       disposeOnce()
     } catch {
@@ -53,8 +53,8 @@ class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disp
     throw e1
   }
 
-  private[ManagedResource] def withAdditionalDisposeTask[U](f: => U): ManagedResource[A] =
-    new ManagedResource[A](resource)(Disposable {
+  private[Dispose] def withAdditionalDisposeTask[U](f: => U): Dispose[A] =
+    new Dispose[A](resource)(Disposable {
       try {
         disposeOnce()
       } finally {
@@ -104,8 +104,8 @@ class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disp
     * @tparam B
     * @return
     */
-  def map[B](f: A => B): ManagedResource[B] =
-    new ManagedResource[B](f(resource))(Disposable(disposeOnce()))
+  def map[B](f: A => B): Dispose[B] =
+    new Dispose[B](f(resource))(Disposable(disposeOnce()))
 
   def withFilter(f: A => Boolean): this.type = {
     if (!f(resource)) disposeOnce()
@@ -121,15 +121,15 @@ class ManagedResource[A](private[ManagedResource] val resource: A)(implicit disp
     * @tparam F
     * @return
     */
-  def flatMap[B, F[_]](f: A => F[B])(implicit fv: ManagedResource.FlatMap[F]): fv.Output[B] =
+  def flatMap[B, F[_]](f: A => F[B])(implicit fv: Dispose.FlatMap[F]): fv.Output[B] =
     fv.apply(this)(f)
 }
 
-object ManagedResource {
+object Dispose {
   // Hack to get around issue in Scala 2.11: https://stackoverflow.com/questions/47598333/
   sealed trait FlatMap[-F[_]] {
     type Output[_]
-    def apply[A, B](a: ManagedResource[A])(f: A => F[B]): Output[B]
+    def apply[A, B](a: Dispose[A])(f: A => F[B]): Output[B]
   }
 
   object FlatMap {
@@ -138,9 +138,9 @@ object ManagedResource {
       /**
         * Compose this managed resource with another managed resource closing the outer one after the inner one
         */
-      implicit object managedResourceFlatMap extends FlatMap[ManagedResource] {
-        override type Output[X] = ManagedResource[X]
-        override def apply[A, B](m: ManagedResource[A])(f: A => ManagedResource[B]) =
+      implicit object disposeFlatMap extends FlatMap[Dispose] {
+        override type Output[X] = Dispose[X]
+        override def apply[A, B](m: Dispose[A])(f: A => Dispose[B]) =
           f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
       }
 
@@ -149,7 +149,7 @@ object ManagedResource {
         */
       implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
         override type Output[X] = Iterator[X]
-        override def apply[A, B](m: ManagedResource[A])(f: A => GenTraversableOnce[B]) = {
+        override def apply[A, B](m: Dispose[A])(f: A => GenTraversableOnce[B]) = {
           val it = try {
             f(m.resource).toIterator
           } catch {
