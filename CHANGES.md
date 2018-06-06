@@ -23,19 +23,19 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to Dispose
 * [Issue #241](https://github.com/pathikrit/better-files/issues/241): Remove resource leak from directory empty check
 
-## v3.5.0
+## [v3.5.0](https://github.com/pathikrit/better-files/releases/tag/v3.5.0)
 * [PR #230](https://github.com/pathikrit/better-files/pull/230): New Resource APIs with [module safety](https://github.com/pathikrit/better-files/pull/227)
 * [Issue #224](https://github.com/pathikrit/better-files/issues/224): FileMonitor should not block threads
 
-## v3.4.0
+## [v3.4.0](https://github.com/pathikrit/better-files/releases/tag/v3.4.0)
 * [PR #202](https://github.com/pathikrit/better-files/pull/202): for-comprehension friendly ARM
 * [PR #203](https://github.com/pathikrit/better-files/pull/203): Type-class for Scanner construction
 * Remove [redundant `count` param](https://github.com/pathikrit/better-files/commit/8cc66d0e8ac6517597eeb1db1814903f2256b805) from `File.Monitor#onUnknownEvent`
 
-## v3.3.1
+## [v3.3.1]((https://github.com/pathikrit/better-files/releases/tag/v3.3.1)
 * [Issue #146](https://github.com/pathikrit/better-files/issues/146): Release for Scala 2.11
 
-## v3.3.0
+## [v3.3.0]((https://github.com/pathikrit/better-files/releases/tag/v3.3.0)
 * [Issue #193](https://github.com/pathikrit/better-files/issues/193): Handle fast changing directory watching on Windows
 * [Issue #195](https://github.com/pathikrit/better-files/issues/195): Do not swallow `FileAlreadyExistsException` when creating directory or file
 * [Add](https://github.com/pathikrit/better-files/commit/00f27867ebd0cddec1ace7835dcc2375869fb3ae) method to check verified file existence (or non-existence)
@@ -43,7 +43,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [PR #199](https://github.com/pathikrit/better-files/pull/199): Utils for Object I/O
 * [PR #200](https://github.com/pathikrit/better-files/pull/200): GZIP APIs
 
-## v3.2.0
+## [v3.2.0](https://github.com/pathikrit/better-files/releases/tag/v3.2.0)
 * [Rename](https://github.com/pathikrit/better-files/commit/ec34a6f843fec941b51bdddafc2e07e5bc0e1cbb) PosixFilePermissions.OTHERS* APIs
 * [Issue #186](https://github.com/pathikrit/better-files/issues/186): Splitter based Scanner
 * [Issue #173](https://github.com/pathikrit/better-files/issues/173): Better ARM handling of fatal errors
@@ -53,7 +53,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Restore File.usingTemp](https://github.com/pathikrit/better-files/commit/35184a642245db3d1e41fc02c7bfbec0b19a43bb) first introduced in [7c60ca](https://github.com/pathikrit/better-files/commit/d3522e8da63b55c7d3fa14cc9b0b76acd57c60ca)
 * [Fix](https://github.com/pathikrit/better-files/pull/184) bug in appendBytes
 
-## v3.1.0
+## [v3.1.0](https://github.com/pathikrit/better-files/releases/tag/v3.1.0)
 * [Issue #140](https://github.com/pathikrit/better-files/issues/140): Batch up events for file monitoring
 * [Issue #136](https://github.com/pathikrit/better-files/issues/136): Use execution contexts for file monitoring
 * [Issue #152](https://github.com/pathikrit/better-files/issues/152): Streamed unzipping
@@ -64,7 +64,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #169](https://github.com/pathikrit/better-files/issues/169): Support for symbols in file DSL
 * [Issue #171](https://github.com/pathikrit/better-files/issues/171): Handle `createDirectories()` on symlinks to existing directories
 
-## v3.0.0
+## [v3.0.0]((https://github.com/pathikrit/better-files/releases/tag/v3.0.0)
 * [Issue #9](https://github.com/pathikrit/better-files/issues/9): File resource utils
 * [Issue #114](https://github.com/pathikrit/better-files/issues/114): Glob with automatic path
 * [Issue #107](https://github.com/pathikrit/better-files/issues/107): Handle Byte-order markers
@@ -81,9 +81,9 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #80](https://github.com/pathikrit/better-files/issues/80): Unzip filters
 * [PR #107](https://github.com/pathikrit/better-files/pull/127): Java serialization utils
 
-## v2.17.1
+## [v2.17.1]((https://github.com/pathikrit/better-files/releases/tag/v2.17.1)
 * [PR #99](https://github.com/pathikrit/better-files/pull/99): Release for Scala 2.12
 
-## v2.17.0
+## [v2.17.0](https://github.com/pathikrit/better-files/releases/tag/v2.17.0)
 * [PR #78](https://github.com/pathikrit/better-files/pull/78): Change `write(Array[Byte])` to `writeByteArray()`. Same for `append`
 * [Issue #76](https://github.com/pathikrit/better-files/issues/76): Move `better.files.Read` typeclass to `better.files.Scanner.Read`
