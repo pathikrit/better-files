@@ -1218,7 +1218,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def zipIn(
       files: Files,
       compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
-    )(charset: Charset = DefaultCharset
+    )(implicit
+      charset: Charset = DefaultCharset
     ): this.type = {
     for {
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed

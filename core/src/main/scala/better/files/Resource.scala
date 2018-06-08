@@ -44,10 +44,20 @@ trait Resource {
   def getAsStream(name: String): InputStream =
     asStream(name).getOrElse(Resource.notFound(name))
 
-  def asString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): Option[String] =
+  def asString(
+      name: String,
+      bufferSize: Int = DefaultBufferSize
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): Option[String] =
     asStream(name).map(_.asString(bufferSize = bufferSize)(charset))
 
-  def getAsString(name: String, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset): String =
+  def getAsString(
+      name: String,
+      bufferSize: Int = DefaultBufferSize
+    )(implicit
+      charset: Charset = DefaultCharset
+    ): String =
     asString(name, bufferSize)(charset).getOrElse(Resource.notFound(name))
 
   /**
