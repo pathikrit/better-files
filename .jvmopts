@@ -1,0 +1,10 @@
+-Dfile.encoding=UTF8
+-Xmx1G
+-XX:ReservedCodeCacheSize=256M
+-XX:MetaspaceSize=256M
+-XX:MaxMetaspaceSize=512M
+-noverify
+-XX:+OmitStackTraceInFastThrow
+-XX:SoftRefLRUPolicyMSPerMB=50
+-XX:+AggressiveOpts
+-XX:+CMSClassUnloadingEnabled

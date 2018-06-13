@@ -1,5 +1,17 @@
 language: scala
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - oraclejdk10
+  - oraclejdk11
+
+matrix:
+  allow_failures:
+  - jdk:
+    - jdk: oraclejdk9
+    - jdk: oraclejdk10
+    - jdk: oraclejdk11
+
 
 script: sbt clean coverage +test
 

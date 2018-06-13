@@ -38,7 +38,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   private[this] def fillBuffer() = {
     assert(!endOfInput)
     if (lastCoderResult.isUnderflow) {
-      val position = encoderIn.compact().position
+      val position = encoderIn.compact().position()
       //  We don't use Reader#read(CharBuffer) here because it is more efficient to write directly to the underlying char array
       // since the default implementation copies data to a temporary char array anyway
       reader.read(encoderIn.array, position, encoderIn.remaining) match {
