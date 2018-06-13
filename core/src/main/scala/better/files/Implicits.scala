@@ -121,17 +121,6 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
           } catch {
             case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
           }
-
-        override protected def resolveProxyClass(interfaces: Array[String]): Class[_] = {
-          try {
-            java.lang.reflect.Proxy.getProxyClass(
-              classLoader,
-              interfaces.map(interface => Class.forName(interface, false, classLoader)): _*
-            )
-          } catch {
-            case _: ClassNotFoundException | _: IllegalArgumentException => super.resolveProxyClass(interfaces)
-          }
-        }
       }
 
     def reader(implicit charset: Charset = DefaultCharset): InputStreamReader =
