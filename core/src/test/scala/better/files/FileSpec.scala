@@ -6,7 +6,7 @@ import better.files.Dsl._
 import better.files.File.{home, root}
 
 import scala.language.postfixOps
-import scala.util.Try
+import scala.util.{Properties, Try}
 
 class FileSpec extends CommonSpec {
 
@@ -473,6 +473,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "zip/unzip directories" in {
+    assume(Properties.javaVersion.startsWith("1.8"))
     t1.writeText("hello world")
     val zipFile = testRoot.zip()
     zipFile.size should be > 100L
@@ -490,6 +491,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "zip/unzip single files" in {
+    assume(Properties.javaVersion.startsWith("1.8"))
     t1.writeText("hello world")
     val zipFile = t1.zip()
     zipFile.size should be > 100L

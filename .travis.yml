@@ -5,10 +5,13 @@ jdk:
   - oraclejdk10
   - oraclejdk11
 
+branches:
+  only:
+    master
+
 matrix:
   allow_failures:
   - jdk:
-    - jdk: oraclejdk9
     - jdk: oraclejdk10
     - jdk: oraclejdk11
 
