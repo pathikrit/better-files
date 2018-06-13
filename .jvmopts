@@ -3,8 +3,7 @@
 -XX:ReservedCodeCacheSize=256M
 -XX:MetaspaceSize=256M
 -XX:MaxMetaspaceSize=512M
--noverify
--XX:+OmitStackTraceInFastThrow
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:+AggressiveOpts
--XX:+CMSClassUnloadingEnabled
+
+# For Java 9+ TODO: Remove IgnoreUnrecognizedVMOptions and do it in build.sbt based on Java version!
+-XX:+IgnoreUnrecognizedVMOptions
+--add-modules=java.xml.bind
