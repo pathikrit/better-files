@@ -1,9 +1,21 @@
 language: scala
 jdk:
+  - oraclejdk5
+  - oraclejdk6
+  - oraclejdk7
   - oraclejdk8
   - oraclejdk9
   - oraclejdk10
   - oraclejdk11
+  - oraclejdk-ea
+  - openjdk5
+  - openjdk6
+  - openjdk7
+  - openjdk8
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk-ea
 
 branches:
   only:
@@ -12,9 +24,19 @@ branches:
 matrix:
   allow_failures:
   - jdk:
-    - jdk: oraclejdk10
-    - jdk: oraclejdk11
-
+    - oraclejdk5
+    - oraclejdk6
+    - oraclejdk7
+    - oraclejdk11
+    - oraclejdk-ea
+    - openjdk5
+    - openjdk6
+    - openjdk7
+    - openjdk8
+    - openjdk9
+    - openjdk10
+    - openjdk11
+    - openjdk-ea
 
 script: sbt clean coverage +test
 

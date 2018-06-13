@@ -7,3 +7,4 @@
 # For Java 9+ TODO: Remove IgnoreUnrecognizedVMOptions and do it in build.sbt based on Java version!
 -XX:+IgnoreUnrecognizedVMOptions
 --add-modules=java.xml.bind
+--illegal-access=warn
