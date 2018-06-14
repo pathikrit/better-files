@@ -6,7 +6,6 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.6",
   crossScalaVersions := Seq("2.11.12", "2.12.6"),
   crossVersion := CrossVersion.binary,
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint"),
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
   scalacOptions in (Compile, doc) += "-groups",
   libraryDependencies += Dependencies.scalatest,

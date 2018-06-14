@@ -81,8 +81,9 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
   }
 
   private[this] def flushOutput(): Unit = {
-    if (decoderOut.position > 0) {
-      writer.write(decoderOut.array, 0, decoderOut.position)
+    val p = decoderOut.position()
+    if (p > 0) {
+      writer.write(decoderOut.array, 0, p)
       val _ = decoderOut.rewind()
     }
   }

@@ -1,5 +1,30 @@
 language: scala
-jdk: oraclejdk8
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+  - oraclejdk9
+  - oraclejdk10
+  - oraclejdk11
+  - oraclejdk-ea
+  - openjdk6
+  - openjdk7
+  - openjdk8
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk-ea
+
+branches:
+  only:
+    master
+
+matrix:
+  allow_failures:
+    - jdk: oraclejdk11
+    - jdk: oraclejdk-ea
+    - jdk: openjdk7
+    - jdk: openjdk11
+    - jdk: openjdk-ea
 
 script: sbt clean coverage +test
 
@@ -7,16 +32,22 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+    on:
+      jdk: oraclejdk8
 
   - provider: pages
     skip_cleanup: true
     github-token: $GITHUB_TOKEN
     local-dir: target/site
     verbose: true
+    on:
+      jdk: oraclejdk8
 
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
+    on:
+      jdk: oraclejdk8
 
 cache:
   directories:  # Copied from https://github.com/typelevel/cats/blob/master/.travis.yml
