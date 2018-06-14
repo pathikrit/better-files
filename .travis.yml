@@ -20,12 +20,11 @@ branches:
 
 matrix:
   allow_failures:
-  - jdk:
-    - oraclejdk11
-    - oraclejdk-ea
-    - openjdk7
-    - openjdk11
-    - openjdk-ea
+    - jdk: oraclejdk11
+    - jdk: oraclejdk-ea
+    - jdk: openjdk7
+    - jdk: openjdk11
+    - jdk: openjdk-ea
 
 script: sbt clean coverage +test
 
