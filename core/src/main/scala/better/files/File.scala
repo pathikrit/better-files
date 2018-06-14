@@ -10,7 +10,6 @@ import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
 import java.util.regex.Pattern
 import java.util.zip._
-import javax.xml.bind.DatatypeConverter
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
@@ -610,8 +609,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /**
     * @return checksum of this file (or directory) in hex format
     */
-  def checksum(algorithm: MessageDigest): String =
-    DatatypeConverter.printHexBinary(digest(algorithm))
+  def checksum(algorithm: MessageDigest): String = {
+    val bytes = digest(algorithm)
+    String.format("%0" + (bytes.length << 1) + "X", new java.math.BigInteger(1, bytes))
+  }
 
   def md5: String =
     checksum("MD5")
