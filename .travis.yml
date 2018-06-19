@@ -21,11 +21,7 @@ scala:
 
 matrix:
   allow_failures:
-    - jdk: openjdk7
-    - jdk: oraclejdk11
-    - jdk: oraclejdk-ea
-    - jdk: openjdk11
-    - jdk: openjdk-ea
+    - jdk: openjdk7  # https://github.com/sbt/sbt/issues/4219
 
 branches:
   only:
