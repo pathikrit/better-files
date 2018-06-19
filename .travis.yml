@@ -16,15 +16,11 @@ jdk:
   - openjdk-ea
 
 scala:
-  - 2.10.7
   - 2.11.12
   - 2.12.6
-  - 2.13.0-M4
 
 matrix:
   allow_failures:
-    - scala: 2.10.7
-    - scala: 2.13.0-M4
     - jdk: openjdk7
     - jdk: oraclejdk11
     - jdk: oraclejdk-ea

@@ -3,7 +3,7 @@ val repo     = "better-files"
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := "2.12.6",
+  scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
   crossScalaVersions := Seq("2.11.12", "2.12.6"),
   crossVersion := CrossVersion.binary,
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
