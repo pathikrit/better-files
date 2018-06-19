@@ -471,24 +471,24 @@ val research: File = zipFile.unzipTo(destination = home/"Documents"/"research")
 val zipFile: File = directory.zipTo(destination = home/"Desktop"/"toEmail.zip")
 
 // Zipping in:
-val zipFile = File("countries.zip").zipIn(file"usa.txt", file"russia.txt")
+val zipFile = File("countries.zip").zipIn(Iterator(file"usa.txt", file"russia.txt"))()
 
 // Zipping/Unzipping to temporary files/directories:
 val someTempZipFile: File = directory.zip()
-val someTempDir: File = zipFile.unzip()
+val someTempDir: File = someTempZipFile.unzip()
 assert(directory === someTempDir)
 ```
 
 GZIP handling:
 ```scala
-File("big-data.csv").gzipTo("big-data.csv.gz")
-File("big-data.csv.gz").ungzipTo("big-data.csv")
+File("big-data.csv").gzipTo(File("big-data.csv.gz"))
+File("big-data.csv.gz").unGzipTo(File("big-data.csv"))
 
 // GZIP stream handling:
 File("countries.gz").newInputStream.asGzipInputStream().lines.take(10).foreach(println)
 
 def write(out: OutputStream, countries: Seq[String]) =
-  out.asGzipOutputStream().printwriter.map(_.printLines(countries))
+  out.asGzipOutputStream().printWriter().printLines(countries).close()
 ```
 
 ### Lightweight ARM
