@@ -32,8 +32,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
-    on:
-      jdk: oraclejdk8
 
   - provider: pages
     skip_cleanup: true
@@ -50,7 +48,6 @@ deploy:
       jdk: oraclejdk8
 
 cache:
-  directories:  # Copied from https://github.com/typelevel/cats/blob/master/.travis.yml
+  directories:
   - $HOME/.sbt
   - $HOME/.ivy2/cache
-  - $HOME/.m2
