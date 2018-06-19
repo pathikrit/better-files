@@ -1,4 +1,5 @@
 language: scala
+
 jdk:
   - oraclejdk7
   - oraclejdk8
@@ -14,24 +15,31 @@ jdk:
   - openjdk11
   - openjdk-ea
 
+scala:
+  - 2.11.12
+  - 2.12.6
+
+matrix:
+  allow_failures:
+    - jdk: openjdk7
+    - jdk: oraclejdk11
+    - jdk: oraclejdk-ea
+    - jdk: openjdk11
+    - jdk: openjdk-ea
+
 branches:
   only:
     master
 
-matrix:
-  allow_failures:
-    - jdk: oraclejdk11
-    - jdk: oraclejdk-ea
-    - jdk: openjdk7
-    - jdk: openjdk11
-    - jdk: openjdk-ea
-
-script: sbt clean coverage +test
+script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
 
 deploy:
   - provider: script
     skip_cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+    on:
+      jdk: oraclejdk8
+      scala: 2.12.6
 
   - provider: pages
     skip_cleanup: true
@@ -40,12 +48,14 @@ deploy:
     verbose: true
     on:
       jdk: oraclejdk8
+      scala: 2.12.6
 
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
       jdk: oraclejdk8
+      scala: 2.12.6
 
 cache:
   directories:
