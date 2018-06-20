@@ -1,14 +1,12 @@
 language: scala
 
 jdk:
-  - oraclejdk7
+  # sbt 1 does not support JDK 7 or below: https://github.com/sbt/sbt/issues/4219
   - oraclejdk8
   - oraclejdk9
   - oraclejdk10
   - oraclejdk11
   - oraclejdk-ea
-  - openjdk6
-  - openjdk7
   - openjdk8
   - openjdk9
   - openjdk10
@@ -18,10 +16,6 @@ jdk:
 scala:
   - 2.11.12
   - 2.12.6
-
-matrix:
-  allow_failures:
-    - jdk: openjdk7  # https://github.com/sbt/sbt/issues/4219
 
 branches:
   only:
