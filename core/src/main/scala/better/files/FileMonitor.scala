@@ -1,6 +1,6 @@
 package better.files
 
-import java.nio.file._
+import java.nio.file.{Files => _, _}
 
 import scala.concurrent.{blocking, ExecutionContext}
 import scala.util.Try
