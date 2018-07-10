@@ -192,7 +192,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isSiblingOf(sibling: File): Boolean =
     sibling.isChildOf(parent)
 
-  def siblings: Files =
+  def siblings: Iterator[File] =
     parent.list.filterNot(_ == this)
 
   def isChildOf(parent: File): Boolean =
@@ -707,14 +707,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isWriteLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.readWrite, position, size, isShared)
 
-  def list: Files =
+  def list: Iterator[File] =
     Files.list(path)
 
-  def children: Files = list
+  def children: Iterator[File] = list
 
-  def entries: Files = list
+  def entries: Iterator[File] = list
 
-  def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+  def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] =
     walk()(visitOptions).filterNot(isSamePathAs)
 
   /**
@@ -723,7 +723,11 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @param maxDepth
     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0)
     */
-  def walk(maxDepth: Int = Int.MaxValue)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Files =
+  def walk(
+      maxDepth: Int = Int.MaxValue
+    )(implicit
+      visitOptions: File.VisitOptions = File.VisitOptions.default
+    ): Iterator[File] =
     Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
 
   def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
@@ -744,7 +748,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default,
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Files =
+    ): Iterator[File] =
     pathMatcher(syntax, includePath)(pattern).matches(this)(visitOptions)
 
   /**
@@ -760,7 +764,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       includePath: Boolean = true
     )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Files =
+    ): Iterator[File] =
     glob(pattern.regex, includePath)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
 
   /**
@@ -774,7 +778,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       matchFilter: File => Boolean
     )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Files =
+    ): Iterator[File] =
     walk()(visitOptions).filter(matchFilter)
 
   def uri: URI =
@@ -1217,7 +1221,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return this
     */
   def zipIn(
-      files: Files,
+      files: Iterator[File],
       compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
     )(implicit
       charset: Charset = DefaultCharset

@@ -24,8 +24,6 @@ package object files extends Implicits {
 
   val EOF = StreamTokenizer.TT_EOF
 
-  type Files = Iterator[File]
-
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =
     new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
@@ -33,8 +31,6 @@ package object files extends Implicits {
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 
   @inline private[files] def repeat[U](n: Int)(f: => U): Unit = (1 to n).foreach(_ => f)
-
-  private[files] def currentClassLoader() = Thread.currentThread().getContextClassLoader
 
   private[files] def eofReader(read: => Int): Iterator[Int] = Iterator.continually(read).takeWhile(_ != EOF)
 

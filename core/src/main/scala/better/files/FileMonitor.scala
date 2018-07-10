@@ -44,7 +44,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   }
 
   protected[this] def watch(file: File, depth: Int): Unit = {
-    def toWatch: Files =
+    def toWatch: Iterator[File] =
       if (file.isDirectory) {
         file.walk(depth).filter(f => f.isDirectory && f.exists)
       } else {

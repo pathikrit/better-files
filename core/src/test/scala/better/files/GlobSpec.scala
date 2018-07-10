@@ -121,7 +121,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     * @param refPaths references
     * @param baseDir basedir to for creating full path of references
     */
-  private def verify(pathsIt: Files, refPaths: Seq[String], baseDir: File) = {
+  private def verify(pathsIt: Iterator[File], refPaths: Seq[String], baseDir: File) = {
     val paths = pathsIt.toSeq
     val refs = refPaths
       .map(refPath => baseDir / refPath)

@@ -103,13 +103,13 @@ object Dsl {
   def cat(files: File*): Seq[Iterator[Byte]] =
     files.map(_.bytes)
 
-  def ls(file: File): Files =
+  def ls(file: File): Iterator[File] =
     file.list
 
-  def dir(file: File): Files =
+  def dir(file: File): Iterator[File] =
     ls(file)
 
-  def ls_r(file: File): Files =
+  def ls_r(file: File): Iterator[File] =
     file.listRecursively
 
   def touch(file: File): File =
