@@ -8,6 +8,7 @@ import java.nio.file._
 import java.nio.file.attribute._
 import java.security.{DigestInputStream, MessageDigest}
 import java.time.Instant
+import java.util.function.BiPredicate
 import java.util.regex.Pattern
 import java.util.zip._
 
@@ -651,19 +652,23 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     Files.isHidden(path)
 
   /**
-    * List files recursively upto given depth using a custom file filter
+    * List files recursively up to given depth using a custom file filter
     *
-    * @param maxDepth
     * @param filter
+    * @param maxDepth
     * @param visitOptions
     * @return
     */
   def list(
-      maxDepth: Int = Int.MaxValue,
       filter: File => Boolean,
+      maxDepth: Int = Int.MaxValue,
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Iterator[File] =
-    Files.find(path, maxDepth, (p, _) => filter(p), visitOptions: _*)
+    ): Iterator[File] = {
+    val predicate = new BiPredicate[Path, BasicFileAttributes] {
+      override def test(p: Path, a: BasicFileAttributes) = filter(p)
+    }
+    Files.find(path, maxDepth, predicate, visitOptions: _*)
+  }
 
   /**
     * Check if a file is locked.
