@@ -23,6 +23,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to Dispose
 * [Issue #241](https://github.com/pathikrit/better-files/issues/241): Remove resource leak from directory empty check
 * [Issue #242](https://github.com/pathikrit/better-files/issues/242): Support for JDK 9 and JDK 10
+* [Remove Files alias](https://github.com/pathikrit/better-files/commit/bfccb5041239bc5413afade4218ec1fb90d3e3d5)
 
 ## [v3.5.0](https://github.com/pathikrit/better-files/releases/tag/v3.5.0)
 * [PR #230](https://github.com/pathikrit/better-files/pull/230): New Resource APIs with [module safety](https://github.com/pathikrit/better-files/pull/227)

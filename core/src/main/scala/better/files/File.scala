@@ -651,6 +651,21 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     Files.isHidden(path)
 
   /**
+    * List files recursively upto given depth using a custom file filter
+    *
+    * @param maxDepth
+    * @param filter
+    * @param visitOptions
+    * @return
+    */
+  def list(
+      maxDepth: Int = Int.MaxValue,
+      filter: File => Boolean,
+      visitOptions: File.VisitOptions = File.VisitOptions.default
+    ): Iterator[File] =
+    Files.find(path, maxDepth, (p, _) => filter(p), visitOptions: _*)
+
+  /**
     * Check if a file is locked.
     *
     * @param mode     The random access mode.
