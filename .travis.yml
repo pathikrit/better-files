@@ -17,6 +17,14 @@ scala:
   - 2.11.12
   - 2.12.6
 
+matrix:
+  allow_failures:
+  - jdk:
+    - oraclejdk11
+    - oraclejdk-ea
+    - openjdk11
+    - openjdk-ea
+
 branches:
   only:
     master
