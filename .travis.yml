@@ -19,11 +19,10 @@ scala:
 
 matrix:
   allow_failures:
-  - jdk:
-    - oraclejdk11
-    - oraclejdk-ea
-    - openjdk11
-    - openjdk-ea
+    - jdk: oraclejdk11
+    - jdk: oraclejdk-ea
+    - jdk: openjdk11
+    - jdk: openjdk-ea
 
 branches:
   only:
@@ -57,5 +56,5 @@ deploy:
 
 cache:
   directories:
-  - $HOME/.sbt
-  - $HOME/.ivy2/cache
+    - $HOME/.sbt
+    - $HOME/.ivy2/cache
