@@ -17,10 +17,9 @@ import scala.concurrent.ExecutionContext
 import scala.util.Properties
 import scala.util.matching.Regex
 
-/**
-  * Scala wrapper around java.nio.files.Path
-  */
-class File private (val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) {
+/** Scala wrapper around java.nio.files.Path */
+@SerialVersionUID(3435L)
+class File private (val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends Serializable {
   //TODO: LinkOption?
 
   def pathAsString: String =
