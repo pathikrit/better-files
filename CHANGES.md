@@ -25,7 +25,8 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #242](https://github.com/pathikrit/better-files/issues/242): Support for JDK 9 and JDK 10
 * [Remove Files alias](https://github.com/pathikrit/better-files/commit/bfccb5041239bc5413afade4218ec1fb90d3e3d5)
 * [List with filter API](https://github.com/pathikrit/better-files/commit/41e521b9a95a7f3ae5affb1a8eb798a0b2358445)
-* [More create if not exists APIs](https://github.com/pathikrit/better-files/commit/9c83d8b6c6eeb361eed5ffcf3e0810b207af7939)
+* More [createIfNotExists() APIs](https://github.com/pathikrit/better-files/commit/9c83d8b6c6eeb361eed5ffcf3e0810b207af7939)
+* [Issue #247](https://github.com/pathikrit/better-files/issues/247): Strict equality for contains/isParentOf/isChildOf
 
 ## [v3.5.0](https://github.com/pathikrit/better-files/releases/tag/v3.5.0)
 * [PR #230](https://github.com/pathikrit/better-files/pull/230): New Resource APIs with [module safety](https://github.com/pathikrit/better-files/pull/227)

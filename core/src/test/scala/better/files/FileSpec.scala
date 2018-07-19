@@ -232,8 +232,9 @@ class FileSpec extends CommonSpec {
   it should "support parent/child" in {
     fa isChildOf testRoot shouldBe true
     testRoot isChildOf root shouldBe true
-    root isChildOf root shouldBe true
-    fa isChildOf fa shouldBe true
+    root isChildOf root shouldBe false
+    fa isChildOf fa shouldBe false
+    fa isParentOf fa shouldBe false
     b2 isChildOf b2 shouldBe false
     b2 isChildOf b2.parent shouldBe true
     root.parent shouldBe null

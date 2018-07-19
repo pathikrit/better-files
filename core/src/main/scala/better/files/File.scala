@@ -219,10 +219,11 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * Check if this directory contains this file
     *
     * @param file
+    * @param strict If strict is false, it would return true for self.contains(self)
     * @return true if this is a directory and it contains this file
     */
-  def contains(file: File): Boolean =
-    isDirectory && (file.path startsWith path)
+  def contains(file: File, strict: Boolean = true): Boolean =
+    isDirectory && (file.path startsWith path) && (!strict || !isSamePathAs(file))
 
   def isParentOf(child: File): Boolean =
     contains(child)
