@@ -162,7 +162,7 @@ class FileSpec extends CommonSpec {
     t2.writeText("hello").appendText("world").contentAsString shouldEqual "helloworld"
 
     (testRoot / "diary")
-      .createIfNotExists()
+      .createFileIfNotExists()
       .appendLine()
       .appendLines("My name is", "Inigo Montoya")
       .printLines(Iterator("x", 1))

@@ -170,6 +170,22 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     }
   }
 
+  def createFileIfNotExists(
+      createParents: Boolean = false
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type =
+    createIfNotExists(asDirectory = false, createParents = createParents)
+
+  def createDirectoryIfNotExists(
+      createParents: Boolean = false
+    )(implicit
+      attributes: File.Attributes = File.Attributes.default,
+      linkOptions: File.LinkOptions = File.LinkOptions.default
+    ): this.type =
+    createIfNotExists(asDirectory = true, createParents = createParents)
+
   /**
     * Create this file
     *
@@ -560,7 +576,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
     ): this.type = {
-    createIfNotExists().outputStream(openOptions).foreach(_.asObjectOutputStream().serialize(obj).flush())
+    createFileIfNotExists().outputStream(openOptions).foreach(_.asObjectOutputStream().serialize(obj).flush())
     this
   }
 
@@ -930,7 +946,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
     ): this.type = {
-    Files.setLastModifiedTime(createIfNotExists()(attributes, linkOptions).path, FileTime.from(time))
+    Files.setLastModifiedTime(createFileIfNotExists()(attributes, linkOptions).path, FileTime.from(time))
     this
   }
 
@@ -1206,7 +1222,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): destination.type = {
     for {
       in  <- gzipInputStream(bufferSize)
-      out <- destination.createIfNotExists(createParents = true).fileOutputStream(append)
+      out <- destination.createFileIfNotExists(createParents = true).fileOutputStream(append)
     } in.pipeTo(out, bufferSize)
     destination
   }
@@ -1225,7 +1241,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     for {
       in <- fileInputStream
       out <- destination
-        .createIfNotExists(createParents = true)
+        .createFileIfNotExists(createParents = true)
         .gzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append)
     } in.buffered(bufferSize).pipeTo(out, bufferSize)
     destination
