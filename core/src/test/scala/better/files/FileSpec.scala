@@ -507,7 +507,7 @@ class FileSpec extends CommonSpec {
       val f2      = (dir / 'f2).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
       val lines   = zipFile.newZipInputStream.foldMap(_.lines.toSeq).flatten
-      lines shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
+      lines.toSeq shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
     }
   }
 

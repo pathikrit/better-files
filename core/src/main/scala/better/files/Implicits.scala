@@ -272,8 +272,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       }
     }
 
-    def foldMap[A](f: ZipInputStream => A): Seq[A] =
-      mapEntries(_ => f(in)).toSeq
+    def foldMap[A](f: ZipInputStream => A): Iterator[A] =
+      mapEntries(_ => f(in))
   }
 
   implicit class ZipEntryOps(val entry: ZipEntry) {
