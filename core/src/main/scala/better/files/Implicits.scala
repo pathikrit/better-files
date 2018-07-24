@@ -34,6 +34,15 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def /(child: String): File =
       toFile / child
+
+    def inputStream(implicit charset: Charset = DefaultCharset): InputStream =
+      new ByteArrayInputStream(str.getBytes(charset))
+
+    def reader: Reader =
+      new StringReader(str)
+
+    def lines: Seq[String] =
+      str.split("\\r?\\n")
   }
 
   implicit class FileOps(file: JFile) {

@@ -29,6 +29,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #247](https://github.com/pathikrit/better-files/issues/247): Strict equality for contains/isParentOf/isChildOf
 * [Issue #249](https://github.com/pathikrit/better-files/issues/249): Make File serializable
 * More [ZIP I/O helpers](https://github.com/pathikrit/better-files/commit/59c17c60eb22daad4a8690c052169c379fe3d5e3)
+* More [String to I/O helpers]()
 
 ## [v3.5.0](https://github.com/pathikrit/better-files/releases/tag/v3.5.0)
 * [PR #230](https://github.com/pathikrit/better-files/pull/230): New Resource APIs with [module safety](https://github.com/pathikrit/better-files/pull/227)
