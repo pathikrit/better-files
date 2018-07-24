@@ -12,7 +12,6 @@ import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
-import scala.util.Try
 
 /**
   * Container for various implicits
@@ -94,6 +93,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
       new GZIPInputStream(in, bufferSize)
 
+    def asZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
+      new ZipInputStream(in, charset)
+
     /**
       * If bufferSize is set to less than or equal to 0, we don't buffer
       * @param bufferSize
@@ -165,6 +167,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       */
     def asObjectOutputStream(bufferSize: Int = DefaultBufferSize): ObjectOutputStream =
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
+
+    def asZipOutputStream(implicit charset: Charset): ZipOutputStream =
+      new ZipOutputStream(out, charset)
   }
 
   implicit class PrintWriterOps(pw: PrintWriter) {
@@ -255,12 +260,20 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       override def hasNext = entry != null
 
       override def next() = {
-        val result = Try(f(entry))
-        Try(in.closeEntry())
-        entry = in.getNextEntry
-        result.get
+        try {
+          f(entry)
+        } finally {
+          try {
+            in.closeEntry()
+          } finally {
+            entry = in.getNextEntry
+          }
+        }
       }
     }
+
+    def foldMap[A](f: ZipInputStream => A): Seq[A] =
+      mapEntries(_ => f(in)).toSeq
   }
 
   implicit class ZipEntryOps(val entry: ZipEntry) {

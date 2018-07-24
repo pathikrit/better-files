@@ -501,6 +501,16 @@ class FileSpec extends CommonSpec {
     (destination / "t1.txt").contentAsString shouldEqual "hello world"
   }
 
+  it should "zip/unzip multiple files" in {
+    File.usingTemporaryDirectory() { dir =>
+      val f1      = (dir / 'f1).touch().appendLines("Line 1", "Line 2")
+      val f2      = (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
+      val lines   = zipFile.newZipInputStream.foldMap(_.lines.toSeq).flatten
+      lines shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
+    }
+  }
+
   it should "ungzip" in {
     val data = Seq("hello", "world")
     for {
