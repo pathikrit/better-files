@@ -92,7 +92,7 @@ lazy val releaseSettings = Seq(
     setNextVersion,
     commitNextVersion,
     releaseStepCommand("sonatypeReleaseAll"),
-    pushChanges
+    //pushChanges
   )
 )
 
@@ -104,11 +104,15 @@ lazy val publishSettings = Seq(
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   developers := List(
-    Developer(id = username,
-              name = "Pathikrit Bhowmick",
-              email = "pathikritbhowmick@msn.com",
-              url = new URL(s"http://github.com/${username}"))
+    Developer(
+      id = username,
+      name = "Pathikrit Bhowmick",
+      email = "pathikritbhowmick@msn.com",
+      url = new URL(s"http://github.com/${username}")
+    )
   ),
+  useGpg := true,
+  usePgpKeyHex("66AA02EC8AA60DB9"),
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
