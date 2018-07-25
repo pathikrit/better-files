@@ -166,6 +166,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       out
     }
 
+    def writeAndClose(str: String)(implicit charset: Charset = DefaultCharset): Unit =
+      out.writer.autoClosed.foreach(_.write(str))
+
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
 

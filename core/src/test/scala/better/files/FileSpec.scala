@@ -529,6 +529,9 @@ class FileSpec extends CommonSpec {
       .contentAsString
 
     assert(actual === "hello world")
+
+    t1.clear().newGzipOutputStream().writeAndClose("hello world2")
+    assert(t1.newGzipInputStream().asString() === "hello world2")
   }
 
   it should "read bytebuffers" in {
