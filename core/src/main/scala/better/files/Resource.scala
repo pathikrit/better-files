@@ -7,9 +7,15 @@ import java.nio.charset.Charset
 import scala.reflect.macros.{ReificationException, blackbox}
 
 /**
-  * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) class resources]] or [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
+  * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) class resources]]
+  * or [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
   *
-  * The default implementation of this trait is the [[Resource]] object, which looks up resources using the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]]. The Resource object also offers several other Resource implementations, through its methods `at`, `from`, and `my`. `at` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]], `from` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html ClassLoader]], and `my` searches from the class, trait, or object surrounding the call.
+  * The default implementation of this trait is the [[Resource]] object, which looks up resources
+  * using the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]].
+  * The Resource object also offers several other Resource implementations,
+  * through its methods `at`, `from`, and `my`. `at` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]],
+  * `from` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html ClassLoader]],
+  * and `my` searches from the class, trait, or object surrounding the call.
   *
   * @example {{{
   *          // Look up the config.properties file for this class or object.
@@ -77,7 +83,12 @@ trait Resource {
 /**
   * Implementations of [[Resource]].
   *
-  * This object itself is a Resource uses the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]]. It also creates Resources with different lookup behavior, using the methods `at`, `from`, and `my`. `at` searches from a [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]], `from` searches from a different [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html ClassLoader]], and `my` searches from the class, trait, or object surrounding the call.
+  * This object itself is a Resource uses the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s
+  * [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]].
+  * It also creates Resources with different lookup behavior, using the methods `at`, `from`, and `my`. `at` searches
+  * rom a [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]], `from` searches
+  * from a different [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html ClassLoader]],
+  * and `my` searches from the class, trait, or object surrounding the call.
   *
   * @see [[Resource]]
   * @see [[https://stackoverflow.com/questions/676250/different-ways-of-loading-a-file-as-an-inputstream Different ways of loading a file as an InputStream]]
@@ -96,7 +107,9 @@ object Resource extends Resource {
   /**
     * Look up class resource files.
     *
-    * This Resource looks up resources relative to the JVM class file for `T`, using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]. For example, if `com.example.ExampleClass` is given for `T`, then resource files will be searched for in the `com/example` folder containing `ExampleClass.class`.
+    * This Resource looks up resources relative to the JVM class file for `T`,
+    * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
+    * For example, if `com.example.ExampleClass` is given for `T`, then resource files will be searched for in the `com/example` folder containing `ExampleClass.class`.
     *
     * If you want to look up resource files relative to the call site instead (that is, you want a class to look up one of its own resources), use the `my` method instead.
     *
@@ -111,9 +124,13 @@ object Resource extends Resource {
   /**
     * Look up class resource files.
     *
-    * This Resource looks up resources from the given Class, using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]. For example, if `classOf[com.example.ExampleClass]` is given for `clazz`, then resource files will be searched for in the `com/example` folder containing `ExampleClass.class`.
+    * This Resource looks up resources from the given Class,
+    * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
+    * For example, if `classOf[com.example.ExampleClass]` is given for `clazz`, then resource files will be searched for
+    * in the `com/example` folder containing `ExampleClass.class`.
     *
-    * If you want to look up resource files relative to the call site instead (that is, you want your class to look up one of its own resources), use the `my` method instead.
+    * If you want to look up resource files relative to the call site instead (that is, you want your class to look up one of its own resources),
+    * use the `my` method instead.
     *
     * @example {{{ Resource.at(Class.forName("your.AppClass")).url("config.properties") }}}
     *
@@ -128,7 +145,10 @@ object Resource extends Resource {
   /**
     * Look up own resource files.
     *
-    * This Resource looks up resources from the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]] surrounding the call, using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]. For example, if `my` is called from `com.example.ExampleClass`, then resource files will be searched for in the `com/example` folder containing `ExampleClass.class`.
+    * This Resource looks up resources from the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]] surrounding the call,
+    * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
+    * For example, if `my` is called from `com.example.ExampleClass`,
+    * then resource files will be searched for in the `com/example` folder containing `ExampleClass.class`.
     *
     * @example {{{ Resource.my.url("config.properties") }}}
     * @return A Resource for the call site.
@@ -154,7 +174,8 @@ object Resource extends Resource {
     }
 
   /**
-    * Implementations of the `Resource.at` macros. This is needed because `Class#getResource` is caller-sensitive; calls to it must appear in user code, ''not'' in better-files.
+    * Implementations of the `Resource.at` macros. This is needed because `Class#getResource` is caller-sensitive;
+    * calls to it must appear in user code, ''not'' in better-files.
     */
   private[Resource] final class Macros(val c: blackbox.Context) {
     import c.universe._

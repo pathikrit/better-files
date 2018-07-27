@@ -671,6 +671,9 @@ val watcher = new FileMonitor(myDir, recursive = true) {
 }
 ```
 
+There is also an external module which gives high performance file monitoring and interpolates with better-files.
+See: https://github.com/gmethvin/directory-watcher#better-files-integration-scala
+
 ### Akka File Watcher
 `better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala)
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:

@@ -19,7 +19,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
 * Remove implicit options from all APIs
 
-## v3.6.0
+## v3.7.0
+* [Issue #250](https://github.com/pathikrit/better-files/issues/250): Add explicit `AutoDisposingIterator`
+
+## [v3.6.0](https://github.com/pathikrit/better-files/releases/tag/v3.6.0)
 * [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to Dispose
 * [Issue #241](https://github.com/pathikrit/better-files/issues/241): Remove resource leak from directory empty check
 * [Issue #242](https://github.com/pathikrit/better-files/issues/242): Support for JDK 9 and JDK 10
