@@ -76,7 +76,14 @@ trait Resource {
     */
   def url(name: String): Option[URL]
 
-  def getUrl(name: String): URL =
+  /**
+    * Get URL of given resource
+    * A default argument of empty string is provided to conveniently get the root resource URL using {{Resource.getUrl()}}
+    * 
+    * @param name
+    * @return
+    */
+  def getUrl(name: String = ""): URL =
     url(name).getOrElse(Resource.notFound(name))
 }
 

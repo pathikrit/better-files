@@ -45,4 +45,8 @@ final class ResourceSpec extends CommonSpec {
   it should "require a concrete type" in {
     """def foo[T] = better.files.Resource.at[T].asStream("foo")""" shouldNot typeCheck
   }
+
+  it should "fetch root url" in {
+    assert(Option(Resource.getUrl()).isDefined)
+  }
 }

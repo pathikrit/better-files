@@ -174,6 +174,7 @@ Worry no more:
 ```scala
 val resource        : InputStream   = Resource.getAsStream("foo.txt") //Same as this.getClass().getResource("foo.txt")
 val resourceURL     : java.net.URL  = Resource.getUrl("foo.txt")
+val rootResourceURL : java.net.URL  = Resource.getUrl()
 val resourceAsStr   : String        = Resource.getAsString("foo.txt")
 ```
 Tha above APIs can load from custom `ClassLoader`s too:
