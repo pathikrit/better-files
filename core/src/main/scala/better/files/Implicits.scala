@@ -266,6 +266,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class ZipInputStreamOps(val in: ZipInputStream) {
+    /**
+      * Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
+      *
+      * @param f The function to apply to each ZipEntry. Can fail if it returns a lazy value,
+      *          like Iterator, as the entry will have been closed before the lazy value is evaluated.
+      */
     def mapEntries[A](f: ZipEntry => A): Iterator[A] = new Iterator[A] {
       private[this] var entry = in.getNextEntry
 
@@ -284,6 +290,11 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       }
     }
 
+    /**
+      * Apply `f` to the ZipInputStream for every entry in the archive.
+      * @param f The function to apply to the ZipInputStream. Can fail if it returns a lazy value,
+      *          like Iterator, as the the entry will have been closed before the lazy value is evaluated.
+      */
     def foldMap[A](f: ZipInputStream => A): Iterator[A] =
       mapEntries(_ => f(in))
   }
