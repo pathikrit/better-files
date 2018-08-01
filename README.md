@@ -483,6 +483,11 @@ val someTempDir: File = someTempZipFile.unzip()
 assert(directory === someTempDir)
 ```
 
+Mapping over each `ZipEntry`:
+```scala
+val fileNames = zipFile.newZipInputStream.mapEntries(_.getName) // gets the file names inside the zip file
+```
+
 GZIP handling:
 ```scala
 File("big-data.csv").gzipTo(File("big-data.csv.gz"))

@@ -79,7 +79,7 @@ trait Resource {
   /**
     * Get URL of given resource
     * A default argument of empty string is provided to conveniently get the root resource URL using {{Resource.getUrl()}}
-    * 
+    *
     * @param name
     * @return
     */
