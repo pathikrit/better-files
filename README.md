@@ -568,6 +568,13 @@ for {
 } doSomething(s)  // s is disposed after this
 ```
 
+`using` syntax:
+```scala
+val lines: List[String] = using(file.newInputStream) { stream =>
+  stream.lines.toList   // Must be eager so .toList
+}
+```
+
 ### Scanner
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives.
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
@@ -638,7 +645,7 @@ val file = """
   23,foo
   42,bar
 """
-val csvScanner = file.newScanner(StringSpliiter.on(','))
+val csvScanner = file.newScanner(StringSplitter.on(','))
 csvScanner.next[Int]    //23
 csvScanner.next[String] //foo
 ```

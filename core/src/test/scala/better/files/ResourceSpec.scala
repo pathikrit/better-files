@@ -49,4 +49,14 @@ final class ResourceSpec extends CommonSpec {
   it should "fetch root url" in {
     assert(Option(Resource.getUrl()).isDefined)
   }
+
+  it should "work with using util" in {
+    File.usingTemporaryFile() { file =>
+      file.appendText("hello world")
+      val lines = using(file.newInputStream) { is =>
+        is.lines.toList
+      }
+      assert(lines === "hello world" :: Nil)
+    }
+  }
 }

@@ -24,6 +24,25 @@ package object files extends Implicits {
 
   val EOF = StreamTokenizer.TT_EOF
 
+  /**
+    * Similar to the `with` keyword in Python and `using` keyword in .NET and `try-with-resource` syntax in Java,
+    * this let's you use and dispose a resource e.g.
+    *
+    * {{
+    *     val lines: List[String] = using(file.newInputStream) { stream =>
+    *         stream.lines.toList   // Must be eager so .toList
+    *     }
+    * }}
+    *
+    * @param resource
+    * @param f
+    * @tparam A
+    * @tparam B
+    * @return
+    */
+  def using[A: Disposable, B](resource: A)(f: A => B): B =
+    new Dispose(resource).apply(f)
+
   // Some utils:
   private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =
     new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]

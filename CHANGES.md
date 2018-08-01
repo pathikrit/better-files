@@ -22,6 +22,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 ## v3.7.0
 * [Issue #250](https://github.com/pathikrit/better-files/issues/250): Add explicit `AutoDisposingIterator`
 * [Util](https://github.com/pathikrit/better-files/commit/07f0f69b7a544e74720ac60f0f5921d8a0becc8e) to fetch root Resource URL
+* [`using` util]() for disposable resources
 
 ## [v3.6.0](https://github.com/pathikrit/better-files/releases/tag/v3.6.0)
 * [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to Dispose

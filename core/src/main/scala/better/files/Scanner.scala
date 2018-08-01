@@ -143,7 +143,7 @@ object StringSplitter {
 
   /**
     * Split string on this character
-    * This  will return exactly 1 + n number of items where n is the number of occurence of delimiter in String s
+    * This will return exactly 1 + n number of items where n is the number of occurrence of delimiter in String s
     *
     * @param delimiter
     * @return
