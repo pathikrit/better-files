@@ -266,6 +266,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class ZipInputStreamOps(val in: ZipInputStream) {
+
     /**
       * Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
       *

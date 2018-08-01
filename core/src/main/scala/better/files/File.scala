@@ -281,6 +281,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def lines(implicit charset: Charset = DefaultCharset): Traversable[String] =
     Files.readAllLines(path, charset).asScala
 
+  def lineCount(implicit charset: Charset = DefaultCharset): Long =
+    Files.lines(path, charset).count()
+
   /**
     * Iterate over lines in a file (auto-close stream on complete)
     * NOTE: If the iteration is partial, it may leave a stream open
