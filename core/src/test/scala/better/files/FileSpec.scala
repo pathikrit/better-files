@@ -541,6 +541,8 @@ class FileSpec extends CommonSpec {
     } fileChannel.toMappedByteBuffer.remaining() shouldEqual t1.bytes.length
 
     (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
+
+    t1.newInputStream.bytes.toArray shouldEqual t1.newInputStream.byteArray
   }
 
   it should "convert readers to inputstreams and writers to outputstreams" in {

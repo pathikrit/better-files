@@ -142,6 +142,13 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def bytes: Iterator[Byte] =
       in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
+
+    def byteArray: Array[Byte] = {
+      for {
+        _   <- in.autoClosed
+        out <- new ByteArrayOutputStream().autoClosed
+      } yield pipeTo(out).toByteArray
+    }.get()
   }
 
   implicit class OutputStreamOps(val out: OutputStream) {
