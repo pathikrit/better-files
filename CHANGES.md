@@ -16,15 +16,15 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 ## v4.0.0
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
-* [Issue #122](https://github.com/pathikrit/better-files/issues/122): Scala Platform Release - Support for Scala 2.13 and 2.11
 * Remove implicit options from all APIs
 
 ## v3.7.0
+* [Issue #248](https://github.com/pathikrit/better-files/issues/248): Release for Scala 2.13.0-M4
 * [Issue #250](https://github.com/pathikrit/better-files/issues/250): Add explicit `AutoDisposingIterator`
 * [Util](https://github.com/pathikrit/better-files/commit/07f0f69b7a544e74720ac60f0f5921d8a0becc8e) to fetch root Resource URL
 * [`using`](https://github.com/pathikrit/better-files/commit/2a7c438ef672d2b414027e96c7fcecc11a9b791b) util for disposable resources
 * [file.lineCount](https://github.com/pathikrit/better-files/commit/af315c9b1311c9baeab9b0a70a388e772b6a5eaf) util
-* [inputstream.byteArray]() util
+* [inputstream.byteArray](https://github.com/pathikrit/better-files/commit/1657d8b30c836059813637a5a0d412d7a924467f) util
 
 ## [v3.6.0](https://github.com/pathikrit/better-files/releases/tag/v3.6.0)
 * [Issue #123](https://github.com/pathikrit/better-files/issues/233): Rename ManagedResource to Dispose
