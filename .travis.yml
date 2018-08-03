@@ -6,23 +6,34 @@ jdk:
   - oraclejdk9
   - oraclejdk10
   - oraclejdk11
-  - oraclejdk-ea
   - openjdk8
   - openjdk9
   - openjdk10
   - openjdk11
-  - openjdk-ea
 
 scala:
-  - 2.11.12
   - 2.12.6
 
 matrix:
+  include:
+    - scala: 2.11.12
+      jdk: oraclejdk8
+
+    - scala: 2.11.12
+      jdk: oraclejdk9
+
+    - scala: 2.11.12
+      jdk: openjdk8
+
+    - scala: 2.11.12
+      jdk: openjdk9
+
+    - scala: 2.13.0-M4
+      jdk: oraclejdk8
+
   allow_failures:
-    - jdk: oraclejdk11
-    - jdk: oraclejdk-ea
-    - jdk: openjdk11
-    - jdk: openjdk-ea
+    - scala: 2.13.0-M4
+    - jdk: openjdk9     #Not sure but openjdk9 does not work?
 
 branches:
   only:

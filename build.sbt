@@ -4,7 +4,7 @@ val repo     = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.6"),
+  crossScalaVersions := Seq("2.11.12", "2.12.6", "2.13.0-M4"),
   crossVersion := CrossVersion.binary,
   scalacOptions --= ignoreScalacOptions(scalaVersion.value),
   scalacOptions in (Compile, doc) += "-groups",
@@ -28,6 +28,7 @@ lazy val commonSettings = Seq(
 def ignoreScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
   case Some((2, 10)) => Seq("-Ywarn-numeric-widen") // buggy in 2.10
   case Some((2, 11)) => Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
+  case Some((2, 13)) => Seq("-Xfatal-warnings") // Ignore warnings for 2.13 for now
   case _             => Nil
 }
 
@@ -63,7 +64,8 @@ lazy val root = (project in file("."))
   .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka)
+  .aggregate(core)
+//.aggregate(core, akka) //TODO: Don't build akka module until it supports 2.13
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,
