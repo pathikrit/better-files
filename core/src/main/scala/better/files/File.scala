@@ -575,7 +575,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return
     */
   def writeSerialized(
-      obj: Serializable
+      obj: Serializable,
+      bufferSize: Int = DefaultBufferSize
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
     ): this.type = {
@@ -590,8 +591,17 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * @return
     */
-  def readDeserialized[A](implicit openOptions: File.OpenOptions = File.OpenOptions.default): A =
-    inputStream(openOptions).apply(_.asObjectInputStream().deserialize[A])
+  def readDeserialized[A](
+      classLoaderOverride: Option[ClassLoader] = None,
+      bufferSize: Int = DefaultBufferSize
+    )(implicit
+      openOptions: File.OpenOptions = File.OpenOptions.default
+    ): A =
+    classLoaderOverride match {
+      case Some(classLoader) =>
+        inputStream(openOptions).apply(_.asObjectInputStreamUsingClassLoader(classLoader, bufferSize).deserialize[A])
+      case _ => inputStream(openOptions).apply(_.asObjectInputStream(bufferSize).deserialize[A])
+    }
 
   def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
     path.register(service, events.toArray)
