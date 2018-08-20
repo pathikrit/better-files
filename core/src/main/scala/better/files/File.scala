@@ -582,7 +582,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): this.type = {
     createFileIfNotExists(createParents = true)
       .outputStream(openOptions)
-      .foreach(_.asObjectOutputStream().serialize(obj).flush())
+      .foreach(_.asObjectOutputStream(bufferSize).serialize(obj).flush())
     this
   }
 

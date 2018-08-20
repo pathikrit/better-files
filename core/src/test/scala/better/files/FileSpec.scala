@@ -566,7 +566,7 @@ class FileSpec extends CommonSpec {
       assert(f.isEmpty)
       f.writeSerialized(p1)
       assert(f.nonEmpty)
-      val p2: Person = f.readDeserialized[Person]
+      val p2: Person = f.readDeserialized[Person]()
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
 
@@ -577,7 +577,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "serialize/deserialize primitives" in {
-    assert(t1.writeSerialized(23).readDeserialized[Int] === 23)
+    assert(t1.writeSerialized(23).readDeserialized[Int]() === 23)
   }
 
   it should "count number of open file descriptors" in {
