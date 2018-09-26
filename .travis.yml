@@ -3,11 +3,6 @@ language: scala
 jdk:
   # sbt 1 does not support JDK 7 or below: https://github.com/sbt/sbt/issues/4219
   - oraclejdk8
-  - oraclejdk9
-  - oraclejdk10
-  - oraclejdk11
-  - openjdk9
-  - openjdk10
   - openjdk11
 
 scala:
@@ -19,13 +14,7 @@ matrix:
       jdk: oraclejdk8
 
     - scala: 2.11.12
-      jdk: oraclejdk9
-
-    - scala: 2.11.12
-      jdk: openjdk8
-
-    - scala: 2.11.12
-      jdk: openjdk9
+      jdk: openjdk11
 
     - scala: 2.13.0-M4
       jdk: oraclejdk8
@@ -33,7 +22,6 @@ matrix:
   allow_failures:
     - scala: 2.13.0-M4
     - jdk: openjdk8     #Not sure but openjdk8 does not work?
-    - jdk: openjdk9     #Not sure but openjdk9 does not work?
 
 branches:
   only:
