@@ -317,7 +317,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       * @return the extracted file
       */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
-      val child = rootDir.createChild(entry.getName, asDirectory = entry.isDirectory, createParents = true)
+      val entryName = entry.getName.replace("\\", "/") //see https://github.com/pathikrit/better-files/issues/262
+      val child = rootDir.createChild(entryName, asDirectory = entry.isDirectory, createParents = true)
       if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
       child
     }

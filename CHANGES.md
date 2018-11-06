@@ -22,6 +22,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #248](https://github.com/pathikrit/better-files/issues/248): Release for Scala 2.13.0-M4
 * [Issue #250](https://github.com/pathikrit/better-files/issues/250): Add explicit `AutoDisposingIterator`
 * [Issue #270](https://github.com/pathikrit/better-files/issues/270): `FileTreeIterator` can be traversed multiple times safely
+* [Issue #262](https://github.com/pathikrit/better-files/issues/262): Handle backslashes in zip entry name
 * [Util](https://github.com/pathikrit/better-files/commit/07f0f69b7a544e74720ac60f0f5921d8a0becc8e) to fetch root Resource URL
 * [`using`](https://github.com/pathikrit/better-files/commit/2a7c438ef672d2b414027e96c7fcecc11a9b791b) util for disposable resources
 * [file.lineCount](https://github.com/pathikrit/better-files/commit/af315c9b1311c9baeab9b0a70a388e772b6a5eaf) util
