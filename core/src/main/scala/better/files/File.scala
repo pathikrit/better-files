@@ -97,6 +97,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /**
     * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
     * Example usage file"foo.java".changeExtensionTo(".scala")
+    *
+    * If file does not exist (or is a directory) no change is done and the current file is returned
     */
   def changeExtensionTo(extension: String): File =
     if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
