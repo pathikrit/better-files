@@ -669,7 +669,8 @@ val watcher = new FileMonitor(myDir, recursive = true) {
   override def onModify(file: File, count: Int) = println(s"$file got modified $count times")
   override def onDelete(file: File, count: Int) = println(s"$file got deleted")
 }
-watcher.start()
+watcher.start() 
+Thread.sleep(60 * 1000) // The above line starts the monitoring asynchronously 
 ```
 Sometimes, instead of overwriting each of the 3 methods above, it is more convenient to override the dispatcher itself:
 ```scala
