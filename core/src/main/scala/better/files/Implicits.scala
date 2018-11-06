@@ -370,6 +370,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
   //  PosixFilePermissions.asFileAttribute(Set(perm))
 
-  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Iterator[File] =
-    scala.collection.JavaConverters.asScalaIterator(files.iterator()).map(File.apply)
+  private[files] implicit def pathStreamToFiles(files: JStream[Path]): Iterator[File] = {
+    import scala.collection.JavaConverters._
+    files.iterator().asScala.map(File.apply)
+  }
 }

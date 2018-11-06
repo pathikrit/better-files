@@ -58,7 +58,7 @@ class DisposeSpec extends CommonSpec {
     val t = new TestDisposable
 
     val result = for {
-      tc <- t.autoClosed
+      _ <- t.autoClosed
     } yield {
       t.closeCount shouldBe 0
       "hello"
@@ -72,8 +72,8 @@ class DisposeSpec extends CommonSpec {
     val t = new TestDisposable
 
     val result = (for {
-      tc <- t.autoClosed
-      v  <- Iterator("one", "two", "three")
+      _ <- t.autoClosed
+      v <- Iterator("one", "two", "three")
     } yield {
       t.closeCount shouldBe 0
       v
@@ -88,7 +88,7 @@ class DisposeSpec extends CommonSpec {
 
     a[TestEvalException] should be thrownBy {
       for {
-        tc <- t.autoClosed
+        _ <- t.autoClosed
       } {
         t.closeCount shouldBe 0
         throw new TestEvalException
@@ -99,8 +99,8 @@ class DisposeSpec extends CommonSpec {
     var lastSeen = ""
     a[TestEvalException] should be thrownBy {
       for {
-        tc <- t.autoClosed
-        v  <- Iterator("one", "two", "three")
+        _ <- t.autoClosed
+        v <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
@@ -123,7 +123,7 @@ class DisposeSpec extends CommonSpec {
     val e1 =
       try {
         for {
-          tc <- t.autoClosed
+          _ <- t.autoClosed
         } {
           t.closeCount shouldBe 0
         }
@@ -142,8 +142,8 @@ class DisposeSpec extends CommonSpec {
     val e2 =
       try {
         val i = for {
-          tc <- t.autoClosed
-          v  <- Iterator("one", "two", "three")
+          _ <- t.autoClosed
+          v <- Iterator("one", "two", "three")
         } yield {
           t.closeCount shouldBe 1
           lastSeen = v
@@ -169,7 +169,7 @@ class DisposeSpec extends CommonSpec {
     def doTheThing(): String = {
       throw the[ControlThrowable] thrownBy {
         for {
-          tc <- t.autoClosed
+          _ <- t.autoClosed
         } {
           t.closeCount shouldBe 0
           return "hello"
@@ -182,8 +182,8 @@ class DisposeSpec extends CommonSpec {
     def doTheThings(): String = {
       throw the[ControlThrowable] thrownBy {
         for {
-          tc <- t.autoClosed
-          v  <- Iterator("one", "two", "three")
+          _ <- t.autoClosed
+          v <- Iterator("one", "two", "three")
         } {
           t.closeCount shouldBe 1
           if (v == "two") return v
@@ -199,7 +199,7 @@ class DisposeSpec extends CommonSpec {
 
     the[TestEvalException] thrownBy {
       for {
-        tc <- t.autoClosed
+        _ <- t.autoClosed
       } {
         t.closeCount shouldBe 0
         throw new TestEvalException
@@ -210,8 +210,8 @@ class DisposeSpec extends CommonSpec {
     var lastSeen = ""
     the[TestEvalException] thrownBy {
       for {
-        tc <- t.autoClosed
-        v  <- Iterator("one", "two", "three")
+        _ <- t.autoClosed
+        v <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
@@ -227,7 +227,7 @@ class DisposeSpec extends CommonSpec {
 
     the[TestDisposeFatalException] thrownBy {
       for {
-        tc <- t.autoClosed
+        _ <- t.autoClosed
       } {
         t.closeCount shouldBe 0
         throw new TestEvalException
@@ -238,8 +238,8 @@ class DisposeSpec extends CommonSpec {
     var lastSeen = ""
     the[TestDisposeFatalException] thrownBy {
       for {
-        tc <- t.autoClosed
-        v  <- Iterator("one", "two", "three")
+        _ <- t.autoClosed
+        v <- Iterator("one", "two", "three")
       } {
         t.closeCount shouldBe 1
         lastSeen = v
@@ -260,7 +260,7 @@ class DisposeSpec extends CommonSpec {
     File.usingTemporaryFile() { f =>
       for {
         pw <- f.printWriter()
-        header :: rows = data
+        _ :: rows = data
         row <- rows
       } pw.println(row)
 
@@ -284,8 +284,8 @@ class DisposeSpec extends CommonSpec {
       new AutoCloseable { override def close() = log = msg :: log }
 
     for {
-      t1 <- dummyClosable("outer").autoClosed
-      t2 <- dummyClosable("inner").autoClosed
+      _ <- dummyClosable("outer").autoClosed
+      _ <- dummyClosable("inner").autoClosed
     } ()
 
     assert(log === "outer" :: "inner" :: Nil)
@@ -298,8 +298,8 @@ class DisposeSpec extends CommonSpec {
       new AutoCloseable { override def close() = log = msg :: log }
 
     val x = for {
-      t1 <- dummyClosable("outer").autoClosed
-      t2 <- dummyClosable("inner").autoClosed
+      _ <- dummyClosable("outer").autoClosed
+      _ <- dummyClosable("inner").autoClosed
     } yield 8
 
     assert(log.isEmpty)

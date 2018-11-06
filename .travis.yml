@@ -4,7 +4,6 @@ jdk:
   # sbt 1 does not support JDK 7 or below: https://github.com/sbt/sbt/issues/4219
   - oraclejdk8
   - oraclejdk9
-  - oraclejdk10
   - oraclejdk11
   - openjdk9
   - openjdk10
@@ -34,6 +33,7 @@ matrix:
     - scala: 2.13.0-M4
     - jdk: openjdk8     #Not sure but openjdk8 does not work?
     - jdk: openjdk9     #Not sure but openjdk9 does not work?
+    - jdk: oraclejdk10   #Not supported on TravisCI
 
 branches:
   only:
@@ -47,7 +47,7 @@ deploy:
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
       jdk: oraclejdk8
-      scala: 2.12.6
+      scala: 2.12.7
 
   - provider: pages
     skip_cleanup: true
@@ -56,14 +56,14 @@ deploy:
     verbose: true
     on:
       jdk: oraclejdk8
-      scala: 2.12.6
+      scala: 2.12.7
 
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
       jdk: oraclejdk8
-      scala: 2.12.6
+      scala: 2.12.7
 
 cache:
   directories:
