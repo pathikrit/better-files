@@ -318,13 +318,13 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
       val entryName = entry.getName.replace("\\", "/") //see https://github.com/pathikrit/better-files/issues/262
-      val child = rootDir.createChild(entryName, asDirectory = entry.isDirectory, createParents = true)
+      val child     = rootDir.createChild(entryName, asDirectory = entry.isDirectory, createParents = true)
       if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
       child
     }
   }
 
-  implicit class CloseableOps[A <: AutoCloseable](resource: A) {
+  implicit class DisposeableOps[A: Disposable](resource: A) {
 
     /**
       * Lightweight automatic resource management
@@ -339,7 +339,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       * @return
       */
     def autoClosed: Dispose[A] =
-      new Dispose(resource)(Disposable.closableDisposer)
+      new Dispose(resource)
   }
 
   implicit class JStreamOps[A](stream: JStream[A]) {
