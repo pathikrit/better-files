@@ -88,11 +88,11 @@ lazy val releaseSettings = Seq(
     //runClean,
     runTest,
     setReleaseVersion,
-    commitReleaseVersion,
+    //commitReleaseVersion,
     tagRelease,
     releaseStepCommand("publishSigned"),
     setNextVersion,
-    commitNextVersion,
+    //commitNextVersion,
     releaseStepCommand("sonatypeReleaseAll"),
     //pushChanges
   )
