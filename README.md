@@ -1,6 +1,29 @@
-# better-files [![License][licenseImg]][licenseLink] [![TravisCI][travisCiImg]][travisCiLink] [![Codacy][codacyImg]][codacyLink]
+# better-files [![License][licenseImg]][licenseLink] [![TravisCI][travisCiImg]][travisCiLink] [![Codacy][codacyImg2]][codacyLink]
 
 `better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+
+## Motivation
+Imagine you have to write the following method:
+1) List all the `.csv` files in a directory in increasing order by size
+2) Drop the first line of each file and concat the rest into a single output file in a given output directory
+3) Split the above output file into `n` smaller files without breaking up the lines in the input files
+4) `gzip` each of the smaller output files
+5) And, lastly, your program should work when files are much bigger than memory in your JVM
+
+The above task is not that easy to write in Java or shell or Python without a certain amount of Googling.
+In better-files, the above code can be written as:
+```scala
+import better.files._
+
+def run(inputDir: File, outputDir: File, n: Int) = {
+  val count = new AtomicInteger()
+  for {
+    writers <- Vector.tabulate(n)(i => (outputDir / s"part-$i.csv.gz").newGzipOutputStream().printWriter()).autoClosed
+    inputFile <- inputDir.list(_.extension == Some(".csv")).toSeq.sorted(File.Order.bySize)
+    line <- inputFile.lineIterator.drop(1)
+  } writers(count.incrementAndGet() % n).println(line)
+}
+```
 
 ## Talks [![Gitter][gitterImg]][gitterLink]
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
