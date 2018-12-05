@@ -31,8 +31,6 @@ matrix:
 
   allow_failures:
     - scala: 2.13.0-M4
-    - jdk: openjdk8     #Not sure but openjdk8 does not work?
-    - jdk: openjdk9     #Not sure but openjdk9 does not work?
     - jdk: oraclejdk10   #Not supported on TravisCI
 
 branches:

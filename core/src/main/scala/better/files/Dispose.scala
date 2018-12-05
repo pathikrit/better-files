@@ -31,10 +31,16 @@ object Disposable {
   implicit val closableDisposer: Disposable[AutoCloseable] =
     Disposable(_.close())
 
+  implicit def traversableDisposer[A](implicit disposer: Disposable[A]): Disposable[Traversable[A]] =
+    Disposable(_.foreach(disposer.dispose))
+
   val fileDisposer: Disposable[File] =
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
+/**
+  * Given a disposable resource, this actually does the disposing
+  */
 class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable[A]) {
   private[Dispose] val isDisposed    = new AtomicBoolean(false)
   private[Dispose] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)

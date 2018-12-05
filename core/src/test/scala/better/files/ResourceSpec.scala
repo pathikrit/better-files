@@ -59,4 +59,20 @@ final class ResourceSpec extends CommonSpec {
       assert(lines === "hello world" :: Nil)
     }
   }
+
+  it should "close multiple resources" in {
+    def emit(dir: File, partitions: Int, lines: Int) = {
+      for {
+        writers <- Vector.tabulate(partitions)(i => (dir / s"partition-$i.csv").newPrintWriter()).autoClosed
+        line    <- 1 to lines
+      } writers(line % partitions).println(line)
+    }
+
+    File.usingTemporaryDirectory() { dir =>
+      val lines = 1000
+      emit(dir = dir, partitions = 5, lines = lines)
+      val expected = dir.list(filter = _.extension.contains(".csv")).flatMap(_.lines).map(_.toInt).toSet
+      assert((1 to lines).forall(expected))
+    }
+  }
 }
