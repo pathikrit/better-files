@@ -10,7 +10,7 @@ jdk:
   - openjdk11
 
 scala:
-  - 2.12.6
+  - 2.12.8
 
 matrix:
   include:
@@ -26,11 +26,11 @@ matrix:
     - scala: 2.11.12
       jdk: openjdk9
 
-    - scala: 2.13.0-M4
+    - scala: 2.13.0-M5
       jdk: oraclejdk8
 
   allow_failures:
-    - scala: 2.13.0-M4
+    - scala: 2.13.0-M5
     - jdk: oraclejdk10   #Not supported on TravisCI
 
 branches:
@@ -45,7 +45,7 @@ deploy:
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
       jdk: oraclejdk8
-      scala: 2.12.7
+      scala: 2.12.8
 
   - provider: pages
     skip_cleanup: true
@@ -54,14 +54,14 @@ deploy:
     verbose: true
     on:
       jdk: oraclejdk8
-      scala: 2.12.7
+      scala: 2.12.8
 
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
       jdk: oraclejdk8
-      scala: 2.12.7
+      scala: 2.12.8
 
 cache:
   directories:
