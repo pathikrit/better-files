@@ -4,6 +4,7 @@ import java.io.{IOException, InputStream}
 import java.net.URL
 import java.nio.charset.Charset
 
+import scala.language.experimental.macros
 import scala.reflect.macros.{ReificationException, blackbox}
 
 /**

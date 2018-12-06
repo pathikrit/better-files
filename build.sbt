@@ -4,9 +4,9 @@ val repo     = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.7", "2.13.0-M4"),
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
   crossVersion := CrossVersion.binary,
-  scalacOptions --= ignoreScalacOptions(scalaVersion.value),
+  scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   scalacOptions in (Compile, doc) += "-groups",
   libraryDependencies += Dependencies.scalatest,
   updateImpactOpenBrowser := false,
@@ -25,12 +25,13 @@ lazy val commonSettings = Seq(
 )
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
-def ignoreScalacOptions(scalaVersion: String): Seq[String] = CrossVersion.partialVersion(scalaVersion) match {
-  case Some((2, 10)) => Seq("-Ywarn-numeric-widen") // buggy in 2.10
-  case Some((2, 11)) => Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
-  case Some((2, 13)) => Seq("-Xfatal-warnings") // Ignore warnings for 2.13 for now
-  case _             => Nil
-}
+def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
+  CrossVersion.partialVersion(scalaVersion) match {
+    case Some((2, 10)) => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
+    case Some((2, 11)) => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
+    case Some((2, 13)) => Nil // Ignore warnings for 2.13 for now
+    case _             => Nil
+  }
 
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
