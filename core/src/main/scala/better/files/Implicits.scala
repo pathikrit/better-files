@@ -40,9 +40,6 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def reader: Reader =
       new StringReader(str)
-
-    def lines: Seq[String] =
-      str.split("\\r?\\n")
   }
 
   implicit class FileOps(file: JFile) {
