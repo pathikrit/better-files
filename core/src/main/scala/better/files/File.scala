@@ -984,12 +984,20 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
 
   /**
     * Deletes this file or directory
+    * Unless otherwise specified, this does not follow symlinks
+    * i.e. if this is a symlink, only the symlink itself is deleted and not the linked object
     *
     * @param swallowIOExceptions If this is set to true, any exception thrown is swallowed
     */
-  def delete(swallowIOExceptions: Boolean = false): this.type = {
+  def delete(
+      swallowIOExceptions: Boolean = false,
+      linkOption: File.LinkOptions = File.LinkOptions.noFollow
+    ): this.type = {
     try {
-      if (isDirectory) list.foreach(_.delete(swallowIOExceptions))
+      // Note: We call .toList to exhaust the iterator upfront
+      // since otherwise we wait until the last element of the iterator to close the underlying Stream
+      // which when doing a DFS may lead to a lot of open file handles for large directories
+      if (isDirectory(linkOption)) list.toList.foreach(_.delete(swallowIOExceptions, linkOption))
       Files.delete(path)
     } catch {
       case _: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
