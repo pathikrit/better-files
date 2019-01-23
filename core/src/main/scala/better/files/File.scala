@@ -792,47 +792,53 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * @param includePath If true, we don't need to set path glob patterns
     *                    e.g. instead of **/ /*.txt we just use *.txt
+   * @param maxDepth Recurse up to maxDepth
    * @return Set of files that matched
    */
   //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
   def glob(
       pattern: String,
-      includePath: Boolean = true
+      includePath: Boolean = true,
+      maxDepth: Int = Int.MaxValue
     )(implicit
       syntax: File.PathMatcherSyntax = File.PathMatcherSyntax.default,
       visitOptions: File.VisitOptions = File.VisitOptions.default
     ): Iterator[File] =
-    pathMatcher(syntax, includePath)(pattern).matches(this)(visitOptions)
+    pathMatcher(syntax, includePath)(pattern).matches(this, maxDepth)(visitOptions)
 
   /**
     * Util to match from this file's path using Regex
     *
     * @param includePath If true, we don't need to set path glob patterns
     *                    e.g. instead of **/ /*.txt we just use *.txt
+   * @param maxDepth Recurse up to maxDepth
    * @see glob
    * @return Set of files that matched
    */
   def globRegex(
       pattern: Regex,
-      includePath: Boolean = true
+      includePath: Boolean = true,
+      maxDepth: Int = Int.MaxValue
     )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
     ): Iterator[File] =
-    glob(pattern.regex, includePath)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
+    glob(pattern.regex, includePath, maxDepth)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
 
   /**
     * More Scala friendly way of doing Files.walk
     * Note: This is lazy (returns an Iterator) and won't evaluate till we reify the iterator (e.g. using .toList)
     *
     * @param matchFilter
+    * @param maxDepth
     * @return
     */
   def collectChildren(
-      matchFilter: File => Boolean
+      matchFilter: File => Boolean,
+      maxDepth: Int = Int.MaxValue
     )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
     ): Iterator[File] =
-    walk()(visitOptions).filter(matchFilter)
+    walk(maxDepth)(visitOptions).filter(matchFilter)
 
   def uri: URI =
     path.toUri
