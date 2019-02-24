@@ -1,4 +1,4 @@
-# better-files [![License][licenseImg]][licenseLink] [![TravisCI][travisCiImg]][travisCiLink] [![Codacy][codacyImg2]][codacyLink]
+# better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink] [![Gitter][gitterImg]][gitterLink]
 
 `better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
@@ -26,7 +26,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 }
 ```
 
-## Talks [![Gitter][gitterImg]][gitterLink]
+## Talks
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
 
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
@@ -68,12 +68,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"     %% "akka-actor"         % "2.5.13"
 )
 ```
-Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
+Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 
 Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
 you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
 
-## Tests [![codecov][codecovImg]][codecovLink]
+## Tests [![TravisCI][travisCiImg]][travisCiLink]  [![codecov][codecovImg]][codecovLink] [![Codacy][codacyImg2]][codacyLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
@@ -125,6 +125,9 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 [scalæByTheBay2016Event]: http://sched.co/7iUn
 [scalæByTheBay2016Video]: https://www.youtube.com/watch?v=bLiCE6NGjrk&t=251s
 [scalæByTheBay2016Slides]: https://slides.com/pathikrit/better-files/
+
+[snykImg]: https://snyk.io/test/github/pathikrit/better-files/badge.svg?targetFile=build.sbt
+[snykLink]: https://snyk.io/test/github/pathikrit/better-files?targetFile=build.sbt
 
 -------
 ### Instantiation
