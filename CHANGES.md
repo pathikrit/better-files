@@ -20,6 +20,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v3.8.0
 * [Issue #283](https://github.com/pathikrit/better-files/issues/283): Fix resource not closing bug on File#list
+* [Issue #279](https://github.com/pathikrit/better-files/issues/279): Better manage open file handles in recursive deletion of large directories
 * [Issue #285](https://github.com/pathikrit/better-files/issues/285): Add canonical file/path APIs
 * [PR #290](https://github.com/pathikrit/better-files/pull/290) Add maxDepth to File#glob and File#globRegex
 
