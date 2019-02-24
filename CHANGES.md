@@ -19,7 +19,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Remove implicit options from all APIs
 
 ## v3.8.0
-* [Issue #279](https://github.com/pathikrit/better-files/issues/279): Deletion of large directories better manages open file handles
+* [Issue #285](https://github.com/pathikrit/better-files/issues/285): Add canonical file/path APIs
 * [PR #290](https://github.com/pathikrit/better-files/pull/290) Add maxDepth to File#glob and File#globRegex
 
 ## [v3.7.0](https://github.com/pathikrit/better-files/releases/tag/v3.7.0)

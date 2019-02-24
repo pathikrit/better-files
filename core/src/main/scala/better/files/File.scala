@@ -48,6 +48,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def root: File =
     path.getRoot
 
+  def canonicalPath: String =
+    toJava.getAbsolutePath
+
+  def canonicalFile: File =
+    toJava.getCanonicalFile.toScala
+
   def nameWithoutExtension: String =
     nameWithoutExtension(includeAll = true)
 
