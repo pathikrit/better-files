@@ -225,8 +225,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class PathMatcherOps(matcher: PathMatcher) {
-    def matches(file: File)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
-      file.collectChildren(child => matcher.matches(child.path))(visitOptions)
+    def matches(file: File, maxDepth: Int)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
+      file.collectChildren(child => matcher.matches(child.path), maxDepth)(visitOptions)
   }
 
   implicit class ObjectInputStreamOps(ois: ObjectInputStream) {
