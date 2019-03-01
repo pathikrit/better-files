@@ -4,11 +4,11 @@
 
 ## Motivation
 Imagine you have to write the following method:
-1) List all the `.csv` files in a directory by increasing order of file size
-2) Drop the first line of each file and concat the rest into a single output file in a given output directory
+1) List all `.csv` files in a directory by increasing order of file size
+2) Drop the first line of each file and concat the rest into a single output file
 3) Split the above output file into `n` smaller files without breaking up the lines in the input files
 4) `gzip` each of the smaller output files
-5) And, lastly, your program should work when files are much bigger than memory in your JVM
+Note: Your program should work when files are much bigger than memory in your JVM and must close all open resources correctly
 
 The above task is not that easy to write in Java or shell or Python without a certain amount of Googling.
 Using better-files, the above problem can be solved in a fairly straightforward way:
