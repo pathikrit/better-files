@@ -275,7 +275,7 @@ file.newInputStream.asObjectInputStreamUsingClassLoader(classLoader = myClassLoa
 
 The above can be simply written as:
 ```scala
-val person2: Person = file.writeSerialized(person).readDeserialized[Person]
+val person2: Person = file.writeSerialized(person).readDeserialized[Person]()
 assert(person == person2)
 ```
 
