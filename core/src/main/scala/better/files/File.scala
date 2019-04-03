@@ -1020,6 +1020,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   }
 
   /**
+    * Moves this file atomically to the given destination
+    * @param destination
+    * @return destination
+    */
+  def moveAtomicallyTo(destination: File): destination.type = {
+    Files.move(path, destination.path, StandardCopyOption.ATOMIC_MOVE)
+    destination
+  }
+
+  /**
     * Moves this file into the given directory
     * @param directory
     *
