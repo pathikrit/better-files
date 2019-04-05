@@ -84,7 +84,7 @@ object Dsl {
     if (to.isDirectory) {
       from.moveToDirectory(to)
     } else {
-      from.moveTo(to, overwrite = true)
+      from.moveTo(to)(File.CopyOptions(overwrite = true))
     }
   }
 

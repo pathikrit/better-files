@@ -1011,11 +1011,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /**
     *
     * @param destination
-    * @param overwrite
     * @return destination
     */
-  def moveTo(destination: File, overwrite: Boolean = false): destination.type = {
-    Files.move(path, destination.path, File.CopyOptions(overwrite): _*)
+  def moveTo(
+      destination: File
+    )(implicit
+      copyOptions: File.CopyOptions = File.CopyOptions(overwrite = false)
+    ): destination.type = {
+    Files.move(path, destination.path, copyOptions: _*)
     destination
   }
 
@@ -1459,7 +1462,8 @@ object File {
   object CopyOptions {
     def apply(overwrite: Boolean): CopyOptions =
       (if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else default) ++ LinkOptions.default
-    val default: CopyOptions = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
+    val default: CopyOptions    = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
+    val atomically: CopyOptions = Seq(StandardCopyOption.ATOMIC_MOVE)
   }
 
   type Events = Seq[WatchEvent.Kind[_]]
