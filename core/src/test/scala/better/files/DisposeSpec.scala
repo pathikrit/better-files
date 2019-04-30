@@ -31,7 +31,7 @@ class DisposeSpec extends CommonSpec {
 
   private class TestEvalException         extends Exception
   private class TestDisposeException      extends Exception
-  private class TestDisposeFatalException extends Exception with ControlThrowable
+  private class TestDisposeFatalException extends InterruptedException
 
   // Custom matchers
 
