@@ -28,7 +28,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       sc.s(args: _*)
   }
 
-  implicit class StringOps(str: String) {
+  implicit class StringExtensions(str: String) {
     def toFile: File =
       File(str)
 
@@ -42,7 +42,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new StringReader(str)
   }
 
-  implicit class FileOps(file: JFile) {
+  implicit class FileExtensions(file: JFile) {
     def toScala: File =
       File(file.getPath)
   }
@@ -59,7 +59,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }
   }
 
-  implicit class InputStreamOps(in: InputStream) {
+  implicit class InputStreamExtensions(in: InputStream) {
     def pipeTo(out: OutputStream, bufferSize: Int = DefaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
 
@@ -148,7 +148,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }.get()
   }
 
-  implicit class OutputStreamOps(val out: OutputStream) {
+  implicit class OutputStreamExtensions(val out: OutputStream) {
     def buffered: BufferedOutputStream =
       new BufferedOutputStream(out)
 
@@ -188,14 +188,14 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new ZipOutputStream(out, charset)
   }
 
-  implicit class PrintWriterOps(pw: PrintWriter) {
+  implicit class PrintWriterExtensions(pw: PrintWriter) {
     def printLines(lines: TraversableOnce[_]): PrintWriter = {
       lines.foreach(pw.println)
       pw
     }
   }
 
-  implicit class ReaderOps(reader: Reader) {
+  implicit class ReaderExtensions(reader: Reader) {
     def buffered: BufferedReader =
       new BufferedReader(reader)
 
@@ -206,12 +206,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new Dispose(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
   }
 
-  implicit class BufferedReaderOps(reader: BufferedReader) {
+  implicit class BufferedReaderExtensions(reader: BufferedReader) {
     def tokens(splitter: StringSplitter = StringSplitter.Default): Iterator[String] =
       reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
 
-  implicit class WriterOps(writer: Writer) {
+  implicit class WriterExtensions(writer: Writer) {
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
 
@@ -219,29 +219,29 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new WriterOutputStream(writer)(charset)
   }
 
-  implicit class FileChannelOps(fc: FileChannel) {
+  implicit class FileChannelExtensions(fc: FileChannel) {
     def toMappedByteBuffer: MappedByteBuffer =
       fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size())
   }
 
-  implicit class PathMatcherOps(matcher: PathMatcher) {
+  implicit class PathMatcherExtensions(matcher: PathMatcher) {
     def matches(file: File, maxDepth: Int)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
       file.collectChildren(child => matcher.matches(child.path), maxDepth)(visitOptions)
   }
 
-  implicit class ObjectInputStreamOps(ois: ObjectInputStream) {
+  implicit class ObjectInputStreamExtensions(ois: ObjectInputStream) {
     def deserialize[A]: A =
       ois.readObject().asInstanceOf[A]
   }
 
-  implicit class ObjectOutputStreamOps(val oos: ObjectOutputStream) {
+  implicit class ObjectOutputStreamExtensions(val oos: ObjectOutputStream) {
     def serialize(obj: Serializable): oos.type = {
       oos.writeObject(obj)
       oos
     }
   }
 
-  implicit class ZipOutputStreamOps(val out: ZipOutputStream) {
+  implicit class ZipOutputStreamExtensions(val out: ZipOutputStream) {
 
     /**
       * Correctly set the compression level
@@ -269,7 +269,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       add(file, file.name)
   }
 
-  implicit class ZipInputStreamOps(val in: ZipInputStream) {
+  implicit class ZipInputStreamExtensions(val in: ZipInputStream) {
 
     /**
       * Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
@@ -304,7 +304,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       mapEntries(_ => f(in))
   }
 
-  implicit class ZipEntryOps(val entry: ZipEntry) {
+  implicit class ZipEntryExtensions(val entry: ZipEntry) {
 
     /**
       * Extract this ZipEntry under this rootDir
@@ -321,7 +321,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }
   }
 
-  implicit class DisposeableOps[A: Disposable](resource: A) {
+  implicit class DisposeableExtensions[A: Disposable](resource: A) {
 
     /**
       * Lightweight automatic resource management
@@ -339,7 +339,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new Dispose(resource)
   }
 
-  implicit class JStreamOps[A](stream: JStream[A]) {
+  implicit class JStreamExtensions[A](stream: JStream[A]) {
 
     /**
       * Closes this stream when iteration is complete
@@ -351,7 +351,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       stream.autoClosed.flatMap(_.iterator().asScala)
   }
 
-  private[files] implicit class OrderingOps[A](order: Ordering[A]) {
+  private[files] implicit class OrderingExtensions[A](order: Ordering[A]) {
     def andThenBy(order2: Ordering[A]): Ordering[A] =
       Ordering.comparatorToOrdering(order.thenComparing(order2))
   }
