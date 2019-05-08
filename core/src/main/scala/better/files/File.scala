@@ -1182,8 +1182,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  def deleteOnExit(): this.type = {
-    toJava.deleteOnExit()
+  def deleteOnExit(
+      swallowIOExceptions: Boolean = false,
+      linkOption: File.LinkOptions = File.LinkOptions.noFollow
+    ): this.type = {
+    try {
+      if (isDirectory(linkOption)) list.toList.foreach(_.deleteOnExit(swallowIOExceptions, linkOption))
+      toJava.deleteOnExit()
+    } catch {
+      case _: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
+    }
     this
   }
 
