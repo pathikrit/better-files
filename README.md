@@ -204,13 +204,13 @@ val resourceURL     : java.net.URL  = Resource.getUrl("foo.txt")
 val rootResourceURL : java.net.URL  = Resource.getUrl()
 val resourceAsStr   : String        = Resource.getAsString("foo.txt")
 ```
-Tha above APIs can load from custom `ClassLoader`s too:
+The above APIs can load from custom `ClassLoader`s too:
 ```scala
 val resource        : InputStream   = Resource.at[MyClass].getAsStream("foo.txt")
 ``` 
 
 ### Streams
-Various ways to slurp a file without loading the contents into memory:
+Various ways to slurp a file without loading its contents into memory:
  ```scala
 val bytes  : Iterator[Byte]            = file.bytes
 val chars  : Iterator[Char]            = file.chars
