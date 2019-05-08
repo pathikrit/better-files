@@ -18,6 +18,11 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * Remove implicit options from all APIs
 
+## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
+* [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
+* [Issue #309](https://github.com/pathikrit/better-files/issues/312): Recursive `deleteOnExit` support
+* [Rename](https://github.com/pathikrit/better-files/commit/ae45c6b419a53a7095e3dadccda010eb4d624fc6) certain implicit utils
+
 ## [v3.7.1](https://github.com/pathikrit/better-files/releases/tag/v3.7.1)
 * [Issue #283](https://github.com/pathikrit/better-files/issues/283): Fix resource not closing bug on File#list
 * [Issue #279](https://github.com/pathikrit/better-files/issues/279): Better manage open file handles in recursive deletion of large directories
