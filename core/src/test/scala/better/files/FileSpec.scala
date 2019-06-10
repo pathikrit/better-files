@@ -558,7 +558,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "serialize/deserialize" in {
-    assume(scalaVersion.startsWith("2.12")) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
+    assume(scalaVersion.startsWith("2.12") || scalaVersion.startsWith("2.13")) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
