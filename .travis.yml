@@ -26,11 +26,11 @@ matrix:
     - scala: 2.11.12
       jdk: openjdk9
 
-    - scala: 2.13.0-RC1
+    - scala: 2.13.0
       jdk: oraclejdk8
 
   allow_failures:
-    - scala: 2.13.0-RC1
+    - scala: 2.13.0
     - jdk: oraclejdk10   #Not supported on TravisCI
 
 branches:
