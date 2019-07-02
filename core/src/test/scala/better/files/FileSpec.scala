@@ -400,6 +400,11 @@ class FileSpec extends CommonSpec {
     c2 shouldEqual t1.checksum("md5")
   }
 
+  it should "read chinese" in {
+    val lines = "core/src/test/resources/better/files/issues-326.txt".toFile.lines.toSeq
+    assert(lines.length > 20)
+  }
+
   it should "support hashing algos" in {
     implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("")

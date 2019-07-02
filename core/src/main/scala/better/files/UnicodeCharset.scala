@@ -35,7 +35,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
   @annotation.tailrec
   private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: Set[Charset] = Set.empty): CoderResult = {
     if (isCharsetDetected) {
-      detectedCharset().newDecoder().decode(in, out, true)
+      detectedCharset().newDecoder().decode(in, out, false)
     } else if (candidates.isEmpty || !in.hasRemaining) {
       inferredCharset = Some(defaultCharset)
       in.rewind()
