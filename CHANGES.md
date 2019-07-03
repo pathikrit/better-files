@@ -18,6 +18,9 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * Remove implicit options from all APIs
 
+## v3.8.1
+* [Issue #326](https://github.com/pathikrit/better-files/issues/326): Do not mark end of input when charset is detected from BOM
+
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
 * [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
 * [Issue #309](https://github.com/pathikrit/better-files/issues/312): Recursive `deleteOnExit` support
