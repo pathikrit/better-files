@@ -47,6 +47,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
   0. [Java compatibility](#java-interoperability)
   0. [Globbing](#globbing)
   0. [File system operations](#file-system-operations)
+  0. [Checksums](#checksums)
   0. [Temporary files](#temporary-files)
   0. [UNIX DSL](#unix-dsl)
   0. [File attributes](#file-attributes)
@@ -363,13 +364,29 @@ file.copyTo(destination)       // unlike the default API, also works on director
 file.copyToDirectory(destination)
 file.linkTo(destination)                     // ln destination file
 file.symbolicLinkTo(destination)             // ln -s destination file
-file.{checksum, md5, sha1, sha256, sha512, digest}   // also works for directories
 file.setOwner(user: String)      // chown user file
 file.setGroup(group: String)     // chgrp group file
 Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3 (must import import better.files.Dsl.SymbolicOperations)
 Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must import import better.files.Dsl.SymbolicOperations)
 file.isReadLocked; file.isWriteLocked; file.isLocked
 File.numberOfOpenFileDescriptors        // number of open file descriptors
+```
+
+### Checksums
+One liner checksum for files (also works on directories):
+```scala
+file.md5 // equivalent to file.checksum("md5")
+file.sha1
+file.sha256
+file.sha512
+```
+For streams:
+```scala
+val md5: String = inputstream.withMessageDigest("md5").hexDigest()
+```
+The above consumes and closes the `inputstream`. If you want to write it to a file AND also compute the `md5`, you can do:
+```scala
+val md5: String = inputstream.withMessageDigest("md5").hexDigest(drainTo = someFile)
 ```
 
 ### Temporary files

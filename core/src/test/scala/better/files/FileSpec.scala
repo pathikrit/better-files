@@ -285,6 +285,7 @@ class FileSpec extends CommonSpec {
     fa shouldNot equal(testRoot / "b")
     val c1 = fa.md5
     fa.md5 shouldEqual c1
+    fa.md5 shouldEqual fa.newInputStream.withMessageDigest("md5").digest()
     t1 < "hello"
     t2 < "hello"
     (t1 == t2) shouldBe false

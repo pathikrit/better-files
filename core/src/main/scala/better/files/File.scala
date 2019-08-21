@@ -469,21 +469,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def fileOutputStream(append: Boolean = false): Dispose[FileOutputStream] =
     newFileOutputStream(append).autoClosed
 
-  //TODO: Move this to inputstream implicit
-  def newDigestInputStream(
-      digest: MessageDigest
-    )(implicit
-      openOptions: File.OpenOptions = File.OpenOptions.default
-    ): DigestInputStream =
-    new DigestInputStream(newInputStream(openOptions), digest)
-
-  def digestInputStream(
-      digest: MessageDigest
-    )(implicit
-      openOptions: File.OpenOptions = File.OpenOptions.default
-    ): Dispose[DigestInputStream] =
-    newDigestInputStream(digest)(openOptions).autoClosed
-
   def newScanner(
       splitter: StringSplitter = StringSplitter.Default
     )(implicit
@@ -622,7 +607,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       if (file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
-        file.digestInputStream(algorithm).foreach(_.pipeTo(NullOutputStream))
+        newInputStream().withMessageDigest(algorithm).autoClosed.foreach(_.pipeTo(NullOutputStream))
       }
     }
     algorithm.digest()
@@ -649,10 +634,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /**
     * @return checksum of this file (or directory) in hex format
     */
-  def checksum(algorithm: MessageDigest): String = {
-    val bytes = digest(algorithm)
-    String.format("%0" + (bytes.length << 1) + "X", new java.math.BigInteger(1, bytes))
-  }
+  def checksum(algorithm: MessageDigest): String =
+    toHex(digest(algorithm))
 
   def md5: String =
     checksum("MD5")
