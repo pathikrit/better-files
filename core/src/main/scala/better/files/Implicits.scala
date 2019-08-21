@@ -5,7 +5,7 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.nio.file.{Path, PathMatcher}
-import java.security.MessageDigest
+import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
@@ -90,6 +90,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       }
     }
 
+    def withMessageDigest(digest: MessageDigest): DigestInputStream =
+      new DigestInputStream(in, digest)
+
+    def withChecksum(checksum: Checksum): CheckedInputStream =
+      new CheckedInputStream(in, checksum)
+
     def buffered: BufferedInputStream =
       new BufferedInputStream(in)
 
@@ -148,6 +154,19 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }.get()
   }
 
+  implicit class DigestInputStreamExtensions(in: DigestInputStream) {
+
+    /** Exhausts the stream and computes the digest and closes the stream */
+    def digest(drainTo: OutputStream = NullOutputStream): Array[Byte] = {
+      in.autoClosed.foreach(_.pipeTo(drainTo))
+      in.getMessageDigest.digest()
+    }
+
+    /** Exhausts the stream and computes the digest as hex and closes the stream */
+    def hexDigest(drainTo: OutputStream = NullOutputStream): String =
+      toHex(digest(drainTo))
+  }
+
   implicit class OutputStreamExtensions(val out: OutputStream) {
     def buffered: BufferedOutputStream =
       new BufferedOutputStream(out)
@@ -157,6 +176,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def asGzipOutputStream(bufferSize: Int = DefaultBufferSize, syncFlush: Boolean = false): GZIPOutputStream =
       new GZIPOutputStream(out, bufferSize, syncFlush)
+
+    def withMessageDigest(digest: MessageDigest): DigestOutputStream =
+      new DigestOutputStream(out, digest)
+
+    def withChecksum(checksum: Checksum): CheckedOutputStream =
+      new CheckedOutputStream(out, checksum)
 
     def writer(implicit charset: Charset = DefaultCharset): OutputStreamWriter =
       new OutputStreamWriter(out, charset)
