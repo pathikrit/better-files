@@ -1,37 +1,28 @@
 language: scala
 
 jdk:
-  # sbt 1 does not support JDK 7 or below: https://github.com/sbt/sbt/issues/4219
-  - oraclejdk8
-  - oraclejdk9
-  - oraclejdk11
   - openjdk9
   - openjdk10
   - openjdk11
+  - openjdk12
 
 scala:
-  - 2.12.8
+  - 2.12.9
 
 matrix:
   include:
     - scala: 2.11.12
-      jdk: oraclejdk8
-
-    - scala: 2.11.12
       jdk: oraclejdk9
 
-    - scala: 2.11.12
-      jdk: openjdk8
-
-    - scala: 2.11.12
-      jdk: openjdk9
+    - scala: 2.12.9
+      jdk: oraclejdk11
 
     - scala: 2.13.0
-      jdk: oraclejdk8
+      jdk: oraclejdk12
 
   allow_failures:
     - scala: 2.13.0
-    - jdk: oraclejdk10   #Not supported on TravisCI
+    - jdk: oraclejdk10
 
 branches:
   only:
@@ -44,8 +35,8 @@ deploy:
     skip_cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
-      jdk: oraclejdk8
-      scala: 2.12.8
+      jdk: openjdk11
+      scala: 2.12.9
 
   - provider: pages
     skip_cleanup: true
@@ -53,15 +44,15 @@ deploy:
     local-dir: target/site
     verbose: true
     on:
-      jdk: oraclejdk8
-      scala: 2.12.8
+      jdk: openjdk11
+      scala: 2.12.9
 
   - provider: script
     skip_cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
-      jdk: oraclejdk8
-      scala: 2.12.8
+      jdk: openjdk11
+      scala: 2.12.9
 
 cache:
   directories:
