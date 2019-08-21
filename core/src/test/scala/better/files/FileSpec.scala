@@ -400,6 +400,11 @@ class FileSpec extends CommonSpec {
     c2 shouldEqual t1.checksum("md5")
   }
 
+  it should "read chinese" in {
+    val lines = "core/src/test/resources/better/files/issues-326.txt".toFile.lines.toSeq
+    assert(lines.length > 20)
+  }
+
   it should "support hashing algos" in {
     implicit val charset = java.nio.charset.StandardCharsets.UTF_8
     t1.writeText("")
@@ -558,7 +563,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "serialize/deserialize" in {
-    assume(scalaVersion.startsWith("2.12")) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
+    assume(scalaVersion.startsWith("2.12") || scalaVersion.startsWith("2.13")) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
