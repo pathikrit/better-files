@@ -944,8 +944,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  def setGroup(group: String): this.type = {
-    Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
+  def setGroup(group: String)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+    Files
+      .getFileAttributeView(path, classOf[PosixFileAttributeView], linkOptions: _*)
+      .setGroup(fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
     this
   }
 

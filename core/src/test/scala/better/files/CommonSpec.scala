@@ -1,14 +1,13 @@
 package better.files
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
+import org.scalatest._
+import org.scalatest.flatspec._
 
 import scala.concurrent.duration._
-import scala.language.postfixOps
-import scala.util.Properties.{osName, isMac, versionNumberString}
+import scala.util.Properties._
 
-trait CommonSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
-  def isLinux =
-    osName startsWith "Linux" //TODO: this is now in Scala:  https://github.com/scala/scala/commit/71f2bc737d96fcd29fcf2e5f494c6ae259d7b64e
+trait CommonSpec extends AnyFlatSpec with BeforeAndAfterEach with Matchers {
+  def isLinux = osName.startsWith("Linux")
 
   val isCI = sys.env.get("CI").exists(_.toBoolean)
 
@@ -16,5 +15,5 @@ trait CommonSpec extends FlatSpec with BeforeAndAfterEach with Matchers {
 
   val scalaVersion = versionNumberString
 
-  def sleep(t: FiniteDuration = 2 second) = Thread.sleep(t.toMillis)
+  def sleep(t: FiniteDuration = 2.second) = Thread.sleep(t.toMillis)
 }

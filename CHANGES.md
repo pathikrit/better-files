@@ -20,6 +20,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v3.9.0
 * [Issue #326](https://github.com/pathikrit/better-files/issues/326): Do not mark end of input when charset is detected from BOM
+* [Issue #332](https://github.com/pathikrit/better-files/issues/332): Fix `setGroup` - it was using semantics of `setOwner`
 * [Checksum utils for streams](https://github.com/pathikrit/better-files/issues/330)
 * [Issue #316](https://github.com/pathikrit/better-files/issues/316): Rename `isWriteable` to `isWritable`
 
