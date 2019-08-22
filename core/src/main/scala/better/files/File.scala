@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 import java.nio.channels._
 import java.nio.file._
 import java.nio.file.attribute._
-import java.security.{DigestInputStream, MessageDigest}
+import java.security.MessageDigest
 import java.time.Instant
 import java.util.function.BiPredicate
 import java.util.regex.Pattern
@@ -607,7 +607,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       if (file.isDirectory) {
         algorithm.update(relativePath.toString.getBytes)
       } else {
-        newInputStream().withMessageDigest(algorithm).autoClosed.foreach(_.pipeTo(NullOutputStream))
+        file.newInputStream().withMessageDigest(algorithm).autoClosed.foreach(_.pipeTo(NullOutputStream))
       }
     }
     algorithm.digest()
@@ -1272,8 +1272,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     for {
       in <- fileInputStream
       out <- destination
-        .createFileIfNotExists(createParents = true)
-        .gzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append)
+              .createFileIfNotExists(createParents = true)
+              .gzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append)
     } in.buffered(bufferSize).pipeTo(out, bufferSize)
     destination
   }
@@ -1297,7 +1297,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input  <- files
       file   <- input.walk()
-      name = input.parent.relativize(file)
+      name   = input.parent.relativize(file)
     } output.add(file, name.toString)
     this
   }
@@ -1459,9 +1459,11 @@ object File {
 
   type Events = Seq[WatchEvent.Kind[_]]
   object Events {
-    val all: Events = Seq(StandardWatchEventKinds.ENTRY_CREATE,
-                          StandardWatchEventKinds.ENTRY_MODIFY,
-                          StandardWatchEventKinds.ENTRY_DELETE)
+    val all: Events = Seq(
+      StandardWatchEventKinds.ENTRY_CREATE,
+      StandardWatchEventKinds.ENTRY_MODIFY,
+      StandardWatchEventKinds.ENTRY_DELETE
+    )
     val default: Events = all
   }
 

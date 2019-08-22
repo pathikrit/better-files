@@ -82,11 +82,11 @@ class FileSpec extends CommonSpec {
   "files" can "be instantiated" in {
     import java.io.{File => JFile}
 
-    val f        = File("/User/johndoe/Documents") // using constructor
-    val f1: File = file"/User/johndoe/Documents" // using string interpolator
-    val f2: File = "/User/johndoe/Documents".toFile // convert a string path to a file
+    val f        = File("/User/johndoe/Documents")              // using constructor
+    val f1: File = file"/User/johndoe/Documents"                // using string interpolator
+    val f2: File = "/User/johndoe/Documents".toFile             // convert a string path to a file
     val f3: File = new JFile("/User/johndoe/Documents").toScala // convert a Java file to Scala
-    val f4: File = root / "User" / "johndoe" / "Documents" // using root helper to start from root
+    val f4: File = root / "User" / "johndoe" / "Documents"      // using root helper to start from root
     //val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
     val f6: File  = "/User" / "johndoe" / "Documents" // using file separator DSL
     val f7: File  = home / "Documents" / "presentations" / `..` // Use `..` to navigate up to parent
@@ -145,7 +145,8 @@ class FileSpec extends CommonSpec {
     File(basedir, "rel/path/to/loc").toString should be(unixToNative(File("rel/anc/b").toString + "/rel/path/to/loc"))
     File(basedir, "../rel/path/to/loc").toString should be(unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
     File(basedir, "../", "rel", "path", "to", "loc").toString should be(
-      unixToNative(File("rel/anc").toString + "/rel/path/to/loc"))
+      unixToNative(File("rel/anc").toString + "/rel/path/to/loc")
+    )
   }
 
   it should "do basic I/O" in {
@@ -285,7 +286,6 @@ class FileSpec extends CommonSpec {
     fa shouldNot equal(testRoot / "b")
     val c1 = fa.md5
     fa.md5 shouldEqual c1
-    fa.md5 shouldEqual fa.newInputStream.withMessageDigest("md5").digest()
     t1 < "hello"
     t2 < "hello"
     (t1 == t2) shouldBe false
@@ -317,7 +317,8 @@ class FileSpec extends CommonSpec {
       JFiles.createSymbolicLink(dirSymlink.path, realDir.path)
       dirSymlink.createDirectories()
       a[FileAlreadyExistsException] should be thrownBy dirSymlink.createDirectories()(
-        linkOptions = File.LinkOptions.noFollow)
+        linkOptions = File.LinkOptions.noFollow
+      )
       /*a[FileAlreadyExistsException] shouldNot be thrownBy*/
       dirSymlink.createDirectories()
     }
@@ -467,6 +468,7 @@ class FileSpec extends CommonSpec {
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
     expected.toUpperCase should include(actual)
     actual should not equal h1
+    actual shouldEqual t1.newInputStream.withMessageDigest("md5").hexDigest()
   }
 
   it should "support file in/out" in {
