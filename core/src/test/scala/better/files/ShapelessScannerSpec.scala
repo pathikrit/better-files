@@ -46,7 +46,8 @@ class ShapelessScannerSpec extends CommonSpec {
         12 :: "Bob" :: true :: HNil,
         13 :: "Mary" :: false :: HNil,
         26 :: "Rick" :: true :: HNil
-      ))
+      )
+    )
   }
 
   "Shapeless Scanner" should "parse case class" in {

@@ -93,7 +93,7 @@ lazy val releaseSettings = Seq(
     releaseStepCommand("publishSigned"),
     setNextVersion,
     //commitNextVersion,
-    releaseStepCommand("sonatypeReleaseAll"),
+    releaseStepCommand("sonatypeReleaseAll")
     //pushChanges
   )
 )
