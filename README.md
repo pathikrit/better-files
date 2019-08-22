@@ -375,20 +375,23 @@ File.numberOfOpenFileDescriptors        // number of open file descriptors
 ```
 
 ### Checksums
-One liner checksum for files (also works on directories):
+One liner checksum for files:
 ```scala
 file.md5 // equivalent to file.checksum("md5")
 file.sha1
 file.sha256
 file.sha512
 ```
-For streams:
+Note: The above also works for directories (it recursively computes for each file in the directory).
+
+For input/output streams:
 ```scala
-val md5: String = inputstream.withMessageDigest("md5").hexDigest()
+val md5: String = inputstream.md5.hexDigest()
+val md5: String = outputstream.md5.hexDigest()
 ```
-The above consumes and closes the `inputstream`. If you want to write it to a file AND also compute the `md5`, you can do:
+The above consumes and closes the `inputstream`. If you want to write it to a file AND also compute the `sha512`, you can do:
 ```scala
-val md5: String = inputstream.withMessageDigest("md5").hexDigest(drainTo = someFile)
+val md5: String = inputstream.sha512.hexDigest(drainTo = someFile)
 ```
 
 ### Temporary files

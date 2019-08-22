@@ -93,6 +93,18 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def withMessageDigest(digest: MessageDigest): DigestInputStream =
       new DigestInputStream(in, digest)
 
+    def md5: DigestInputStream =
+      withMessageDigest("MD5")
+
+    def sha1: DigestInputStream =
+      withMessageDigest("SHA-1")
+
+    def sha256: DigestInputStream =
+      withMessageDigest("SHA-256")
+
+    def sha512: DigestInputStream =
+      withMessageDigest("SHA-512")
+
     def withChecksum(checksum: Checksum): CheckedInputStream =
       new CheckedInputStream(in, checksum)
 
@@ -194,6 +206,24 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       out.flush()
       out
     }
+
+    def md5: DigestOutputStream =
+      withMessageDigest("MD5")
+
+    def sha1: DigestOutputStream =
+      withMessageDigest("SHA-1")
+
+    def sha256: DigestOutputStream =
+      withMessageDigest("SHA-256")
+
+    def sha512: DigestOutputStream =
+      withMessageDigest("SHA-512")
+
+    def crc32: CheckedOutputStream =
+      withChecksum(CRC32)
+
+    def adler32: CheckedOutputStream =
+      withChecksum(Adler32)
 
     def writeAndClose(str: String)(implicit charset: Charset = DefaultCharset): Unit =
       out.writer.autoClosed.foreach(_.write(str))

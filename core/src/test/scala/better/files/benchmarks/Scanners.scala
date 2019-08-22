@@ -36,9 +36,9 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
   override def iterator =
     for {
-      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
+      line      <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
       tokenizer = new java.util.StringTokenizer(line)
-      _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
+      _         <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
     } yield tokenizer.nextToken()
 
   private[this] var current = iterator

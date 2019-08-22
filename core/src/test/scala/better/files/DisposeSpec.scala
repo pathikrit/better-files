@@ -259,9 +259,9 @@ class DisposeSpec extends CommonSpec {
 
     File.usingTemporaryFile() { f =>
       for {
-        pw <- f.printWriter()
+        pw        <- f.printWriter()
         _ :: rows = data
-        row <- rows
+        row       <- rows
       } pw.println(row)
 
       val expected = data.tail
