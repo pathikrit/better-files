@@ -21,6 +21,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 ## v3.9.0
 * [Issue #326](https://github.com/pathikrit/better-files/issues/326): Do not mark end of input when charset is detected from BOM
 * [Checksum utils for streams](https://github.com/pathikrit/better-files/issues/330)
+* [Issue #316](https://github.com/pathikrit/better-files/issues/316): Rename `isWriteable` to `isWritable`
 
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
 * [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release

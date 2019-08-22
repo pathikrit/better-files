@@ -912,7 +912,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isReadable: Boolean =
     toJava.canRead
 
-  def isWriteable: Boolean =
+  def isWritable: Boolean =
     toJava.canWrite
 
   def isExecutable: Boolean =

@@ -105,6 +105,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def sha512: DigestInputStream =
       withMessageDigest("SHA-512")
 
+    def crc32: CheckedInputStream =
+      withChecksum(new CRC32)
+
+    def adler32: CheckedInputStream =
+      withChecksum(new Adler32)
+
     def withChecksum(checksum: Checksum): CheckedInputStream =
       new CheckedInputStream(in, checksum)
 
@@ -220,10 +226,10 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       withMessageDigest("SHA-512")
 
     def crc32: CheckedOutputStream =
-      withChecksum(CRC32)
+      withChecksum(new CRC32)
 
     def adler32: CheckedOutputStream =
-      withChecksum(Adler32)
+      withChecksum(new Adler32)
 
     def writeAndClose(str: String)(implicit charset: Charset = DefaultCharset): Unit =
       out.writer.autoClosed.foreach(_.write(str))
