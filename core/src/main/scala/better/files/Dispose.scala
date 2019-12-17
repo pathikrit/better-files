@@ -156,11 +156,12 @@ object Dispose {
       implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
         override type Output[X] = Iterator[X]
         override def apply[A, B](m: Dispose[A])(f: A => GenTraversableOnce[B]) = {
-          val it = try {
-            f(m.resource).toIterator
-          } catch {
-            case NonFatal(e) => m.disposeOnceAndThrow(e)
-          }
+          val it =
+            try {
+              f(m.resource).toIterator
+            } catch {
+              case NonFatal(e) => m.disposeOnceAndThrow(e)
+            }
           it withHasNext {
             try {
               val result = it.hasNext

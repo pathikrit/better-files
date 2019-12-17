@@ -5,6 +5,7 @@ import org.scalatest.flatspec._
 
 import scala.concurrent.duration._
 import scala.util.Properties._
+import org.scalatest.matchers.should.Matchers
 
 trait CommonSpec extends AnyFlatSpec with BeforeAndAfterEach with Matchers {
   def isLinux = osName.startsWith("Linux")
