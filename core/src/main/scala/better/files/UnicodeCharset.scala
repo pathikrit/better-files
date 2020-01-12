@@ -42,6 +42,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
     if (isCharsetDetected) {
       detectedCharset().newDecoder().decode(in, out, false)
     } else if (firstCall && in.position() != 0) {
+      // See: https://github.com/pathikrit/better-files/pull/384
       inferredCharset = Some(defaultCharset)
       decode(in, out, firstCall = false)
     } else if (candidates.isEmpty || !in.hasRemaining) {

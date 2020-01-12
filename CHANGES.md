@@ -23,6 +23,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #332](https://github.com/pathikrit/better-files/issues/332): Fix `setGroup` - it was using semantics of `setOwner`
 * [Checksum utils for streams](https://github.com/pathikrit/better-files/issues/330)
 * [Issue #316](https://github.com/pathikrit/better-files/issues/316): Rename `isWriteable` to `isWritable`
+* [Issue #380](https://github.com/pathikrit/better-files/issues/380): Zip API exception in JDK 11
 
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
 * [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
