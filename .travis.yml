@@ -8,21 +8,21 @@ jdk:
   - openjdk12
 
 scala:
-  - 2.12.9
+  - 2.12.11
 
 matrix:
   include:
     - scala: 2.11.12
       jdk: oraclejdk9
 
-    - scala: 2.12.9
+    - scala: 2.12.11
       jdk: oraclejdk11
 
-    - scala: 2.13.0
+    - scala: 2.13.2
       jdk: oraclejdk12
 
   allow_failures:
-    - scala: 2.13.0
+    - scala: 2.13.2
     - jdk: oraclejdk10
 
 branches:
@@ -37,7 +37,7 @@ deploy:
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
       jdk: openjdk11
-      scala: 2.12.9
+      scala: 2.12.11
 
   - provider: pages
     cleanup: true
@@ -46,14 +46,14 @@ deploy:
     verbose: true
     on:
       jdk: openjdk11
-      scala: 2.12.9
+      scala: 2.12.11
 
   - provider: script
     cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
       jdk: openjdk11
-      scala: 2.12.9
+      scala: 2.12.11
 
 # Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
 

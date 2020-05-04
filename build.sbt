@@ -113,7 +113,6 @@ lazy val publishSettings = Seq(
       url = new URL(s"http://github.com/${username}")
     )
   ),
-  useGpg := true,
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
