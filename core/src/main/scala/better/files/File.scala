@@ -839,7 +839,22 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return file size (for directories, return size of the directory) in bytes
     */
   def size(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Long =
-    walk()(visitOptions).map(f => Files.size(f.path)).sum
+    size(returnZeroIfMissing = isDirectory)
+
+  /**
+    * @param returnZeroIfMissing If true, return zeroes for missing files*
+    * @return file size (for directories, return size of the directory) in bytes
+    */
+  def size(returnZeroIfMissing: Boolean)(implicit visitOptions: File.VisitOptions): Long =
+    walk()(visitOptions)
+      .map({ f =>
+        try {
+          Files.size(f.path)
+        } catch {
+          case _: FileNotFoundException if returnZeroIfMissing => 0L
+        }
+      })
+      .sum
 
   def permissions(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Set[PosixFilePermission] =
     Files.getPosixFilePermissions(path, linkOptions: _*).asScala.toSet
@@ -1218,7 +1233,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return The destination where contents are unzipped
     */
   def unzipTo(
-      destination: File,
+      destination: File = File.newTemporaryDirectory(name.stripSuffix(".zip")),
       zipFilter: ZipEntry => Boolean = _ => true
     )(implicit
       charset: Charset = DefaultCharset

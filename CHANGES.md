@@ -24,6 +24,8 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Checksum utils for streams](https://github.com/pathikrit/better-files/issues/330)
 * [Issue #316](https://github.com/pathikrit/better-files/issues/316): Rename `isWriteable` to `isWritable`
 * [Issue #380](https://github.com/pathikrit/better-files/issues/380): Zip API exception in JDK 11
+* [Issue #391](https://github.com/pathikrit/better-files/issues/391): Handle NPE in `FileMonitor` for large folders
+* [Issue #362](https://github.com/pathikrit/better-files/issues/362): Add API to skip missing files when calculating size on a directory
 
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
 * [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
