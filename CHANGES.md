@@ -29,7 +29,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #320](https://github.com/pathikrit/better-files/issues/320): Change extension works when file is not present
 
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
-* [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.2-RC1 release
+* [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
 * [Issue #309](https://github.com/pathikrit/better-files/issues/312): Recursive `deleteOnExit` support
 * [Rename](https://github.com/pathikrit/better-files/commit/ae45c6b419a53a7095e3dadccda010eb4d624fc6) certain implicit utils
 
@@ -40,7 +40,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [PR #290](https://github.com/pathikrit/better-files/pull/290) Add maxDepth to File#glob and File#globRegex
 
 ## [v3.7.0](https://github.com/pathikrit/better-files/releases/tag/v3.7.0)
-* [Issue #248](https://github.com/pathikrit/better-files/issues/248): Release for Scala 2.13.2-M5
+* [Issue #248](https://github.com/pathikrit/better-files/issues/248): Release for Scala 2.13.0-M5
 * [Issue #270](https://github.com/pathikrit/better-files/issues/270): `FileTreeIterator` can be traversed multiple times safely
 * [Issue #262](https://github.com/pathikrit/better-files/issues/262): Handle backslashes in zip entry name
 * [Issue #278](https://github.com/pathikrit/better-files/issues/278): Dispose multiple resources

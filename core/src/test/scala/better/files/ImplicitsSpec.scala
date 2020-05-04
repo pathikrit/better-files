@@ -2,6 +2,7 @@ package better.files
 
 import org.scalatest._
 
+@Ignore
 class ImplicitsSpec extends CommonSpec {
   "streams" can "be partitioned" in {
     File.usingTemporaryDirectory() { dir =>
