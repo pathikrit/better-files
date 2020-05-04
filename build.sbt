@@ -4,7 +4,7 @@ val repo     = "better-files"
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.9", "2.13.0"),
+  crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.2"),
   crossVersion := CrossVersion.binary,
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   scalacOptions in (Compile, doc) += "-groups",
@@ -29,7 +29,7 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, 10)) => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
     case Some((2, 11)) => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
-    case Some((2, 13)) => Nil // Ignore warnings for 2.13 for now
+    case Some((2, 13)) => Nil                                               // Ignore warnings for 2.13 for now
     case _             => Nil
   }
 
@@ -113,7 +113,6 @@ lazy val publishSettings = Seq(
       url = new URL(s"http://github.com/${username}")
     )
   ),
-  useGpg := true,
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),

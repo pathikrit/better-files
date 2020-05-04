@@ -8,19 +8,21 @@ import scala.util.Random
 
 class EncodingBenchmark extends Benchmark {
 
-  def testWrite(file: File, charset: Charset) = profile {
-    for {
-      writer  <- file.bufferedWriter(charset)
-      content <- Iterator.continually(Random.nextString(10000)).take(1000)
-    } writer.write(content + "\n")
-  }
+  def testWrite(file: File, charset: Charset) =
+    profile {
+      for {
+        writer  <- file.bufferedWriter(charset)
+        content <- Iterator.continually(Random.nextString(10000)).take(1000)
+      } writer.write(content + "\n")
+    }
 
-  def testRead(file: File, charset: Charset) = profile {
-    for {
-      reader <- file.bufferedReader(charset)
-      line   <- reader.lines().autoClosed
-    } line
-  }
+  def testRead(file: File, charset: Charset) =
+    profile {
+      for {
+        reader <- file.bufferedReader(charset)
+        line   <- reader.lines().autoClosed
+      } line
+    }
 
   def run(charset: Charset) = {
     File.temporaryFile() foreach { file =>

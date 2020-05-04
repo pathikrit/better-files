@@ -15,8 +15,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   def this(reader: Reader, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset) =
     this(
       reader = reader,
-      encoder =
-        charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE),
+      encoder = charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE),
       bufferSize = bufferSize
     )
 
@@ -58,17 +57,18 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
       0 // Always return 0 if len == 0
     } else {
       var read = 0
-      @tailrec def loop(off: Int, len: Int): Unit = if (len > 0) {
-        if (encoderOut.hasRemaining) {
-          val c = encoderOut.remaining min len
-          encoderOut.get(b, off, c)
-          read += c
-          loop(off + c, len - c)
-        } else if (!endOfInput) {
-          fillBuffer()
-          loop(off, len)
+      @tailrec def loop(off: Int, len: Int): Unit =
+        if (len > 0) {
+          if (encoderOut.hasRemaining) {
+            val c = encoderOut.remaining min len
+            encoderOut.get(b, off, c)
+            read += c
+            loop(off + c, len - c)
+          } else if (!endOfInput) {
+            fillBuffer()
+            loop(off, len)
+          }
         }
-      }
       loop(off, len)
       if (read == 0 && endOfInput) EOF else read
     }
@@ -76,7 +76,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
 
   @tailrec final override def read() = {
     if (encoderOut.hasRemaining) {
-      encoderOut.get & 0xFF
+      encoderOut.get & 0xff
     } else if (endOfInput) {
       EOF
     } else {

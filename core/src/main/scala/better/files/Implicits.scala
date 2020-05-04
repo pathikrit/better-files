@@ -7,6 +7,7 @@ import java.nio.charset.Charset
 import java.nio.file.{Path, PathMatcher}
 import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
 
@@ -53,10 +54,11 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class IteratorExtensions[A](it: Iterator[A]) {
-    def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
-      override def hasNext = f && it.hasNext
-      override def next()  = it.next()
-    }
+    def withHasNext(f: => Boolean): Iterator[A] =
+      new Iterator[A] {
+        override def hasNext = f && it.hasNext
+        override def next()  = it.next()
+      }
   }
 
   implicit class InputStreamExtensions(in: InputStream) {
@@ -79,9 +81,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asString(
         closeStream: Boolean = true,
         bufferSize: Int = DefaultBufferSize
-      )(implicit
+    )(implicit
         charset: Charset = DefaultCharset
-      ): String = {
+    ): String = {
       try {
         new ByteArrayOutputStream(bufferSize).autoClosed
           .apply(pipeTo(_, bufferSize = bufferSize).toString(charset.displayName()))
@@ -145,7 +147,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asObjectInputStreamUsingClassLoader(
         classLoader: ClassLoader = getClass.getClassLoader,
         bufferSize: Int = DefaultBufferSize
-      ): ObjectInputStream =
+    ): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize)) {
         override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
           try {
@@ -319,7 +321,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def add(file: File, name: String): out.type = {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
-      val entryName    = if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
+      val entryName =
+        if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
       if (file.isRegularFile) file.inputStream.foreach(_.pipeTo(out))
       out.closeEntry()
@@ -338,23 +341,24 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       * @param f The function to apply to each ZipEntry. Can fail if it returns a lazy value,
       *          like Iterator, as the entry will have been closed before the lazy value is evaluated.
       */
-    def mapEntries[A](f: ZipEntry => A): Iterator[A] = new Iterator[A] {
-      private[this] var entry = in.getNextEntry
+    def mapEntries[A](f: ZipEntry => A): Iterator[A] =
+      new Iterator[A] {
+        private[this] var entry = in.getNextEntry
 
-      override def hasNext = entry != null
+        override def hasNext = entry != null
 
-      override def next() = {
-        try {
-          f(entry)
-        } finally {
+        override def next() = {
           try {
-            in.closeEntry()
+            f(entry)
           } finally {
-            entry = in.getNextEntry
+            try {
+              in.closeEntry()
+            } finally {
+              entry = in.getNextEntry
+            }
           }
         }
       }
-    }
 
     /**
       * Apply `f` to the ZipInputStream for every entry in the archive.

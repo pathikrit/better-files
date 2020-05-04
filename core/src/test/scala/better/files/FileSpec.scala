@@ -88,11 +88,11 @@ class FileSpec extends CommonSpec {
     val f3: File = new JFile("/User/johndoe/Documents").toScala // convert a Java file to Scala
     val f4: File = root / "User" / "johndoe" / "Documents"      // using root helper to start from root
     //val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
-    val f6: File  = "/User" / "johndoe" / "Documents" // using file separator DSL
+    val f6: File  = "/User" / "johndoe" / "Documents"           // using file separator DSL
     val f7: File  = home / "Documents" / "presentations" / `..` // Use `..` to navigate up to parent
     val f8: File  = root / "User" / "johndoe" / "Documents" / `.`
     val f9: File  = File(f.uri)
-    val f10: File = File("../a") // using a relative path
+    val f10: File = File("../a")                                // using a relative path
     Seq(f, f1, f2, f3, f4, /* f5,*/ f6, f7, f8, f9, f10) foreach { f =>
       f.pathAsString should not include ".."
     }
@@ -412,7 +412,9 @@ class FileSpec extends CommonSpec {
     md5(t1) shouldEqual "D41D8CD98F00B204E9800998ECF8427E"
     sha1(t1) shouldEqual "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
     sha256(t1) shouldEqual "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-    sha512(t1) shouldEqual "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
+    sha512(
+      t1
+    ) shouldEqual "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
   }
 
   it should "compute correct checksum for non-zero length string" in {
@@ -421,7 +423,9 @@ class FileSpec extends CommonSpec {
     md5(t1) shouldEqual "098F6BCD4621D373CADE4E832627B4F6"
     sha1(t1) shouldEqual "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3"
     sha256(t1) shouldEqual "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08"
-    sha512(t1) shouldEqual "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF"
+    sha512(
+      t1
+    ) shouldEqual "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF"
   }
 
   it should "copy" in {
@@ -573,7 +577,9 @@ class FileSpec extends CommonSpec {
   }
 
   it should "serialize/deserialize" in {
-    assume(scalaVersion.startsWith("2.12") || scalaVersion.startsWith("2.13")) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
+    assume(
+      scalaVersion.startsWith("2.12") || scalaVersion.startsWith("2.13")
+    ) // inline classes not serializable in Scala 2.11 because of https://github.com/scala/bug/issues/10233
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 

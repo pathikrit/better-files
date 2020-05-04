@@ -32,13 +32,14 @@ class ScannerBenchmark extends Benchmark {
     info(f"${scanner.getClass.getSimpleName.padTo(25, ' ')}: $time%4d ms")
   }
 
-  def run(scanner: AbstractScanner): Unit = repeat(n) {
-    assert(scanner.hasNext)
-    val ints  = List.fill(2 * n + 1)(scanner.nextInt())
-    val line  = "" //scanner.nextLine()
-    val words = IndexedSeq.fill(2 * n)(scanner.next())
-    (line, ints, words)
-  }
+  def run(scanner: AbstractScanner): Unit =
+    repeat(n) {
+      assert(scanner.hasNext)
+      val ints  = List.fill(2 * n + 1)(scanner.nextInt())
+      val line  = "" //scanner.nextLine()
+      val words = IndexedSeq.fill(2 * n)(scanner.next())
+      (line, ints, words)
+    }
 
   test("scanner") {
     info("Warming up ...")

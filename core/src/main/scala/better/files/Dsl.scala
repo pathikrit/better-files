@@ -48,18 +48,18 @@ object Dsl {
 
     def <(
         text: String
-      )(implicit
+    )(implicit
         openOptions: File.OpenOptions = File.OpenOptions.default,
         charset: Charset = DefaultCharset
-      ): file.type =
+    ): file.type =
       file.write(text)(openOptions, charset)
 
     def `>:`(
         text: String
-      )(implicit
+    )(implicit
         openOptions: File.OpenOptions = File.OpenOptions.default,
         charset: Charset = DefaultCharset
-      ): file.type =
+    ): file.type =
       file.write(text)(openOptions, charset)
 
     def `!`(implicit charset: Charset = DefaultCharset): String =
@@ -163,11 +163,9 @@ object Dsl {
 
   def zip(
       files: File*
-    )(destination: File,
-      compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
-    )(implicit
+  )(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit
       charset: Charset = DefaultCharset
-    ): destination.type =
+  ): destination.type =
     destination.zipIn(files.iterator, compressionLevel)(charset)
 
   def ungzip(gzipFile: File)(destination: File): File =

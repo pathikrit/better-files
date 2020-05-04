@@ -36,9 +36,9 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
   override def iterator =
     for {
-      line      <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
+      line <- Iterator.continually(reader.readLine()).takeWhile(_ != null)
       tokenizer = new java.util.StringTokenizer(line)
-      _         <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
+      _ <- Iterator.continually(tokenizer).takeWhile(_.hasMoreTokens)
     } yield tokenizer.nextToken()
 
   private[this] var current = iterator
@@ -59,10 +59,11 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
     Iterator.continually(reader.readLine()).takeWhile(_ != null).map(new StringTokenizer(_)).filter(_.hasMoreTokens)
   private[this] var current: Option[StringTokenizer] = None
 
-  @inline private[this] def tokenizer(): Option[StringTokenizer] = current.find(_.hasMoreTokens) orElse {
-    current = if (tokenizers.hasNext) Some(tokenizers.next()) else None
-    current
-  }
+  @inline private[this] def tokenizer(): Option[StringTokenizer] =
+    current.find(_.hasMoreTokens) orElse {
+      current = if (tokenizers.hasNext) Some(tokenizers.next()) else None
+      current
+    }
   override def hasNext = tokenizer().nonEmpty
   override def next()  = tokenizer().get.nextToken()
   override def nextLine() = {
