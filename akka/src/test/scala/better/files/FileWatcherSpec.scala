@@ -13,11 +13,12 @@ class FileWatcherSpec extends CommonSpec {
       (dir / "a" / "b" / "c.txt").createIfNotExists(createParents = true)
 
       var actualEvents = List.empty[String]
-      def output(file: File, event: String) = synchronized {
-        val msg = s"${dir.path relativize file.path} got $event"
-        println(msg)
-        actualEvents = msg :: actualEvents
-      }
+      def output(file: File, event: String) =
+        synchronized {
+          val msg = s"${dir.path relativize file.path} got $event"
+          println(msg)
+          actualEvents = msg :: actualEvents
+        }
 
       /***************************************************************************/
       import java.nio.file.{StandardWatchEventKinds => Events}

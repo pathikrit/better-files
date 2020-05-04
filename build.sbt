@@ -29,7 +29,7 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, 10)) => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
     case Some((2, 11)) => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
-    case Some((2, 13)) => Nil // Ignore warnings for 2.13 for now
+    case Some((2, 13)) => Nil                                               // Ignore warnings for 2.13 for now
     case _             => Nil
   }
 

@@ -24,15 +24,17 @@ object Scanner {
 
   trait Source[A] { self =>
     def apply(a: A): LineNumberReader
-    def contramap[B](f: B => A): Source[B] = new Source[B] {
-      override def apply(b: B) = self.apply(f(b))
-    }
+    def contramap[B](f: B => A): Source[B] =
+      new Source[B] {
+        override def apply(b: B) = self.apply(f(b))
+      }
   }
 
   object Source {
-    def apply[A](f: A => LineNumberReader): Source[A] = new Source[A] {
-      override def apply(a: A) = f(a)
-    }
+    def apply[A](f: A => LineNumberReader): Source[A] =
+      new Source[A] {
+        override def apply(a: A) = f(a)
+      }
 
     trait Implicits {
       implicit val lineNumberReaderSource: Source[LineNumberReader] = Source(identity)
@@ -46,24 +48,26 @@ object Scanner {
     }
   }
 
-  def apply[A: Source](a: A, splitter: StringSplitter = StringSplitter.Default): Scanner = new Scanner {
-    private[this] val reader  = implicitly[Source[A]].apply(a)
-    private[this] val tokens  = reader.tokens(splitter)
-    override def lineNumber() = reader.getLineNumber
-    override def nextLine()   = Option(reader.readLine()).getOrElse(throw new NoSuchElementException("End of file"))
-    override def next()       = tokens.next()
-    override def hasNext      = tokens.hasNext
-    override def close()      = reader.close()
-  }
+  def apply[A: Source](a: A, splitter: StringSplitter = StringSplitter.Default): Scanner =
+    new Scanner {
+      private[this] val reader  = implicitly[Source[A]].apply(a)
+      private[this] val tokens  = reader.tokens(splitter)
+      override def lineNumber() = reader.getLineNumber
+      override def nextLine()   = Option(reader.readLine()).getOrElse(throw new NoSuchElementException("End of file"))
+      override def next()       = tokens.next()
+      override def hasNext      = tokens.hasNext
+      override def close()      = reader.close()
+    }
 
   trait Read[A] { // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
     def apply(s: String): A
   }
 
   object Read {
-    def apply[A](f: String => A): Read[A] = new Read[A] {
-      override def apply(s: String) = f(s)
-    }
+    def apply[A](f: String => A): Read[A] =
+      new Read[A] {
+        override def apply(s: String) = f(s)
+      }
 
     trait Implicits {
       implicit val stringRead: Read[String]             = Read(identity)
@@ -121,9 +125,10 @@ trait Scannable[A] {
 }
 
 object Scannable {
-  def apply[A](f: Scanner => A): Scannable[A] = new Scannable[A] {
-    override def apply(scanner: Scanner) = f(scanner)
-  }
+  def apply[A](f: Scanner => A): Scannable[A] =
+    new Scannable[A] {
+      override def apply(scanner: Scanner) = f(scanner)
+    }
 
   implicit def fromRead[A](implicit read: Scanner.Read[A]): Scannable[A] =
     Scannable(s => read(s.next()))
@@ -148,28 +153,30 @@ object StringSplitter {
     * @param delimiter
     * @return
     */
-  def on(delimiter: Char): StringSplitter = new StringSplitter {
-    override def split(s: String) = new Iterator[String] {
-      private[this] var i = 0
-      private[this] var j = -1
-      private[this] val c = delimiter.toInt
-      _next()
+  def on(delimiter: Char): StringSplitter =
+    new StringSplitter {
+      override def split(s: String) =
+        new Iterator[String] {
+          private[this] var i = 0
+          private[this] var j = -1
+          private[this] val c = delimiter.toInt
+          _next()
 
-      private[this] def _next() = {
-        i = j + 1
-        val k = s.indexOf(c, i)
-        j = if (k < 0) s.length else k
-      }
+          private[this] def _next() = {
+            i = j + 1
+            val k = s.indexOf(c, i)
+            j = if (k < 0) s.length else k
+          }
 
-      override def hasNext = i <= s.length
+          override def hasNext = i <= s.length
 
-      override def next() = {
-        val res = s.substring(i, j)
-        _next()
-        res
-      }
+          override def next() = {
+            val res = s.substring(i, j)
+            _next()
+            res
+          }
+        }
     }
-  }
 
   /**
     * Split this string using ANY of the characters from delimiters
@@ -178,9 +185,10 @@ object StringSplitter {
     * @param includeDelimiters
     * @return
     */
-  def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter = new StringSplitter {
-    override def split(s: String) = new StringTokenizer(s, delimiters, includeDelimiters)
-  }
+  def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter =
+    new StringSplitter {
+      override def split(s: String) = new StringTokenizer(s, delimiters, includeDelimiters)
+    }
 
   /**
     * Split string using a regex pattern
@@ -188,7 +196,8 @@ object StringSplitter {
     * @param pattern
     * @return
     */
-  def regex(pattern: String): StringSplitter = new StringSplitter {
-    override def split(s: String) = s.split(pattern, -1)
-  }
+  def regex(pattern: String): StringSplitter =
+    new StringSplitter {
+      override def split(s: String) = s.split(pattern, -1)
+    }
 }

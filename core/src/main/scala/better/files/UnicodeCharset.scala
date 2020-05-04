@@ -38,7 +38,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
       out: CharBuffer,
       candidates: Set[Charset] = Set.empty,
       firstCall: Boolean
-    ): CoderResult = {
+  ): CoderResult = {
     if (isCharsetDetected) {
       detectedCharset().newDecoder().decode(in, out, false)
     } else if (firstCall && in.position() != 0) {
@@ -101,11 +101,11 @@ class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
 
 object UnicodeCharset {
   private[files] val bomTable: Map[Charset, IndexedSeq[Byte]] = Map(
-    "UTF-8"    -> IndexedSeq(0xEF, 0xBB, 0xBF),
-    "UTF-16BE" -> IndexedSeq(0xFE, 0xFF),
-    "UTF-16LE" -> IndexedSeq(0xFF, 0xFE),
-    "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xFE, 0xFF),
-    "UTF-32LE" -> IndexedSeq(0xFF, 0xFE, 0x00, 0x00)
+    "UTF-8"    -> IndexedSeq(0xef, 0xbb, 0xbf),
+    "UTF-16BE" -> IndexedSeq(0xfe, 0xff),
+    "UTF-16LE" -> IndexedSeq(0xff, 0xfe),
+    "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xfe, 0xff),
+    "UTF-32LE" -> IndexedSeq(0xff, 0xfe, 0x00, 0x00)
   ).collect {
       case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)
     }

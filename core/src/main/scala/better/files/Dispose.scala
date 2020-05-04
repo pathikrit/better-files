@@ -19,11 +19,12 @@ trait Disposable[-A] {
 }
 
 object Disposable {
-  def apply[A](disposeFunction: A => Any): Disposable[A] = new Disposable[A] {
-    override def dispose(resource: A) = {
-      val _ = disposeFunction(resource)
+  def apply[A](disposeFunction: A => Any): Disposable[A] =
+    new Disposable[A] {
+      override def dispose(resource: A) = {
+        val _ = disposeFunction(resource)
+      }
     }
-  }
 
   def apply[A](disposeMethod: => Unit): Disposable[A] =
     Disposable(_ => disposeMethod)

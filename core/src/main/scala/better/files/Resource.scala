@@ -54,17 +54,17 @@ trait Resource {
   def asString(
       name: String,
       bufferSize: Int = DefaultBufferSize
-    )(implicit
+  )(implicit
       charset: Charset = DefaultCharset
-    ): Option[String] =
+  ): Option[String] =
     asStream(name).map(_.asString(bufferSize = bufferSize)(charset))
 
   def getAsString(
       name: String,
       bufferSize: Int = DefaultBufferSize
-    )(implicit
+  )(implicit
       charset: Charset = DefaultCharset
-    ): String =
+  ): String =
     asString(name, bufferSize)(charset).getOrElse(Resource.notFound(name))
 
   /**

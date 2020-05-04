@@ -10,8 +10,7 @@ import scala.annotation.tailrec
   * Code ported from Java to Scala:
   * https://github.com/apache/commons-io/blob/d357d9d563c4a34fa2ab3cdc68221c851a9de4f5/src/main/java/org/apache/commons/io/output/WriterOutputStream.java
   */
-class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: Int, flushImmediately: Boolean)
-    extends OutputStream {
+class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: Int, flushImmediately: Boolean) extends OutputStream {
 
   /**
     * CharBuffer used as output for the decoder
@@ -28,9 +27,9 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
       writer: Writer,
       bufferSize: Int = DefaultBufferSize,
       flushImmediately: Boolean = false
-    )(implicit
+  )(implicit
       charset: Charset = DefaultCharset
-    ) =
+  ) =
     this(
       writer = writer,
       decoder = charset.newDecoder
@@ -42,12 +41,13 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     )
 
   override def write(b: Array[Byte], off: Int, len: Int) = {
-    @tailrec def loop(off: Int, len: Int): Unit = if (len > 0) {
-      val c = decoderIn.remaining min len
-      decoderIn.put(b, off, c)
-      processInput(endOfInput = false)
-      loop(off + c, len - c)
-    }
+    @tailrec def loop(off: Int, len: Int): Unit =
+      if (len > 0) {
+        val c = decoderIn.remaining min len
+        decoderIn.put(b, off, c)
+        processInput(endOfInput = false)
+        loop(off + c, len - c)
+      }
     loop(off, len)
     if (flushImmediately) flushOutput()
   }
