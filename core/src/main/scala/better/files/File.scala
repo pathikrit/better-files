@@ -1,7 +1,7 @@
 package better.files
 
-import java.io.{File => JFile, _}
-import java.net.{URI, URL}
+import java.io.{IOException, File => JFile, _}
+import java.net.{MalformedURLException, URI, URL}
 import java.nio.charset.Charset
 import java.nio.channels._
 import java.nio.file._
@@ -15,6 +15,7 @@ import java.util.zip._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 import scala.util.Properties
+import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
 /** Scala wrapper around java.nio.files.Path */
@@ -25,9 +26,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def pathAsString: String =
     path.toString
 
-  def toJava: JFile =
+  def toJava: JFile =withFileInfoException{
     new JFile(path.toAbsolutePath.toString)
-
+  }
   /**
     * Name of file
     * Certain files may not have a name e.g. root directory - returns empty string in that case
@@ -42,8 +43,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * @return
     */
-  def nameOption: Option[String] =
+  def nameOption: Option[String] = withFileInfoException{
     Option(path.getFileName).map(_.toString)
+  }
 
   def root: File =
     path.getRoot
@@ -51,11 +53,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def canonicalPath: String =
     toJava.getAbsolutePath
 
-  def canonicalFile: File =
+  def canonicalFile: File =  withFileInfoException {
     toJava.getCanonicalFile.toScala
+  }
 
-  def nameWithoutExtension: String =
+  def nameWithoutExtension: String =  withFileInfoException {
     nameWithoutExtension(includeAll = true)
+  }
 
   /**
     * @param includeAll
@@ -64,9 +68,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *         nameWithoutExtension(includeAll = false) returns "bundle.tar"
     * @return
     */
-  def nameWithoutExtension(includeAll: Boolean): String =
+  def nameWithoutExtension(includeAll: Boolean): String =  withFileInfoException {
     if (hasExtension) name.substring(0, indexOfExtension(includeAll)) else name
-
+  }
   /**
     * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
     */
@@ -109,8 +113,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def changeExtensionTo(extension: String): File =
     if (isRegularFile) renameTo(s"$nameWithoutExtension$extension") else this
 
-  def contentType: Option[String] =
+  def contentType: Option[String] = withFileInfoException {
     Option(Files.probeContentType(path))
+  }
 
   /**
     * Return parent of this file
@@ -161,7 +166,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type = {
+    ): this.type = withFileInfoException{
     if (exists(linkOptions)) {
       this
     } else if (asDirectory) {
@@ -182,24 +187,25 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type =
+    ): this.type = withFileInfoException{
     createIfNotExists(asDirectory = false, createParents = createParents)
+  }
 
   def createDirectoryIfNotExists(
       createParents: Boolean = false
     )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type =
+    ): this.type = withFileInfoException{
     createIfNotExists(asDirectory = true, createParents = createParents)
-
+  }
   /**
     * Create this file
     *
     * @param attributes
     * @return
     */
-  def createFile()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
+  def createFile()(implicit attributes: File.Attributes = File.Attributes.default): this.type = withFileInfoException{
     Files.createFile(path, attributes: _*)
     this
   }
@@ -210,14 +216,17 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def notExists(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     Files.notExists(path, linkOptions: _*)
 
-  def sibling(name: String): File =
+  def sibling(name: String): File = withFileInfoException{
     path.resolveSibling(name)
+  }
 
-  def isSiblingOf(sibling: File): Boolean =
+  def isSiblingOf(sibling: File): Boolean = withFileInfoException {
     sibling.isChildOf(parent)
+  }
 
-  def siblings: Iterator[File] =
+  def siblings: Iterator[File] = withFileInfoException {
     parent.list.filterNot(_ == this)
+  }
 
   def isChildOf(parent: File): Boolean =
     parent.isParentOf(this)
@@ -250,7 +259,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @param attributes
     * @return
     */
-  def createDirectory()(implicit attributes: File.Attributes = File.Attributes.default): this.type = {
+  def createDirectory()(implicit attributes: File.Attributes = File.Attributes.default): this.type = withFileInfoException{
     Files.createDirectory(path, attributes: _*)
     this
   }
@@ -267,7 +276,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type = {
+    ): this.type = withFileInfoException{
     try {
       Files.createDirectories(path, attributes: _*)
     } catch {
@@ -399,14 +408,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): this.type =
     write(text)(openOptions, charset)
 
-  def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile =
+  def newRandomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): RandomAccessFile =  withFileInfoException {
     new RandomAccessFile(toJava, mode.value)
+  }
 
   def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): Dispose[RandomAccessFile] =
     newRandomAccess(mode).autoClosed //TODO: Mode enum?
 
-  def newBufferedReader(implicit charset: Charset = DefaultCharset): BufferedReader =
+  def newBufferedReader(implicit charset: Charset = DefaultCharset): BufferedReader = withFileInfoException {
     Files.newBufferedReader(path, charset)
+  }
 
   def bufferedReader(implicit charset: Charset = DefaultCharset): Dispose[BufferedReader] =
     newBufferedReader(charset).autoClosed
@@ -415,8 +426,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       charset: Charset = DefaultCharset,
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): BufferedWriter =
+    ): BufferedWriter =  withFileInfoException {
     Files.newBufferedWriter(path, charset, openOptions: _*)
+  }
 
   def bufferedWriter(
       implicit
@@ -425,14 +437,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): Dispose[BufferedWriter] =
     newBufferedWriter(charset, openOptions).autoClosed
 
-  def newFileReader: FileReader =
+  def newFileReader: FileReader =  withFileInfoException {
     new FileReader(toJava)
+  }
 
   def fileReader: Dispose[FileReader] =
     newFileReader.autoClosed
 
-  def newFileWriter(append: Boolean = false): FileWriter =
+  def newFileWriter(append: Boolean = false): FileWriter =  withFileInfoException {
     new FileWriter(toJava, append)
+  }
 
   def fileWriter(append: Boolean = false): Dispose[FileWriter] =
     newFileWriter(append).autoClosed
@@ -441,8 +455,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       autoFlush: Boolean = false
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): PrintWriter =
+    ): PrintWriter =  withFileInfoException {
     new PrintWriter(newOutputStream(openOptions), autoFlush)
+  }
 
   def printWriter(
       autoFlush: Boolean = false
@@ -451,20 +466,23 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): Dispose[PrintWriter] =
     newPrintWriter(autoFlush)(openOptions).autoClosed
 
-  def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream =
+  def newInputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): InputStream =  withFileInfoException {
     Files.newInputStream(path, openOptions: _*)
+  }
 
   def inputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): Dispose[InputStream] =
     newInputStream(openOptions).autoClosed
 
-  def newFileInputStream: FileInputStream =
+  def newFileInputStream: FileInputStream =  withFileInfoException {
     new FileInputStream(toJava)
+  }
 
   def fileInputStream: Dispose[FileInputStream] =
     newFileInputStream.autoClosed
 
-  def newFileOutputStream(append: Boolean = false): FileOutputStream =
+  def newFileOutputStream(append: Boolean = false): FileOutputStream = withFileInfoException {
     new FileOutputStream(toJava, append)
+  }
 
   def fileOutputStream(append: Boolean = false): Dispose[FileOutputStream] =
     newFileOutputStream(append).autoClosed
@@ -473,9 +491,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       splitter: StringSplitter = StringSplitter.Default
     )(implicit
       charset: Charset = DefaultCharset
-    ): Scanner =
+    ): Scanner = withFileInfoException {
     Scanner(newBufferedReader(charset), splitter)
-
+  }
   def scanner(
       splitter: StringSplitter = StringSplitter.Default
     )(implicit
@@ -483,8 +501,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): Dispose[Scanner] =
     newScanner(splitter)(charset).autoClosed
 
-  def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream =
+  def newOutputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): OutputStream = withFileInfoException {
     Files.newOutputStream(path, openOptions: _*)
+  }
 
   def outputStream(implicit openOptions: File.OpenOptions = File.OpenOptions.default): Dispose[OutputStream] =
     newOutputStream(openOptions).autoClosed
@@ -493,14 +512,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default,
       charset: Charset = DefaultCharset
-    ): ZipOutputStream =
+    ): ZipOutputStream = withFileInfoException {
     new ZipOutputStream(newOutputStream(openOptions), charset)
+  }
 
   def zipInputStream(implicit charset: Charset = DefaultCharset): Dispose[ZipInputStream] =
     newZipInputStream(charset).autoClosed
 
-  def newZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
+  def newZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream = withFileInfoException {
     new ZipInputStream(newFileInputStream.buffered, charset)
+  }
 
   def zipOutputStream(
       implicit
@@ -513,8 +534,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       bufferSize: Int = DefaultBufferSize,
       syncFlush: Boolean = false,
       append: Boolean = false
-    ): GZIPOutputStream =
+    ): GZIPOutputStream = withFileInfoException {
     new GZIPOutputStream(newFileOutputStream(append), bufferSize, syncFlush)
+  }
 
   def gzipOutputStream(
       bufferSize: Int = DefaultBufferSize,
@@ -523,8 +545,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): Dispose[GZIPOutputStream] =
     newGzipOutputStream(bufferSize = bufferSize, syncFlush = syncFlush, append = append).autoClosed
 
-  def newGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
+  def newGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream = withFileInfoException {
     new GZIPInputStream(newFileInputStream, bufferSize)
+  }
 
   def gzipInputStream(bufferSize: Int = DefaultBufferSize): Dispose[GZIPInputStream] =
     newGzipInputStream(bufferSize).autoClosed
@@ -533,8 +556,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default,
       attributes: File.Attributes = File.Attributes.default
-    ): FileChannel =
+    ): FileChannel = withFileInfoException {
     FileChannel.open(path, openOptions.toSet.asJava, attributes: _*)
+  }
 
   def fileChannel(
       implicit
@@ -546,8 +570,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def newAsynchronousFileChannel(
       implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): AsynchronousFileChannel =
+    ): AsynchronousFileChannel = withFileInfoException {
     AsynchronousFileChannel.open(path, openOptions: _*)
+  }
 
   def asynchronousFileChannel(
       implicit
@@ -589,19 +614,20 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       bufferSize: Int = DefaultBufferSize
     )(implicit
       openOptions: File.OpenOptions = File.OpenOptions.default
-    ): A =
+    ): A = withFileInfoException {
     classLoaderOverride match {
       case Some(classLoader) =>
         inputStream(openOptions).apply(_.asObjectInputStreamUsingClassLoader(classLoader, bufferSize).deserialize[A])
       case _ => inputStream(openOptions).apply(_.asObjectInputStream(bufferSize).deserialize[A])
     }
+  }
 
-  def register(service: WatchService, events: File.Events = File.Events.all): this.type = {
+  def register(service: WatchService, events: File.Events = File.Events.all): this.type = withFileInfoException{
     path.register(service, events.toArray)
     this
   }
 
-  def digest(algorithm: MessageDigest): Array[Byte] = {
+  def digest(algorithm: MessageDigest): Array[Byte] = withFileInfoException{
     listRelativePaths.toSeq.sorted foreach { relativePath =>
       val file: File = path.resolve(relativePath)
       if (file.isDirectory) {
@@ -626,7 +652,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       value: Any
     )(implicit
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type = {
+    ): this.type = withFileInfoException{
     Files.setAttribute(path, attribute, value, linkOptions: _*)
     this
   }
@@ -652,9 +678,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /**
     * @return Some(target) if this is a symbolic link (to target) else None
     */
-  def symbolicLink: Option[File] =
+  def symbolicLink: Option[File] = withFileInfoException {
     when(isSymbolicLink)(new File(Files.readSymbolicLink(path)))
-
+  }
   /**
     * @return true if this file (or the file found by following symlink) is a directory
     */
@@ -685,7 +711,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       filter: File => Boolean,
       maxDepth: Int = Int.MaxValue,
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Iterator[File] = {
+    ): Iterator[File] = withFileInfoException{
     val predicate = new BiPredicate[Path, BasicFileAttributes] {
       override def test(p: Path, a: BasicFileAttributes) = filter(p)
     }
@@ -708,7 +734,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       isShared: Boolean = false
     )(implicit
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): Boolean =
+    ): Boolean = withFileInfoException{
     try {
       usingLock(mode) { channel =>
         channel.tryLock(position, size, isShared).release()
@@ -720,6 +746,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       // Windows throws a `FileNotFoundException` if the file is locked (see: https://github.com/pathikrit/better-files/pull/194)
       case _: FileNotFoundException if verifiedExists(linkOptions).getOrElse(true) => true
     }
+  }
 
   /**
     * @see https://docs.oracle.com/javase/tutorial/essential/io/check.html
@@ -749,15 +776,17 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isWriteLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.readWrite, position, size, isShared)
 
-  def list: Iterator[File] =
+  def list: Iterator[File] = withFileInfoException {
     Files.list(path)
+  }
 
   def children: Iterator[File] = list
 
   def entries: Iterator[File] = list
 
-  def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] =
+  def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] = withFileInfoException {
     walk()(visitOptions).filterNot(isSamePathAs)
+  }
 
   /**
     * Walk the directory tree recursively upto maxDepth
@@ -769,8 +798,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       maxDepth: Int = Int.MaxValue
     )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
-    ): Iterator[File] =
+    ): Iterator[File] = withFileInfoException {
     Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
+  }
 
   def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
     syntax(this, pattern, includePath)
@@ -829,11 +859,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     ): Iterator[File] =
     walk(maxDepth)(visitOptions).filter(matchFilter)
 
-  def uri: URI =
+  def uri: URI = withFileInfoException {
     path.toUri
+  }
 
-  def url: URL =
+  def url: URL = withFileInfoException {
     uri.toURL
+  }
 
   /**
     * @return file size (for directories, return size of the directory) in bytes
@@ -856,13 +888,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       })
       .sum
 
-  def permissions(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Set[PosixFilePermission] =
+  def permissions(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Set[PosixFilePermission] = withFileInfoException {
     Files.getPosixFilePermissions(path, linkOptions: _*).asScala.toSet
+  }
 
   def permissionsAsString(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String =
     PosixFilePermissions.toString(permissions(linkOptions).asJava)
 
-  def setPermissions(permissions: Set[PosixFilePermission]): this.type = {
+  def setPermissions(permissions: Set[PosixFilePermission]): this.type = withFileInfoException{
     Files.setPosixFilePermissions(path, permissions.asJava)
     this
   }
@@ -933,17 +966,21 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isExecutable: Boolean =
     toJava.canExecute
 
-  def attributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): BasicFileAttributes =
+  def attributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): BasicFileAttributes = withFileInfoException {
     Files.readAttributes(path, classOf[BasicFileAttributes], linkOptions: _*)
+  }
 
-  def posixAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): PosixFileAttributes =
+  def posixAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): PosixFileAttributes = withFileInfoException {
     Files.readAttributes(path, classOf[PosixFileAttributes], linkOptions: _*)
+  }
 
-  def dosAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): DosFileAttributes =
+  def dosAttributes(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): DosFileAttributes = withFileInfoException {
     Files.readAttributes(path, classOf[DosFileAttributes], linkOptions: _*)
+  }
 
-  def owner(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): UserPrincipal =
+  def owner(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): UserPrincipal = withFileInfoException {
     Files.getOwner(path, linkOptions: _*)
+  }
 
   def ownerName(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String =
     owner(linkOptions).getName
@@ -954,12 +991,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def groupName(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): String =
     group(linkOptions).getName
 
-  def setOwner(owner: String): this.type = {
+  def setOwner(owner: String): this.type = withFileInfoException{
     Files.setOwner(path, fileSystem.getUserPrincipalLookupService.lookupPrincipalByName(owner))
     this
   }
 
-  def setGroup(group: String)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+  def setGroup(group: String)(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = withFileInfoException{
     Files
       .getFileAttributeView(path, classOf[PosixFileAttributeView], linkOptions: _*)
       .setGroup(fileSystem.getUserPrincipalLookupService.lookupPrincipalByGroupName(group))
@@ -974,13 +1011,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-    ): this.type = {
+    ): this.type = withFileInfoException{
     Files.setLastModifiedTime(createFileIfNotExists()(attributes, linkOptions).path, FileTime.from(time))
     this
   }
 
-  def lastModifiedTime(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Instant =
+  def lastModifiedTime(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Instant = withFileInfoException {
     Files.getLastModifiedTime(path, linkOptions: _*).toInstant
+  }
 
   /**
     * Deletes this file or directory
@@ -992,7 +1030,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def delete(
       swallowIOExceptions: Boolean = false,
       linkOption: File.LinkOptions = File.LinkOptions.noFollow
-    ): this.type = {
+    ): this.type = withFileInfoException{
     try {
       // Note: We call .toList to exhaust the iterator upfront
       // since otherwise we wait until the last element of the iterator to close the underlying Stream
@@ -1005,8 +1043,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  def renameTo(newName: String): File =
+  def renameTo(newName: String): File = withFileInfoException {
     moveTo(path.resolveSibling(newName))
+  }
 
   /**
     *
@@ -1017,7 +1056,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       destination: File
     )(implicit
       copyOptions: File.CopyOptions = File.CopyOptions(overwrite = false)
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     Files.move(path, destination.path, copyOptions: _*)
     destination
   }
@@ -1044,7 +1083,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       overwrite: Boolean = false
     )(implicit
       copyOptions: File.CopyOptions = File.CopyOptions(overwrite)
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     if (isDirectory) { //TODO: maxDepth?
       Files.walkFileTree(
         path,
@@ -1088,7 +1127,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       destination: File
     )(implicit
       attributes: File.Attributes = File.Attributes.default
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     Files.createSymbolicLink(path, destination.path, attributes: _*)
     destination
   }
@@ -1102,7 +1141,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     if (symbolic) {
       symbolicLinkTo(destination)(attributes)
     } else {
-      Files.createLink(destination.path, path)
+      withFileInfoException {
+        Files.createLink(destination.path, path)
+      }
       destination
     }
   }
@@ -1110,14 +1151,16 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def listRelativePaths(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[Path] =
     walk()(visitOptions).map(relativize)
 
-  def relativize(destination: File): Path =
+  def relativize(destination: File): Path = withFileInfoException {
     path.relativize(destination.path)
+  }
 
   def isSamePathAs(that: File): Boolean =
     this.path == that.path
 
-  def isSameFileAs(that: File): Boolean =
+  def isSameFileAs(that: File): Boolean = withFileInfoException {
     Files.isSameFile(this.path, that.path)
+  }
 
   /**
     * @return true if this file is exactly same as that file
@@ -1147,7 +1190,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @param linkOptions
     * @return true if file is not present or empty directory or 0-bytes file
     */
-  def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
+  def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = withFileInfoException{
     if (isDirectory(linkOptions)) {
       Files.list(path).autoClosed(_.count()) == 0 //Do not use children.isEmpty as it may leave stream open
     } else if (isRegularFile(linkOptions)) {
@@ -1173,7 +1216,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * @return this
     */
-  def clear()(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = {
+  def clear()(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): this.type = withFileInfoException{
     if (isDirectory(linkOptions)) {
       children.foreach(_.delete())
     } else {
@@ -1185,7 +1228,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def deleteOnExit(
       swallowIOExceptions: Boolean = false,
       linkOption: File.LinkOptions = File.LinkOptions.noFollow
-    ): this.type = {
+    ): this.type = withFileInfoException{
     try {
       if (isDirectory(linkOption)) list.toList.foreach(_.deleteOnExit(swallowIOExceptions, linkOption))
       toJava.deleteOnExit()
@@ -1212,7 +1255,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
     )(implicit
       charset: Charset = DefaultCharset
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     val files = if (isDirectory) children else Iterator(this)
     destination.zipIn(files, compressionLevel)(charset)
   }
@@ -1237,7 +1280,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       zipFilter: ZipEntry => Boolean = _ => true
     )(implicit
       charset: Charset = DefaultCharset
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
       entry   <- zipFile.entries().asScala if zipFilter(entry)
@@ -1256,7 +1299,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       destinationDirectory: File = File.newTemporaryDirectory(name.stripSuffix(".zip"))
     )(implicit
       charset: Charset = DefaultCharset
-    ): destinationDirectory.type = {
+    ): destinationDirectory.type = withFileInfoException{
     for {
       zipIn <- zipInputStream(charset)
     } zipIn.mapEntries(_.extractTo(destinationDirectory, zipIn)).size
@@ -1267,7 +1310,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       destination: File = File.newTemporaryFile(suffix = name.stripSuffix(".gz")),
       append: Boolean = false,
       bufferSize: Int = DefaultBufferSize
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     for {
       in  <- gzipInputStream(bufferSize)
       out <- destination.createFileIfNotExists(createParents = true).fileOutputStream(append)
@@ -1285,7 +1328,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       bufferSize: Int = DefaultBufferSize,
       syncFlush: Boolean = false,
       append: Boolean = false
-    ): destination.type = {
+    ): destination.type = withFileInfoException{
     for {
       in <- fileInputStream
       out <- destination
@@ -1309,7 +1352,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       compressionLevel: Int = Deflater.DEFAULT_COMPRESSION
     )(implicit
       charset: Charset = DefaultCharset
-    ): this.type = {
+    ): this.type = withFileInfoException{
     for {
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input  <- files
@@ -1324,8 +1367,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * @return the zip file
     */
-  def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = DefaultCharset): File =
+  def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = DefaultCharset): File = withFileInfoException {
     unzipTo(destination = File.newTemporaryDirectory(name.stripSuffix(".zip")), zipFilter)(charset)
+  }
 
   /**
     * Java's temporary files/directories are not cleaned up by default.
@@ -1343,6 +1387,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     */
   def toTemporary: Dispose[File] =
     new Dispose(this)(Disposable.fileDisposer)
+
+  private def withFileInfoException[T](f: =>T): T = try{
+    f
+  } catch {
+    case e: Throwable =>
+      e.addSuppressed(FileInfo(path))
+      throw e
+  }
 
   //TODO: add features from https://github.com/sbt/io
 }
@@ -1599,4 +1651,12 @@ object File {
 
     def stop(): Unit = close()
   }
+
+}
+
+
+case class FileInfo(f: File) extends RuntimeException(s"${f.path}"){
+  override def getStackTrace = Array()
+
+  override def printStackTrace(): Unit = {}
 }
