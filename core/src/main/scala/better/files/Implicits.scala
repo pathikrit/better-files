@@ -7,6 +7,7 @@ import java.nio.charset.Charset
 import java.nio.file.{Path, PathMatcher}
 import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
 
@@ -53,6 +54,29 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class IteratorExtensions[A](it: Iterator[A]) {
+
+    /**
+      * Create an iterator which invokes onComplete() exactly once on exhaustion
+      *
+      * Note:
+      *   This also makes certain operations exhaustive (e.g. take(), find(), head)
+      *
+      * @param it
+      * @param onComplete
+      * @tparam A
+      * @return
+      */
+    def onComplete(f: => Unit): Iterator[A] =
+      new Iterator[A] {
+        val isOnCompleteInvoked = new AtomicBoolean(false)
+        override def hasNext = {
+          val hasNext = it.hasNext
+          if (!hasNext && !isOnCompleteInvoked.getAndSet(true)) f
+          hasNext
+        }
+        override def next() = it.next()
+      }
+
     def withHasNext(f: => Boolean): Iterator[A] = new Iterator[A] {
       override def hasNext = f && it.hasNext
       override def next()  = it.next()
