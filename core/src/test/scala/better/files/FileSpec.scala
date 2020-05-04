@@ -519,6 +519,14 @@ class FileSpec extends CommonSpec {
     }
   }
 
+  it should "handle backslashes in zip entry name" in {
+    val list = File("core/src/test/resources/better/files/issues-262.zip")
+      .unzipTo()
+      .listRecursively
+      .toList
+    assert(list.length === 3)
+  }
+
   it should "ungzip" in {
     val data = Seq("hello", "world")
     for {

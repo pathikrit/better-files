@@ -29,7 +29,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
 
     import scala.collection.JavaConverters._
     key.pollEvents().asScala foreach {
-      case event: WatchEvent[Path] @unchecked =>
+      case event: WatchEvent[Path] @unchecked if (event.context() != null) =>
         val target: File = path.resolve(event.context())
         if (reactTo(target)) {
           if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {

@@ -33,25 +33,35 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
   private[this] var inferredCharset: Option[Charset] = None
 
   @annotation.tailrec
-  private[this] def decode(in: ByteBuffer, out: CharBuffer, candidates: Set[Charset] = Set.empty): CoderResult = {
+  private[this] def decode(
+      in: ByteBuffer,
+      out: CharBuffer,
+      candidates: Set[Charset] = Set.empty,
+      firstCall: Boolean
+    ): CoderResult = {
     if (isCharsetDetected) {
       detectedCharset().newDecoder().decode(in, out, false)
+    } else if (firstCall && in.position() != 0) {
+      // See: https://github.com/pathikrit/better-files/pull/384
+      inferredCharset = Some(defaultCharset)
+      decode(in, out, firstCall = false)
     } else if (candidates.isEmpty || !in.hasRemaining) {
       inferredCharset = Some(defaultCharset)
       in.rewind()
-      decode(in, out)
+      decode(in, out, firstCall = false)
     } else if (candidates.forall(c => bomTable(c).length == in.position())) {
       inferredCharset = candidates.headOption.ensuring(candidates.size == 1, "Ambiguous BOMs found")
-      decode(in, out)
+      decode(in, out, firstCall = false)
     } else {
       val idx                          = in.position()
       val byte                         = in.get()
       def isPossible(charset: Charset) = bomTable(charset).lift(idx).contains(byte)
-      decode(in, out, candidates.filter(isPossible))
+      decode(in, out, candidates.filter(isPossible), firstCall = false)
     }
   }
 
-  override def decodeLoop(in: ByteBuffer, out: CharBuffer) = decode(in = in, out = out, candidates = bomTable.keySet)
+  override def decodeLoop(in: ByteBuffer, out: CharBuffer) =
+    decode(in = in, out = out, candidates = bomTable.keySet, firstCall = true)
 
   override def isCharsetDetected = inferredCharset.isDefined
 
