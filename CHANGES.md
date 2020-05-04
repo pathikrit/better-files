@@ -26,6 +26,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #380](https://github.com/pathikrit/better-files/issues/380): Zip API exception in JDK 11
 * [Issue #391](https://github.com/pathikrit/better-files/issues/391): Handle NPE in `FileMonitor` for large folders
 * [Issue #362](https://github.com/pathikrit/better-files/issues/362): Add API to skip missing files when calculating size on a directory
+* [Issue #320](https://github.com/pathikrit/better-files/issues/320): Change extension works when file is not present
 
 ## [v3.8.0](https://github.com/pathikrit/better-files/releases/tag/v3.8.0)
 * [PR #312](https://github.com/pathikrit/better-files/issues/312): Scala 2.13.0-RC1 release
