@@ -1233,7 +1233,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * @return The destination where contents are unzipped
     */
   def unzipTo(
-      destination: File,
+      destination: File = File.newTemporaryDirectory(name.stripSuffix(".zip")),
       zipFilter: ZipEntry => Boolean = _ => true
     )(implicit
       charset: Charset = DefaultCharset
