@@ -1,3 +1,4 @@
+os: linux
 language: scala
 
 jdk:
@@ -32,23 +33,23 @@ script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
 
 deploy:
   - provider: script
-    skip_cleanup: true
+    cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
       jdk: openjdk11
       scala: 2.12.9
 
   - provider: pages
-    skip_cleanup: true
-    github-token: $GITHUB_TOKEN
-    local-dir: target/site
+    cleanup: true
+    token: $GITHUB_TOKEN
+    local_dir: target/site
     verbose: true
     on:
       jdk: openjdk11
       scala: 2.12.9
 
   - provider: script
-    skip_cleanup: true
+    cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
       jdk: openjdk11
