@@ -1,6 +1,20 @@
 val username = "pathikrit"
 val repo     = "better-files"
 
+inThisBuild(List(
+  organization := "better.files",
+  homepage := Some(url(s"https://github.com/$username/$repo")),
+  licenses := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
+  developers := List(
+    Developer(
+      id = username,
+      name = "Pathikrit Bhowmick",
+      email = "pathikritbhowmick@msn.com",
+      url = new URL(s"http://github.com/${username}")
+    )
+  )
+))
+
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
@@ -35,7 +49,6 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
 
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
   .settings(
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
@@ -49,7 +62,6 @@ lazy val core = (project in file("core"))
 
 lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
-  .settings(publishSettings: _*)
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
@@ -62,7 +74,6 @@ lazy val root = (project in file("."))
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
   .settings(skip in publish := true)
-  .settings(releaseSettings: _*)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
   .aggregate(core, akka)
@@ -79,48 +90,3 @@ lazy val docSettings = Seq(
 
 lazy val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
 lazy val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
-
-import ReleaseTransformations._
-lazy val releaseSettings = Seq(
-  releaseProcess := Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    //runClean,
-    //runTest,
-    setReleaseVersion,
-    //commitReleaseVersion,
-    tagRelease,
-    releaseStepCommand("publishSigned"),
-    setNextVersion,
-    //commitNextVersion,
-    releaseStepCommand("sonatypeReleaseAll")
-    //pushChanges
-  )
-)
-
-lazy val publishSettings = Seq(
-  homepage := Some(url(s"https://github.com/$username/$repo")),
-  licenses += "MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE"),
-  scmInfo := Some(ScmInfo(url(s"https://github.com/$username/$repo"), s"git@github.com:$username/$repo.git")),
-  apiURL := Some(url(s"https://$username.github.io/$repo/latest/api/")),
-  releaseCrossBuild := true,
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  developers := List(
-    Developer(
-      id = username,
-      name = "Pathikrit Bhowmick",
-      email = "pathikritbhowmick@msn.com",
-      url = new URL(s"http://github.com/${username}")
-    )
-  ),
-  publishMavenStyle := true,
-  publishArtifact in Test := false,
-  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
-  credentials ++= (for {
-    username <- sys.env.get("SONATYPE_USERNAME")
-    password <- sys.env.get("SONATYPE_PASSWORD")
-  } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq,
-  // Following 2 lines need to get around https://github.com/sbt/sbt/issues/4275
-  publishConfiguration := publishConfiguration.value.withOverwrite(true),
-  publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
-)

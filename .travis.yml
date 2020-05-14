@@ -55,12 +55,31 @@ deploy:
       jdk: openjdk11
       scala: 2.12.11
 
-# Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
+# Copied from https://github.com/olafurpg/sbt-ci-release
 
+before_install:
+  - git fetch --tags # needed to fetch tags
+
+stages:
+  - name: test
+  - name: release
+    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
+
+jobs:
+  include:
+    # stage="test" if no stage is specified
+    - name: compile
+      script: sbt compile
+    # run ci-release only if previous stages passed
+    - stage: release
+      script: sbt ci-release
+
+
+# Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
 before_cache:
   - rm -fv $HOME/.ivy2/.sbt.ivy.lock
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
-  - find $HOME/.sbt        -name "*.lock"               -print -delete      
+  - find $HOME/.sbt        -name "*.lock"               -print -delete
 
 cache:
   directories:
