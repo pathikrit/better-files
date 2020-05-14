@@ -7,7 +7,6 @@ import java.nio.charset.Charset
 import java.nio.file.{Path, PathMatcher}
 import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
 

@@ -86,7 +86,7 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 
 [travisCiImg]: https://img.shields.io/travis/com/pathikrit/better-files/master.svg
 [travisCiImg2]: https://travis-ci.com/pathikrit/better-files.svg?branch=master
-[travisCiLink]: https://travis-ci.com/pathikrit/better-files.svg
+[travisCiLink]: https://travis-ci.com/pathikrit/better-files
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
