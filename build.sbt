@@ -1,19 +1,21 @@
 val username = "pathikrit"
 val repo     = "better-files"
 
-inThisBuild(List(
-  organization := "better.files",
-  homepage := Some(url(s"https://github.com/$username/$repo")),
-  licenses := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
-  developers := List(
-    Developer(
-      id = username,
-      name = "Pathikrit Bhowmick",
-      email = "pathikritbhowmick@msn.com",
-      url = new URL(s"http://github.com/${username}")
+inThisBuild(
+  List(
+    organization := "better.files",
+    homepage := Some(url(s"https://github.com/$username/$repo")),
+    licenses := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
+    developers := List(
+      Developer(
+        id = username,
+        name = "Pathikrit Bhowmick",
+        email = "pathikritbhowmick@msn.com",
+        url = new URL(s"http://github.com/${username}")
+      )
     )
   )
-))
+)
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",

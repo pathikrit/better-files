@@ -1,4 +1,4 @@
-addSbtPlugin("com.geirsson"             % "sbt-ci-release"           % "1.5.3")
+addSbtPlugin("com.geirsson"              % "sbt-ci-release"          % "1.5.3")
 addSbtPlugin("com.eed3si9n"              % "sbt-unidoc"              % "0.4.3")
 addSbtPlugin("org.scoverage"             % "sbt-scoverage"           % "1.6.1")
 addSbtPlugin("com.timushev.sbt"          % "sbt-updates"             % "0.4.2")
