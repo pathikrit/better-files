@@ -7,6 +7,24 @@ jdk:
 scala:
   - 2.12.11
 
+before_install:
+  - git fetch --tags # needed to fetch tags
+
+# Copied from https://github.com/olafurpg/sbt-ci-release
+stages:
+  - name: test
+
+  - name: release
+    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
+
+jobs:
+  include:
+    - name: test
+      script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+
+    - stage: release
+      script: sbt ci-release
+
 deploy:
   - provider: script
     cleanup: true
@@ -33,27 +51,6 @@ deploy:
       branch: master
       jdk: openjdk11
       scala: 2.12.11
-
-# Copied from https://github.com/olafurpg/sbt-ci-release
-
-before_install:
-  - git fetch --tags # needed to fetch tags
-
-stages:
-  - name: test
-
-  - name: release
-    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
-
-
-jobs:
-  include:
-    - name: test
-      script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
-
-    - stage: release
-      script: sbt ci-release
-
 
 # Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
 before_cache:
