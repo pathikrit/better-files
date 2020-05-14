@@ -84,9 +84,9 @@ you can find reasonably recent versions of this library for Scala 2.10 [here](ht
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
 
-[travisCiImg]: https://img.shields.io/travis/pathikrit/better-files/master.svg
-[travisCiImg2]: https://travis-ci.org/pathikrit/better-files.svg?branch=master
-[travisCiLink]: https://travis-ci.org/pathikrit/better-files
+[travisCiImg]: https://img.shields.io/travis/com/pathikrit/better-files/master.svg
+[travisCiImg2]: https://travis-ci.com/pathikrit/better-files.svg?branch=master
+[travisCiLink]: https://travis-ci.com/pathikrit/better-files.svg
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master

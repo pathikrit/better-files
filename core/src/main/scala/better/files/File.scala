@@ -106,10 +106,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     *
     * If file does not exist (or is a directory) no change is done and the current file is returned
     */
-  def changeExtensionTo(extension: String): File =
-    if (isRegularFile) renameTo(s"$nameWithoutExtension$extension")
-    else if (notExists) File(s"$nameWithoutExtension$extension")
-    else this
+  def changeExtensionTo(extension: String): File = {
+    val newName = s"$nameWithoutExtension.${extension.stripPrefix(".")}"
+    if (isRegularFile) renameTo(newName) else if (notExists) File(newName) else this
+  }
 
   def contentType: Option[String] =
     Option(Files.probeContentType(path))

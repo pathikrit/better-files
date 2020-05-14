@@ -202,6 +202,7 @@ class FileSpec extends CommonSpec {
 
   it should "support names/extensions" in {
     assert(File("zzz").changeExtensionTo("ddd").name === "zzz.ddd")
+    assert(File("zzz").changeExtensionTo(".ddd").name === "zzz.ddd")
     fa.extension shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
     t1.extension shouldBe Some(".txt")
