@@ -25,32 +25,32 @@ jobs:
     - stage: release
       script: sbt ci-release
 
-deploy:
-  - provider: script
-    cleanup: true
-    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
-    on:
-      branch: master
-      jdk: openjdk11
-      scala: 2.12.11
-
-  - provider: pages
-    cleanup: true
-    token: $GITHUB_TOKEN
-    local_dir: target/site
-    verbose: true
-    on:
-      branch: master
-      jdk: openjdk11
-      scala: 2.12.11
-
-  - provider: script
-    cleanup: true
-    script: curl -s https://codecov.io/bash | bash
-    on:
-      branch: master
-      jdk: openjdk11
-      scala: 2.12.11
+#deploy:
+#  - provider: script
+#    cleanup: true
+#    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+#    on:
+#      branch: master
+#      jdk: openjdk11
+#      scala: 2.12.11
+#
+#  - provider: pages
+#    cleanup: true
+#    token: $GITHUB_TOKEN
+#    local_dir: target/site
+#    verbose: true
+#    on:
+#      branch: master
+#      jdk: openjdk11
+#      scala: 2.12.11
+#
+#  - provider: script
+#    cleanup: true
+#    script: curl -s https://codecov.io/bash | bash
+#    on:
+#      branch: master
+#      jdk: openjdk11
+#      scala: 2.12.11
 
 # Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
 before_cache:
