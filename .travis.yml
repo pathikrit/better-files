@@ -2,40 +2,17 @@ os: linux
 language: scala
 
 jdk:
-  - openjdk9
-  - openjdk10
   - openjdk11
-  - openjdk12
 
 scala:
   - 2.12.11
-
-matrix:
-  include:
-    - scala: 2.11.12
-      jdk: oraclejdk9
-
-    - scala: 2.12.11
-      jdk: oraclejdk11
-
-    - scala: 2.13.2
-      jdk: oraclejdk12
-
-  allow_failures:
-    - scala: 2.13.2
-    - jdk: oraclejdk10
-
-branches:
-  only:
-    master
-
-script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
 
 deploy:
   - provider: script
     cleanup: true
     script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
     on:
+      branch: master
       jdk: openjdk11
       scala: 2.12.11
 
@@ -45,6 +22,7 @@ deploy:
     local_dir: target/site
     verbose: true
     on:
+      branch: master
       jdk: openjdk11
       scala: 2.12.11
 
@@ -52,6 +30,7 @@ deploy:
     cleanup: true
     script: curl -s https://codecov.io/bash | bash
     on:
+      branch: master
       jdk: openjdk11
       scala: 2.12.11
 
@@ -62,15 +41,16 @@ before_install:
 
 stages:
   - name: test
+
   - name: release
     if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
 
+
 jobs:
   include:
-    # stage="test" if no stage is specified
-    - name: compile
-      script: sbt compile
-    # run ci-release only if previous stages passed
+    - name: test
+      script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+
     - stage: release
       script: sbt ci-release
 
