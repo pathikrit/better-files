@@ -35,7 +35,7 @@ jobs:
         - curl -s https://codecov.io/bash | bash
       deploy:
         - provider: pages
-          cleanup: true
+          skip_cleanup: true
           token: $GITHUB_TOKEN
           local_dir: target/site
           verbose: true

@@ -76,7 +76,7 @@ Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 * [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
 
 Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
-you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).
+you can find reasonably recent versions of this library for Scala 2.10 above.
 
 ## Tests [![TravisCI][travisCiImg]][travisCiLink]  [![codecov][codecovImg]][codecovLink] [![Codacy][codacyImg2]][codacyLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)

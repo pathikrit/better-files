@@ -18,7 +18,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * Remove implicit options from all APIs
 
-## v3.9.1
+## [v3.9.1](https://github.com/pathikrit/better-files/releases/tag/v3.9.1)
 * [Issue #417](https://github.com/pathikrit/better-files/issues/417): Fix `NoSuchMethodError` when reading `contentAsString` on JDK8 
 
 ## [v3.9.0](https://github.com/pathikrit/better-files/releases/tag/v3.9.0)
