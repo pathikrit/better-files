@@ -3,9 +3,13 @@ language: scala
 
 jdk:
   - openjdk8
+  - openjdk9
+  - openjdk11
 
 scala:
+  - 2.11.12
   - 2.12.11
+  - 2.13.2
 
 before_install:
   - git fetch --tags # needed to fetch tags
@@ -13,26 +17,32 @@ before_install:
 jobs:
   include:
     - stage: test
-      script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
-      # Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
-      before_cache:
-        - rm -fv $HOME/.ivy2/.sbt.ivy.lock
-        - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
-        - find $HOME/.sbt        -name "*.lock"               -print -delete
-
-      cache:
-        directories:
-          - $HOME/.cache/coursier
-          - $HOME/.ivy2/cache
-          - $HOME/.sbt
+      jdk: openjdk9
+      scala: 2.11.12
+      script: sbt ++$TRAVIS_SCALA_VERSION clean test
+    - stage: test
+      jdk: openjdk11
+      scala: 2.12.11
+      script: sbt ++$TRAVIS_SCALA_VERSION clean test
+    - stage: test
+      jdk: openjdk12
+      scala: 2.13.2
+      script: sbt ++$TRAVIS_SCALA_VERSION clean test
 
     - stage: release
       if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
-      script: sbt ci-release
+      jdk: openjdk8
+      scala: 2.11.12
+      script:
+        - sbt ++$TRAVIS_SCALA_VERSION clean test
+        - sbt ci-release
 
     - stage: publish
       if: branch = master AND type = push AND NOT fork
+      jdk: openjdk8
+      scala: 2.12.11
       script:
+        - sbt ++$TRAVIS_SCALA_VERSION coverage test # test once more to produce coverage reports (https://docs.travis-ci.com/user/build-stages/#data-persistence-between-stages-and-jobs)
         - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite
         - curl -s https://codecov.io/bash | bash
       deploy:
@@ -41,3 +51,15 @@ jobs:
           token: $GITHUB_TOKEN
           local_dir: target/site
           verbose: true
+
+# Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
+before_cache:
+  - rm -fv $HOME/.ivy2/.sbt.ivy.lock
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+  - find $HOME/.sbt        -name "*.lock"               -print -delete
+
+cache:
+  directories:
+  - $HOME/.cache/coursier
+  - $HOME/.ivy2/cache
+  - $HOME/.sbt
