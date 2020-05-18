@@ -17,36 +17,28 @@ stages:
   - name: release
     if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
 
+  - name: publish
+    if: branch = master AND type = push AND NOT fork
+
 jobs:
   include:
-    - name: test
+    - stage: test
       script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
 
     - stage: release
       script: sbt ci-release
 
+    - stage: publish
+      script:
+        - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+        - curl -s https://codecov.io/bash | bash
+
 #deploy:
-#  - provider: script
-#    cleanup: true
-#    script: sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
-#    on:
-#      branch: master
-#      jdk: openjdk11
-#      scala: 2.12.11
-#
 #  - provider: pages
 #    cleanup: true
 #    token: $GITHUB_TOKEN
 #    local_dir: target/site
 #    verbose: true
-#    on:
-#      branch: master
-#      jdk: openjdk11
-#      scala: 2.12.11
-#
-#  - provider: script
-#    cleanup: true
-#    script: curl -s https://codecov.io/bash | bash
 #    on:
 #      branch: master
 #      jdk: openjdk11
