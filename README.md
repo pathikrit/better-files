@@ -71,6 +71,9 @@ libraryDependencies ++= Seq(
 )
 ```
 Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
+* [Maven](https://repo1.maven.org/maven2/com/github/pathikrit/)
+* [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
+* [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
 
 Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
 you can find reasonably recent versions of this library for Scala 2.10 [here](https://oss.sonatype.org/#nexus-search;quick~better-files).

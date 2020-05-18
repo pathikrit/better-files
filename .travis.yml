@@ -17,25 +17,13 @@ before_install:
 jobs:
   include:
     - stage: test
-      jdk: openjdk9
-      scala: 2.11.12
-      script: sbt ++$TRAVIS_SCALA_VERSION clean test
-    - stage: test
-      jdk: openjdk11
-      scala: 2.12.11
-      script: sbt ++$TRAVIS_SCALA_VERSION clean test
-    - stage: test
-      jdk: openjdk12
-      scala: 2.13.2
       script: sbt ++$TRAVIS_SCALA_VERSION clean test
 
     - stage: release
       if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
       jdk: openjdk8
       scala: 2.11.12
-      script:
-        - sbt ++$TRAVIS_SCALA_VERSION clean test
-        - sbt ci-release
+      script: sbt ci-release
 
     - stage: publish
       if: branch = master AND type = push AND NOT fork
