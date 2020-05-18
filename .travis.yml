@@ -2,7 +2,7 @@ os: linux
 language: scala
 
 jdk:
-  - openjdk11
+  - openjdk8
 
 scala:
   - 2.12.11
@@ -10,48 +10,34 @@ scala:
 before_install:
   - git fetch --tags # needed to fetch tags
 
-# Copied from https://github.com/olafurpg/sbt-ci-release
-stages:
-  - name: test
-
-  - name: release
-    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
-
-  - name: publish
-    if: branch = master AND type = push AND NOT fork
-
 jobs:
   include:
     - stage: test
       script: sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+      # Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
+      before_cache:
+        - rm -fv $HOME/.ivy2/.sbt.ivy.lock
+        - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+        - find $HOME/.sbt        -name "*.lock"               -print -delete
+
+      cache:
+        directories:
+          - $HOME/.cache/coursier
+          - $HOME/.ivy2/cache
+          - $HOME/.sbt
 
     - stage: release
+      if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
       script: sbt ci-release
 
     - stage: publish
+      if: branch = master AND type = push AND NOT fork
       script:
-        - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite +publish
+        - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite
         - curl -s https://codecov.io/bash | bash
-
-#deploy:
-#  - provider: pages
-#    cleanup: true
-#    token: $GITHUB_TOKEN
-#    local_dir: target/site
-#    verbose: true
-#    on:
-#      branch: master
-#      jdk: openjdk11
-#      scala: 2.12.11
-
-# Copied from https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
-before_cache:
-  - rm -fv $HOME/.ivy2/.sbt.ivy.lock
-  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
-  - find $HOME/.sbt        -name "*.lock"               -print -delete
-
-cache:
-  directories:
-    - $HOME/.cache/coursier
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt
+      deploy:
+        - provider: pages
+          cleanup: true
+          token: $GITHUB_TOKEN
+          local_dir: target/site
+          verbose: true
