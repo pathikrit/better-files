@@ -12,15 +12,13 @@ import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import java.net.URI
+import java.net.URL
 
-/**
-  * Container for various implicits
-  */
-trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
-
+object Implicits {
   //TODO: Rename all Ops to Extensions
 
-  implicit class StringInterpolations(sc: StringContext) {
+  final class StringInterpolations(val sc: StringContext) extends AnyVal {
     def file(args: Any*): File =
       value(args).toFile
 
@@ -28,7 +26,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       sc.s(args: _*)
   }
 
-  implicit class StringExtensions(str: String) {
+  final class StringExtensions(val str: String) extends AnyVal {
     def toFile: File =
       File(str)
 
@@ -42,17 +40,45 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new StringReader(str)
   }
 
-  implicit class FileExtensions(file: JFile) {
+  final class FileExtensions(val file: JFile) extends AnyVal {
     def toScala: File =
       File(file.getPath)
   }
 
-  implicit class SymbolExtensions(symbol: Symbol) {
+  final class URLExtensions(val url: URL) extends AnyVal {
+    def isFile: Boolean = {
+      if (null == url) return false
+      val uri: URI = url.toURI
+      uri.getScheme == "file"
+    }
+
+    def toFile: File = {
+      require(isFile, s"Not a file: $url")
+      File(url)
+    }
+
+    def toFileOption: Option[File] = if (isFile) Some(File(url)) else None
+  }
+
+  final class URIExtensions(val uri: URI) extends AnyVal {
+    def isFile: Boolean =
+      if (null == uri) false
+      else uri.getScheme() == "file"
+
+    def toFile: File = {
+      require(isFile, s"Not a file: $uri")
+      File(uri)
+    }
+
+    def toFileOption: Option[File] = if (isFile) Some(File(uri)) else None
+  }
+
+  final class SymbolExtensions(val symbol: Symbol) extends AnyVal {
     def /(child: Symbol): File =
       File(symbol.name) / child
   }
 
-  implicit class IteratorExtensions[A](it: Iterator[A]) {
+  final class IteratorExtensions[A](val it: Iterator[A]) extends AnyVal {
     def withHasNext(f: => Boolean): Iterator[A] =
       new Iterator[A] {
         override def hasNext = f && it.hasNext
@@ -60,7 +86,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       }
   }
 
-  implicit class InputStreamExtensions(in: InputStream) {
+  final class InputStreamExtensions(val in: InputStream) extends AnyVal {
     def pipeTo(out: OutputStream, bufferSize: Int = DefaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
 
@@ -173,7 +199,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }.get()
   }
 
-  implicit class DigestInputStreamExtensions(in: DigestInputStream) {
+  final class DigestInputStreamExtensions(val in: DigestInputStream) extends AnyVal {
 
     /** Exhausts the stream and computes the digest and closes the stream */
     def digest(drainTo: OutputStream = NullOutputStream): Array[Byte] = {
@@ -186,7 +212,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       toHex(digest(drainTo))
   }
 
-  implicit class OutputStreamExtensions(val out: OutputStream) {
+  final class OutputStreamExtensions(val out: OutputStream) extends AnyVal {
     def buffered: BufferedOutputStream =
       new BufferedOutputStream(out)
 
@@ -250,14 +276,14 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new ZipOutputStream(out, charset)
   }
 
-  implicit class PrintWriterExtensions(pw: PrintWriter) {
+  final class PrintWriterExtensions(val pw: PrintWriter) extends AnyVal {
     def printLines(lines: TraversableOnce[_]): PrintWriter = {
       lines.foreach(pw.println)
       pw
     }
   }
 
-  implicit class ReaderExtensions(reader: Reader) {
+  final class ReaderExtensions(val reader: Reader) extends AnyVal {
     def buffered: BufferedReader =
       new BufferedReader(reader)
 
@@ -268,12 +294,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new Dispose(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
   }
 
-  implicit class BufferedReaderExtensions(reader: BufferedReader) {
+  final class BufferedReaderExtensions(val reader: BufferedReader) extends AnyVal {
     def tokens(splitter: StringSplitter = StringSplitter.Default): Iterator[String] =
       reader.lines().toAutoClosedIterator.flatMap(splitter.split)
   }
 
-  implicit class WriterExtensions(writer: Writer) {
+  final class WriterExtensions(val writer: Writer) extends AnyVal {
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
 
@@ -281,29 +307,29 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new WriterOutputStream(writer)(charset)
   }
 
-  implicit class FileChannelExtensions(fc: FileChannel) {
+  final class FileChannelExtensions(val fc: FileChannel) extends AnyVal {
     def toMappedByteBuffer: MappedByteBuffer =
       fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size())
   }
 
-  implicit class PathMatcherExtensions(matcher: PathMatcher) {
+  final class PathMatcherExtensions(val matcher: PathMatcher) extends AnyVal {
     def matches(file: File, maxDepth: Int)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
       file.collectChildren(child => matcher.matches(child.path), maxDepth)(visitOptions)
   }
 
-  implicit class ObjectInputStreamExtensions(ois: ObjectInputStream) {
+  final class ObjectInputStreamExtensions(val ois: ObjectInputStream) extends AnyVal {
     def deserialize[A]: A =
       ois.readObject().asInstanceOf[A]
   }
 
-  implicit class ObjectOutputStreamExtensions(val oos: ObjectOutputStream) {
+  final class ObjectOutputStreamExtensions(val oos: ObjectOutputStream) extends AnyVal {
     def serialize(obj: Serializable): oos.type = {
       oos.writeObject(obj)
       oos
     }
   }
 
-  implicit class ZipOutputStreamExtensions(val out: ZipOutputStream) {
+  final class ZipOutputStreamExtensions(val out: ZipOutputStream) extends AnyVal {
 
     /**
       * Correctly set the compression level
@@ -332,7 +358,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       add(file, file.name)
   }
 
-  implicit class ZipInputStreamExtensions(val in: ZipInputStream) {
+  final class ZipInputStreamExtensions(val in: ZipInputStream) extends AnyVal {
 
     /**
       * Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
@@ -368,7 +394,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       mapEntries(_ => f(in))
   }
 
-  implicit class ZipEntryExtensions(val entry: ZipEntry) {
+  final class ZipEntryExtensions(val entry: ZipEntry) extends AnyVal {
 
     /**
       * Extract this ZipEntry under this rootDir
@@ -385,7 +411,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     }
   }
 
-  implicit class DisposeableExtensions[A: Disposable](resource: A) {
+  final class DisposeableExtensions[A: Disposable](val resource: A) {
 
     /**
       * Lightweight automatic resource management
@@ -403,7 +429,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new Dispose(resource)
   }
 
-  implicit class JStreamExtensions[A](stream: JStream[A]) {
+  final class JStreamExtensions[A](val stream: JStream[A]) extends AnyVal {
 
     /**
       * Closes this stream when iteration is complete
@@ -415,10 +441,90 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       stream.autoClosed.flatMap(_.iterator().asScala)
   }
 
-  private[files] implicit class OrderingExtensions[A](order: Ordering[A]) {
+  final private[files] class OrderingExtensions[A](val order: Ordering[A]) extends AnyVal {
     def andThenBy(order2: Ordering[A]): Ordering[A] =
       Ordering.comparatorToOrdering(order.thenComparing(order2))
   }
+
+}
+
+/**
+  * Container for various implicits
+  */
+trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
+  import Implicits._
+
+  implicit def toStringInterpolations(sc: StringContext): StringInterpolations =
+    new StringInterpolations(sc)
+
+  implicit def toStringExtensions(str: String): StringExtensions =
+    new StringExtensions(str)
+
+  implicit def toFileExtensions(file: JFile): FileExtensions =
+    new FileExtensions(file)
+
+  implicit def toURLExtensions(url: URL): URLExtensions =
+    new URLExtensions(url)
+
+  implicit def toURIExtensions(uri: URI): URIExtensions =
+    new URIExtensions(uri)
+
+  implicit def toSymbolExtensions(symbol: Symbol): SymbolExtensions =
+    new SymbolExtensions(symbol)
+
+  implicit def toIteratorExtensions[A](it: Iterator[A]): IteratorExtensions[A] =
+    new IteratorExtensions(it)
+
+  implicit def toInputStreamExtensions(in: InputStream): InputStreamExtensions =
+    new InputStreamExtensions(in)
+
+  implicit def toDigestInputStreamExtensions(in: DigestInputStream): DigestInputStreamExtensions =
+    new DigestInputStreamExtensions(in)
+
+  implicit def toOutputStreamExtensions(out: OutputStream): OutputStreamExtensions =
+    new OutputStreamExtensions(out)
+
+  implicit def toPrintWriterExtensions(writer: PrintWriter): PrintWriterExtensions =
+    new PrintWriterExtensions(writer)
+
+  implicit def toReaderExtensions(reader: Reader): ReaderExtensions =
+    new ReaderExtensions(reader)
+
+  implicit def toBufferedReaderExtensions(reader: BufferedReader): BufferedReaderExtensions =
+    new BufferedReaderExtensions(reader)
+
+  implicit def toWriterExtensions(writer: Writer): WriterExtensions =
+    new WriterExtensions(writer)
+
+  implicit def toFileChannelExtensions(fc: FileChannel): FileChannelExtensions =
+    new FileChannelExtensions(fc)
+
+  implicit def toPathMatcherExtensions(matcher: PathMatcher): PathMatcherExtensions =
+    new PathMatcherExtensions(matcher)
+
+  implicit def toObjectInputStreamExtensions(ois: ObjectInputStream): ObjectInputStreamExtensions =
+    new ObjectInputStreamExtensions(ois)
+
+  implicit def toObjectOutputStreamExtensions(oos: ObjectOutputStream): ObjectOutputStreamExtensions =
+    new ObjectOutputStreamExtensions(oos)
+
+  implicit def toZipOutputStreamExtensions(out: ZipOutputStream): ZipOutputStreamExtensions =
+    new ZipOutputStreamExtensions(out)
+
+  implicit def toZipInputStreamExtensions(in: ZipInputStream): ZipInputStreamExtensions =
+    new ZipInputStreamExtensions(in)
+
+  implicit def toZipEntryExtensions(entry: ZipEntry): ZipEntryExtensions =
+    new ZipEntryExtensions(entry)
+
+  implicit def toDisposeableExtensions[A: Disposable](resource: A): DisposeableExtensions[A] =
+    new DisposeableExtensions(resource)
+
+  implicit def toJStreamExtensions[A](stream: JStream[A]): JStreamExtensions[A] =
+    new JStreamExtensions(stream)
+
+  private[files] implicit def toOrderingExtensions[A](order: Ordering[A]): OrderingExtensions[A] =
+    new OrderingExtensions(order)
 
   implicit def stringToMessageDigest(algorithmName: String): MessageDigest =
     MessageDigest.getInstance(algorithmName)

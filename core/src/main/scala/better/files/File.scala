@@ -25,6 +25,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def pathAsString: String =
     path.toString
 
+  /**
+    * getResource[...](path) always uses "/" for separator
+    *   https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String)
+    */
+  def toResourcePathAsString: String =
+    pathAsString.replace(JFile.separatorChar, '/')
+
   def toJava: JFile =
     new JFile(path.toAbsolutePath.toString)
 
