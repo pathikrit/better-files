@@ -71,6 +71,17 @@ lazy val akka = (project in file("akka"))
   )
   .dependsOn(core % "test->test;compile->compile")
 
+lazy val resources = (project in file("resources"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$repo-resources",
+    description := "Use I/O in close-safe resources",
+    libraryDependencies ++= Dependencies.resources,
+    baseDirectory in (Test) := file("./resources"),
+    fork in Test := true
+  )
+  .dependsOn(core % "test->test;compile->compile")
+
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
@@ -78,11 +89,11 @@ lazy val root = (project in file("."))
   .settings(skip in publish := true)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka)
+  .aggregate(core, akka, resources)
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,
-  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
+  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka, resources),
   siteSourceDirectory := baseDirectory.value / "site",
   siteSubdirName in ScalaUnidoc := "latest/api",
   addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
