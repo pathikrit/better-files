@@ -1316,6 +1316,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input  <- files
       file   <- input.walk()
+      if (!this.name.contentEquals(file.name))
       name = input.parent.relativize(file)
     } output.add(file, name.toString)
     this
