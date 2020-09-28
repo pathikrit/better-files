@@ -29,7 +29,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     * getResource[...](path) always uses "/" for separator
     *   https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String)
     */
-  def toResourcePathAsString: String =
+  def resourcePathAsString: String =
     pathAsString.replace(JFile.separatorChar, '/')
 
   def toJava: JFile =
@@ -1315,8 +1315,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     for {
       output <- newZipOutputStream(File.OpenOptions.default, charset).withCompressionLevel(compressionLevel).autoClosed
       input  <- files
-      file   <- input.walk()
-      if (!this.name.contentEquals(file.name))
+      file   <- input.walk() if !name.contentEquals(file.name) // See https://github.com/pathikrit/better-files/pull/436
       name = input.parent.relativize(file)
     } output.add(file, name.toString)
     this

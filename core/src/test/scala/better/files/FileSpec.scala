@@ -528,7 +528,7 @@ class FileSpec extends CommonSpec {
       (dir / 'f1).touch().appendLines("Line 1", "Line 2")
       (dir / 'f2).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip")
-      val zipped = dir.zipTo(zipFile.path)
+      val zipped  = dir.zipTo(zipFile.path)
       zipped.unzipTo().listRecursively.toList.map(_.name).forall(!_.contains("zip")) shouldBe true
     }
   }
