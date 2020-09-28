@@ -523,6 +523,16 @@ class FileSpec extends CommonSpec {
     }
   }
 
+  it should "exclude destination zip when it's under directory to be zipped" in {
+    File.usingTemporaryDirectory() { dir =>
+      (dir / 'f1).touch().appendLines("Line 1", "Line 2")
+      (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      val zipFile = (dir / "f.zip")
+      val zipped = dir.zipTo(zipFile.path)
+      zipped.unzipTo().listRecursively.toList.map(_.name).forall(!_.contains("zip")) shouldBe true
+    }
+  }
+
   it should "handle backslashes in zip entry name" in {
     val list = File("core/src/test/resources/better/files/issues-262.zip")
       .unzipTo()
