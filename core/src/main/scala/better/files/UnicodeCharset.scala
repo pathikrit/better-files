@@ -111,12 +111,9 @@ object UnicodeCharset {
     }
     .ensuring(_.nonEmpty, "No unicode charset detected")
 
-  def isUnicodeCharset(charset: Charset): Boolean = bomTable.contains(charset)
-
-  def isUnicodeCharset(charsetName: String): Boolean =
-    Charset.isSupported(charsetName) && bomTable.contains(Charset.forName(charsetName))
+  def isValid(charset: Charset): Boolean = bomTable.contains(charset)
 
   def apply(charset: Charset, writeByteOrderMarkers: Boolean = false): Charset =
-    if (isUnicodeCharset(charset)) new UnicodeCharset(charset, writeByteOrderMarkers)
+    if (isValid(charset)) new UnicodeCharset(charset, writeByteOrderMarkers)
     else charset
 }
