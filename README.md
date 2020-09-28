@@ -1,4 +1,4 @@
-# better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink] [![Gitter][gitterImg]][gitterLink]
+# better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink] [![scaladocImg]][scaladocLink] [![Gitter][gitterImg]][gitterLink]
 
 `better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
@@ -102,6 +102,9 @@ you can find reasonably recent versions of this library for Scala 2.10 above.
 [mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
 [mavenImg2]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.12/badge.svg
 [mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
+
+[scaladocImg]: https://javadoc-badge.appspot.com/com.github.pathikrit/better-files_2.12.svg?label=scaladoc "Scaladoc"
+[scaladocLink]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.12/latest/better/files/index.html
 
 [gitterImg]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
 [gitterImg2]: https://badges.gitter.im/Join%20Chat.svg
