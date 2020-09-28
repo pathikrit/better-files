@@ -58,7 +58,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![UpdateImpact][updateImpactImg]][updateImpactLink] [![Scala Steward badge][scalaStewardImg]](https://scala-steward.org)
+## sbt [![Scala Steward badge][scalaStewardImg]](https://scala-steward.org)
 In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
@@ -113,9 +113,6 @@ you can find reasonably recent versions of this library for Scala 2.10 above.
 [scaladocImg]: https://www.javadoc.io/badge/com.github.pathikrit/better-files_2.12.svg?color=blue&label=scaladocs
 <!--[scaladocLink]: https://www.javadoc.io/page/com.github.pathikrit/better-files_2.12/latest/better/files/File.html-->
 [scaladocLink]: http://pathikrit.github.io/better-files/latest/api/better/files/File.html
-
-[updateImpactImg]: https://app.updateimpact.com/badge/704376701047672832/root.svg?config=compile
-[updateImpactLink]: https://app.updateimpact.com/latest/704376701047672832/root
 
 [scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
 [scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE

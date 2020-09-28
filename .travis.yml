@@ -31,7 +31,7 @@ jobs:
       scala: 2.12.12
       script:
         - sbt ++$TRAVIS_SCALA_VERSION coverage test # test once more to produce coverage reports (https://docs.travis-ci.com/user/build-stages/#data-persistence-between-stages-and-jobs)
-        - sbt updateImpactSubmit coverageReport coverageAggregate codacyCoverage makeSite
+        - sbt coverageReport coverageAggregate codacyCoverage makeSite
         - curl -s https://codecov.io/bash | bash
       deploy:
         - provider: pages
