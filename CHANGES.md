@@ -19,8 +19,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * Remove implicit options from all APIs
 
 ## [v3.9.2]
-* [PR #428](https://github.com/pathikrit/better-files/pull/428): Add `resourcePathAsString` 
-* [PR #436](https://github.com/pathikrit/better-files/pull/436): Exclude destination zip file from final output 
+* [PR #426](https://github.com/pathikrit/better-files/pull/426): Add `UnicodeCharset.isValid()`
+* [PR #428](https://github.com/pathikrit/better-files/pull/428): Add `File.resourcePathAsString` 
+* [PR #436](https://github.com/pathikrit/better-files/pull/436): Exclude destination zip file from final output
+* [PR #429](https://github.com/pathikrit/better-files/pull/429): Add `URI` and `URL` helpers 
 
 ## [v3.9.1](https://github.com/pathikrit/better-files/releases/tag/v3.9.1)
 * [Issue #417](https://github.com/pathikrit/better-files/issues/417): Fix `NoSuchMethodError` when reading `contentAsString` on JDK8 

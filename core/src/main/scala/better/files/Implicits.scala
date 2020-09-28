@@ -49,32 +49,26 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       File(file.getPath)
   }
 
-  implicit class URLExtensions(val url: URL) {
-    def isFile: Boolean = {
-      if (null == url) return false
-      val uri: URI = url.toURI
-      uri.getScheme == "file"
-    }
+  implicit class URLExtensions(url: URL) {
+    def isFile: Boolean =
+      url != null && url.toURI.isFile
 
-    def toFile: File = {
-      require(isFile, s"Not a file: $url")
-      File(url)
-    }
+    def toFileUnsafe: File =
+      toFile.getOrElse(throw new IllegalArgumentException(s"Not a file: $url"))
 
-    def toFileOption: Option[File] = if (isFile) Some(File(url)) else None
+    def toFile: Option[File] =
+      when(isFile)(File(url))
   }
 
-  implicit class URIExtensions(val uri: URI) {
+  implicit class URIExtensions(uri: URI) {
     def isFile: Boolean =
-      if (null == uri) false
-      else uri.getScheme() == "file"
+      uri != null && uri.getScheme() == "file"
 
-    def toFile: File = {
-      require(isFile, s"Not a file: $uri")
-      File(uri)
-    }
+    def toFileUnsafe: File =
+      toFile.getOrElse(throw new IllegalArgumentException(s"Not a file: $uri"))
 
-    def toFileOption: Option[File] = if (isFile) Some(File(uri)) else None
+    def toFile: Option[File] =
+      when(isFile)(File(uri))
   }
 
   implicit class SymbolExtensions(symbol: Symbol) {
