@@ -1443,8 +1443,10 @@ object File {
   def apply(url: URL): File =
     apply(url.toURI)
 
-  def apply(uri: URI): File =
+  def apply(uri: URI): File = {
+    require(uri.isFile, s"Not a file: $uri")
     Paths.get(uri)
+  }
 
   def roots: Iterable[File] =
     FileSystems.getDefault.getRootDirectories.asScala.map(File.apply)
