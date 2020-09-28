@@ -12,6 +12,8 @@ import java.util.zip._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import java.net.URL
+import java.net.URI
 
 /**
   * Container for various implicits
@@ -45,6 +47,34 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   implicit class FileExtensions(file: JFile) {
     def toScala: File =
       File(file.getPath)
+  }
+
+  implicit class URLExtensions(val url: URL) {
+    def isFile: Boolean = {
+      if (null == url) return false
+      val uri: URI = url.toURI
+      uri.getScheme == "file"
+    }
+
+    def toFile: File = {
+      require(isFile, s"Not a file: $url")
+      File(url)
+    }
+
+    def toFileOption: Option[File] = if (isFile) Some(File(url)) else None
+  }
+
+  implicit class URIExtensions(val uri: URI) {
+    def isFile: Boolean =
+      if (null == uri) false
+      else uri.getScheme() == "file"
+
+    def toFile: File = {
+      require(isFile, s"Not a file: $uri")
+      File(uri)
+    }
+
+    def toFileOption: Option[File] = if (isFile) Some(File(uri)) else None
   }
 
   implicit class SymbolExtensions(symbol: Symbol) {
