@@ -25,7 +25,6 @@ lazy val commonSettings = Seq(
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   scalacOptions in (Compile, doc) += "-groups",
   libraryDependencies += Dependencies.scalatest,
-  updateImpactOpenBrowser := false,
   compile in Compile := (compile in Compile).dependsOn(formatAll).value,
   test in Test := (test in Test).dependsOn(checkFormat).value,
   formatAll := {
