@@ -152,6 +152,13 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new ZipInputStream(in, charset)
 
     /**
+      * input stream conversion using default arguments
+      * */
+    def as[T](implicit converter: InputStreamConverter[T]): T = {
+      converter.convert(in)
+    }
+
+    /**
       * If bufferSize is set to less than or equal to 0, we don't buffer
       * @param bufferSize
       * @return
@@ -195,6 +202,20 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
         out <- new ByteArrayOutputStream().autoClosed
       } yield pipeTo(out).toByteArray
     }.get()
+  }
+
+  trait InputStreamConverter[A] {
+    def convert(in: InputStream): A
+  }
+
+  object InputStreamConverter {
+    implicit val gzipInputStreamConverter = new InputStreamConverter[GZIPInputStream] {
+      override def convert(in: InputStream): GZIPInputStream = new GZIPInputStream(in, DefaultBufferSize)
+    }
+
+    implicit val zipInputStreamConverter = new InputStreamConverter[ZipInputStream] {
+      override def convert(in: InputStream): ZipInputStream = new ZipInputStream(in, DefaultCharset)
+    }
   }
 
   implicit class DigestInputStreamExtensions(in: DigestInputStream) {
