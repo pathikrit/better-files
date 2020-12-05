@@ -152,8 +152,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   )(implicit
       attributes: File.Attributes = File.Attributes.default,
       linkOptions: File.LinkOptions = File.LinkOptions.default
-  ): File =
-    (this / child).createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
+  ): File = {
+    val destination = this / child
+    destination.canonicalPath match {
+      case validPath if validPath.startsWith(this.canonicalPath + JFile.separator) =>
+        destination.createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
+      case _ => throw new IOException("File is outside directory.")
+    }
+  }
 
   /**
     * Create this file. If it exists, don't do anything
