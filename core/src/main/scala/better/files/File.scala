@@ -56,7 +56,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     path.getRoot
 
   def canonicalPath: String =
-    toJava.getAbsolutePath
+    toJava.getCanonicalPath
 
   def canonicalFile: File =
     toJava.getCanonicalFile.toScala
@@ -154,11 +154,8 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       linkOptions: File.LinkOptions = File.LinkOptions.default
   ): File = {
     val destination = this / child
-    destination.canonicalPath match {
-      case validPath if validPath.startsWith(this.canonicalPath + JFile.separator) =>
-        destination.createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
-      case _ => throw new IOException("File is outside directory.")
-    }
+    if (destination.isChildOf(this)) destination.createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
+    else throw new IOException("File is outside target directory")
   }
 
   /**
