@@ -1,6 +1,6 @@
-val username = "pathikrit"
-val repo     = "better-files"
-
+val username      = "pathikrit"
+val repo          = "better-files"
+val scalaVersions = Seq("2.11.12", "2.12.12", "2.13.3")
 inThisBuild(
   List(
     organization := "better.files",
@@ -13,14 +13,22 @@ inThisBuild(
         email = "pathikritbhowmick@msn.com",
         url = new URL(s"http://github.com/${username}")
       )
-    )
+    ),
+    githubWorkflowScalaVersions := scalaVersions,
+    githubWorkflowOSes := Seq("ubuntu-latest"),
+    githubWorkflowScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3"),
+    githubWorkflowJavaVersions := Seq("adopt@1.8", "openjdk@1.9", "openjdk@1.11"),
+    githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test"))),
+    githubWorkflowPublishTargetBranches := Seq(),
+    // Seq(RefPredicate.Equals(Ref.Branch("master"))),
+    githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
   )
 )
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3"), // when you change this line, also change .travis.yml
+  crossScalaVersions := scalaVersions, // when you change this line, also change .travis.yml
   crossVersion := CrossVersion.binary,
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   scalacOptions in (Compile, doc) += "-groups",
