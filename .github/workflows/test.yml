@@ -10,7 +10,7 @@ jobs:
       - name: setup scala
         uses: olafurpg/setup-scala@v10
         with:
-          java-version: openjdk@1.8
+          java-version: adopt@1.8
       - name: run test
         run: sbt +test
   test_on_jdk9:
