@@ -1,0 +1,37 @@
+name: Test
+on:
+  pull_request:
+
+jobs:
+  test_on_jdk8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout codes
+      - uses: actions/checkout@v2
+      - name: setup scala
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: openjdk@1.8
+      - name: run test
+      - run: sbt +test
+  test_on_jdk9:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout codes
+      - uses: actions/checkout@v2
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: openjdk@1.9
+      - name: run test
+      - run: sbt +test
+  test_on_jdk11:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout codes
+      - uses: actions/checkout@v2
+      - name: setup scala
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: openjdk@1.11
+      - name: run test
+      - run: sbt +test
