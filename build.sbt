@@ -16,7 +16,6 @@ inThisBuild(
     ),
     githubWorkflowScalaVersions := scalaVersions,
     githubWorkflowOSes := Seq("ubuntu-latest"),
-    githubWorkflowScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3"),
     githubWorkflowJavaVersions := Seq("adopt@1.8", "openjdk@1.9", "openjdk@1.11"),
     githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test"))),
     githubWorkflowPublishTargetBranches := Seq(),
