@@ -2,7 +2,6 @@ package better.files
 
 import java.io.IOException
 import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
-
 import better.files.Dsl._
 import better.files.File.{home, root}
 
@@ -543,6 +542,12 @@ class FileSpec extends CommonSpec {
       .listRecursively
       .toList
     assert(list.length === 3)
+  }
+  it should "throw IOException when unzipped file is outside target directory" in {
+    val zipFile = File("core/src/test/resources/better/files/issues-256.zip")
+    an[IOException] shouldBe thrownBy {
+      zipFile.unzip()
+    }
   }
 
   it should "ungzip" in {
