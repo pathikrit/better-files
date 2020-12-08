@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['*']
+    branches: [master]
   push:
-    branches: ['*']
+    branches: [master]
     tags: [v*]
 
 env:
@@ -127,3 +127,42 @@ jobs:
           rm targets.tar
 
       - run: sbt ++${{ matrix.scala }} ci-release
+
+  publishDoc:
+    name: publishDoc
+    if: github.event.pull_request.merged == true
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        scala: [2.12.12]
+        java: [adopt@1.8]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout current branch (full)
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java and Scala
+        uses: olafurpg/setup-scala@v10
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Cache sbt
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.sbt
+            ~/.ivy2/cache
+            ~/.coursier/cache/v1
+            ~/.cache/coursier/v1
+            ~/AppData/Local/Coursier/Cache/v1
+            ~/Library/Caches/Coursier/v1
+          key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
+
+      - name: publish doc
+        run: sbt makeSite
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: target/site
