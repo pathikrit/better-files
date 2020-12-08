@@ -37,7 +37,7 @@ inThisBuild(
             ),
             name = Some("generate doc")
           ),
-          WorkflowStep.Use("peaceiris", "actions-gh-pages", "v3", params = Map("publish_dir" -> "target/site"), name = "publish doc")
+          WorkflowStep.Use("peaceiris", "actions-gh-pages", "v3", params = Map("publish_dir" -> "target/site"), name = Some("publish doc"))
         ),
         scalas = List(_pubDocScalaVersion),
         cond = Some("github.event.pull_request.merged == true")
