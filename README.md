@@ -328,7 +328,7 @@ val lines   : Seq[String]           = str.lines
 No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.html) to Scala:
 ```scala
 val dir = "src"/"test"
-val matches: Iterator[File] = dir.glob("*.{java,scala}")
+val matches: Iterator[File] = dir.glob("**/*.{java,scala}")
 // above code is equivalent to:
 dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala"))
 ```
