@@ -743,7 +743,9 @@ See: https://github.com/gmethvin/directory-watcher#better-files-integration-scal
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
-import better.files._, FileWatcher._
+import better.files.File.home
+import better.files.FileWatcher._
+import java.nio.file.{StandardWatchEventKinds => EventType}
 
 implicit val system = ActorSystem("mySystem")
 
