@@ -756,8 +756,8 @@ watcher ! on(EventType.ENTRY_DELETE) {
 
 // watch for multiple events
 watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
-  case (EventType.ENTRY_CREATE, file, count) => println(s"$file got created")
-  case (EventType.ENTRY_MODIFY, file, count) => println(s"$file got modified $count times")
+  case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
+  case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
 
