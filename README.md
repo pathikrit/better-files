@@ -751,7 +751,8 @@ val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
 watcher ! on(EventType.ENTRY_DELETE) {
-  case file if file.isDirectory => println(s"$file got deleted")
+  case file if file.isDirectory => println(s"directory $file got deleted")
+  case file                     => println(s"$file got deleted")
 }
 
 // watch for multiple events
