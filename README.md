@@ -67,7 +67,7 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.5.13"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.6.13"
 )
 ```
 Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
