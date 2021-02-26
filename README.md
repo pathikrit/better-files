@@ -67,7 +67,7 @@ To use the [Akka based file monitor](akka), also add this:
 ```scala
 libraryDependencies ++= Seq(
   "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.5.13"
+  "com.typesafe.akka"     %% "akka-actor"         % "2.6.13"
 )
 ```
 Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
@@ -743,7 +743,9 @@ See: https://github.com/gmethvin/directory-watcher#better-files-integration-scal
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
-import better.files._, FileWatcher._
+import better.files.File.home
+import better.files.FileWatcher._
+import java.nio.file.{StandardWatchEventKinds => EventType}
 
 implicit val system = ActorSystem("mySystem")
 
@@ -751,13 +753,14 @@ val watcher: ActorRef = (home/"Downloads").newWatcher(recursive = true)
 
 // register partial function for an event
 watcher ! on(EventType.ENTRY_DELETE) {
-  case file if file.isDirectory => println(s"$file got deleted")
+  case file if file.isDirectory => println(s"directory $file got deleted")
+  case file                     => println(s"$file got deleted")
 }
 
 // watch for multiple events
 watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
-  case (EventType.ENTRY_CREATE, file, count) => println(s"$file got created")
-  case (EventType.ENTRY_MODIFY, file, count) => println(s"$file got modified $count times")
+  case (EventType.ENTRY_CREATE, file) => println(s"$file got created")
+  case (EventType.ENTRY_MODIFY, file) => println(s"$file got modified")
 }
 ```
 
