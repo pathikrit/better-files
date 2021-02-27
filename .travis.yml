@@ -22,7 +22,7 @@ jobs:
     - stage: release
       if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
       jdk: openjdk8
-      scala: 2.11.12
+      scala: 2.13.5
       script: sbt ci-release
 
     - stage: publish
