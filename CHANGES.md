@@ -23,6 +23,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * [PR #428](https://github.com/pathikrit/better-files/pull/428): Add `File.resourcePathAsString` 
 * [PR #436](https://github.com/pathikrit/better-files/pull/436): Exclude destination zip file from final output
 * [PR #429](https://github.com/pathikrit/better-files/pull/429): Add `URI` and `URL` helpers
+* [Issue #478](https://github.com/pathikrit/better-files/issues/478): Handle broken symlinks in `size()`
 * [Issue #412](https://github.com/pathikrit/better-files/issues/412): Better error message when URI is not a valid file 
 
 ## [v3.9.1](https://github.com/pathikrit/better-files/releases/tag/v3.9.1)

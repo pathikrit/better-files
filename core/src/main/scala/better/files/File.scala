@@ -852,8 +852,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
         try {
           Files.size(f.path)
         } catch {
-          case _: FileNotFoundException if returnZeroIfMissing => 0L
-          case _: NoSuchFileException   if returnZeroIfMissing => 0L
+          case (_: FileNotFoundException | _: NoSuchFileException) if returnZeroIfMissing => 0L
         }
       })
       .sum
