@@ -3,7 +3,7 @@ val repo     = "better-files"
 
 inThisBuild(
   List(
-    organization := "better.files",
+    organization.withRank(KeyRanks.Invisible) := "better.files",
     homepage := Some(url(s"https://github.com/$username/$repo")),
     licenses := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
     developers := List(
@@ -20,22 +20,22 @@ inThisBuild(
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3"), // when you change this line, also change .travis.yml
+  crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5"), // when you change this line, also change .travis.yml
   crossVersion := CrossVersion.binary,
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
-  scalacOptions in (Compile, doc) += "-groups",
+  Compile / doc / scalacOptions += "-groups",
   libraryDependencies += Dependencies.scalatest,
-  compile in Compile := (compile in Compile).dependsOn(formatAll).value,
-  test in Test := (test in Test).dependsOn(checkFormat).value,
+  Compile / compile := (Compile / compile).dependsOn(formatAll).value,
+  Test / test := (Test / test).dependsOn(checkFormat).value,
   formatAll := {
-    (scalafmt in Compile).value
-    (scalafmt in Test).value
-    (scalafmtSbt in Compile).value
+    (Compile / scalafmt).value
+    (Test / scalafmt).value
+    (Compile / scalafmtSbt).value
   },
   checkFormat := {
-    (scalafmtCheck in Compile).value
-    (scalafmtCheck in Test).value
-    (scalafmtSbtCheck in Compile).value
+    (Compile / scalafmtCheck).value
+    (Test / scalafmtCheck).value
+    (Compile / scalafmtSbtCheck).value
   }
 )
 
@@ -74,19 +74,19 @@ lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
-  .settings(skip in publish := true)
+  .settings(publish / skip := true)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
   .aggregate(core, akka)
 
 lazy val docSettings = Seq(
   autoAPIMappings := true,
-  unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, akka),
   siteSourceDirectory := baseDirectory.value / "site",
-  siteSubdirName in ScalaUnidoc := "latest/api",
-  addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
+  ScalaUnidoc / siteSubdirName := "latest/api",
+  addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
   git.remoteRepo := s"git@github.com:$username/$repo.git",
-  envVars in ghpagesPushSite += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
+  ghpagesPushSite / envVars += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
 )
 
 lazy val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
