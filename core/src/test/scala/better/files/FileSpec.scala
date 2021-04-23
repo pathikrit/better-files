@@ -1,6 +1,7 @@
 package better.files
 
 import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
+import java.util.zip.GZIPInputStream
 
 import better.files.Dsl._
 import better.files.File.{home, root}
@@ -548,7 +549,7 @@ class FileSpec extends CommonSpec {
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
+    (testRoot / "test.gz").inputStream.flatMap(_.as[GZIPInputStream].lines).toSeq shouldEqual data
   }
 
   it should "gzip" in {
