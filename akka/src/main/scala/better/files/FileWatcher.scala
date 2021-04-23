@@ -2,8 +2,7 @@ package better.files
 
 import akka.actor._
 
-/**
-  * An actor that can watch a file or a directory
+/** An actor that can watch a file or a directory
   * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
   *
   * @param file     watch this file (or directory)

@@ -5,8 +5,7 @@ import java.nio.{BufferOverflowException, ByteBuffer, CharBuffer}
 
 import scala.collection.JavaConverters._
 
-/**
-  * A Unicode charset that handles byte-order markers
+/** A Unicode charset that handles byte-order markers
   *
   * @param underlyingCharset Use this charset if no known byte-order marker is detected; use this for encoding too
   * @param writeByteOrderMarkers If set, write BOMs while encoding
@@ -19,8 +18,7 @@ class UnicodeCharset(underlyingCharset: Charset, writeByteOrderMarkers: Boolean)
   override def contains(cs: Charset) = underlyingCharset.contains(cs)
 }
 
-/**
-  * A Unicode decoder that uses the Unicode byte-order marker (BOM) to auto-detect the encoding
+/** A Unicode decoder that uses the Unicode byte-order marker (BOM) to auto-detect the encoding
   * (if none detected, falls back on the defaultCharset). This also gets around a bug in the JDK
   * (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not consumed for UTF-8.
   * See: https://github.com/pathikrit/better-files/issues/107
@@ -73,8 +71,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
     inferredCharset.getOrElse(throw new IllegalStateException("Insufficient bytes read to determine charset"))
 }
 
-/**
-  * Encoder that writes the BOM for this charset
+/** Encoder that writes the BOM for this charset
   * @param charset
   */
 class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
@@ -107,9 +104,8 @@ object UnicodeCharset {
     "UTF-32BE" -> IndexedSeq(0x00, 0x00, 0xfe, 0xff),
     "UTF-32LE" -> IndexedSeq(0xff, 0xfe, 0x00, 0x00)
   ).collect {
-      case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)
-    }
-    .ensuring(_.nonEmpty, "No unicode charset detected")
+    case (charset, bytes) if Charset.isSupported(charset) => Charset.forName(charset) -> bytes.map(_.toByte)
+  }.ensuring(_.nonEmpty, "No unicode charset detected")
 
   def isValid(charset: Charset): Boolean = bomTable.contains(charset)
 

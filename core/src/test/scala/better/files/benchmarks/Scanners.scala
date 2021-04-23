@@ -4,9 +4,7 @@ import better.files._
 
 import java.io.BufferedReader
 
-/**
-  * Base interface to test
-  */
+/** Base interface to test */
 abstract class AbstractScanner(protected[this] val reader: BufferedReader) {
   def hasNext: Boolean
   def next(): String
@@ -15,9 +13,7 @@ abstract class AbstractScanner(protected[this] val reader: BufferedReader) {
   def close()    = reader.close()
 }
 
-/**
-  * Based on java.util.Scanner
-  */
+/** Based on java.util.Scanner */
 class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] val scanner = new java.util.Scanner(reader)
   override def hasNext      = scanner.hasNext
@@ -30,9 +26,7 @@ class JavaScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   override def close() = scanner.close()
 }
 
-/**
-  * Based on StringTokenizer + resetting the iterator
-  */
+/** Based on StringTokenizer + resetting the iterator */
 class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterable[String] {
   override def iterator =
     for {
@@ -50,9 +44,7 @@ class IterableScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
   }
 }
 
-/**
-  * Based on a mutating var StringTokenizer
-  */
+/** Based on a mutating var StringTokenizer */
 class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.util.StringTokenizer
   private[this] val tokenizers =
@@ -72,9 +64,7 @@ class IteratorScanner(reader: BufferedReader) extends AbstractScanner(reader) wi
   }
 }
 
-/**
-  * Based on java.io.StreamTokenizer
-  */
+/** Based on java.io.StreamTokenizer */
 class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   import java.io.StreamTokenizer
   private[this] val in = new StreamTokenizer(reader)
@@ -91,9 +81,7 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
   }
 }
 
-/**
-  * Based on a reusable StringBuilder
-  */
+/** Based on a reusable StringBuilder */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   private[this] val chars  = reader.chars
   private[this] val buffer = new StringBuilder()
@@ -108,9 +96,7 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
   override def hasNext = chars.hasNext
 }
 
-/**
-  * Scala version of the ArrayBufferScanner
-  */
+/** Scala version of the ArrayBufferScanner */
 class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
   private[this] val chars  = reader.chars
   private[this] var buffer = Array.ofDim[Char](1 << 4)
@@ -131,9 +117,7 @@ class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   override def hasNext = chars.hasNext
 }
 
-/**
-  * Scanner using https://github.com/williamfiset/FastJavaIO
-  */
+/** Scanner using https://github.com/williamfiset/FastJavaIO */
 class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   protected def is: java.io.InputStream = new org.apache.commons.io.input.ReaderInputStream(reader, DefaultCharset)
 
@@ -145,16 +129,12 @@ class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) 
   override def nextLine() = fastReader.readLine()
 }
 
-/**
-  * Same as FastJavaIOScanner but uses better-files's Reader => InputStream
-  */
+/** Same as FastJavaIOScanner but uses better-files's Reader => InputStream */
 class FastJavaIOScanner2(reader: BufferedReader) extends FastJavaIOScanner(reader) {
   override def is = reader.toInputStream
 }
 
-/**
-  * Based on the better-files implementation
-  */
+/** Based on the better-files implementation */
 class BetterFilesScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] val scanner = Scanner(reader)
   override def hasNext      = scanner.hasNext

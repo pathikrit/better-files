@@ -14,8 +14,7 @@ class FileSpec extends CommonSpec {
   val rootStr = FileSystems.getDefault.getRootDirectories.iterator().next().toString
   import java.io.File.{separator, separatorChar}
 
-  /**
-    * Helper for unix -> windows path references (as strings).
+  /** Helper for unix -> windows path references (as strings).
     *
     * @param path as unix path
     * @return path in native format
@@ -41,8 +40,7 @@ class FileSpec extends CommonSpec {
   var b1: File       = _
   var b2: File       = _
 
-  /**
-    * Setup the following directory structure under root
+  /** Setup the following directory structure under root
     * /a
     *  /a1
     *  /a2

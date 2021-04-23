@@ -25,8 +25,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def pathAsString: String =
     path.toString
 
-  /**
-    * getResource[...](path) always uses "/" for separator
+  /** getResource[...](path) always uses "/" for separator
     *   https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String)
     */
   def resourcePathAsString: String =
@@ -35,8 +34,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def toJava: JFile =
     new JFile(path.toAbsolutePath.toString)
 
-  /**
-    * Name of file
+  /** Name of file
     * Certain files may not have a name e.g. root directory - returns empty string in that case
     *
     * @return
@@ -44,8 +42,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def name: String =
     nameOption.getOrElse("")
 
-  /**
-    * Certain files may not have a name e.g. root directory - returns None in that case
+  /** Certain files may not have a name e.g. root directory - returns None in that case
     *
     * @return
     */
@@ -64,8 +61,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def nameWithoutExtension: String =
     nameWithoutExtension(includeAll = true)
 
-  /**
-    * @param includeAll
+  /** @param includeAll
     *         For files with multiple extensions e.g. "bundle.tar.gz"
     *         nameWithoutExtension(includeAll = true) returns "bundle"
     *         nameWithoutExtension(includeAll = false) returns "bundle.tar"
@@ -74,14 +70,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def nameWithoutExtension(includeAll: Boolean): String =
     if (hasExtension) name.substring(0, indexOfExtension(includeAll)) else name
 
-  /**
-    * @return extension (including the dot) of this file if it is a regular file and has an extension, else None
+  /** @return extension (including the dot) of this file if it is a regular file and has an extension, else None
     */
   def extension: Option[String] =
     extension()
 
-  /**
-    * @param includeDot  whether the dot should be included in the extension or not
+  /** @param includeDot  whether the dot should be included in the extension or not
     * @param includeAll  whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz
     * @param toLowerCase to lowercase the extension or not e.g. foo.HTML should have .html or .HTML
     * @return extension of this file if it is a regular file and has an extension, else None
@@ -97,8 +91,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   private[this] def indexOfExtension(includeAll: Boolean) =
     if (includeAll) name.indexOf(".") else name.lastIndexOf(".")
 
-  /**
-    * Returns the extension if file is a regular file
+  /** Returns the extension if file is a regular file
     * If file is unreadable or does not exist, it is assumed to be not a regular file
     * See: https://github.com/pathikrit/better-files/issues/89
     *
@@ -107,8 +100,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def hasExtension: Boolean =
     (isRegularFile || notExists) && name.contains(".")
 
-  /**
-    * Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
+  /** Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
     * Example usage file"foo.java".changeExtensionTo(".scala")
     *
     * If file does not exist (or is a directory) no change is done and the current file is returned
@@ -121,8 +113,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def contentType: Option[String] =
     Option(Files.probeContentType(path))
 
-  /**
-    * Return parent of this file
+  /** Return parent of this file
     * NOTE: This API returns null if this file is the root;
     * please use parentOption if you expect to handle roots
     *
@@ -132,9 +123,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def parent: File =
     parentOption.orNull
 
-  /**
-    *
-    * @return Some(parent) of this file or None if this is the root and thus has no parent
+  /** @return Some(parent) of this file or None if this is the root and thus has no parent
     */
   def parentOption: Option[File] =
     Option(path.getParent).map(File.apply)
@@ -155,8 +144,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   ): File =
     (this / child).createIfNotExists(asDirectory, createParents)(attributes, linkOptions)
 
-  /**
-    * Create this file. If it exists, don't do anything
+  /** Create this file. If it exists, don't do anything
     *
     * @param asDirectory   If you want this file to be created as a directory instead, set this to true (false by default)
     * @param createParents If you also want all the parents to be created from root to this file (false by default)
@@ -202,8 +190,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   ): this.type =
     createIfNotExists(asDirectory = true, createParents = createParents)
 
-  /**
-    * Create this file
+  /** Create this file
     *
     * @param attributes
     * @return
@@ -231,8 +218,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isChildOf(parent: File): Boolean =
     parent.isParentOf(this)
 
-  /**
-    * Check if this directory contains this file
+  /** Check if this directory contains this file
     *
     * @param file
     * @param strict If strict is false, it would return true for self.contains(self)
@@ -253,8 +239,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def byteArray: Array[Byte] =
     loadBytes
 
-  /**
-    * Create this directory
+  /** Create this directory
     *
     * @param attributes
     * @return
@@ -264,8 +249,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * Create this directory and all its parents
+  /** Create this directory and all its parents
     * Unlike the JDK, this by default sanely handles the JDK-8130464 bug
     * If you want default Java behaviour, use File.LinkOptions.noFollow
     *
@@ -288,8 +272,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def chars(implicit charset: Charset = DefaultCharset): Iterator[Char] =
     newBufferedReader(charset).chars //TODO: Dispose here?
 
-  /**
-    * Load all lines from this file
+  /** Load all lines from this file
     * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
     *
     * @param charset
@@ -301,8 +284,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def lineCount(implicit charset: Charset = DefaultCharset): Long =
     Files.lines(path, charset).count()
 
-  /**
-    * Iterate over lines in a file (auto-close stream on complete)
+  /** Iterate over lines in a file (auto-close stream on complete)
     * NOTE: If the iteration is partial, it may leave a stream open
     * If you want partial iteration use @see lines()
     *
@@ -331,8 +313,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * For large number of lines that may not fit in memory, use printLines
+  /** For large number of lines that may not fit in memory, use printLines
     *
     * @param lines
     * @param charset
@@ -360,8 +341,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def appendBytes(bytes: Iterator[Byte]): this.type =
     writeBytes(bytes)(openOptions = File.OpenOptions.append)
 
-  /**
-    * Write byte array to file. For large contents consider using the writeBytes
+  /** Write byte array to file. For large contents consider using the writeBytes
     *
     * @param bytes
     * @return this
@@ -562,8 +542,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def watchService: Dispose[WatchService] =
     newWatchService.autoClosed
 
-  /**
-    * Serialize a object using Java's serializer into this file, creating it and its parents if they do not exist
+  /** Serialize a object using Java's serializer into this file, creating it and its parents if they do not exist
     *
     * @param obj
     * @return
@@ -580,8 +559,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * Deserialize a object using Java's default serialization from this file
+  /** Deserialize a object using Java's default serialization from this file
     *
     * @return
     */
@@ -614,8 +592,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     algorithm.digest()
   }
 
-  /**
-    * Set a file attribute e.g. file("dos:system") = true
+  /** Set a file attribute e.g. file("dos:system") = true
     *
     * @param attribute
     * @param value
@@ -632,8 +609,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * @return checksum of this file (or directory) in hex format
+  /** @return checksum of this file (or directory) in hex format
     */
   def checksum(algorithm: MessageDigest): String =
     toHex(digest(algorithm))
@@ -650,20 +626,17 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def sha512: String =
     checksum("SHA-512")
 
-  /**
-    * @return Some(target) if this is a symbolic link (to target) else None
+  /** @return Some(target) if this is a symbolic link (to target) else None
     */
   def symbolicLink: Option[File] =
     when(isSymbolicLink)(new File(Files.readSymbolicLink(path)))
 
-  /**
-    * @return true if this file (or the file found by following symlink) is a directory
+  /** @return true if this file (or the file found by following symlink) is a directory
     */
   def isDirectory(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     Files.isDirectory(path, linkOptions: _*)
 
-  /**
-    * @return true if this file (or the file found by following symlink) is a regular file
+  /** @return true if this file (or the file found by following symlink) is a regular file
     */
   def isRegularFile(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     Files.isRegularFile(path, linkOptions: _*)
@@ -674,8 +647,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isHidden: Boolean =
     Files.isHidden(path)
 
-  /**
-    * List files recursively up to given depth using a custom file filter
+  /** List files recursively up to given depth using a custom file filter
     *
     * @param filter
     * @param maxDepth
@@ -693,8 +665,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     Files.find(path, maxDepth, predicate, visitOptions: _*)
   }
 
-  /**
-    * Check if a file is locked.
+  /** Check if a file is locked.
     *
     * @param mode     The random access mode.
     * @param position The position at which the locked region is to start; must be non-negative.
@@ -722,8 +693,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       case _: FileNotFoundException if verifiedExists(linkOptions).getOrElse(true) => true
     }
 
-  /**
-    * @see https://docs.oracle.com/javase/tutorial/essential/io/check.html
+  /** @see https://docs.oracle.com/javase/tutorial/essential/io/check.html
     * @see https://stackoverflow.com/questions/30520179/why-does-file-exists-return-true-even-though-files-exists-in-the-nio-files
     *
     * @return
@@ -760,8 +730,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def listRecursively(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] =
     walk()(visitOptions).filterNot(isSamePathAs)
 
-  /**
-    * Walk the directory tree recursively upto maxDepth
+  /** Walk the directory tree recursively upto maxDepth
     *
     * @param maxDepth
     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0)
@@ -776,12 +745,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
     syntax(this, pattern, includePath)
 
-  /**
-    * Util to glob from this file's path
-    *
+  /** Util to glob from this file's path
     *
     * @param includePath If true, we don't need to set path glob patterns
-    *                    e.g. instead of **/ /*.txt we just use *.txt
+    *                    e.g. instead of *
+    */
+  /*.txt we just use *.txt
    * @param maxDepth Recurse up to maxDepth
    * @return Set of files that matched
    */
@@ -796,11 +765,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   ): Iterator[File] =
     pathMatcher(syntax, includePath)(pattern).matches(this, maxDepth)(visitOptions)
 
-  /**
-    * Util to match from this file's path using Regex
+  /** Util to match from this file's path using Regex
     *
     * @param includePath If true, we don't need to set path glob patterns
-    *                    e.g. instead of **/ /*.txt we just use *.txt
+    *                    e.g. instead of *
+    */
+  /*.txt we just use *.txt
    * @param maxDepth Recurse up to maxDepth
    * @see glob
    * @return Set of files that matched
@@ -814,8 +784,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   ): Iterator[File] =
     glob(pattern.regex, includePath, maxDepth)(syntax = File.PathMatcherSyntax.regex, visitOptions = visitOptions)
 
-  /**
-    * More Scala friendly way of doing Files.walk
+  /** More Scala friendly way of doing Files.walk
     * Note: This is lazy (returns an Iterator) and won't evaluate till we reify the iterator (e.g. using .toList)
     *
     * @param matchFilter
@@ -836,14 +805,12 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def url: URL =
     uri.toURL
 
-  /**
-    * @return file size (for directories, return size of the directory) in bytes
+  /** @return file size (for directories, return size of the directory) in bytes
     */
   def size(implicit visitOptions: File.VisitOptions = File.VisitOptions.default): Long =
     size(returnZeroIfMissing = isDirectory)
 
-  /**
-    * @param returnZeroIfMissing If true, return zeroes for missing files*
+  /** @param returnZeroIfMissing If true, return zeroes for missing files*
     * @return file size (for directories, return size of the directory) in bytes
     */
   def size(returnZeroIfMissing: Boolean)(implicit visitOptions: File.VisitOptions): Long =
@@ -882,8 +849,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   ): this.type =
     setPermissions(permissions(linkOptions) - permission)
 
-  /**
-    * test if file has this permission
+  /** test if file has this permission
     */
   def testPermission(
       permission: PosixFilePermission
@@ -919,8 +885,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isOthersExecutable(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     testPermission(PosixFilePermission.OTHERS_EXECUTE)(linkOptions)
 
-  /**
-    * This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
+  /** This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
     *
     * @see isOwnerReadable
     * @return
@@ -967,8 +932,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
+  /** Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
     */
   def touch(
       time: Instant = Instant.now()
@@ -983,8 +947,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def lastModifiedTime(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Instant =
     Files.getLastModifiedTime(path, linkOptions: _*).toInstant
 
-  /**
-    * Deletes this file or directory
+  /** Deletes this file or directory
     * Unless otherwise specified, this does not follow symlinks
     * i.e. if this is a symlink, only the symlink itself is deleted and not the linked object
     *
@@ -1009,9 +972,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def renameTo(newName: String): File =
     moveTo(path.resolveSibling(newName))
 
-  /**
-    *
-    * @param destination
+  /** @param destination
     * @return destination
     */
   def moveTo(
@@ -1023,8 +984,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination
   }
 
-  /**
-    * Moves this file into the given directory
+  /** Moves this file into the given directory
     * @param directory
     *
     * @return the File referencing the new file created under destination
@@ -1034,9 +994,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     moveTo(directory / this.name)
   }
 
-  /**
-    *
-    * @param destination
+  /** @param destination
     * @param overwrite
     * @return destination
     */
@@ -1069,8 +1027,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination
   }
 
-  /**
-    * Copies this file into the given directory
+  /** Copies this file into the given directory
     * @param directory
     *
     * @return the File referencing the new file created under destination
@@ -1120,15 +1077,13 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isSameFileAs(that: File): Boolean =
     Files.isSameFile(this.path, that.path)
 
-  /**
-    * @return true if this file is exactly same as that file
+  /** @return true if this file is exactly same as that file
     *         For directories, it checks for equivalent directory structure
     */
   def isSameContentAs(that: File): Boolean =
     isSimilarContentAs(that)
 
-  /**
-    * Almost same as isSameContentAs but uses faster md5 hashing to compare (and thus small chance of false positive)
+  /** Almost same as isSameContentAs but uses faster md5 hashing to compare (and thus small chance of false positive)
     * Also works for directories
     *
     * @param that
@@ -1144,8 +1099,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     }
   }
 
-  /**
-    * @param linkOptions
+  /** @param linkOptions
     * @return true if file is not present or empty directory or 0-bytes file
     */
   def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
@@ -1158,9 +1112,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     }
   }
 
-  /**
-    *
-    * @param linkOptions
+  /** @param linkOptions
     * @return for directories, true if it has no children, false otherwise
     *         for files, true if it is a 0-byte file, false otherwise
     *         else true if it exists, false otherwise
@@ -1168,8 +1120,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def nonEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean =
     !isEmpty(linkOptions)
 
-  /**
-    * If this is a directory, remove all its children
+  /** If this is a directory, remove all its children
     * If its a file, empty the contents
     *
     * @return this
@@ -1202,8 +1153,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   override def toString =
     pathAsString
 
-  /**
-    * Zips this file (or directory)
+  /** Zips this file (or directory)
     *
     * @param destination The destination file; Creates this if it does not exists
     * @return The destination zip file
@@ -1218,16 +1168,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination.zipIn(files, compressionLevel)(charset)
   }
 
-  /**
-    * zip to a temp directory
+  /** zip to a temp directory
     *
     * @return the target directory
     */
   def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit charset: Charset = DefaultCharset): File =
     zipTo(destination = File.newTemporaryFile(prefix = name, suffix = ".zip"), compressionLevel)(charset)
 
-  /**
-    * Unzips this zip file
+  /** Unzips this zip file
     *
     * @param destination destination folder; Creates this if it does not exist
     * @param zipFilter An optional param to reject or accept unzipping a file
@@ -1246,8 +1194,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination
   }
 
-  /**
-    * Streamed unzipping is slightly slower but supports larger files and more encodings
+  /** Streamed unzipping is slightly slower but supports larger files and more encodings
     * @see https://github.com/pathikrit/better-files/issues/152
     *
     * @param destinationDirectory destination folder; Creates this if it does not exist
@@ -1276,9 +1223,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination
   }
 
-  /**
-    *
-    * @param destination
+  /** @param destination
     * @return
     */
   def gzipTo(
@@ -1297,8 +1242,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     destination
   }
 
-  /**
-    * Adds these files into this zip file
+  /** Adds these files into this zip file
     * Example usage: File("test.zip").zipIn(Seq(file"hello.txt", file"hello2.txt"))
     *
     * @param files
@@ -1321,16 +1265,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     this
   }
 
-  /**
-    * unzip to a temporary zip file
+  /** unzip to a temporary zip file
     *
     * @return the zip file
     */
   def unzip(zipFilter: ZipEntry => Boolean = _ => true)(implicit charset: Charset = DefaultCharset): File =
     unzipTo(destination = File.newTemporaryDirectory(name.stripSuffix(".zip")), zipFilter)(charset)
 
-  /**
-    * Java's temporary files/directories are not cleaned up by default.
+  /** Java's temporary files/directories are not cleaned up by default.
     * If we explicitly call `.deleteOnExit()`, it gets added to shutdown handler which is not ideal
     * for long running systems with millions of temporary files as:
     *   a) it would slowdown shutdown and
@@ -1412,8 +1354,7 @@ object File {
   def apply(path: String, fragments: String*): File =
     Paths.get(path, fragments: _*)
 
-  /**
-    * Get File to path with help of reference anchor.
+  /** Get File to path with help of reference anchor.
     *
     * Anchor is used as a reference in case that path is not absolute.
     * Anchor could be path to directory or path to file.
@@ -1518,13 +1459,14 @@ object File {
 
   abstract class PathMatcherSyntax(name: String) {
 
-    /**
-      * Return PathMatcher from this file
+    /** Return PathMatcher from this file
       *
       * @param file
       * @param pattern
       * @param includePath If this is true, no need to include path matchers
-      *                    e.g. instead of "**/ /*.txt" we can simply use *.txt
+      *                    e.g. instead of "*
+      */
+    /*.txt" we can simply use *.txt
      * @return
      */
     def apply(file: File, pattern: String, includePath: Boolean): PathMatcher = {
@@ -1568,14 +1510,11 @@ object File {
       .asInstanceOf[Long]
   }
 
-  /**
-    * Implement this interface to monitor the root file
-    */
+  /** Implement this interface to monitor the root file */
   trait Monitor extends AutoCloseable {
     val root: File
 
-    /**
-      * Dispatch a StandardWatchEventKind to an appropriate callback
+    /** Dispatch a StandardWatchEventKind to an appropriate callback
       * Override this if you don't want to manually handle onDelete/onCreate/onModify separately
       *
       * @param eventType

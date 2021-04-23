@@ -15,8 +15,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
   def lines: Iterator[String] = Iterator.continually(nextLine()).withHasNext(hasNext)
 }
 
-/**
-  * Faster, safer and more idiomatic Scala replacement for java.util.Scanner
+/** Faster, safer and more idiomatic Scala replacement for java.util.Scanner
   * See: http://codeforces.com/blog/entry/7018
   */
 object Scanner {
@@ -101,8 +100,7 @@ object Scanner {
       implicit val sqlTimeRead: Read[SqlTime]               = Read(SqlTime.valueOf)
       implicit val sqlTimestampRead: Read[SqlTimestamp]     = Read(SqlTimestamp.valueOf)
 
-      /**
-        * Use this to create custom readers e.g. to read a LocalDate using some custom format
+      /** Use this to create custom readers e.g. to read a LocalDate using some custom format
         * val readLocalDate: Read[LocalDate] = Read.temporalQuery(format = myFormat, query = LocalDate.from)
         * @param format
         * @param query
@@ -115,8 +113,7 @@ object Scanner {
   }
 }
 
-/**
-  * Implement this trait to make thing parsable
+/** Implement this trait to make thing parsable
   * In most cases, use Scanner.Read typeclass when you simply need access to one String token
   * Use Scannable typeclass if you need access to the full scanner e.g. to detect encodings etc.
   */
@@ -146,8 +143,7 @@ trait StringSplitter {
 object StringSplitter {
   val Default = StringSplitter.anyOf(" \t\t\n\r")
 
-  /**
-    * Split string on this character
+  /** Split string on this character
     * This will return exactly 1 + n number of items where n is the number of occurrence of delimiter in String s
     *
     * @param delimiter
@@ -178,8 +174,7 @@ object StringSplitter {
         }
     }
 
-  /**
-    * Split this string using ANY of the characters from delimiters
+  /** Split this string using ANY of the characters from delimiters
     *
     * @param delimiters
     * @param includeDelimiters
@@ -190,8 +185,7 @@ object StringSplitter {
       override def split(s: String) = new StringTokenizer(s, delimiters, includeDelimiters)
     }
 
-  /**
-    * Split string using a regex pattern
+  /** Split string using a regex pattern
     *
     * @param pattern
     * @return

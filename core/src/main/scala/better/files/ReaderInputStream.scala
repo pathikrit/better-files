@@ -6,8 +6,7 @@ import java.nio.charset.{Charset, CharsetEncoder, CoderResult, CodingErrorAction
 
 import scala.annotation.tailrec
 
-/**
-  * Code ported from Java to Scala:
+/** Code ported from Java to Scala:
   * https://github.com/apache/commons-io/blob/c0eb48f7e83987c5ed112b82f0d651aff5149ae4/src/main/java/org/apache/commons/io/input/ReaderInputStream.java
   */
 class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int) extends InputStream {
@@ -19,14 +18,12 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
       bufferSize = bufferSize
     )
 
-  /**
-    * CharBuffer used as input for the decoder. It should be reasonably
+  /** CharBuffer used as input for the decoder. It should be reasonably
     * large as we read data from the underlying Reader into this buffer.
     */
   private[this] val encoderIn = CharBuffer.allocate(bufferSize).flip().asInstanceOf[CharBuffer]
 
-  /**
-    * ByteBuffer used as output for the decoder. This buffer can be small
+  /** ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
   private[this] val encoderOut = ByteBuffer.allocate(bufferSize >> 4).flip().asInstanceOf[ByteBuffer]

@@ -6,8 +6,7 @@ import scala.collection.GenTraversableOnce
 import scala.util.Try
 import scala.util.control.NonFatal
 
-/**
-  * A typeclass to denote a disposable resource
+/** A typeclass to denote a disposable resource
   * @tparam A
   */
 trait Disposable[-A] {
@@ -39,8 +38,7 @@ object Disposable {
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
-/**
-  * Given a disposable resource, this actually does the disposing
+/** Given a disposable resource, this actually does the disposing
   */
 class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable[A]) {
   private[Dispose] val isDisposed    = new AtomicBoolean(false)
@@ -69,13 +67,8 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
       }
     })
 
-  /**
-    * Apply f to the resource and return it after closing the resource
+  /** Apply f to the resource and return it after closing the resource
     * If you don't wish to close the resource (e.g. if you are creating an iterator on file contents), use flatMap instead
-    *
-    * @param f
-    * @tparam B
-    * @return
     */
   def apply[B](f: A => B): B =
     try {
@@ -86,30 +79,19 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
       disposeOnce()
     }
 
-  /**
-    * Dispose this resource and return it
+  /** Dispose this resource and return it
     * Note: If you are using map followed by get, consider using apply instead
-    * @return
     */
   def get(): A =
     apply(identity)
 
-  /**
-    * This will immediately apply f on the resource and close the resource
-    *
-    * @param f
-    * @tparam U
+  /** This will immediately apply f on the resource and close the resource
     */
   def foreach[U](f: A => U): Unit = {
     val _ = apply(f)
   }
 
-  /**
-    * This will apply f on the resource while it is open
-    *
-    * @param f
-    * @tparam B
-    * @return
+  /** This will apply f on the resource while it is open
     */
   def map[B](f: A => B): Dispose[B] =
     new Dispose[B](f(resource))(Disposable(disposeOnce()))
@@ -119,14 +101,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
     this
   }
 
-  /**
-    * This keeps the resource open during the context of this flatMap and closes when done
-    *
-    * @param f
-    * @param fv
-    * @tparam B
-    * @tparam F
-    * @return
+  /** This keeps the resource open during the context of this flatMap and closes when done
     */
   def flatMap[B, F[_]](f: A => F[B])(implicit fv: Dispose.FlatMap[F]): fv.Output[B] =
     fv.apply(this)(f)
@@ -142,18 +117,14 @@ object Dispose {
   object FlatMap {
     trait Implicits {
 
-      /**
-        * Compose this managed resource with another managed resource closing the outer one after the inner one
-        */
+      /** Compose this managed resource with another managed resource closing the outer one after the inner one */
       implicit object disposeFlatMap extends FlatMap[Dispose] {
         override type Output[X] = Dispose[X]
         override def apply[A, B](m: Dispose[A])(f: A => Dispose[B]) =
           f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
       }
 
-      /**
-        * Use the current managed resource as a generator needed to create another sequence
-        */
+      /** Use the current managed resource as a generator needed to create another sequence */
       implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
         override type Output[X] = Iterator[X]
         override def apply[A, B](m: Dispose[A])(f: A => GenTraversableOnce[B]) = {

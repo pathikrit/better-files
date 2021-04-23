@@ -103,8 +103,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     val _ = rm(testDir)
   }
 
-  /**
-    * Helper in case something goes wrong...
+  /** Helper in case something goes wrong...
     */
   private def debugPaths(files: Seq[File]): String = {
     files
@@ -113,8 +112,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       .mkString(s"SIZE: ${files.size}\n", "\n", "\n")
   }
 
-  /**
-    * Verity if candidates are equal with references.
+  /** Verity if candidates are equal with references.
     * Does not accept empty sets, use assert(paths.isEmpty) for that.
     *
     * @param pathsIt candidates

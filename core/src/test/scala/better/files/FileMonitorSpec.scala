@@ -16,7 +16,9 @@ class FileMonitorSpec extends CommonSpec {
         log = msg :: log
       }
 
-    /***************************************************************************/
+    /** ************************************************************************
+      */
+
     val watcher = new FileMonitor(file) {
       override def onCreate(file: File, count: Int) = output(s"$file got created $count time(s)")
       override def onModify(file: File, count: Int) = output(s"$file got modified $count time(s)")
@@ -24,7 +26,9 @@ class FileMonitorSpec extends CommonSpec {
     }
     watcher.start()
 
-    /***************************************************************************/
+    /** ***********************************************************************
+      */
+
     sleep(5 seconds)
     file.writeText("hello world"); sleep()
     file.clear(); sleep()

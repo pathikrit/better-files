@@ -15,8 +15,7 @@ import scala.collection.JavaConverters._
 import java.net.URL
 import java.net.URI
 
-/**
-  * Container for various implicits
+/** Container for various implicits
   */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
@@ -88,8 +87,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def pipeTo(out: OutputStream, bufferSize: Int = DefaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
 
-    /**
-      * Pipe an input stream to an output stream using a byte buffer
+    /** Pipe an input stream to an output stream using a byte buffer
       */
     @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): out.type = {
       val n = in.read(buffer)
@@ -151,16 +149,14 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
       new ZipInputStream(in, charset)
 
-    /**
-      * If bufferSize is set to less than or equal to 0, we don't buffer
+    /** If bufferSize is set to less than or equal to 0, we don't buffer
       * @param bufferSize
       * @return
       */
     def asObjectInputStream(bufferSize: Int = DefaultBufferSize): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize))
 
-    /**
-      * @param bufferSize If bufferSize is set to less than or equal to 0, we don't buffer
+    /** @param bufferSize If bufferSize is set to less than or equal to 0, we don't buffer
       * Code adapted from:
       * https://github.com/apache/commons-io/blob/master/src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java
       *
@@ -262,8 +258,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
 
-    /**
-      * If bufferSize is set to less than or equal to 0, we don't buffer
+    /** If bufferSize is set to less than or equal to 0, we don't buffer
       * @param bufferSize
       * @return
       */
@@ -329,8 +324,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class ZipOutputStreamExtensions(val out: ZipOutputStream) {
 
-    /**
-      * Correctly set the compression level
+    /** Correctly set the compression level
       * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
       *
       * @param level
@@ -358,8 +352,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class ZipInputStreamExtensions(val in: ZipInputStream) {
 
-    /**
-      * Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
+    /** Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
       *
       * @param f The function to apply to each ZipEntry. Can fail if it returns a lazy value,
       *          like Iterator, as the entry will have been closed before the lazy value is evaluated.
@@ -383,8 +376,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
         }
       }
 
-    /**
-      * Apply `f` to the ZipInputStream for every entry in the archive.
+    /** Apply `f` to the ZipInputStream for every entry in the archive.
       * @param f The function to apply to the ZipInputStream. Can fail if it returns a lazy value,
       *          like Iterator, as the the entry will have been closed before the lazy value is evaluated.
       */
@@ -394,8 +386,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class ZipEntryExtensions(val entry: ZipEntry) {
 
-    /**
-      * Extract this ZipEntry under this rootDir
+    /** Extract this ZipEntry under this rootDir
       *
       * @param rootDir directory under which this entry is extracted
       * @param inputStream use this inputStream when this entry is a file
@@ -411,8 +402,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class DisposeableExtensions[A: Disposable](resource: A) {
 
-    /**
-      * Lightweight automatic resource management
+    /** Lightweight automatic resource management
       * Closes the resource when done e.g.
       * <pre>
       * for {
@@ -429,8 +419,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class JStreamExtensions[A](stream: JStream[A]) {
 
-    /**
-      * Closes this stream when iteration is complete
+    /** Closes this stream when iteration is complete
       * It will NOT close the stream if it is not depleted!
       *
       * @return

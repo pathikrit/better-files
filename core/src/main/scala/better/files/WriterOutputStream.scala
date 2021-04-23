@@ -6,19 +6,16 @@ import java.nio.{ByteBuffer, CharBuffer}
 
 import scala.annotation.tailrec
 
-/**
-  * Code ported from Java to Scala:
+/** Code ported from Java to Scala:
   * https://github.com/apache/commons-io/blob/d357d9d563c4a34fa2ab3cdc68221c851a9de4f5/src/main/java/org/apache/commons/io/output/WriterOutputStream.java
   */
 class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: Int, flushImmediately: Boolean) extends OutputStream {
 
-  /**
-    * CharBuffer used as output for the decoder
+  /** CharBuffer used as output for the decoder
     */
   private[this] val decoderOut = CharBuffer.allocate(bufferSize)
 
-  /**
-    * ByteBuffer used as output for the decoder. This buffer can be small
+  /** ByteBuffer used as output for the decoder. This buffer can be small
     * as it is only used to transfer data from the decoder to the buffer provided by the caller.
     */
   private[this] val decoderIn = ByteBuffer.allocate(bufferSize >> 4)

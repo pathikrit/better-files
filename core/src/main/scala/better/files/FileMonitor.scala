@@ -6,8 +6,7 @@ import scala.concurrent.{blocking, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-/**
-  * Implementation of File.Monitor
+/** Implementation of File.Monitor
   *
   * @param root
   * @param maxDepth
@@ -17,8 +16,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
-  /**
-    * If watching non-directory, don't react to siblings
+  /** If watching non-directory, don't react to siblings
     * @param target
     * @return
     */

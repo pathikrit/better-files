@@ -7,8 +7,7 @@ import java.nio.charset.Charset
 import scala.language.experimental.macros
 import scala.reflect.macros.{ReificationException, blackbox}
 
-/**
-  * Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) class resources]]
+/** Finds and loads [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) class resources]]
   * or [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) class loader resources]].
   *
   * The default implementation of this trait is the [[Resource]] object, which looks up resources
@@ -33,8 +32,7 @@ import scala.reflect.macros.{ReificationException, blackbox}
   */
 trait Resource {
 
-  /**
-    * Look up a resource by name, and open an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]] for reading it.
+  /** Look up a resource by name, and open an [[https://docs.oracle.com/javase/10/docs/api/java/io/InputStream.html InputStream]] for reading it.
     *
     * @param name Name of the resource to search for.
     * @return InputStream for reading the found resource, if a resource was found.
@@ -45,8 +43,7 @@ trait Resource {
   def asStream(name: String): Option[InputStream] =
     url(name).map(_.openStream())
 
-  /**
-    * Same as asStream but throws a NoSuchElementException if resource is not found
+  /** Same as asStream but throws a NoSuchElementException if resource is not found
     */
   def getAsStream(name: String): InputStream =
     asStream(name).getOrElse(Resource.notFound(name))
@@ -67,8 +64,7 @@ trait Resource {
   ): String =
     asString(name, bufferSize)(charset).getOrElse(Resource.notFound(name))
 
-  /**
-    * Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
+  /** Look up a resource by name, and get its [[https://docs.oracle.com/javase/10/docs/api/java/net/URL.html URL]].
     *
     * @param name Name of the resource to search for.
     * @return URL of the requested resource. If the resource could not be found or is not accessible, returns None.
@@ -77,8 +73,7 @@ trait Resource {
     */
   def url(name: String): Option[URL]
 
-  /**
-    * Get URL of given resource
+  /** Get URL of given resource
     * A default argument of empty string is provided to conveniently get the root resource URL using {{Resource.getUrl()}}
     *
     * @param name
@@ -88,8 +83,7 @@ trait Resource {
     url(name).getOrElse(Resource.notFound(name))
 }
 
-/**
-  * Implementations of [[Resource]].
+/** Implementations of [[Resource]].
   *
   * This object itself is a Resource uses the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread() current thread]]'s
   * [[https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#getContextClassLoader() context class loader]].
@@ -112,8 +106,7 @@ object Resource extends Resource {
   override def url(name: String): Option[URL] =
     from(Thread.currentThread.getContextClassLoader).url(name)
 
-  /**
-    * Look up class resource files.
+  /** Look up class resource files.
     *
     * This Resource looks up resources relative to the JVM class file for `T`,
     * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
@@ -129,8 +122,7 @@ object Resource extends Resource {
   def at[T]: Resource =
     macro Macros.atStaticImpl[T]
 
-  /**
-    * Look up class resource files.
+  /** Look up class resource files.
     *
     * This Resource looks up resources from the given Class,
     * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
@@ -150,8 +142,7 @@ object Resource extends Resource {
   def at(clazz: Class[_]): Resource =
     macro Macros.atDynamicImpl
 
-  /**
-    * Look up own resource files.
+  /** Look up own resource files.
     *
     * This Resource looks up resources from the [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html Class]] surrounding the call,
     * using [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]].
@@ -165,8 +156,7 @@ object Resource extends Resource {
   def my: Resource =
     macro Macros.myImpl
 
-  /**
-    * Look up resource files using the specified ClassLoader.
+  /** Look up resource files using the specified ClassLoader.
     *
     * This Resource looks up resources from a specific ClassLoader. Like [[Resource the default Resource]], resource names are relative to the root package.
     *
@@ -181,8 +171,7 @@ object Resource extends Resource {
         Option(cl.getResource(name))
     }
 
-  /**
-    * Implementations of the `Resource.at` macros. This is needed because `Class#getResource` is caller-sensitive;
+  /** Implementations of the `Resource.at` macros. This is needed because `Class#getResource` is caller-sensitive;
     * calls to it must appear in user code, ''not'' in better-files.
     */
   private[Resource] final class Macros(val c: blackbox.Context) {

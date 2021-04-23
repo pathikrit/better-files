@@ -6,9 +6,7 @@ import java.util.zip.Deflater
 
 import scala.collection.JavaConverters._
 
-/**
-  * Do file ops using a UNIX command line DSL
-  */
+/** Do file ops using a UNIX command line DSL */
 object Dsl {
   def ~ : File =
     File.home
@@ -25,14 +23,12 @@ object Dsl {
   val `.` : File => File =
     identity
 
-  /**
-    * Adds some symbolic operations to file
+  /** Adds some symbolic operations to file
     * @param file
     */
   implicit class SymbolicOperations(val file: File) {
 
-    /**
-      * Allows navigation up e.g. file / .. / ..
+    /** Allows navigation up e.g. file / .. / ..
       *
       * @param f
       * @return
@@ -139,8 +135,7 @@ object Dsl {
   def chgrp(group: String, file: File): File =
     file.setGroup(group)
 
-  /**
-    * Update permission of this file
+  /** Update permission of this file
     *
     * @param permissions Must be 9 character POSIX permission representation e.g. "rwxr-x---"
     * @param file

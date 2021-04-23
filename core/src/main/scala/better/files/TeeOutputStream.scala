@@ -2,8 +2,7 @@ package better.files
 
 import java.io.OutputStream
 
-/**
-  * Write to multiple outputstreams at once
+/** Write to multiple outputstreams at once
   * If error happens on any one while doing an operation, only the last error is reported
   * @param outs
   */
@@ -15,9 +14,7 @@ class TeeOutputStream(outs: OutputStream*) extends OutputStream {
   override def close()                                   = tryAll(outs)(_.close())
 }
 
-/**
-  * A sink outputstream similar to /dev/null - just consumes everything
-  */
+/** A sink outputstream similar to /dev/null - just consumes everything */
 object NullOutputStream extends OutputStream {
   override def write(b: Int) = {}
 }
