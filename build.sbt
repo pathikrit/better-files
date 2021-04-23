@@ -1,6 +1,10 @@
 val username = "pathikrit"
 val repo     = "better-files"
-
+// scalaVersion in build scope is used  for publish job in github actions.
+// See https://github.com/djspiewak/sbt-github-actions#build-job
+val _crossScalaVersions = Seq("2.11.12", "2.12.12", "2.13.3")
+val _scalaVersion       = _crossScalaVersions.find(_.startsWith("2.11")).get
+val _pubDocScalaVersion = _crossScalaVersions.find(_.startsWith("2.12")).get
 inThisBuild(
   List(
     organization := "better.files",
@@ -13,14 +17,43 @@ inThisBuild(
         email = "pathikritbhowmick@msn.com",
         url = new URL(s"http://github.com/${username}")
       )
-    )
+    ),
+    scalaVersion := _scalaVersion,
+    githubWorkflowScalaVersions := _crossScalaVersions,
+    githubWorkflowOSes := Seq("ubuntu-latest"),
+    githubWorkflowTargetBranches := Seq("master"),
+    //NOTE: The publish job will always run under the very first of these versions.
+    // See https://github.com/djspiewak/sbt-github-actions#build-job
+    githubWorkflowJavaVersions := Seq("adopt@1.8", "openjdk@1.9", "openjdk@1.11"),
+    githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test"))),
+    githubWorkflowAddedJobs ++= Seq(
+      WorkflowJob(
+        "publishDoc",
+        "publishDoc",
+        githubWorkflowJobSetup.value.toList ::: List(
+          WorkflowStep.Run(
+            List(
+              "sbt makeSite"
+            ),
+            name = Some("generate doc")
+          ),
+          WorkflowStep.Use("peaceiris", "actions-gh-pages", "v3", params = Map("publish_dir" -> "target/site"), name = Some("publish doc"))
+        ),
+        scalas = List(_pubDocScalaVersion),
+        cond = Some("github.event.pull_request.merged == true")
+      )
+    ),
+    githubWorkflowTargetTags ++= Seq("v*"),
+    githubWorkflowPublishTargetBranches :=
+      Seq(RefPredicate.StartsWith(Ref.Tag("v"))),
+    githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
   )
 )
 
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
-  scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3"), // when you change this line, also change .travis.yml
+  scalaVersion := _scalaVersion,
+  crossScalaVersions := _crossScalaVersions, // when you change this line, also change .travis.yml
   crossVersion := CrossVersion.binary,
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   scalacOptions in (Compile, doc) += "-groups",
