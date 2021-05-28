@@ -28,7 +28,7 @@ jobs:
     - stage: publish
       if: branch = master AND type = push AND NOT fork
       jdk: openjdk8
-      scala: 2.12.13
+      scala: 2.12.14
       script:
         - sbt ++$TRAVIS_SCALA_VERSION coverage test # test once more to produce coverage reports (https://docs.travis-ci.com/user/build-stages/#data-persistence-between-stages-and-jobs)
         - sbt coverageReport coverageAggregate codacyCoverage makeSite
