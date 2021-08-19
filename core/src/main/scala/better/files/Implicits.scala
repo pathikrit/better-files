@@ -156,12 +156,13 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asObjectInputStream(bufferSize: Int = DefaultBufferSize): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize))
 
-    /** @param bufferSize If bufferSize is set to less than or equal to 0, we don't buffer
-      * Code adapted from:
-      * https://github.com/apache/commons-io/blob/master/src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java
+    /** @param bufferSize
+      *   If bufferSize is set to less than or equal to 0, we don't buffer Code adapted from:
+      *   https://github.com/apache/commons-io/blob/master/src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java
       *
-      * @return A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
-      * This is useful in dynamic container environments.
+      * @return
+      *   A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default This is useful in dynamic
+      *   container environments.
       */
     def asObjectInputStreamUsingClassLoader(
         classLoader: ClassLoader = getClass.getClassLoader,
@@ -324,8 +325,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class ZipOutputStreamExtensions(val out: ZipOutputStream) {
 
-    /** Correctly set the compression level
-      * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
+    /** Correctly set the compression level See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
       *
       * @param level
       * @return
@@ -354,8 +354,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     /** Apply `f` on each ZipEntry in the archive, closing the entry after `f` has been applied.
       *
-      * @param f The function to apply to each ZipEntry. Can fail if it returns a lazy value,
-      *          like Iterator, as the entry will have been closed before the lazy value is evaluated.
+      * @param f
+      *   The function to apply to each ZipEntry. Can fail if it returns a lazy value, like Iterator, as the entry will have been closed
+      *   before the lazy value is evaluated.
       */
     def mapEntries[A](f: ZipEntry => A): Iterator[A] =
       new Iterator[A] {
@@ -377,8 +378,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       }
 
     /** Apply `f` to the ZipInputStream for every entry in the archive.
-      * @param f The function to apply to the ZipInputStream. Can fail if it returns a lazy value,
-      *          like Iterator, as the the entry will have been closed before the lazy value is evaluated.
+      * @param f
+      *   The function to apply to the ZipInputStream. Can fail if it returns a lazy value, like Iterator, as the the entry will have been
+      *   closed before the lazy value is evaluated.
       */
     def foldMap[A](f: ZipInputStream => A): Iterator[A] =
       mapEntries(_ => f(in))
@@ -388,9 +390,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     /** Extract this ZipEntry under this rootDir
       *
-      * @param rootDir directory under which this entry is extracted
-      * @param inputStream use this inputStream when this entry is a file
-      * @return the extracted file
+      * @param rootDir
+      *   directory under which this entry is extracted
+      * @param inputStream
+      *   use this inputStream when this entry is a file
+      * @return
+      *   the extracted file
       */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
       val entryName = entry.getName.replace("\\", "/") //see https://github.com/pathikrit/better-files/issues/262
@@ -402,14 +407,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class DisposeableExtensions[A: Disposable](resource: A) {
 
-    /** Lightweight automatic resource management
-      * Closes the resource when done e.g.
-      * <pre>
-      * for {
-      * in <- file.newInputStream.autoClosed
-      * } in.write(bytes)
-      * // in is closed now
-      * </pre>
+    /** Lightweight automatic resource management Closes the resource when done e.g. <pre> for { in <- file.newInputStream.autoClosed }
+      * in.write(bytes) // in is closed now </pre>
       *
       * @return
       */
@@ -419,8 +418,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
   implicit class JStreamExtensions[A](stream: JStream[A]) {
 
-    /** Closes this stream when iteration is complete
-      * It will NOT close the stream if it is not depleted!
+    /** Closes this stream when iteration is complete It will NOT close the stream if it is not depleted!
       *
       * @return
       */
