@@ -8,28 +8,23 @@ import scala.util.{Failure, Success, Try}
 
 package object files extends Implicits {
 
-  /** Default array buffer size
-    * Seems like a good value used by JDK: (see: java.io.BufferedInputStream.DEFAULT_BUFFER_SIZE)
+  /** Default array buffer size Seems like a good value used by JDK: (see: java.io.BufferedInputStream.DEFAULT_BUFFER_SIZE)
     */
   val DefaultBufferSize = 8192
 
-  /** The Default charset used by better-files
-    * Note: It uses java.net.charset.Charset.DefaultCharset() in general but if the Default supports byte-order markers,
-    *       it uses a more compliant version than the JDK one (see: https://github.com/pathikrit/better-files/issues/107)
+  /** The Default charset used by better-files Note: It uses java.net.charset.Charset.DefaultCharset() in general but if the Default
+    * supports byte-order markers, it uses a more compliant version than the JDK one (see:
+    * https://github.com/pathikrit/better-files/issues/107)
     */
   val DefaultCharset: Charset =
     UnicodeCharset(Charset.defaultCharset())
 
   val EOF = StreamTokenizer.TT_EOF
 
-  /** Similar to the `with` keyword in Python and `using` keyword in .NET and `try-with-resource` syntax in Java,
-    * this let's you use and dispose a resource e.g.
+  /** Similar to the `with` keyword in Python and `using` keyword in .NET and `try-with-resource` syntax in Java, this let's you use and
+    * dispose a resource e.g.
     *
-    * {{
-    *     val lines: List[String] = using(file.newInputStream) { stream =>
-    *         stream.lines.toList   // Must be eager so .toList
-    *     }
-    * }}
+    * {{ val lines: List[String] = using(file.newInputStream) { stream => stream.lines.toList // Must be eager so .toList } }}
     *
     * @param resource
     * @param f
@@ -50,9 +45,7 @@ package object files extends Implicits {
 
   private[files] def eofReader(read: => Int): Iterator[Int] = Iterator.continually(read).takeWhile(_ != EOF)
 
-  /** Utility to apply f on all xs skipping over errors
-    * Throws the last error that happened
-    * *
+  /** Utility to apply f on all xs skipping over errors Throws the last error that happened *
     * @param xs
     * @param f
     * @tparam A

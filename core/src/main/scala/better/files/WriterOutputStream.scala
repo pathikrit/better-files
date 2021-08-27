@@ -15,8 +15,8 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     */
   private[this] val decoderOut = CharBuffer.allocate(bufferSize)
 
-  /** ByteBuffer used as output for the decoder. This buffer can be small
-    * as it is only used to transfer data from the decoder to the buffer provided by the caller.
+  /** ByteBuffer used as output for the decoder. This buffer can be small as it is only used to transfer data from the decoder to the buffer
+    * provided by the caller.
     */
   private[this] val decoderIn = ByteBuffer.allocate(bufferSize >> 4)
 

@@ -16,8 +16,10 @@ class FileSpec extends CommonSpec {
 
   /** Helper for unix -> windows path references (as strings).
     *
-    * @param path as unix path
-    * @return path in native format
+    * @param path
+    *   as unix path
+    * @return
+    *   path in native format
     */
   def unixToNative(path: String): String = {
     if (isUnixOS) {
@@ -40,15 +42,7 @@ class FileSpec extends CommonSpec {
   var b1: File       = _
   var b2: File       = _
 
-  /** Setup the following directory structure under root
-    * /a
-    *  /a1
-    *  /a2
-    *    a21.txt
-    *    a22.txt
-    * /b
-    *    b1/ --> ../a1
-    *    b2.txt --> ../a2/a22.txt
+  /** Setup the following directory structure under root /a /a1 /a2 a21.txt a22.txt /b b1/ --> ../a1 b2.txt --> ../a2/a22.txt
     */
   override def beforeEach() = {
     testRoot = File.newTemporaryDirectory("better-files")
