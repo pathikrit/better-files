@@ -137,9 +137,11 @@ object Dsl {
 
   /** Update permission of this file
     *
-    * @param permissions Must be 9 character POSIX permission representation e.g. "rwxr-x---"
+    * @param permissions
+    *   Must be 9 character POSIX permission representation e.g. "rwxr-x---"
     * @param file
-    * @return file
+    * @return
+    *   file
     */
   def chmod(permissions: String, file: File): File =
     file.setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)

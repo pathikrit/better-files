@@ -112,12 +112,14 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       .mkString(s"SIZE: ${files.size}\n", "\n", "\n")
   }
 
-  /** Verity if candidates are equal with references.
-    * Does not accept empty sets, use assert(paths.isEmpty) for that.
+  /** Verity if candidates are equal with references. Does not accept empty sets, use assert(paths.isEmpty) for that.
     *
-    * @param pathsIt candidates
-    * @param refPaths references
-    * @param baseDir basedir to for creating full path of references
+    * @param pathsIt
+    *   candidates
+    * @param refPaths
+    *   references
+    * @param baseDir
+    *   basedir to for creating full path of references
     */
   private def verify(pathsIt: Iterator[File], refPaths: Seq[String], baseDir: File) = {
     val paths = pathsIt.toSeq
