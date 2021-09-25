@@ -2,8 +2,7 @@ package better.files
 
 import java.io.OutputStream
 
-/** Write to multiple outputstreams at once
-  * If error happens on any one while doing an operation, only the last error is reported
+/** Write to multiple outputstreams at once If error happens on any one while doing an operation, only the last error is reported
   * @param outs
   */
 class TeeOutputStream(outs: OutputStream*) extends OutputStream {
