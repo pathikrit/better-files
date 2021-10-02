@@ -2,11 +2,13 @@ package better.files
 
 import akka.actor._
 
-/** An actor that can watch a file or a directory
-  * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
+/** An actor that can watch a file or a directory Instead of directly calling the constructor of this, call file.newWatcher to create the
+  * actor
   *
-  * @param file     watch this file (or directory)
-  * @param maxDepth In case of directories, how much depth should we watch
+  * @param file
+  *   watch this file (or directory)
+  * @param maxDepth
+  *   In case of directories, how much depth should we watch
   */
 class FileWatcher(file: File, maxDepth: Int) extends Actor {
   import FileWatcher._
