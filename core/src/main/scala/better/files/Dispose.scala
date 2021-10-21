@@ -67,8 +67,8 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
       }
     })
 
-  /** Apply f to the resource and return it after closing the resource
-    * If you don't wish to close the resource (e.g. if you are creating an iterator on file contents), use flatMap instead
+  /** Apply f to the resource and return it after closing the resource If you don't wish to close the resource (e.g. if you are creating an
+    * iterator on file contents), use flatMap instead
     */
   def apply[B](f: A => B): B =
     try {
@@ -79,8 +79,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
       disposeOnce()
     }
 
-  /** Dispose this resource and return it
-    * Note: If you are using map followed by get, consider using apply instead
+  /** Dispose this resource and return it Note: If you are using map followed by get, consider using apply instead
     */
   def get(): A =
     apply(identity)

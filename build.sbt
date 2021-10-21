@@ -4,8 +4,8 @@ val repo     = "better-files"
 inThisBuild(
   List(
     organization.withRank(KeyRanks.Invisible) := "better.files",
-    homepage := Some(url(s"https://github.com/$username/$repo")),
-    licenses := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
+    homepage                                  := Some(url(s"https://github.com/$username/$repo")),
+    licenses                                  := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
     developers := List(
       Developer(
         id = username,
@@ -18,15 +18,15 @@ inThisBuild(
 )
 
 lazy val commonSettings = Seq(
-  organization := s"com.github.$username",
-  scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
+  organization       := s"com.github.$username",
+  scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
   crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5"), // when you change this line, also change .travis.yml
-  crossVersion := CrossVersion.binary,
-  scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
+  crossVersion       := CrossVersion.binary,
+  scalacOptions      := myScalacOptions(scalaVersion.value, scalacOptions.value),
   Compile / doc / scalacOptions += "-groups",
   libraryDependencies += Dependencies.scalatest,
   Compile / compile := (Compile / compile).dependsOn(formatAll).value,
-  Test / test := (Test / test).dependsOn(checkFormat).value,
+  Test / test       := (Test / test).dependsOn(checkFormat).value,
   formatAll := {
     (Compile / scalafmt).value
     (Test / scalafmt).value
@@ -51,7 +51,7 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
 lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(
-    name := repo,
+    name        := repo,
     description := "Simple, safe and intuitive I/O in Scala",
     libraryDependencies ++= Seq(
       Dependencies.scalaReflect(scalaVersion.value),
@@ -64,7 +64,7 @@ lazy val core = (project in file("core"))
 lazy val akka = (project in file("akka"))
   .settings(commonSettings: _*)
   .settings(
-    name := s"$repo-akka",
+    name        := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
     libraryDependencies += Dependencies.akka
   )
@@ -80,12 +80,12 @@ lazy val root = (project in file("."))
   .aggregate(core, akka)
 
 lazy val docSettings = Seq(
-  autoAPIMappings := true,
+  autoAPIMappings                            := true,
   ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, akka),
-  siteSourceDirectory := baseDirectory.value / "site",
-  ScalaUnidoc / siteSubdirName := "latest/api",
+  siteSourceDirectory                        := baseDirectory.value / "site",
+  ScalaUnidoc / siteSubdirName               := "latest/api",
   addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
-  git.remoteRepo := s"git@github.com:$username/$repo.git",
+  git.remoteRepo                                             := s"git@github.com:$username/$repo.git",
   ghpagesPushSite / envVars += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
 )
 
