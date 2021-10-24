@@ -1,5 +1,5 @@
 addSbtPlugin("com.geirsson"              % "sbt-ci-release"      % "1.5.7")
-addSbtPlugin("com.eed3si9n"              % "sbt-unidoc"          % "0.4.3")
+addSbtPlugin("com.github.sbt"              % "sbt-unidoc"          % "0.5.0")
 addSbtPlugin("org.scoverage"             % "sbt-scoverage"       % "1.6.1")
 addSbtPlugin("com.timushev.sbt"          % "sbt-updates"         % "0.4.2")
 addSbtPlugin("com.typesafe.sbt"          % "sbt-ghpages"         % "0.6.3")
