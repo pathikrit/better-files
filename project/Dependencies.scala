@@ -7,5 +7,5 @@ object Dependencies {
   val shapeless                     = "com.chuusai"       %% "shapeless"     % "2.3.4" % Test // For shapeless based Reader/Scanner in tests
   val commonsio                     = "commons-io"         % "commons-io"    % "2.8.0" % Test // Benchmarks
   val fastjavaio =
-    "fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar" //Benchmarks
+    "fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar" // Benchmarks
 }

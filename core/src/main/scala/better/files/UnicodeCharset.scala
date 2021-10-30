@@ -7,8 +7,10 @@ import scala.collection.JavaConverters._
 
 /** A Unicode charset that handles byte-order markers
   *
-  * @param underlyingCharset Use this charset if no known byte-order marker is detected; use this for encoding too
-  * @param writeByteOrderMarkers If set, write BOMs while encoding
+  * @param underlyingCharset
+  *   Use this charset if no known byte-order marker is detected; use this for encoding too
+  * @param writeByteOrderMarkers
+  *   If set, write BOMs while encoding
   */
 class UnicodeCharset(underlyingCharset: Charset, writeByteOrderMarkers: Boolean)
     extends Charset(underlyingCharset.name(), underlyingCharset.aliases().asScala.toArray) {
@@ -18,12 +20,12 @@ class UnicodeCharset(underlyingCharset: Charset, writeByteOrderMarkers: Boolean)
   override def contains(cs: Charset) = underlyingCharset.contains(cs)
 }
 
-/** A Unicode decoder that uses the Unicode byte-order marker (BOM) to auto-detect the encoding
-  * (if none detected, falls back on the defaultCharset). This also gets around a bug in the JDK
-  * (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not consumed for UTF-8.
-  * See: https://github.com/pathikrit/better-files/issues/107
+/** A Unicode decoder that uses the Unicode byte-order marker (BOM) to auto-detect the encoding (if none detected, falls back on the
+  * defaultCharset). This also gets around a bug in the JDK (http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058) where BOM is not
+  * consumed for UTF-8. See: https://github.com/pathikrit/better-files/issues/107
   *
-  * @param defaultCharset Use this charset if no known byte-order marker is detected
+  * @param defaultCharset
+  *   Use this charset if no known byte-order marker is detected
   */
 class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultCharset, 1, 1) {
   import UnicodeCharset.bomTable

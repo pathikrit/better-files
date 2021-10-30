@@ -123,7 +123,7 @@ class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) 
 
   private[this] val fastReader = new fastjavaio.InputReader(is)
 
-  override def hasNext    = true //TODO: https://github.com/williamfiset/FastJavaIO/issues/3
+  override def hasNext    = true // TODO: https://github.com/williamfiset/FastJavaIO/issues/3
   override def next()     = fastReader.readStr()
   override def nextInt()  = fastReader.readInt()
   override def nextLine() = fastReader.readLine()

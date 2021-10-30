@@ -15,8 +15,7 @@ trait Scanner extends Iterator[String] with AutoCloseable {
   def lines: Iterator[String] = Iterator.continually(nextLine()).withHasNext(hasNext)
 }
 
-/** Faster, safer and more idiomatic Scala replacement for java.util.Scanner
-  * See: http://codeforces.com/blog/entry/7018
+/** Faster, safer and more idiomatic Scala replacement for java.util.Scanner See: http://codeforces.com/blog/entry/7018
   */
 object Scanner {
   val stdin: Scanner = Scanner(System.in)
@@ -71,7 +70,7 @@ object Scanner {
     trait Implicits {
       implicit val stringRead: Read[String]             = Read(identity)
       implicit val booleanRead: Read[Boolean]           = Read(_.toBoolean)
-      implicit val byteRead: Read[Byte]                 = Read(_.toByte) //TODO: https://issues.scala-lang.org/browse/SI-9706
+      implicit val byteRead: Read[Byte]                 = Read(_.toByte) // TODO: https://issues.scala-lang.org/browse/SI-9706
       implicit val shortRead: Read[Short]               = Read(_.toShort)
       implicit val intRead: Read[Int]                   = Read(_.toInt)
       implicit val longRead: Read[Long]                 = Read(_.toLong)
@@ -100,8 +99,8 @@ object Scanner {
       implicit val sqlTimeRead: Read[SqlTime]               = Read(SqlTime.valueOf)
       implicit val sqlTimestampRead: Read[SqlTimestamp]     = Read(SqlTimestamp.valueOf)
 
-      /** Use this to create custom readers e.g. to read a LocalDate using some custom format
-        * val readLocalDate: Read[LocalDate] = Read.temporalQuery(format = myFormat, query = LocalDate.from)
+      /** Use this to create custom readers e.g. to read a LocalDate using some custom format val readLocalDate: Read[LocalDate] =
+        * Read.temporalQuery(format = myFormat, query = LocalDate.from)
         * @param format
         * @param query
         * @tparam A
@@ -113,8 +112,7 @@ object Scanner {
   }
 }
 
-/** Implement this trait to make thing parsable
-  * In most cases, use Scanner.Read typeclass when you simply need access to one String token
+/** Implement this trait to make thing parsable In most cases, use Scanner.Read typeclass when you simply need access to one String token
   * Use Scannable typeclass if you need access to the full scanner e.g. to detect encodings etc.
   */
 trait Scannable[A] {
@@ -143,8 +141,8 @@ trait StringSplitter {
 object StringSplitter {
   val Default = StringSplitter.anyOf(" \t\t\n\r")
 
-  /** Split string on this character
-    * This will return exactly 1 + n number of items where n is the number of occurrence of delimiter in String s
+  /** Split string on this character This will return exactly 1 + n number of items where n is the number of occurrence of delimiter in
+    * String s
     *
     * @param delimiter
     * @return
