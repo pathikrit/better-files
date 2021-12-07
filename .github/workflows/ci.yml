@@ -1,0 +1,42 @@
+name: Scala CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion:
+          - 8
+          - 9
+          - 11
+        scalaVersion:
+          - 2.11.12
+          - 2.12.13
+          - 2.13.5
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ matrix.javaVersion }}
+        distribution: 'adopt'
+
+    - name: Cache sbt
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.sbt
+          ~/.cache/coursier/v1
+        key: scala
+
+    - name: Run tests
+      run: sbt ++${{ matrix.scalaVersion }} test
