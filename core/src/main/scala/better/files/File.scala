@@ -73,7 +73,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /** @return extension (including the dot) of this file if it is a regular file and has an extension, else None
     */
   def extension: Option[String] =
-    extension()
+    this.extension()
 
   /** @param includeDot  whether the dot should be included in the extension or not
     * @param includeAll  whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz
