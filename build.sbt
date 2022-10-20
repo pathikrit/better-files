@@ -20,7 +20,7 @@ inThisBuild(
 lazy val commonSettings = Seq(
   organization := s"com.github.$username",
   scalaVersion := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5"), // when you change this line, also change .travis.yml
+  crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5", "3.2.0"), // when you change this line, also change .travis.yml
   crossVersion := CrossVersion.binary,
   scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
   Compile / doc / scalacOptions += "-groups",
@@ -54,11 +54,16 @@ lazy val core = (project in file("core"))
     name := repo,
     description := "Simple, safe and intuitive I/O in Scala",
     libraryDependencies ++= Seq(
-      Dependencies.scalaReflect(scalaVersion.value),
       Dependencies.commonsio,
       Dependencies.fastjavaio,
-      Dependencies.shapeless
-    )
+      Dependencies.shapeless.cross(CrossVersion.for3Use2_13)
+    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        Seq(
+          Dependencies.scalaReflect(scalaVersion.value)
+        )
+      case _ => Seq.empty
+    })
   )
 
 lazy val akka = (project in file("akka"))
@@ -66,7 +71,12 @@ lazy val akka = (project in file("akka"))
   .settings(
     name := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += Dependencies.akka
+    libraryDependencies += (CrossVersion.partialVersion(scalaVersion.value) match {
+      // scala-steward:off
+      case Some((2, 11)) => "com.typesafe.akka" %% "akka-actor" % "2.5.32"
+      // scala-steward:on
+      case _ => Dependencies.akka
+    })
   )
   .dependsOn(core % "test->test;compile->compile")
 
