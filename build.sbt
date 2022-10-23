@@ -55,11 +55,11 @@ lazy val core = (project in file("core"))
     description := "Simple, safe and intuitive I/O in Scala",
     libraryDependencies ++= Seq(
       Dependencies.commonsio,
-      Dependencies.fastjavaio,
-      Dependencies.shapeless.cross(CrossVersion.for3Use2_13)
+      Dependencies.fastjavaio
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
         Seq(
+          Dependencies.shapeless,
           Dependencies.scalaReflect(scalaVersion.value)
         )
       case _ => Seq.empty
