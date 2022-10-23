@@ -60,7 +60,7 @@ class FileSpec extends CommonSpec {
     t3 = testRoot / "a" / "a1" / "t3.scala.txt"
     fb = testRoot / "b"
     b1 = testRoot / "b" / "b1"
-    b2 = testRoot / 'b / "b2.txt"
+    b2 = testRoot / Symbol("b") / "b2.txt"
     Seq(a1, a2, fb) foreach mkdirs
     Seq(t1, t2) foreach touch
   }
@@ -513,8 +513,8 @@ class FileSpec extends CommonSpec {
 
   it should "zip/unzip multiple files" in {
     File.usingTemporaryDirectory() { dir =>
-      val f1      = (dir / 'f1).touch().appendLines("Line 1", "Line 2")
-      val f2      = (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      val f1      = (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
+      val f2      = (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
       val lines   = zipFile.newZipInputStream.foldMap(_.lines.toSeq).flatten
       lines.toSeq shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
@@ -523,8 +523,8 @@ class FileSpec extends CommonSpec {
 
   it should "exclude destination zip when it's under directory to be zipped" in {
     File.usingTemporaryDirectory() { dir =>
-      (dir / 'f1).touch().appendLines("Line 1", "Line 2")
-      (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
+      (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip")
       val zipped  = dir.zipTo(zipFile.path)
       zipped.unzipTo().listRecursively.toList.map(_.name).forall(!_.contains("zip")) shouldBe true
