@@ -278,6 +278,7 @@ class FileSpec extends CommonSpec {
 //  }
 
   it should "support equality" in {
+    import better.files.Dsl._
     fa shouldEqual (testRoot / "a")
     fa shouldNot equal(testRoot / "b")
     val c1 = fa.md5
@@ -433,7 +434,7 @@ class FileSpec extends CommonSpec {
     (fb / "t3").exists shouldBe true
     (fb / "t5" / "t3").exists shouldBe true
     (fb / "t5" / "t5.txt").contentAsString shouldEqual "Scala Awesome"
-    assert((fb / "t3") === (fb / "t5" / "t3"))
+    assert((fb / "t3") isSameContentAs (fb / "t5" / "t3"))
   }
 
   it should "move" in {
@@ -489,6 +490,7 @@ class FileSpec extends CommonSpec {
     zipFile.name should endWith(".zip")
 
     def test(output: File) = {
+      import better.files.Dsl._
       (output / "a" / "a1" / "t1.txt").contentAsString shouldEqual "hello world"
       output === testRoot shouldBe true
       (output / "a" / "a1" / "t1.txt").overwrite("hello")
