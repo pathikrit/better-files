@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
   def scalaReflect(version: String) = "org.scala-lang"     % "scala-reflect" % version  % Provided
   val akka                          = "com.typesafe.akka" %% "akka-actor"    % "2.6.20" // Used in Akka file watcher
-  val scalatest                     = "org.scalatest"     %% "scalatest"     % "3.2.14" % Test
+  val scalatest                     = "org.scalatest"     %% "scalatest"     % "3.2.15" % Test
   val shapeless = "com.chuusai" %% "shapeless"  % "2.3.4" % Test // For shapeless based Reader/Scanner in tests
   val commonsio = "commons-io"   % "commons-io" % "2.8.0" % Test // Benchmarks
   val fastjavaio =
