@@ -20,7 +20,7 @@ import scala.util.matching.Regex
 /** Scala wrapper around java.nio.files.Path */
 @SerialVersionUID(3435L)
 class File private (val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends Serializable {
-  //TODO: LinkOption?
+  // TODO: LinkOption?
 
   def pathAsString: String =
     path.toString
@@ -73,7 +73,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   /** @return extension (including the dot) of this file if it is a regular file and has an extension, else None
     */
   def extension: Option[String] =
-    extension()
+    this.extension()
 
   /** @param includeDot  whether the dot should be included in the extension or not
     * @param includeAll  whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz
@@ -231,7 +231,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     contains(child)
 
   def bytes: Iterator[Byte] =
-    newInputStream.buffered.bytes //TODO: Dispose here?
+    newInputStream.buffered.bytes // TODO: Dispose here?
 
   def loadBytes: Array[Byte] =
     Files.readAllBytes(path)
@@ -270,7 +270,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   }
 
   def chars(implicit charset: Charset = DefaultCharset): Iterator[Char] =
-    newBufferedReader(charset).chars //TODO: Dispose here?
+    newBufferedReader(charset).chars // TODO: Dispose here?
 
   /** Load all lines from this file
     * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
@@ -392,7 +392,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     new RandomAccessFile(toJava, mode.value)
 
   def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): Dispose[RandomAccessFile] =
-    newRandomAccess(mode).autoClosed //TODO: Mode enum?
+    newRandomAccess(mode).autoClosed // TODO: Mode enum?
 
   def newBufferedReader(implicit charset: Charset = DefaultCharset): BufferedReader =
     Files.newBufferedReader(path, charset)
@@ -740,7 +740,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   )(implicit
       visitOptions: File.VisitOptions = File.VisitOptions.default
   ): Iterator[File] =
-    Files.walk(path, maxDepth, visitOptions: _*) //TODO: that ignores I/O errors?
+    Files.walk(path, maxDepth, visitOptions: _*) // TODO: that ignores I/O errors?
 
   def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
     syntax(this, pattern, includePath)
@@ -754,7 +754,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
    * @param maxDepth Recurse up to maxDepth
    * @return Set of files that matched
    */
-  //TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
+  // TODO: Consider removing `syntax` as implicit. You often want to control this on a per method call basis
   def glob(
       pattern: String,
       includePath: Boolean = true,
@@ -964,7 +964,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       if (isDirectory(linkOption)) list.toList.foreach(_.delete(swallowIOExceptions, linkOption))
       Files.delete(path)
     } catch {
-      case _: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
+      case _: IOException if swallowIOExceptions => // e.printStackTrace() //swallow
     }
     this
   }
@@ -1004,7 +1004,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   )(implicit
       copyOptions: File.CopyOptions = File.CopyOptions(overwrite)
   ): destination.type = {
-    if (isDirectory) { //TODO: maxDepth?
+    if (isDirectory) { // TODO: maxDepth?
       Files.walkFileTree(
         path,
         new SimpleFileVisitor[Path] {
@@ -1104,7 +1104,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     */
   def isEmpty(implicit linkOptions: File.LinkOptions = File.LinkOptions.default): Boolean = {
     if (isDirectory(linkOptions)) {
-      Files.list(path).autoClosed(_.count()) == 0 //Do not use children.isEmpty as it may leave stream open
+      Files.list(path).autoClosed(_.count()) == 0 // Do not use children.isEmpty as it may leave stream open
     } else if (isRegularFile(linkOptions)) {
       toJava.length() == 0
     } else {
@@ -1142,7 +1142,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       if (isDirectory(linkOption)) list.toList.foreach(_.deleteOnExit(swallowIOExceptions, linkOption))
       toJava.deleteOnExit()
     } catch {
-      case _: IOException if swallowIOExceptions => //e.printStackTrace() //swallow
+      case _: IOException if swallowIOExceptions => // e.printStackTrace() //swallow
     }
     this
   }
@@ -1288,7 +1288,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def toTemporary: Dispose[File] =
     new Dispose(this)(Disposable.fileDisposer)
 
-  //TODO: add features from https://github.com/sbt/io
+  // TODO: add features from https://github.com/sbt/io
 }
 
 object File {
@@ -1413,7 +1413,7 @@ object File {
   object CopyOptions {
     def apply(overwrite: Boolean): CopyOptions =
       (if (overwrite) Seq(StandardCopyOption.REPLACE_EXISTING) else default) ++ LinkOptions.default
-    val default: CopyOptions    = Seq.empty //Seq(StandardCopyOption.COPY_ATTRIBUTES)
+    val default: CopyOptions    = Seq.empty // Seq(StandardCopyOption.COPY_ATTRIBUTES)
     val atomically: CopyOptions = Seq(StandardCopyOption.ATOMIC_MOVE)
   }
 
