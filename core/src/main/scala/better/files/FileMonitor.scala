@@ -65,9 +65,9 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   override def close() = service.close()
 
   // Although this class is abstract, we provide noop implementations so user can choose to implement a subset of these
-  override def onCreate(file: File, count: Int) = {}
-  override def onModify(file: File, count: Int) = {}
-  override def onDelete(file: File, count: Int) = {}
+  override def onCreate(file: File, count: Int)     = {}
+  override def onModify(file: File, count: Int)     = {}
+  override def onDelete(file: File, count: Int)     = {}
   override def onUnknownEvent(event: WatchEvent[_]) = {}
-  override def onException(exception: Throwable) = {}
+  override def onException(exception: Throwable)    = {}
 }
