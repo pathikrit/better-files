@@ -128,6 +128,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     withClue("Result: " + debugPaths(paths) + "Reference: " + debugPaths(refs)) {
       assert(paths.length === refPaths.length)
       assert(paths.nonEmpty)
+      import better.files.Dsl._
       paths.sortBy(_.path).zip(refs).foreach({ case (path, refPath) => assert(path === refPath) })
     }
   }
