@@ -36,7 +36,7 @@ class ScannerBenchmark extends Benchmark {
     repeat(n) {
       assert(scanner.hasNext)
       val ints  = List.fill(2 * n + 1)(scanner.nextInt())
-      val line  = "" //scanner.nextLine()
+      val line  = "" // scanner.nextLine()
       val words = IndexedSeq.fill(2 * n)(scanner.next())
       (line, ints, words)
     }
@@ -61,7 +61,7 @@ class ScannerBenchmark extends Benchmark {
       val l = scanner.nextLine()
       assert(l == "Hello World", l)
       assert(scanner.nextInt() == 19)
-    //assert(!scanner.hasNext)
+    // assert(!scanner.hasNext)
     }
 
     info("Running benchmark ...")

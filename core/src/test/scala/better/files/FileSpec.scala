@@ -29,7 +29,7 @@ class FileSpec extends CommonSpec {
     }
   }
 
-  var testRoot: File = _ //TODO: Get rid of mutable test vars
+  var testRoot: File = _ // TODO: Get rid of mutable test vars
   var fa: File       = _
   var a1: File       = _
   var a2: File       = _
@@ -60,7 +60,7 @@ class FileSpec extends CommonSpec {
     t3 = testRoot / "a" / "a1" / "t3.scala.txt"
     fb = testRoot / "b"
     b1 = testRoot / "b" / "b1"
-    b2 = testRoot / 'b / "b2.txt"
+    b2 = testRoot / Symbol("b") / "b2.txt"
     Seq(a1, a2, fb) foreach mkdirs
     Seq(t1, t2) foreach touch
   }
@@ -70,10 +70,10 @@ class FileSpec extends CommonSpec {
   }
 
   override def withFixture(test: NoArgTest) = {
-    //val before = File.numberOfOpenFileDescriptors()
+    // val before = File.numberOfOpenFileDescriptors()
     val result = super.withFixture(test)
-    //val after = File.numberOfOpenFileDescriptors()
-    //assert(before == after, s"Resource leakage detected in $test")
+    // val after = File.numberOfOpenFileDescriptors()
+    // assert(before == after, s"Resource leakage detected in $test")
     result
   }
 
@@ -85,7 +85,7 @@ class FileSpec extends CommonSpec {
     val f2: File = "/User/johndoe/Documents".toFile             // convert a string path to a file
     val f3: File = new JFile("/User/johndoe/Documents").toScala // convert a Java file to Scala
     val f4: File = root / "User" / "johndoe" / "Documents"      // using root helper to start from root
-    //val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
+    // val f5: File = `~` / "Documents"                             // also equivalent to `home / "Documents"`
     val f6: File  = "/User" / "johndoe" / "Documents"           // using file separator DSL
     val f7: File  = home / "Documents" / "presentations" / `..` // Use `..` to navigate up to parent
     val f8: File  = root / "User" / "johndoe" / "Documents" / `.`
@@ -212,11 +212,9 @@ class FileSpec extends CommonSpec {
     t1.nameWithoutExtension shouldBe "t1"
     t1.changeExtensionTo(".md").name shouldBe "t1.md"
     (t1 < "hello world").changeExtensionTo(".txt").name shouldBe "t1.txt"
-    //t1.contentType shouldBe Some("text/plain")
+    // t1.contentType shouldBe Some("text/plain")
     ("src" / "test").toString should include("better-files")
-    (t1 == t1.toString) shouldBe false
     (t1.contentAsString == t1.toString) shouldBe false
-    (t1 == t1.contentAsString) shouldBe false
     t1.root shouldEqual fa.root
     file"/tmp/foo.scala.html".extension shouldBe Some(".html")
     file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo"
@@ -280,6 +278,7 @@ class FileSpec extends CommonSpec {
 //  }
 
   it should "support equality" in {
+    import better.files.Dsl._
     fa shouldEqual (testRoot / "a")
     fa shouldNot equal(testRoot / "b")
     val c1 = fa.md5
@@ -326,10 +325,10 @@ class FileSpec extends CommonSpec {
     fa.ownerName should not be empty
     fa.groupName should not be empty
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chown("hitler", fa)
-    //a[java.nio.file.FileSystemException] should be thrownBy chown("root", fa)
+    // a[java.nio.file.FileSystemException] should be thrownBy chown("root", fa)
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chgrp("cool", fa)
-    //a[java.nio.file.FileSystemException] should be thrownBy chown("admin", fa)
-    //fa.chown("nobody").chgrp("nobody")
+    // a[java.nio.file.FileSystemException] should be thrownBy chown("admin", fa)
+    // fa.chown("nobody").chgrp("nobody")
     stat(t1) shouldBe a[java.nio.file.attribute.PosixFileAttributes]
   }
 
@@ -435,7 +434,7 @@ class FileSpec extends CommonSpec {
     (fb / "t3").exists shouldBe true
     (fb / "t5" / "t3").exists shouldBe true
     (fb / "t5" / "t5.txt").contentAsString shouldEqual "Scala Awesome"
-    assert((fb / "t3") === (fb / "t5" / "t3"))
+    assert((fb / "t3") isSameContentAs (fb / "t5" / "t3"))
   }
 
   it should "move" in {
@@ -491,6 +490,7 @@ class FileSpec extends CommonSpec {
     zipFile.name should endWith(".zip")
 
     def test(output: File) = {
+      import better.files.Dsl._
       (output / "a" / "a1" / "t1.txt").contentAsString shouldEqual "hello world"
       output === testRoot shouldBe true
       (output / "a" / "a1" / "t1.txt").overwrite("hello")
@@ -513,8 +513,8 @@ class FileSpec extends CommonSpec {
 
   it should "zip/unzip multiple files" in {
     File.usingTemporaryDirectory() { dir =>
-      val f1      = (dir / 'f1).touch().appendLines("Line 1", "Line 2")
-      val f2      = (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      val f1      = (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
+      val f2      = (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
       val lines   = zipFile.newZipInputStream.foldMap(_.lines.toSeq).flatten
       lines.toSeq shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
@@ -523,8 +523,8 @@ class FileSpec extends CommonSpec {
 
   it should "exclude destination zip when it's under directory to be zipped" in {
     File.usingTemporaryDirectory() { dir =>
-      (dir / 'f1).touch().appendLines("Line 1", "Line 2")
-      (dir / 'f2).touch().appendLines("Line 3", "Line 4")
+      (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
+      (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip")
       val zipped  = dir.zipTo(zipFile.path)
       zipped.unzipTo().listRecursively.toList.map(_.name).forall(!_.contains("zip")) shouldBe true
@@ -592,7 +592,7 @@ class FileSpec extends CommonSpec {
     class Person(val name: String, val age: Int) extends Serializable
     val p1 = new Person("Chris", 34)
 
-    File.temporaryFile() foreach { f => //serialization round-trip test
+    File.temporaryFile() foreach { f => // serialization round-trip test
       assert(f.isEmpty)
       f.writeSerialized(p1)
       assert(f.nonEmpty)
