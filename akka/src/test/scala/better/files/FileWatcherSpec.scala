@@ -26,7 +26,7 @@ class FileWatcherSpec extends CommonSpec {
       import java.nio.file.{StandardWatchEventKinds => Events}
       import FileWatcher._
 
-      import akka.actor.{ActorRef, ActorSystem}
+      import akka.actor._
       implicit val system = ActorSystem()
 
       val watcher: ActorRef = dir.newWatcher()

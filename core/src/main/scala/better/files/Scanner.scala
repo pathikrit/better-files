@@ -71,7 +71,7 @@ object Scanner {
     trait Implicits {
       implicit val stringRead: Read[String]             = Read(identity)
       implicit val booleanRead: Read[Boolean]           = Read(_.toBoolean)
-      implicit val byteRead: Read[Byte]                 = Read(_.toByte) //TODO: https://issues.scala-lang.org/browse/SI-9706
+      implicit val byteRead: Read[Byte]                 = Read(_.toByte) // TODO: https://issues.scala-lang.org/browse/SI-9706
       implicit val shortRead: Read[Short]               = Read(_.toShort)
       implicit val intRead: Read[Int]                   = Read(_.toInt)
       implicit val longRead: Read[Long]                 = Read(_.toLong)

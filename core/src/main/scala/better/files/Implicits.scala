@@ -19,7 +19,7 @@ import java.net.URI
   */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
-  //TODO: Rename all Ops to Extensions
+  // TODO: Rename all Ops to Extensions
 
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File =
@@ -393,7 +393,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       * @return the extracted file
       */
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
-      val entryName = entry.getName.replace("\\", "/") //see https://github.com/pathikrit/better-files/issues/262
+      val entryName = entry.getName.replace("\\", "/") // see https://github.com/pathikrit/better-files/issues/262
       val child     = rootDir.createChild(entryName, asDirectory = entry.isDirectory, createParents = true)
       if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
       child
@@ -442,7 +442,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   implicit def tokenizerToIterator(s: StringTokenizer): Iterator[String] =
     Iterator.continually(s.nextToken()).withHasNext(s.hasMoreTokens)
 
-  //implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
+  // implicit def posixPermissionToFileAttribute(perm: PosixFilePermission) =
   //  PosixFilePermissions.asFileAttribute(Set(perm))
 
   private[files] implicit def pathStreamToFiles(files: JStream[Path]): Iterator[File] =

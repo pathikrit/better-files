@@ -261,8 +261,8 @@ class DisposeSpec extends CommonSpec {
       for {
         pw <- f.printWriter()
         // TODO: Following couple of lines fails here https://travis-ci.com/github/pathikrit/better-files/jobs/500762452
-        //_ :: rows = data
-        //row <- rows
+        // _ :: rows = data
+        // row <- rows
         row <- data.tail
       } pw.println(row)
 
