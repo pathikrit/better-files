@@ -6,7 +6,7 @@ addSbtPlugin("com.github.sbt"            % "sbt-ghpages"    % "0.7.0")
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"   % "0.1.22")
 addSbtPlugin("org.scalameta"             % "sbt-scalafmt"   % "2.5.0")
 
-// A workaround until sbt ecosystem migrate to scala-xml 2.x https://github.com/sbt/sbt/issues/6997
+// TODO: A workaround until sbt ecosystem migrate to scala-xml 2.x https://github.com/sbt/sbt/issues/6997
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )

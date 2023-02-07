@@ -15,8 +15,7 @@ import scala.collection.JavaConverters._
 import java.net.URL
 import java.net.URI
 
-/** Container for various implicits
-  */
+/** Container for various implicits */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
   // TODO: Rename all Ops to Extensions

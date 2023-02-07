@@ -20,8 +20,7 @@ class FileWatcherSpec extends CommonSpec {
           actualEvents = msg :: actualEvents
         }
 
-      /** ************************************************************************
-        */
+      /*************************************************************************/
 
       import java.nio.file.{StandardWatchEventKinds => Events}
       import FileWatcher._
@@ -38,8 +37,7 @@ class FileWatcherSpec extends CommonSpec {
 
       watcher ! on(Events.ENTRY_DELETE)(file => output(file, "deleted")) // register partial function for single event
 
-      /** ************************************************************************
-        */
+      /************************************************************************/
 
       sleep(5 seconds)
 

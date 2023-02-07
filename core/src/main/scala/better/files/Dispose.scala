@@ -101,8 +101,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
     this
   }
 
-  /** This keeps the resource open during the context of this flatMap and closes when done
-    */
+  /** This keeps the resource open during the context of this flatMap and closes when done */
   def flatMap[B, F[_]](f: A => F[B])(implicit fv: Dispose.FlatMap[F]): fv.Output[B] =
     fv.apply(this)(f)
 }

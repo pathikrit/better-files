@@ -1,5 +1,5 @@
-name: Publish
 # Adapted from https://github.com/sbt/sbt-ci-release/blob/main/.github/workflows/release.yml
+name: Publish
 
 on:
   push:

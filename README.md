@@ -70,13 +70,19 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"     %% "akka-actor"         % "2.6.13"
 )
 ```
-Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
+Latest version: [![Scaladex][scaladexImg]][scaladexLink]
+
+Older versions available:
 * [Maven](https://repo1.maven.org/maven2/com/github/pathikrit/)
+  - [Scala 3](https://search.maven.org/artifact/com.github.pathikrit/better-files_3)
+  - [Scala 2.13](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13)
+  - [Scala 2.12](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12)
+  - [Scala 2.11](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11)
+  - [Scala 2.10](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10)
 * [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
 * [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
 
-Although this library is currently only actively developed for Scala 2.11, 2.12, 2.13 and Scala 3,
-you can find reasonably recent versions of this library for Scala 2.10 by clicking on the Maven/Sonatype links above.
+Consult [the changelog](CHANGES.md) if you are upgrading your library. 
 
 ## Tests [![Tests][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
