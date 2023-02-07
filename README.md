@@ -75,10 +75,10 @@ Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 * [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
 * [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
 
-Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
-you can find reasonably recent versions of this library for Scala 2.10 above.
+Although this library is currently only actively developed for Scala 2.11, 2.12, 2.13 and Scala 3,
+you can find reasonably recent versions of this library for Scala 2.10 by clicking on the Maven/Sonatype links above.
 
-## Tests [![GithubActions][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
+## Tests [![Build][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
