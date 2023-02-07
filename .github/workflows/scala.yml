@@ -41,10 +41,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build artifacts
-        run: |
-          sbt coverage test
-          sbt coverageReport coverageAggregate makeSite
+      - name: Generate reports
+        run: sbt coverage test coverageReport coverageAggregate makeSite
 
       - name: Publish coverage reports
         run: curl -s https://codecov.io/bash | bash

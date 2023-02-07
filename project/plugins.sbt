@@ -1,8 +1,12 @@
-addSbtPlugin("com.geirsson"              % "sbt-ci-release"      % "1.5.7")
-addSbtPlugin("com.eed3si9n"              % "sbt-unidoc"          % "0.4.3")
-addSbtPlugin("org.scoverage"             % "sbt-scoverage"       % "1.6.1")
-addSbtPlugin("com.timushev.sbt"          % "sbt-updates"         % "0.4.2")
-addSbtPlugin("com.typesafe.sbt"          % "sbt-ghpages"         % "0.6.3")
-addSbtPlugin("com.codacy"                % "sbt-codacy-coverage" % "3.0.3")
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"        % "0.1.17")
-addSbtPlugin("org.scalameta"             % "sbt-scalafmt"        % "2.0.4")
+addSbtPlugin("com.github.sbt"            % "sbt-ci-release" % "1.5.11")
+addSbtPlugin("com.github.sbt"            % "sbt-unidoc"     % "0.5.0")
+addSbtPlugin("org.scoverage"             % "sbt-scoverage"  % "2.0.6")
+addSbtPlugin("com.timushev.sbt"          % "sbt-updates"    % "0.4.2")
+addSbtPlugin("com.github.sbt"            % "sbt-ghpages"    % "0.7.0")
+addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"   % "0.1.22")
+addSbtPlugin("org.scalameta"             % "sbt-scalafmt"   % "2.5.0")
+
+// A workaround until sbt ecosystem migrate to scala-xml 2.x https://github.com/sbt/sbt/issues/6997
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
