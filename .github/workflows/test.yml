@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 17 ] # Include _only_ LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
-        scala: [ "2.11.12", "2.12.17", "2.13.10", "3.2.2" ]  # This _must_ mirror commonSettings.crossScalaVersions from build.sbt
+        java: [8, 11, 17] # Include _only_ LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+        scala: ["2.11.12", "2.12.17", "2.13.10", "3.2.2"]  # This _must_ mirror commonSettings.crossScalaVersions from build.sbt
 
     steps:
       - name: Checkout

@@ -3,8 +3,8 @@ name: Publish
 
 on:
   push:
-    branches: [ master ]
-    tags: [ "*" ]
+    branches: [master]
+    tags: ["*"]
 
 permissions:
   contents: write
