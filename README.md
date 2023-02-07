@@ -78,7 +78,7 @@ Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
 you can find reasonably recent versions of this library for Scala 2.10 above.
 
-## Tests [![TravisCI][travisCiImg]][travisCiLink]  [![codecov][codecovImg]][codecovLink] [![Codacy][codacyImg2]][codacyLink] [![Known Vulnerabilities][snykImg]][snykLink] 
+## Tests [![GithubActions][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Codacy][codacyImg2]][codacyLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
@@ -87,9 +87,8 @@ you can find reasonably recent versions of this library for Scala 2.10 above.
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
 
-[travisCiImg]: https://img.shields.io/travis/com/pathikrit/better-files/master.svg
-[travisCiImg2]: https://travis-ci.com/pathikrit/better-files.svg?branch=master
-[travisCiLink]: https://travis-ci.com/pathikrit/better-files
+[GithubActionsImg]: https://github.com/pathikrit/better-files/actions/workflows/scala.yml/badge.svg
+[GithubActionsLink]:https://github.com/pathikrit/better-files/actions/workflows/build.yml
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
