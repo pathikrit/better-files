@@ -172,7 +172,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
           try {
             Class.forName(objectStreamClass.getName, false, classLoader)
           } catch {
-            case _: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
+            case _: ClassNotFoundException => super.resolveClass(objectStreamClass)
           }
       }
 
