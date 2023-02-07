@@ -298,7 +298,7 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">Resource</span><span class="result"> extends <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></span>
+        <span class="name">Resource</span><span class="result"> extends <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a> with <span class="extype" name="better.files.ResourceScalaCompat">ResourceScalaCompat</span></span>
       </span>
       </h4>
 
@@ -313,7 +313,7 @@ and <code>my</code> searches from the class, trait, or object surrounding the ca
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><a href="Resource.html" class="extype" name="better.files.Resource">Resource</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="better.files.ResourceScalaCompat">ResourceScalaCompat</span>, <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -339,7 +339,7 @@ and <code>my</code> searches from the class, trait, or object surrounding the ca
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="better.files.Resource"><span>Resource</span></li><li class="in" name="better.files.Resource"><span>Resource</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="better.files.Resource"><span>Resource</span></li><li class="in" name="better.files.ResourceScalaCompat"><span>ResourceScalaCompat</span></li><li class="in" name="better.files.Resource"><span>Resource</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -469,7 +469,7 @@ and <code>my</code> searches from the class, trait, or object surrounding the ca
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></dd></dl></div>
-    </li><li name="better.files.Resource#at" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.ResourceScalaCompat#at" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="at(clazz:Class[_]):better.files.Resource"></a><a id="at(Class[_]):Resource"></a>
       <span class="permalink">
       <a href="../../better/files/Resource$.html#at(clazz:Class[_]):better.files.Resource" title="Permalink">
@@ -489,10 +489,10 @@ using <a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#g
 For example, if <code>classOf[com.example.ExampleClass]</code> is given for <code>clazz</code>, then resource files will be searched for
 in the <code>com/example</code> folder containing <code>ExampleClass.class</code>.</p><p>If you want to look up resource files relative to the call site instead (that is, you want your class to look up one of its own resources),
 use the <code>my</code> method instead.
-</p></div><dl class="paramcmts block"><dt class="param">clazz</dt><dd class="cmt"><p>The class to look up from.</p></dd><dt>returns</dt><dd class="cmt"><p>A Resource for <code>clazz</code>.</p></dd></dl><dl class="attributes block"> <div class="block">Example:
-               <ol><li class="cmt"><p></p><pre>Resource.at(<span class="std">Class</span>.forName(<span class="lit">"your.AppClass"</span>)).url(<span class="lit">"config.properties"</span>)</pre><p>        In this example, a file named <code>config.properties</code> is expected to appear alongside the file <code>AppClass.class</code> in the package <code>your</code>.</p></li></ol>
+</p></div><dl class="paramcmts block"><dt class="param">clazz</dt><dd class="cmt"><p>The class to look up from.</p></dd><dt>returns</dt><dd class="cmt"><p>A Resource for <code>clazz</code>.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd>ResourceScalaCompat</dd><div class="block">Example:
+               <ol><li class="cmt"><p></p><pre>Resource.at(<span class="std">Class</span>.forName(<span class="lit">"your.AppClass"</span>)).url(<span class="lit">"config.properties"</span>)</pre><p>In this example, a file named <code>config.properties</code> is expected to appear alongside the file <code>AppClass.class</code> in the package <code>your</code>.</p></li></ol>
             </div><dt>See also</dt><dd><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a></p></span></dd></dl></div>
-    </li><li name="better.files.Resource#at" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.ResourceScalaCompat#at" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="at[T]:better.files.Resource"></a><a id="at[T]:Resource"></a>
       <span class="permalink">
       <a href="../../better/files/Resource$.html#at[T]:better.files.Resource" title="Permalink">
@@ -510,7 +510,7 @@ use the <code>my</code> method instead.
       <p class="shortcomment cmt">Look up class resource files.</p><div class="fullcomment"><div class="comment cmt"><p>Look up class resource files.</p><p>This Resource looks up resources relative to the JVM class file for <code>T</code>,
 using <a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a>.
 For example, if <code>com.example.ExampleClass</code> is given for <code>T</code>, then resource files will be searched for in the <code>com/example</code> folder containing <code>ExampleClass.class</code>.</p><p>If you want to look up resource files relative to the call site instead (that is, you want a class to look up one of its own resources), use the <code>my</code> method instead.
-</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>The class, trait, or object to look up from. Objects must be written with a <code>.type</code> suffix, such as <code>Resource.at[SomeObject.type]</code>.</p></dd><dt>returns</dt><dd class="cmt"><p>A Resource for <code>T</code>.</p></dd></dl><dl class="attributes block"> <div class="block">Example:
+</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>The class, trait, or object to look up from. Objects must be written with a <code>.type</code> suffix, such as <code>Resource.at[SomeObject.type]</code>.</p></dd><dt>returns</dt><dd class="cmt"><p>A Resource for <code>T</code>.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd>ResourceScalaCompat</dd><div class="block">Example:
                <ol><li class="cmt"><p></p><pre>Resource.at[YourClass].url(<span class="lit">"config.properties"</span>)</pre></li></ol>
             </div><dt>See also</dt><dd><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -535,6 +535,8 @@ For example, if <code>com.example.ExampleClass</code> is given for <code>T</code
     </span>)</span>
               
                 <span class="name">@native</span><span class="args">()</span>
+              
+                <span class="name">@HotSpotIntrinsicCandidate</span><span class="args">()</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -569,28 +571,6 @@ For example, if <code>com.example.ExampleClass</code> is given for <code>T</code
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="finalize():Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/Resource$.html#finalize():Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">(<span>
-      
-      <span class="symbol">classOf[java.lang.Throwable]</span>
-    </span>)</span>
-              
-        </dd></dl></div>
     </li><li name="better.files.Resource#from" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="from(cl:ClassLoader):better.files.Resource"></a><a id="from(ClassLoader):Resource"></a>
       <span class="permalink">
@@ -662,6 +642,8 @@ For example, if <code>com.example.ExampleClass</code> is given for <code>T</code
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd><dt>Annotations</dt><dd>
                 <span class="name">@native</span><span class="args">()</span>
               
+                <span class="name">@HotSpotIntrinsicCandidate</span><span class="args">()</span>
+              
         </dd></dl></div>
     </li><li name="better.files.Resource#getUrl" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getUrl(name:String):java.net.URL"></a><a id="getUrl(String):URL"></a>
@@ -701,6 +683,8 @@ A default argument of empty string is provided to conveniently get the root reso
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd><dt>Annotations</dt><dd>
                 <span class="name">@native</span><span class="args">()</span>
               
+                <span class="name">@HotSpotIntrinsicCandidate</span><span class="args">()</span>
+              
         </dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -718,7 +702,7 @@ A default argument of empty string is provided to conveniently get the root reso
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="better.files.Resource#my" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.ResourceScalaCompat#my" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="my:better.files.Resource"></a><a id="my:Resource"></a>
       <span class="permalink">
       <a href="../../better/files/Resource$.html#my:better.files.Resource" title="Permalink">
@@ -737,7 +721,7 @@ A default argument of empty string is provided to conveniently get the root reso
 using <a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a>.
 For example, if <code>my</code> is called from <code>com.example.ExampleClass</code>,
 then resource files will be searched for in the <code>com/example</code> folder containing <code>ExampleClass.class</code>.
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Resource for the call site.</p></dd></dl><dl class="attributes block"> <div class="block">Example:
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Resource for the call site.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd>ResourceScalaCompat</dd><div class="block">Example:
                <ol><li class="cmt"><p></p><pre>Resource.my.url(<span class="lit">"config.properties"</span>)</pre></li></ol>
             </div><dt>See also</dt><dd><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -796,6 +780,8 @@ then resource files will be searched for in the <code>com/example</code> folder 
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@native</span><span class="args">()</span>
               
+                <span class="name">@HotSpotIntrinsicCandidate</span><span class="args">()</span>
+              
         </dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -814,6 +800,8 @@ then resource files will be searched for in the <code>com/example</code> folder 
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@native</span><span class="args">()</span>
+              
+                <span class="name">@HotSpotIntrinsicCandidate</span><span class="args">()</span>
               
         </dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -866,28 +854,6 @@ then resource files will be searched for in the <code>com/example</code> folder 
       <p class="shortcomment cmt">Look up a resource by name, and get its <a href="https://docs.oracle.com/javase/10/docs/api/java/net/URL.html" target="_blank">URL</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Look up a resource by name, and get its <a href="https://docs.oracle.com/javase/10/docs/api/java/net/URL.html" target="_blank">URL</a>.
 </p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>Name of the resource to search for.</p></dd><dt>returns</dt><dd class="cmt"><p>URL of the requested resource. If the resource could not be found or is not accessible, returns None.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.Resource">Resource</a> → <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String)" target="_blank">Class#getResource</a></p></span><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String)" target="_blank">ClassLoader#getResource</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="wait():Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/Resource$.html#wait():Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">(<span>
-      
-      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
-    </span>)</span>
-              
-        </dd></dl></div>
-    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
       <span class="permalink">
       <a href="../../better/files/Resource$.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
@@ -933,17 +899,68 @@ then resource files will be searched for in the <code>com/example</code> folder 
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <span class="permalink">
+      <a href="../../better/files/Resource$.html#wait():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
     </li>
               </ol>
             </div>
 
         
 
-        
+        <div class="values members">
+              <h3>Deprecated Value Members</h3>
+              <ol><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <span class="permalink">
+      <a href="../../better/files/Resource$.html#finalize():Unit" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name deprecated" title="Deprecated: ">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+                <span class="name">@Deprecated</span>
+              
+        </dd><dt>Deprecated</dt><dd class="cmt"></dd></dl></div>
+    </li></ol>
+            </div>
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="better.files.Resource">
+        <div class="parent" name="better.files.ResourceScalaCompat">
+              <h3>Inherited from <span class="extype" name="better.files.ResourceScalaCompat">ResourceScalaCompat</span></h3>
+            </div><div class="parent" name="better.files.Resource">
               <h3>Inherited from <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>

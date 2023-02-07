@@ -1691,9 +1691,7 @@ this let's you use and dispose a resource e.g.</p><p>{{
         <a title="Compose this managed resource with another managed resource closing the outer one after the inner one" href="Dispose$$FlatMap$$Implicits$disposeFlatMap$.html"><span class="name">disposeFlatMap</span></a><span class="result"> extends <a href="Dispose$$FlatMap.html" class="extype" name="better.files.Dispose.FlatMap">FlatMap</a>[<a href="Dispose.html" class="extype" name="better.files.Dispose">Dispose</a>]</span>
       </span>
       
-      <p class="shortcomment cmt">Compose this managed resource with another managed resource closing the outer one after the inner one
-</p><div class="fullcomment"><div class="comment cmt"><p>Compose this managed resource with another managed resource closing the outer one after the inner one
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Dispose$$FlatMap$$Implicits.html" class="extype" name="better.files.Dispose.FlatMap.Implicits">Implicits</a></dd></dl></div>
+      <p class="shortcomment cmt">Compose this managed resource with another managed resource closing the outer one after the inner one</p><div class="fullcomment"><div class="comment cmt"><p>Compose this managed resource with another managed resource closing the outer one after the inner one</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Dispose$$FlatMap$$Implicits.html" class="extype" name="better.files.Dispose.FlatMap.Implicits">Implicits</a></dd></dl></div>
     </li><li name="better.files.Dispose.FlatMap.Implicits.traversableFlatMap" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="traversableFlatMap"></a><a id="traversableFlatMap:traversableFlatMap"></a>
       <span class="permalink">
@@ -1709,9 +1707,7 @@ this let's you use and dispose a resource e.g.</p><p>{{
         <a title="Use the current managed resource as a generator needed to create another sequence" href="Dispose$$FlatMap$$Implicits$traversableFlatMap$.html"><span class="name">traversableFlatMap</span></a><span class="result"> extends <a href="Dispose$$FlatMap.html" class="extype" name="better.files.Dispose.FlatMap">FlatMap</a>[<span class="extype" name="scala.collection.GenTraversableOnce">GenTraversableOnce</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Use the current managed resource as a generator needed to create another sequence
-</p><div class="fullcomment"><div class="comment cmt"><p>Use the current managed resource as a generator needed to create another sequence
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Dispose$$FlatMap$$Implicits.html" class="extype" name="better.files.Dispose.FlatMap.Implicits">Implicits</a></dd></dl></div>
+      <p class="shortcomment cmt">Use the current managed resource as a generator needed to create another sequence</p><div class="fullcomment"><div class="comment cmt"><p>Use the current managed resource as a generator needed to create another sequence</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Dispose$$FlatMap$$Implicits.html" class="extype" name="better.files.Dispose.FlatMap.Implicits">Implicits</a></dd></dl></div>
     </li><li name="better.files.Dsl" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Dsl"></a><a id="Dsl:Dsl"></a>
       <span class="permalink">
@@ -1727,8 +1723,7 @@ this let's you use and dispose a resource e.g.</p><p>{{
         <a title="Do file ops using a UNIX command line DSL" href="Dsl$.html"><span class="name">Dsl</span></a>
       </span>
       
-      <p class="shortcomment cmt">Do file ops using a UNIX command line DSL
-</p>
+      <p class="shortcomment cmt">Do file ops using a UNIX command line DSL</p>
     </li><li name="better.files.File" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="File"></a><a id="File:File"></a>
       <span class="permalink">
@@ -1776,8 +1771,7 @@ this let's you use and dispose a resource e.g.</p><p>{{
         <a title="A sink outputstream similar to /dev/null - just consumes everything" href="NullOutputStream$.html"><span class="name">NullOutputStream</span></a><span class="result"> extends <span class="extype" name="java.io.OutputStream">OutputStream</span></span>
       </span>
       
-      <p class="shortcomment cmt">A sink outputstream similar to /dev/null - just consumes everything
-</p>
+      <p class="shortcomment cmt">A sink outputstream similar to /dev/null - just consumes everything</p>
     </li><li name="better.files.Resource" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Resource"></a><a id="Resource:Resource"></a>
       <span class="permalink">
@@ -1790,7 +1784,7 @@ this let's you use and dispose a resource e.g.</p><p>{{
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a title="Implementations of Resource." href="Resource$.html"><span class="name">Resource</span></a><span class="result"> extends <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></span>
+        <a title="Implementations of Resource." href="Resource$.html"><span class="name">Resource</span></a><span class="result"> extends <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a> with <span class="extype" name="better.files.ResourceScalaCompat">ResourceScalaCompat</span></span>
       </span>
       
       <p class="shortcomment cmt">Implementations of <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Implementations of <a href="Resource.html" class="extype" name="better.files.Resource">Resource</a>.</p><p>This object itself is a Resource uses the <a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Thread.html#currentThread()" target="_blank">current thread</a>'s
