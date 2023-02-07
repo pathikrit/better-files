@@ -78,7 +78,7 @@ Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 Although this library is currently only actively developed for Scala 2.11, 2.12 and 2.13,
 you can find reasonably recent versions of this library for Scala 2.10 above.
 
-## Tests [![GithubActions][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Codacy][codacyImg2]][codacyLink] [![Known Vulnerabilities][snykImg]][snykLink] 
+## Tests [![GithubActions][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
@@ -88,15 +88,11 @@ you can find reasonably recent versions of this library for Scala 2.10 above.
 [licenseLink]: LICENSE
 
 [GithubActionsImg]: https://github.com/pathikrit/better-files/actions/workflows/scala.yml/badge.svg
-[GithubActionsLink]:https://github.com/pathikrit/better-files/actions/workflows/build.yml
+[GithubActionsLink]:https://github.com/pathikrit/better-files/actions/workflows/scala.yml
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
-
-[codacyImg]: https://img.shields.io/codacy/0e2aeb7949bc49e6802afcc43a7a1aa1.svg
-[codacyImg2]: https://api.codacy.com/project/badge/grade/0e2aeb7949bc49e6802afcc43a7a1aa1
-[codacyLink]: https://www.codacy.com/app/pathikrit/better-files/dashboard
 
 [mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
 [mavenImg2]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.12/badge.svg

@@ -26,4 +26,4 @@ jobs:
           cache: sbt
 
       - name: Run tests on Scala ${{matrix.scala}}
-        run: sbt ++${{matrix.scala}} test
+        run: sbt ++${{matrix.scala}} clean test
