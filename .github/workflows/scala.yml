@@ -58,7 +58,7 @@ jobs:
           folder: target/site
 
       - name: Setup release
-      - uses: olafurpg/setup-scala@v13
+        uses: olafurpg/setup-scala@v13
 
       - name: Release
         run: sbt ci-release
