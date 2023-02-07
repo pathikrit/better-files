@@ -29,9 +29,12 @@ jobs:
         run: sbt ++${{matrix.scala}} clean test
 
   publish:
-    run: >
-      sbt coverage test
-      sbt coverageReport coverageAggregate makeSite
-      curl -s https://codecov.io/bash | bash
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Build artifacts
+        run: >
+          sbt coverage test
+          sbt coverageReport coverageAggregate makeSite
+          curl -s https://codecov.io/bash | bash
     
 
