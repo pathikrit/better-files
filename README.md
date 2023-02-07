@@ -78,7 +78,7 @@ Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 Although this library is currently only actively developed for Scala 2.11, 2.12, 2.13 and Scala 3,
 you can find reasonably recent versions of this library for Scala 2.10 by clicking on the Maven/Sonatype links above.
 
-## Tests [![Build][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
+## Tests [![Tests][GithubActionsImg]][GithubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink] 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
