@@ -3,7 +3,6 @@ name: Tests
 on:
   push:
     branches: [ master ]
-    tags: [ "*" ]
   pull_request:
     branches: [ master ]
 
@@ -14,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 17 ] # Include only LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
-        scala: [ "2.11.12", "2.12.17", "2.13.10", "3.2.2" ]  # This MUST mirror build.sbt > commonSettings.crossScalaVersions
+        java: [ 8, 11, 17 ] # Include _only_ LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+        scala: [ "2.11.12", "2.12.17", "2.13.10", "3.2.2" ]  # This _must_ mirror commonSettings.crossScalaVersions from build.sbt
 
     steps:
       - name: Checkout
@@ -28,5 +27,5 @@ jobs:
           distribution: 'temurin'
           cache: sbt
 
-      - name: Run tests on Scala ${{matrix.scala}}
+      - name: Test on Scala ${{matrix.scala}}
         run: sbt ++${{matrix.scala}} clean test
