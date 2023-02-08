@@ -54,8 +54,8 @@ final class ResourceSpec extends CommonSpec {
   it should "work with using util" in {
     File.usingTemporaryFile() { file =>
       file.appendText("hello world")
-      val lines = using(file.newInputStream) { is =>
-        is.lines.toList
+      val lines = using(file.newInputStream()) { is =>
+        is.lines().toList
       }
       assert(lines === "hello world" :: Nil)
     }
@@ -72,7 +72,7 @@ final class ResourceSpec extends CommonSpec {
     File.usingTemporaryDirectory() { dir =>
       val lines = 1000
       emit(dir = dir, partitions = 5, lines = lines)
-      val expected = dir.list(filter = _.extension.contains(".csv")).flatMap(_.lines).map(_.toInt).toSet
+      val expected = dir.list(filter = _.extension.contains(".csv")).flatMap(_.lines()).map(_.toInt).toSet
       assert((1 to lines).forall(expected))
     }
   }

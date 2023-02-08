@@ -14,10 +14,10 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 -----------
 
 ## v4.0.0 [WIP]
+* [PR #621](https://github.com/pathikrit/better-files/pull/621): Remove implicit options from all APIs
 * [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs
-* Remove implicit options from all APIs
 * Remove akka utils
 
 ##  [v3.9.2](https://github.com/pathikrit/better-files/releases/tag/v3.9.2)

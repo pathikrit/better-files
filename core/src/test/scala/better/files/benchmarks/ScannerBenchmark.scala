@@ -66,7 +66,7 @@ class ScannerBenchmark extends Benchmark {
 
     info("Running benchmark ...")
     scanners foreach { scanner =>
-      runTest(scanner(file.newBufferedReader))
+      runTest(scanner(file.newBufferedReader()))
     }
   }
 }
