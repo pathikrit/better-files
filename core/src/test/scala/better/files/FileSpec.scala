@@ -201,11 +201,11 @@ class FileSpec extends CommonSpec {
   it should "support names/extensions" in {
     assert(File("zzz").changeExtensionTo("ddd").name === "zzz.ddd")
     assert(File("zzz").changeExtensionTo(".ddd").name === "zzz.ddd")
-    fa.extension shouldBe None
+    fa.extension() shouldBe None
     fa.nameWithoutExtension shouldBe fa.name
-    t1.extension shouldBe Some(".txt")
+    t1.extension() shouldBe Some(".txt")
     t1.extension(includeDot = false) shouldBe Some("txt")
-    t3.extension shouldBe Some(".txt")
+    t3.extension() shouldBe Some(".txt")
     t3.extension(includeAll = true) shouldBe Some(".scala.txt")
     t3.extension(includeDot = false, includeAll = true) shouldBe Some("scala.txt")
     t1.name shouldBe "t1.txt"
@@ -216,7 +216,7 @@ class FileSpec extends CommonSpec {
     ("src" / "test").toString should include("better-files")
     (t1.contentAsString() == t1.toString) shouldBe false
     t1.root shouldEqual fa.root
-    file"/tmp/foo.scala.html".extension shouldBe Some(".html")
+    file"/tmp/foo.scala.html".extension() shouldBe Some(".html")
     file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo"
     file"/tmp/foo.scala.html".nameWithoutExtension(includeAll = false) shouldBe "foo.scala"
     root.name shouldBe ""

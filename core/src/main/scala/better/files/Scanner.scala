@@ -102,10 +102,6 @@ object Scanner {
 
       /** Use this to create custom readers e.g. to read a LocalDate using some custom format
         * val readLocalDate: Read[LocalDate] = Read.temporalQuery(format = myFormat, query = LocalDate.from)
-        * @param format
-        * @param query
-        * @tparam A
-        * @return
         */
       def temporalQuery[A](format: DateTimeFormatter, query: temporal.TemporalQuery[A]): Read[A] =
         Read(format.parse(_, query))
@@ -145,9 +141,6 @@ object StringSplitter {
 
   /** Split string on this character
     * This will return exactly 1 + n number of items where n is the number of occurrence of delimiter in String s
-    *
-    * @param delimiter
-    * @return
     */
   def on(delimiter: Char): StringSplitter =
     new StringSplitter {

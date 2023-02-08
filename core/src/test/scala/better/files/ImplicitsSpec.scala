@@ -9,7 +9,7 @@ class ImplicitsSpec extends CommonSpec {
       (dir / "1.csv").touch()
       (dir / "2.csv").touch()
       (dir / "3.txt").touch()
-      val (csv, other) = dir.listRecursively().partition(_.extension.contains(".csv"))
+      val (csv, other) = dir.listRecursively().partition(_.extension().contains(".csv"))
       assert(csv.size == 2)
       assert(other.size == 1)
     }
