@@ -410,7 +410,7 @@
         <span title="gt4s: $div" class="name">/</span><span class="params">(<span name="child">child: <span class="extype" name="scala.Symbol">Symbol</span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt">DSL to drop to child</p>
     </li><li name="better.files.File#/" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="/(child:String):better.files.File"></a><a id="/(String):File"></a>
       <span class="permalink">
@@ -426,7 +426,7 @@
         <span title="gt4s: $div" class="name">/</span><span class="params">(<span name="child">child: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt">DSL to drop to child</p>
     </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
       <span class="permalink">
@@ -538,8 +538,7 @@
         <span class="name">appendLines</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">For large number of lines that may not fit in memory, use printLines
-</p>
+      <p class="shortcomment cmt">For large number of lines that may not fit in memory, use printLines</p>
     </li><li name="better.files.File#appendText" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="appendText(text:String,charset:java.nio.charset.Charset):File.this.type"></a><a id="appendText(String,Charset):File.this.type"></a>
       <span class="permalink">
@@ -668,7 +667,7 @@
       </span>
       
       
-    </li><li name="better.files.File#canonicalFile" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#canonicalFile" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="canonicalFile:better.files.File"></a><a id="canonicalFile:File"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#canonicalFile:better.files.File" title="Permalink">
@@ -683,7 +682,7 @@
         <span class="name">canonicalFile</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>canonicalFile</p></span></dd></dl></div>
     </li><li name="better.files.File#canonicalPath" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="canonicalPath:String"></a>
       <span class="permalink">
@@ -699,11 +698,11 @@
         <span class="name">canonicalPath</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Resolves ../../foo to the fully qualified path</p>
     </li><li name="better.files.File#changeExtensionTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="changeExtensionTo(extension:String):better.files.File"></a><a id="changeExtensionTo(String):File"></a>
+      <a id="changeExtensionTo(extension:String,linkOptions:better.files.File.LinkOptions):better.files.File"></a><a id="changeExtensionTo(String,LinkOptions):File"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#changeExtensionTo(extension:String):better.files.File" title="Permalink">
+      <a href="../../better/files/File.html#changeExtensionTo(extension:String,linkOptions:better.files.File.LinkOptions):better.files.File" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -712,14 +711,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">changeExtensionTo</span><span class="params">(<span name="extension">extension: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
+        <span class="name">changeExtensionTo</span><span class="params">(<span name="extension">extension: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
       <p class="shortcomment cmt">Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
 Example usage file&quot;foo.java&quot;.changeExtensionTo(&quot;.scala&quot;)</p><div class="fullcomment"><div class="comment cmt"><p>Changes the file-extension by renaming this file; if file does not have an extension, it adds the extension
 Example usage file&quot;foo.java&quot;.changeExtensionTo(&quot;.scala&quot;)</p><p>If file does not exist (or is a directory) no change is done and the current file is returned
 </p></div></div>
-    </li><li name="better.files.File#chars" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#chars" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chars(charset:java.nio.charset.Charset):Iterator[Char]"></a><a id="chars(Charset):Iterator[Char]"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#chars(charset:java.nio.charset.Charset):Iterator[Char]" title="Permalink">
@@ -734,7 +733,7 @@ Example usage file&quot;foo.java&quot;.changeExtensionTo(&quot;.scala&quot;)</p>
         <span class="name">chars</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="scala.Char">Char</span>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>characters of this file</p></dd></dl></div>
     </li><li name="better.files.File#checksum" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checksum(algorithm:java.security.MessageDigest,visitOptions:better.files.File.VisitOptions,linkOptions:better.files.File.LinkOptions):String"></a><a id="checksum(MessageDigest,VisitOptions,LinkOptions):String"></a>
       <span class="permalink">
@@ -767,7 +766,7 @@ Example usage file&quot;foo.java&quot;.changeExtensionTo(&quot;.scala&quot;)</p>
       </span>
       
       
-    </li><li name="better.files.File#clear" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.File#clear" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="clear(linkOptions:better.files.File.LinkOptions):File.this.type"></a><a id="clear(LinkOptions):File.this.type"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#clear(linkOptions:better.files.File.LinkOptions):File.this.type" title="Permalink">
@@ -784,9 +783,7 @@ Example usage file&quot;foo.java&quot;.changeExtensionTo(&quot;.scala&quot;)</p>
       
       <p class="shortcomment cmt">If this is a directory, remove all its children
 If its a file, empty the contents
-</p><div class="fullcomment"><div class="comment cmt"><p>If this is a directory, remove all its children
-If its a file, empty the contents
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>this</p></dd></dl></div>
+</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a><a id="clone():AnyRef"></a>
       <span class="permalink">
@@ -848,7 +845,7 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
       <p class="shortcomment cmt">Check if this directory contains this file
 </p><div class="fullcomment"><div class="comment cmt"><p>Check if this directory contains this file
 </p></div><dl class="paramcmts block"><dt class="param">strict</dt><dd class="cmt"><p>If strict is false, it would return true for self.contains(self)</p></dd><dt>returns</dt><dd class="cmt"><p>true if this is a directory and it contains this file</p></dd></dl></div>
-    </li><li name="better.files.File#contentAsString" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#contentAsString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="contentAsString(charset:java.nio.charset.Charset):String"></a><a id="contentAsString(Charset):String"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#contentAsString(charset:java.nio.charset.Charset):String" title="Permalink">
@@ -863,8 +860,8 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
         <span class="name">contentAsString</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      
-    </li><li name="better.files.File#contentType" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the content of this file as string</p></dd></dl></div>
+    </li><li name="better.files.File#contentType" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="contentType:Option[String]"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#contentType:Option[String]" title="Permalink">
@@ -879,7 +876,7 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
         <span class="name">contentType</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt">return the content type of the file e.g.</p><div class="fullcomment"><div class="comment cmt"><p>return the content type of the file e.g. text/html</p></div></div>
     </li><li name="better.files.File#copyTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="copyTo(destination:better.files.File,overwrite:Boolean)(implicitcopyOptions:better.files.File.CopyOptions):destination.type"></a><a id="copyTo(File,Boolean)(CopyOptions):destination.type"></a>
       <span class="permalink">
@@ -895,7 +892,7 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
         <span class="name">copyTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="overwrite">overwrite: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="copyOptions">copyOptions: <a href="File$.html#CopyOptions=Seq[java.nio.file.CopyOption]" class="extmbr" name="better.files.File.CopyOptions">CopyOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.CopyOptions(overwrite)</a></span></span></span>)</span><span class="result">: <span class="extype" name="better.files.File.copyTo.destination">destination</span>.type</span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>destination</p></dd></dl></div>
+      <p class="shortcomment cmt">Copy this file to destination similar to unix cp command</p><div class="fullcomment"><div class="comment cmt"><p>Copy this file to destination similar to unix cp command</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>copyToDirectory() if you want to copy _into_ another directory</p></span></dd></dl></div>
     </li><li name="better.files.File#copyToDirectory" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="copyToDirectory(directory:better.files.File,overwrite:Boolean,linkOptions:better.files.File.LinkOptions,copyOptions:better.files.File.CopyOptions):better.files.File"></a><a id="copyToDirectory(File,Boolean,LinkOptions,CopyOptions):File"></a>
       <span class="permalink">
@@ -962,8 +959,7 @@ If you want default Java behaviour, use File.LinkOptions.noFollow
         <span class="name">createDirectory</span><span class="params">(<span name="attributes">attributes: <a href="File$.html#Attributes=Seq[java.nio.file.attribute.FileAttribute[_]]" class="extmbr" name="better.files.File.Attributes">Attributes</a> = <span class="symbol"><span class="name"><a href="File$.html">File.Attributes.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Create this directory
-</p>
+      <p class="shortcomment cmt">Create this directory</p>
     </li><li name="better.files.File#createDirectoryIfNotExists" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="createDirectoryIfNotExists(createParents:Boolean,attributes:better.files.File.Attributes,linkOptions:better.files.File.LinkOptions):File.this.type"></a><a id="createDirectoryIfNotExists(Boolean,Attributes,LinkOptions):File.this.type"></a>
       <span class="permalink">
@@ -995,8 +991,7 @@ If you want default Java behaviour, use File.LinkOptions.noFollow
         <span class="name">createFile</span><span class="params">(<span name="attributes">attributes: <a href="File$.html#Attributes=Seq[java.nio.file.attribute.FileAttribute[_]]" class="extmbr" name="better.files.File.Attributes">Attributes</a> = <span class="symbol"><span class="name"><a href="File$.html">File.Attributes.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Create this file
-</p>
+      <p class="shortcomment cmt">Create this file</p>
     </li><li name="better.files.File#createFileIfNotExists" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="createFileIfNotExists(createParents:Boolean,attributes:better.files.File.Attributes,linkOptions:better.files.File.LinkOptions):File.this.type"></a><a id="createFileIfNotExists(Boolean,Attributes,LinkOptions):File.this.type"></a>
       <span class="permalink">
@@ -1164,9 +1159,9 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
       
       
     </li><li name="better.files.File#extension" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="extension(includeDot:Boolean,includeAll:Boolean,toLowerCase:Boolean):Option[String]"></a><a id="extension(Boolean,Boolean,Boolean):Option[String]"></a>
+      <a id="extension(includeDot:Boolean,includeAll:Boolean,toLowerCase:Boolean,linkOptions:better.files.File.LinkOptions):Option[String]"></a><a id="extension(Boolean,Boolean,Boolean,LinkOptions):Option[String]"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#extension(includeDot:Boolean,includeAll:Boolean,toLowerCase:Boolean):Option[String]" title="Permalink">
+      <a href="../../better/files/File.html#extension(includeDot:Boolean,includeAll:Boolean,toLowerCase:Boolean,linkOptions:better.files.File.LinkOptions):Option[String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -1175,26 +1170,10 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">extension</span><span class="params">(<span name="includeDot">includeDot: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="includeAll">includeAll: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="toLowerCase">toLowerCase: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">extension</span><span class="params">(<span name="includeDot">includeDot: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="includeAll">includeAll: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="toLowerCase">toLowerCase: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">includeDot</dt><dd class="cmt"><p>whether the dot should be included in the extension or not</p></dd><dt class="param">includeAll</dt><dd class="cmt"><p>whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz</p></dd><dt class="param">toLowerCase</dt><dd class="cmt"><p>to lowercase the extension or not e.g. foo.HTML should have .html or .HTML</p></dd><dt>returns</dt><dd class="cmt"><p>extension of this file if it is a regular file and has an extension, else None</p></dd></dl></div>
-    </li><li name="better.files.File#extension" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="extension:Option[String]"></a>
-      <span class="permalink">
-      <a href="../../better/files/File.html#extension:Option[String]" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">extension</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>extension (including the dot) of this file if it is a regular file and has an extension, else None</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">includeDot</dt><dd class="cmt"><p>whether the dot should be included in the extension or not</p></dd><dt class="param">includeAll</dt><dd class="cmt"><p>whether all extension tokens should be included, or just the last one e.g. for bundle.tar.gz should it be .tar.gz or .gz</p></dd><dt class="param">toLowerCase</dt><dd class="cmt"><p>to lowercase the extension or not e.g. foo.HTML should have .html or .HTML</p></dd><dt>returns</dt><dd class="cmt"><p>extension (including the dot) of this file if it is a regular file and has an extension, else None</p></dd></dl></div>
     </li><li name="better.files.File#fileChannel" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="fileChannel(openOptions:better.files.File.OpenOptions,attributes:better.files.File.Attributes):better.files.Dispose[java.nio.channels.FileChannel]"></a><a id="fileChannel(OpenOptions,Attributes):Dispose[FileChannel]"></a>
       <span class="permalink">
@@ -1350,7 +1329,7 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
       <p class="shortcomment cmt">Util to glob from this file's path
 </p><div class="fullcomment"><div class="comment cmt"><p>Util to glob from this file's path
 </p></div><dl class="paramcmts block"><dt class="param">includePath</dt><dd class="cmt"><p>If true, we don't need to set path glob patterns
-                   e.g. instead of *</p></dd></dl></div>
+                   e.g. instead of **.txt we just use *.txt</p></dd><dt class="param">maxDepth</dt><dd class="cmt"><p>Recurse up to maxDepth</p></dd><dt>returns</dt><dd class="cmt"><p>Set of files that matched</p></dd></dl></div>
     </li><li name="better.files.File#globRegex" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="globRegex(pattern:scala.util.matching.Regex,includePath:Boolean,maxDepth:Int,visitOptions:better.files.File.VisitOptions):Iterator[better.files.File]"></a><a id="globRegex(Regex,Boolean,Int,VisitOptions):Iterator[File]"></a>
       <span class="permalink">
@@ -1369,7 +1348,7 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
       <p class="shortcomment cmt">Util to match from this file's path using Regex
 </p><div class="fullcomment"><div class="comment cmt"><p>Util to match from this file's path using Regex
 </p></div><dl class="paramcmts block"><dt class="param">includePath</dt><dd class="cmt"><p>If true, we don't need to set path glob patterns
-                   e.g. instead of *</p></dd></dl></div>
+                   e.g. instead of **.txt we just use *.txt</p></dd><dt class="param">maxDepth</dt><dd class="cmt"><p>Recurse up to maxDepth</p></dd><dt>returns</dt><dd class="cmt"><p>Set of files that matched</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>glob</p></span></dd></dl></div>
     </li><li name="better.files.File#group" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="group(linkOptions:better.files.File.LinkOptions):java.nio.file.attribute.GroupPrincipal"></a><a id="group(LinkOptions):GroupPrincipal"></a>
       <span class="permalink">
@@ -1449,11 +1428,11 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
         <span class="name">gzipTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a> = <span class="defval" name='<span class="name"><a href="File$.html">File.newTemporaryFile(suffix = name + &quot;.gz&quot;)</a></span>'>...</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="syncFlush">syncFlush: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="append">append: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="better.files.File.gzipTo.destination">destination</span>.type</span>
       </span>
       
-      <p class="shortcomment cmt"></p>
+      
     </li><li name="better.files.File#hasExtension" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="hasExtension:Boolean"></a>
+      <a id="hasExtension(linkOptions:better.files.File.LinkOptions):Boolean"></a><a id="hasExtension(LinkOptions):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#hasExtension:Boolean" title="Permalink">
+      <a href="../../better/files/File.html#hasExtension(linkOptions:better.files.File.LinkOptions):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -1462,7 +1441,7 @@ i.e. if this is a symlink, only the symlink itself is deleted and not the linked
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">hasExtension</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">hasExtension</span><span class="params">(<span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       
       <p class="shortcomment cmt">Returns the extension if file is a regular file
@@ -1790,7 +1769,7 @@ See: https://github.com/pathikrit/better-files/issues/89
       </span>
       
       
-    </li><li name="better.files.File#isReadable" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.File#isReadable" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="isReadable:Boolean"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#isReadable:Boolean" title="Permalink">
@@ -1805,9 +1784,7 @@ See: https://github.com/pathikrit/better-files/issues/89
         <span class="name">isReadable</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       
-      <p class="shortcomment cmt">This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
-</p><div class="fullcomment"><div class="comment cmt"><p>This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>isOwnerReadable</p></span></dd></dl></div>
+      <p class="shortcomment cmt">This differs from the above as this checks if the JVM can read this file even though the OS cannot in certain platforms</p>
     </li><li name="better.files.File#isRegularFile" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isRegularFile(linkOptions:better.files.File.LinkOptions):Boolean"></a><a id="isRegularFile(LinkOptions):Boolean"></a>
       <span class="permalink">
@@ -1971,7 +1948,7 @@ Also works for directories
       </span>
       
       
-    </li><li name="better.files.File#lineCount" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#lineCount" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lineCount(charset:java.nio.charset.Charset):Long"></a><a id="lineCount(Charset):Long"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#lineCount(charset:java.nio.charset.Charset):Long" title="Permalink">
@@ -1986,7 +1963,7 @@ Also works for directories
         <span class="name">lineCount</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>number of lines in this file</p></dd></dl></div>
     </li><li name="better.files.File#lineIterator" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lineIterator(charset:java.nio.charset.Charset):Iterator[String]"></a><a id="lineIterator(Charset):Iterator[String]"></a>
       <span class="permalink">
@@ -2073,8 +2050,7 @@ Note: Large files may cause an OutOfMemory in which case, use the streaming vers
         <span class="name">list</span><span class="params">(<span name="filter">filter: (<a href="" class="extype" name="better.files.File">File</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="maxDepth">maxDepth: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">Int.MaxValue</span></span>, <span name="visitOptions">visitOptions: <a href="File$.html#VisitOptions=Seq[java.nio.file.FileVisitOption]" class="extmbr" name="better.files.File.VisitOptions">VisitOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.VisitOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<a href="" class="extype" name="better.files.File">File</a>]</span>
       </span>
       
-      <p class="shortcomment cmt">List files recursively up to given depth using a custom file filter
-</p>
+      <p class="shortcomment cmt">List files recursively up to given depth using a custom file filter</p>
     </li><li name="better.files.File#listRecursively" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="listRecursively(visitOptions:better.files.File.VisitOptions):Iterator[better.files.File]"></a><a id="listRecursively(VisitOptions):Iterator[File]"></a>
       <span class="permalink">
@@ -2122,7 +2098,7 @@ Note: Large files may cause an OutOfMemory in which case, use the streaming vers
         <span class="name">loadBytes</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt">load bytes into memory - for large files you want to use @see bytes which uses an iterator</p>
     </li><li name="better.files.File#md5" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="md5(visitOptions:better.files.File.VisitOptions,linkOptions:better.files.File.LinkOptions):String"></a><a id="md5(VisitOptions,LinkOptions):String"></a>
       <span class="permalink">
@@ -2154,7 +2130,7 @@ Note: Large files may cause an OutOfMemory in which case, use the streaming vers
         <span class="name">moveTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="copyOptions">copyOptions: <a href="File$.html#CopyOptions=Seq[java.nio.file.CopyOption]" class="extmbr" name="better.files.File.CopyOptions">CopyOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.CopyOptions(overwrite = false)</a></span></span></span>)</span><span class="result">: <span class="extype" name="better.files.File.moveTo.destination">destination</span>.type</span>
       </span>
       
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>destination</p></dd></dl></div>
+      <p class="shortcomment cmt">Move this to destination similar to unix mv command</p><div class="fullcomment"><div class="comment cmt"><p>Move this to destination similar to unix mv command</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>moveToDirectory() if you want to move _into_ another directory</p></span></dd></dl></div>
     </li><li name="better.files.File#moveToDirectory" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="moveToDirectory(directory:better.files.File,linkOptions:better.files.File.LinkOptions):better.files.File"></a><a id="moveToDirectory(File,LinkOptions):File"></a>
       <span class="permalink">
@@ -2205,12 +2181,11 @@ Certain files may not have a name e.g. root directory - returns empty string in 
         <span class="name">nameOption</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Certain files may not have a name e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Certain files may not have a name e.g. root directory - returns None in that case
-</p></div></div>
+      <p class="shortcomment cmt">Certain files may not have a name e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Certain files may not have a name e.g. root directory - returns None in that case</p></div></div>
     </li><li name="better.files.File#nameWithoutExtension" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="nameWithoutExtension(includeAll:Boolean):String"></a><a id="nameWithoutExtension(Boolean):String"></a>
+      <a id="nameWithoutExtension(includeAll:Boolean,linkOptions:better.files.File.LinkOptions):String"></a><a id="nameWithoutExtension(Boolean,LinkOptions):String"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#nameWithoutExtension(includeAll:Boolean):String" title="Permalink">
+      <a href="../../better/files/File.html#nameWithoutExtension(includeAll:Boolean,linkOptions:better.files.File.LinkOptions):String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -2219,14 +2194,14 @@ Certain files may not have a name e.g. root directory - returns empty string in 
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">nameWithoutExtension</span><span class="params">(<span name="includeAll">includeAll: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">nameWithoutExtension</span><span class="params">(<span name="includeAll">includeAll: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">includeAll</dt><dd class="cmt"><p>
         For files with multiple extensions e.g. &quot;bundle.tar.gz&quot;
         nameWithoutExtension(includeAll = true) returns &quot;bundle&quot;
         nameWithoutExtension(includeAll = false) returns &quot;bundle.tar&quot;</p></dd></dl></div>
-    </li><li name="better.files.File#nameWithoutExtension" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#nameWithoutExtension" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="nameWithoutExtension:String"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#nameWithoutExtension:String" title="Permalink">
@@ -2241,7 +2216,7 @@ Certain files may not have a name e.g. root directory - returns empty string in 
         <span class="name">nameWithoutExtension</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt">Return the file name without extension e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Return the file name without extension e.g. for foo.tar.gz return foo</p></div></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -2682,7 +2657,7 @@ Certain files may not have a name e.g. root directory - returns empty string in 
       </span>
       
       
-    </li><li name="better.files.File#parent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.File#parent" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="parent:better.files.File"></a><a id="parent:File"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#parent:better.files.File" title="Permalink">
@@ -2700,10 +2675,7 @@ Certain files may not have a name e.g. root directory - returns empty string in 
       <p class="shortcomment cmt">Return parent of this file
 NOTE: This API returns null if this file is the root;
 please use parentOption if you expect to handle roots
-</p><div class="fullcomment"><div class="comment cmt"><p>Return parent of this file
-NOTE: This API returns null if this file is the root;
-please use parentOption if you expect to handle roots
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>parentOption</p></span></dd></dl></div>
+</p>
     </li><li name="better.files.File#parentOption" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="parentOption:Option[better.files.File]"></a><a id="parentOption:Option[File]"></a>
       <span class="permalink">
@@ -2831,7 +2803,7 @@ please use parentOption if you expect to handle roots
         <span class="name">printLines</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.TraversableOnce">TraversableOnce</span>[_]</span>, <span name="openOptions">openOptions: <a href="File$.html#OpenOptions=Seq[java.nio.file.OpenOption]" class="extmbr" name="better.files.File.OpenOptions">OpenOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.OpenOptions.append</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      
+      <p class="shortcomment cmt">Write lines into this file</p>
     </li><li name="better.files.File#printWriter" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="printWriter(autoFlush:Boolean,openOptions:better.files.File.OpenOptions):better.files.Dispose[java.io.PrintWriter]"></a><a id="printWriter(Boolean,OpenOptions):Dispose[PrintWriter]"></a>
       <span class="permalink">
@@ -2879,8 +2851,7 @@ please use parentOption if you expect to handle roots
         <span class="name">readDeserialized</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="classLoaderOverride">classLoaderOverride: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.lang.ClassLoader">ClassLoader</span>] = <span class="symbol">None</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="openOptions">openOptions: <a href="File$.html#OpenOptions=Seq[java.nio.file.OpenOption]" class="extmbr" name="better.files.File.OpenOptions">OpenOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.OpenOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="better.files.File.readDeserialized.A">A</span></span>
       </span>
       
-      <p class="shortcomment cmt">Deserialize a object using Java's default serialization from this file
-</p>
+      <p class="shortcomment cmt">Deserialize a object using Java's default serialization from this file</p>
     </li><li name="better.files.File#register" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="register(service:java.nio.file.WatchService,events:better.files.File.Events):File.this.type"></a><a id="register(WatchService,Events):File.this.type"></a>
       <span class="permalink">
@@ -2896,7 +2867,7 @@ please use parentOption if you expect to handle roots
         <span class="name">register</span><span class="params">(<span name="service">service: <span class="extype" name="java.nio.file.WatchService">WatchService</span></span>, <span name="events">events: <a href="File$.html#Events=Seq[java.nio.file.WatchEvent.Kind[_]]" class="extmbr" name="better.files.File.Events">Events</a> = <span class="symbol"><span class="name"><a href="File$.html">File.Events.all</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      
+      <p class="shortcomment cmt">register a watch service for given events</p>
     </li><li name="better.files.File#relativize" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="relativize(destination:better.files.File):java.nio.file.Path"></a><a id="relativize(File):Path"></a>
       <span class="permalink">
@@ -2963,7 +2934,7 @@ please use parentOption if you expect to handle roots
       <p class="shortcomment cmt">getResource[...](path) always uses &quot;/&quot; for separator
   https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String)
 </p>
-    </li><li name="better.files.File#root" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="better.files.File#root" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="root:better.files.File"></a><a id="root:File"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#root:better.files.File" title="Permalink">
@@ -2978,7 +2949,7 @@ please use parentOption if you expect to handle roots
         <span class="name">root</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>root of this file e.g. '/' for '/dve/null'</p></dd></dl></div>
     </li><li name="better.files.File#scanner" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="scanner(splitter:better.files.StringSplitter,charset:java.nio.charset.Charset):better.files.Dispose[better.files.Scanner]"></a><a id="scanner(StringSplitter,Charset):Dispose[Scanner]"></a>
       <span class="permalink">
@@ -3218,9 +3189,8 @@ please use parentOption if you expect to handle roots
         <span class="name">testPermission</span><span class="params">(<span name="permission">permission: <span class="extype" name="java.nio.file.attribute.PosixFilePermission">PosixFilePermission</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       
-      <p class="shortcomment cmt">test if file has this permission
-</p>
-    </li><li name="better.files.File#toJava" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">test if file has this permission</p>
+    </li><li name="better.files.File#toJava" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toJava:java.io.File"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#toJava:java.io.File" title="Permalink">
@@ -3235,7 +3205,7 @@ please use parentOption if you expect to handle roots
         <span class="name">toJava</span><span class="result">: <span class="extype" name="java.io.File">java.io.File</span></span>
       </span>
       
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>java.io.File version of this</p></dd></dl></div>
     </li><li name="better.files.File#toString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <span class="permalink">
@@ -3289,7 +3259,7 @@ for long running systems with millions of temporary files as:
         <span class="name">tokens</span><span class="params">(<span name="splitter">splitter: <a href="StringSplitter.html" class="extype" name="better.files.StringSplitter">StringSplitter</a> = <span class="symbol"><span class="name"><a href="StringSplitter$.html">StringSplitter.Default</a></span></span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt">Similar to string.split(), this returns tokens from the file by given splitter (default is whitespace)</p>
     </li><li name="better.files.File#touch" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="touch(time:java.time.Instant,attributes:better.files.File.Attributes,linkOptions:better.files.File.LinkOptions):File.this.type"></a><a id="touch(Instant,Attributes,LinkOptions):File.this.type"></a>
       <span class="permalink">
@@ -3305,8 +3275,7 @@ for long running systems with millions of temporary files as:
         <span class="name">touch</span><span class="params">(<span name="time">time: <span class="extype" name="java.time.Instant">Instant</span> = <span class="symbol">Instant.now()</span></span>, <span name="attributes">attributes: <a href="File$.html#Attributes=Seq[java.nio.file.attribute.FileAttribute[_]]" class="extmbr" name="better.files.File.Attributes">Attributes</a> = <span class="symbol"><span class="name"><a href="File$.html">File.Attributes.default</a></span></span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Similar to the UNIX command touch - create this file if it does not exist and set its last modification time
-</p>
+      <p class="shortcomment cmt">Similar to the UNIX command touch - create this file if it does not exist and set its last modification time</p>
     </li><li name="better.files.File#unGzipTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="unGzipTo(destination:better.files.File,append:Boolean,bufferSize:Int):destination.type"></a><a id="unGzipTo(File,Boolean,Int):destination.type"></a>
       <span class="permalink">
@@ -3374,8 +3343,7 @@ for long running systems with millions of temporary files as:
         <span class="name">update</span><span class="params">(<span name="attribute">attribute: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="scala.Any">Any</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Set a file attribute e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Set a file attribute e.g. file(&quot;dos:system&quot;) = true
-</p></div></div>
+      <p class="shortcomment cmt">Set a file attribute e.g.</p><div class="fullcomment"><div class="comment cmt"><p>Set a file attribute e.g. file(&quot;dos:system&quot;) = true</p></div></div>
     </li><li name="better.files.File#uri" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="uri:java.net.URI"></a><a id="uri:URI"></a>
       <span class="permalink">
@@ -3576,8 +3544,7 @@ for long running systems with millions of temporary files as:
         <span class="name">writeByteArray</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="openOptions">openOptions: <a href="File$.html#OpenOptions=Seq[java.nio.file.OpenOption]" class="extmbr" name="better.files.File.OpenOptions">OpenOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.OpenOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Write byte array to file.</p><div class="fullcomment"><div class="comment cmt"><p>Write byte array to file. For large contents consider using the writeBytes
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>this</p></dd></dl></div>
+      <p class="shortcomment cmt">Write byte array to file.</p><div class="fullcomment"><div class="comment cmt"><p>Write byte array to file. For large contents consider using the writeBytes</p></div></div>
     </li><li name="better.files.File#writeBytes" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="writeBytes(bytes:Iterator[Byte],openOptions:better.files.File.OpenOptions):File.this.type"></a><a id="writeBytes(Iterator[Byte],OpenOptions):File.this.type"></a>
       <span class="permalink">
@@ -3609,8 +3576,7 @@ for long running systems with millions of temporary files as:
         <span class="name">writeSerialized</span><span class="params">(<span name="obj">obj: <span class="extype" name="java.io.Serializable">Serializable</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="openOptions">openOptions: <a href="File$.html#OpenOptions=Seq[java.nio.file.OpenOption]" class="extmbr" name="better.files.File.OpenOptions">OpenOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.OpenOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
-      <p class="shortcomment cmt">Serialize a object using Java's serializer into this file, creating it and its parents if they do not exist
-</p>
+      <p class="shortcomment cmt">Serialize a object using Java's serializer into this file, creating it and its parents if they do not exist</p>
     </li><li name="better.files.File#writeText" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="writeText(text:String,openOptions:better.files.File.OpenOptions,charset:java.nio.charset.Charset):File.this.type"></a><a id="writeText(String,OpenOptions,Charset):File.this.type"></a>
       <span class="permalink">
@@ -3645,7 +3611,7 @@ for long running systems with millions of temporary files as:
       <p class="shortcomment cmt">zip to a temp directory
 </p><div class="fullcomment"><div class="comment cmt"><p>zip to a temp directory
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the target directory</p></dd></dl></div>
-    </li><li name="better.files.File#zipIn" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="better.files.File#zipIn" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="zipIn(files:Iterator[better.files.File],compressionLevel:Int,charset:java.nio.charset.Charset):File.this.type"></a><a id="zipIn(Iterator[File],Int,Charset):File.this.type"></a>
       <span class="permalink">
       <a href="../../better/files/File.html#zipIn(files:Iterator[better.files.File],compressionLevel:Int,charset:java.nio.charset.Charset):File.this.type" title="Permalink">
@@ -3662,9 +3628,7 @@ for long running systems with millions of temporary files as:
       
       <p class="shortcomment cmt">Adds these files into this zip file
 Example usage: File(&quot;test.zip&quot;).zipIn(Seq(file&quot;hello.txt&quot;, file&quot;hello2.txt&quot;))
-</p><div class="fullcomment"><div class="comment cmt"><p>Adds these files into this zip file
-Example usage: File(&quot;test.zip&quot;).zipIn(Seq(file&quot;hello.txt&quot;, file&quot;hello2.txt&quot;))
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>this</p></dd></dl></div>
+</p>
     </li><li name="better.files.File#zipInputStream" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="zipInputStream(charset:java.nio.charset.Charset):better.files.Dispose[java.util.zip.ZipInputStream]"></a><a id="zipInputStream(Charset):Dispose[ZipInputStream]"></a>
       <span class="permalink">
