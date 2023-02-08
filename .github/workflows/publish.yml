@@ -19,8 +19,8 @@ jobs:
       - name: Generate reports
         run: sbt coverage test coverageReport coverageAggregate makeSite
 
-      - name: Publish coverage reports
-        run: curl -s https://codecov.io/bash | bash
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
 
       - name: Publish Github Pages
         uses: JamesIves/github-pages-deploy-action@v4
