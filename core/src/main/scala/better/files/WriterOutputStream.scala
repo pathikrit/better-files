@@ -11,8 +11,7 @@ import scala.annotation.tailrec
   */
 class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: Int, flushImmediately: Boolean) extends OutputStream {
 
-  /** CharBuffer used as output for the decoder
-    */
+  /** CharBuffer used as output for the decoder */
   private[this] val decoderOut = CharBuffer.allocate(bufferSize)
 
   /** ByteBuffer used as output for the decoder. This buffer can be small

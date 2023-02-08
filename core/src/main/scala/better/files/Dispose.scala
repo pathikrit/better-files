@@ -38,8 +38,7 @@ object Disposable {
     Disposable(_.delete(swallowIOExceptions = true))
 }
 
-/** Given a disposable resource, this actually does the disposing
-  */
+/** Given a disposable resource, this actually does the disposing */
 class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable[A]) {
   private[Dispose] val isDisposed    = new AtomicBoolean(false)
   private[Dispose] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
@@ -85,14 +84,12 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
   def get(): A =
     apply(identity)
 
-  /** This will immediately apply f on the resource and close the resource
-    */
+  /** This will immediately apply f on the resource and close the resource */
   def foreach[U](f: A => U): Unit = {
     val _ = apply(f)
   }
 
-  /** This will apply f on the resource while it is open
-    */
+  /** This will apply f on the resource while it is open */
   def map[B](f: A => B): Dispose[B] =
     new Dispose[B](f(resource))(Disposable(disposeOnce()))
 

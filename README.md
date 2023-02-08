@@ -72,14 +72,14 @@ libraryDependencies ++= Seq(
 ```
 Latest version: [![Scaladex][scaladexImg]][scaladexLink]
 
-Older versions available:
-* [Maven](https://repo1.maven.org/maven2/com/github/pathikrit/)
+Other available versions:  
+* [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
   - [Scala 3](https://search.maven.org/artifact/com.github.pathikrit/better-files_3)
   - [Scala 2.13](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13)
   - [Scala 2.12](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12)
   - [Scala 2.11](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11)
   - [Scala 2.10](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10)
-* [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
+* [Maven](https://repo1.maven.org/maven2/com/github/pathikrit/) 
 * [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
 
 Consult [the changelog](CHANGES.md) if you are upgrading your library. 

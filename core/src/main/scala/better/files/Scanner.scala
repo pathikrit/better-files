@@ -174,22 +174,13 @@ object StringSplitter {
         }
     }
 
-  /** Split this string using ANY of the characters from delimiters
-    *
-    * @param delimiters
-    * @param includeDelimiters
-    * @return
-    */
+  /** Split this string using ANY of the characters from delimiters */
   def anyOf(delimiters: String, includeDelimiters: Boolean = false): StringSplitter =
     new StringSplitter {
       override def split(s: String) = new StringTokenizer(s, delimiters, includeDelimiters)
     }
 
-  /** Split string using a regex pattern
-    *
-    * @param pattern
-    * @return
-    */
+  /** Split string using a regex pattern */
   def regex(pattern: String): StringSplitter =
     new StringSplitter {
       override def split(s: String) = s.split(pattern, -1)

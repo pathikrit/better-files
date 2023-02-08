@@ -6,20 +6,13 @@ import scala.concurrent.{blocking, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-/** Implementation of File.Monitor
-  *
-  * @param root
-  * @param maxDepth
-  */
+/** Implementation of File.Monitor */
 abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] val service = root.newWatchService
 
   def this(root: File, recursive: Boolean = true) = this(root, if (recursive) Int.MaxValue else 0)
 
-  /** If watching non-directory, don't react to siblings
-    * @param target
-    * @return
-    */
+  /** If watching non-directory, don't react to siblings */
   protected[this] def reactTo(target: File) = root.isDirectory() || root.isSamePathAs(target)
 
   protected[this] def process(key: WatchKey) = {

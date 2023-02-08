@@ -4,7 +4,6 @@ import java.io.OutputStream
 
 /** Write to multiple outputstreams at once
   * If error happens on any one while doing an operation, only the last error is reported
-  * @param outs
   */
 class TeeOutputStream(outs: OutputStream*) extends OutputStream {
   override def write(b: Int)                             = tryAll(outs)(_.write(b))

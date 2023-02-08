@@ -23,16 +23,10 @@ object Dsl {
   val `.` : File => File =
     identity
 
-  /** Adds some symbolic operations to file
-    * @param file
-    */
+  /** Adds some symbolic operations to file */
   implicit class SymbolicOperations(val file: File) {
 
-    /** Allows navigation up e.g. file / .. / ..
-      *
-      * @param f
-      * @return
-      */
+    /** Allows navigation up e.g. file / .. / .. */
     def /(f: File => File): File =
       f(file)
 
@@ -136,8 +130,6 @@ object Dsl {
   /** Update permission of this file
     *
     * @param permissions Must be 9 character POSIX permission representation e.g. "rwxr-x---"
-    * @param file
-    * @return file
     */
   def chmod(permissions: String, file: File): File =
     file.setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)

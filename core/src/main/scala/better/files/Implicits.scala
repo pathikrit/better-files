@@ -86,8 +86,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def pipeTo(out: OutputStream, bufferSize: Int = DefaultBufferSize): out.type =
       pipeTo(out, Array.ofDim[Byte](bufferSize))
 
-    /** Pipe an input stream to an output stream using a byte buffer
-      */
+    /** Pipe an input stream to an output stream using a byte buffer */
     @tailrec final def pipeTo(out: OutputStream, buffer: Array[Byte]): out.type = {
       val n = in.read(buffer)
       if (n > 0) {
@@ -148,10 +147,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
       new ZipInputStream(in, charset)
 
-    /** If bufferSize is set to less than or equal to 0, we don't buffer
-      * @param bufferSize
-      * @return
-      */
+    /** If bufferSize is set to less than or equal to 0, we don't buffer */
     def asObjectInputStream(bufferSize: Int = DefaultBufferSize): ObjectInputStream =
       new ObjectInputStream(if (bufferSize <= 0) in else buffered(bufferSize))
 
@@ -257,10 +253,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
 
-    /** If bufferSize is set to less than or equal to 0, we don't buffer
-      * @param bufferSize
-      * @return
-      */
+    /** If bufferSize is set to less than or equal to 0, we don't buffer */
     def asObjectOutputStream(bufferSize: Int = DefaultBufferSize): ObjectOutputStream =
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
 
@@ -420,8 +413,6 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     /** Closes this stream when iteration is complete
       * It will NOT close the stream if it is not depleted!
-      *
-      * @return
       */
     def toAutoClosedIterator: Iterator[A] =
       stream.autoClosed.flatMap(_.iterator().asScala)

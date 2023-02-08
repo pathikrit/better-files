@@ -30,12 +30,6 @@ package object files extends Implicits {
     *         stream.lines.toList   // Must be eager so .toList
     *     }
     * }}
-    *
-    * @param resource
-    * @param f
-    * @tparam A
-    * @tparam B
-    * @return
     */
   def using[A: Disposable, B](resource: A)(f: A => B): B =
     new Dispose(resource).apply(f)
@@ -52,10 +46,6 @@ package object files extends Implicits {
 
   /** Utility to apply f on all xs skipping over errors
     * Throws the last error that happened
-    * *
-    * @param xs
-    * @param f
-    * @tparam A
     */
   private[files] def tryAll[A](xs: Seq[A])(f: A => Unit): Unit = {
     val res = xs.foldLeft(Option.empty[Throwable]) { case (currError, a) =>
