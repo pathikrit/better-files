@@ -305,8 +305,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class PathMatcherExtensions(matcher: PathMatcher) {
-    def matches(file: File, maxDepth: Int)(implicit visitOptions: File.VisitOptions = File.VisitOptions.default) =
-      file.collectChildren(child => matcher.matches(child.path), maxDepth)(visitOptions)
+    def matches(file: File, maxDepth: Int, visitOptions: File.VisitOptions = File.VisitOptions.default) =
+      file.collectChildren(child => matcher.matches(child.path), maxDepth, visitOptions)
   }
 
   implicit class ObjectInputStreamExtensions(ois: ObjectInputStream) {
@@ -338,9 +338,9 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def add(file: File, name: String): out.type = {
       val relativeName = name.stripSuffix(file.fileSystem.getSeparator)
       val entryName =
-        if (file.isDirectory) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
+        if (file.isDirectory()) s"$relativeName/" else relativeName // make sure to end directories in ZipEntry with "/"
       out.putNextEntry(new ZipEntry(entryName))
-      if (file.isRegularFile) file.inputStream.foreach(_.pipeTo(out))
+      if (file.isRegularFile()) file.inputStream().foreach(_.pipeTo(out))
       out.closeEntry()
       out
     }
@@ -394,7 +394,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def extractTo(rootDir: File, inputStream: => InputStream): File = {
       val entryName = entry.getName.replace("\\", "/") // see https://github.com/pathikrit/better-files/issues/262
       val child     = rootDir.createChild(entryName, asDirectory = entry.isDirectory, createParents = true)
-      if (!entry.isDirectory) child.outputStream.foreach(inputStream.pipeTo(_))
+      if (!entry.isDirectory) child.outputStream().foreach(inputStream.pipeTo(_))
       child
     }
   }

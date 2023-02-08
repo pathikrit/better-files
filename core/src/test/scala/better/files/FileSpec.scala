@@ -149,23 +149,23 @@ class FileSpec extends CommonSpec {
 
   it should "do basic I/O" in {
     t1 < "hello"
-    t1.contentAsString shouldEqual "hello"
+    t1.contentAsString() shouldEqual "hello"
     t1.appendLine() << "world"
     (t1 !) shouldEqual String.format("hello%nworld%n")
-    t1.chars.toStream should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
+    t1.chars().toStream should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
     "foo" `>:` t1
     "bar" >>: t1
-    t1.contentAsString shouldEqual String.format("foobar%n")
+    t1.contentAsString() shouldEqual String.format("foobar%n")
     t1.appendLines("hello", "world")
-    t1.contentAsString shouldEqual String.format("foobar%nhello%nworld%n")
-    t2.writeText("hello").appendText("world").contentAsString shouldEqual "helloworld"
+    t1.contentAsString() shouldEqual String.format("foobar%nhello%nworld%n")
+    t2.writeText("hello").appendText("world").contentAsString() shouldEqual "helloworld"
 
     (testRoot / "diary")
       .createFileIfNotExists()
       .appendLine()
       .appendLines("My name is", "Inigo Montoya")
       .printLines(Iterator("x", 1))
-      .lines
+      .lines()
       .toSeq should contain theSameElementsInOrderAs Seq("", "My name is", "Inigo Montoya", "x", "1")
   }
 
@@ -175,7 +175,7 @@ class FileSpec extends CommonSpec {
     File.temporaryFile() foreach { file =>
       file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
       file.contentAsString(charset = "UTF-8") should not equal expectedContent
-      file.contentAsString shouldEqual expectedContent
+      file.contentAsString() shouldEqual expectedContent
     }
   }
 
@@ -214,7 +214,7 @@ class FileSpec extends CommonSpec {
     (t1 < "hello world").changeExtensionTo(".txt").name shouldBe "t1.txt"
     // t1.contentType shouldBe Some("text/plain")
     ("src" / "test").toString should include("better-files")
-    (t1.contentAsString == t1.toString) shouldBe false
+    (t1.contentAsString() == t1.toString) shouldBe false
     t1.root shouldEqual fa.root
     file"/tmp/foo.scala.html".extension shouldBe Some(".html")
     file"/tmp/foo.scala.html".nameWithoutExtension shouldBe "foo"
@@ -245,7 +245,7 @@ class FileSpec extends CommonSpec {
 
   it should "support sorting" in {
     testRoot.list.toSeq.sorted(File.Order.byName) should not be empty
-    testRoot.list.toSeq.max(File.Order.bySize).isEmpty shouldBe false
+    testRoot.list.toSeq.max(File.Order.bySize).isEmpty() shouldBe false
     Seq(fa, fb).contains(testRoot.list.toSeq.min(File.Order.byDepth)) shouldBe true
     sleep()
     t2.appendLine("modified!")
@@ -254,11 +254,11 @@ class FileSpec extends CommonSpec {
   }
 
   it must "have .size" in {
-    fb.isEmpty shouldBe true
-    t1.size shouldBe 0
+    fb.isEmpty() shouldBe true
+    t1.size() shouldBe 0
     t1.writeText("Hello World")
-    t1.size should be > 0L
-    testRoot.size should be > (t1.size + t2.size)
+    t1.size() should be > 0L
+    testRoot.size() should be > (t1.size() + t2.size())
   }
 
 //  NOTE: Commented out because it's no longer needed. Expected to be vetted and removed by the project maintainer.
@@ -281,8 +281,8 @@ class FileSpec extends CommonSpec {
     import better.files.Dsl._
     fa shouldEqual (testRoot / "a")
     fa shouldNot equal(testRoot / "b")
-    val c1 = fa.md5
-    fa.md5 shouldEqual c1
+    val c1 = fa.md5()
+    fa.md5() shouldEqual c1
     t1 < "hello"
     t2 < "hello"
     (t1 == t2) shouldBe false
@@ -290,19 +290,19 @@ class FileSpec extends CommonSpec {
     t2 < "hello world"
     (t1 == t2) shouldBe false
     (t1 === t2) shouldBe false
-    fa.md5 should not equal c1
+    fa.md5() should not equal c1
   }
 
   it should "create if not exist directory structures" in {
     File.usingTemporaryDirectory() { dir =>
       val file = dir / "a" / "b" / "c.txt"
-      assert(file.notExists)
-      assert(file.parent.notExists)
+      assert(file.notExists())
+      assert(file.parent.notExists())
       file.createIfNotExists(createParents = true)
-      assert(file.exists)
-      assert(file.parent.exists)
+      assert(file.exists())
+      assert(file.parent.exists())
       file.writeText("Hello world")
-      assert(file.contentAsString === "Hello world")
+      assert(file.contentAsString() === "Hello world")
     }
   }
 
@@ -313,17 +313,15 @@ class FileSpec extends CommonSpec {
       realDir.createDirectory()
       JFiles.createSymbolicLink(dirSymlink.path, realDir.path)
       dirSymlink.createDirectories()
-      a[FileAlreadyExistsException] should be thrownBy dirSymlink.createDirectories()(
-        linkOptions = File.LinkOptions.noFollow
-      )
+      a[FileAlreadyExistsException] should be thrownBy dirSymlink.createDirectories(linkOptions = File.LinkOptions.noFollow)
       /*a[FileAlreadyExistsException] shouldNot be thrownBy*/
       dirSymlink.createDirectories()
     }
   }
 
   it should "support chown/chgrp" in {
-    fa.ownerName should not be empty
-    fa.groupName should not be empty
+    fa.ownerName() should not be empty
+    fa.groupName() should not be empty
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chown("hitler", fa)
     // a[java.nio.file.FileSystemException] should be thrownBy chown("root", fa)
     a[java.nio.file.attribute.UserPrincipalNotFoundException] should be thrownBy chgrp("cool", fa)
@@ -358,26 +356,26 @@ class FileSpec extends CommonSpec {
     // to absolute target
     b1.linkTo(a1, symbolic = true)
     ln_s(b2, t2)
-    (b1 / "t1.txt").contentAsString shouldEqual magicWord
+    (b1 / "t1.txt").contentAsString() shouldEqual magicWord
     // copy
-    b2.contentAsString shouldBe empty
-    t1.md5 should not equal t2.md5
+    b2.contentAsString() shouldBe empty
+    t1.md5() should not equal t2.md5()
     a[java.nio.file.FileAlreadyExistsException] should be thrownBy (t1 copyTo t2)
     t1.copyTo(t2, overwrite = true)
-    t1.exists shouldBe true
-    t1.md5 shouldEqual t2.md5
-    b2.contentAsString shouldEqual magicWord
+    t1.exists() shouldBe true
+    t1.md5() shouldEqual t2.md5()
+    b2.contentAsString() shouldEqual magicWord
     // rename
     t2.name shouldBe "t2.txt"
-    t2.exists shouldBe true
+    t2.exists() shouldBe true
     val t3 = t2 renameTo "t3.txt"
     t3.name shouldBe "t3.txt"
-    t2.exists shouldBe false
-    t3.exists shouldBe true
+    t2.exists() shouldBe false
+    t3.exists() shouldBe true
     // move
     t3 moveTo t2
-    t2.exists shouldBe true
-    t3.exists shouldBe false
+    t2.exists() shouldBe true
+    t3.exists() shouldBe false
   }
 
   it should "support creating hard links with ln" in {
@@ -385,113 +383,111 @@ class FileSpec extends CommonSpec {
     val magicWord = "Hello World"
     t1 writeText magicWord
     t1.linkTo(t3, symbolic = false)
-    (a1 / "t3.scala.txt").contentAsString shouldEqual magicWord
+    (a1 / "t3.scala.txt").contentAsString() shouldEqual magicWord
   }
 
   it should "support custom charset" in {
     import java.nio.charset.Charset
-    t1.writeText("你好世界")(charset = "UTF8")
+    t1.writeText("你好世界", charset = "UTF8")
     t1.contentAsString(charset = "ISO-8859-1") should not equal "你好世界"
     t1.contentAsString(charset = "UTF8") shouldEqual "你好世界"
     val c1 = md5(t1)
-    val c2 = t1.overwrite("你好世界")(File.OpenOptions.default, Charset.forName("ISO-8859-1")).md5
+    val c2 = t1.overwrite("你好世界", File.OpenOptions.default, Charset.forName("ISO-8859-1")).md5()
     c1 should not equal c2
     c2 shouldEqual t1.checksum("md5")
   }
 
   it should "read chinese" in {
-    val lines = "core/src/test/resources/better/files/issues-326.txt".toFile.lines.toSeq
+    val lines = "core/src/test/resources/better/files/issues-326.txt".toFile.lines().toSeq
     assert(lines.length > 20)
   }
 
   it should "support hashing algos" in {
-    implicit val charset = java.nio.charset.StandardCharsets.UTF_8
-    t1.writeText("")
+    val charset = java.nio.charset.StandardCharsets.UTF_8
+    t1.writeText("", charset = charset)
     md5(t1) shouldEqual "D41D8CD98F00B204E9800998ECF8427E"
     sha1(t1) shouldEqual "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
     sha256(t1) shouldEqual "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-    sha512(
-      t1
-    ) shouldEqual "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
+    sha512(t1) shouldEqual
+      "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
   }
 
   it should "compute correct checksum for non-zero length string" in {
-    implicit val charset = java.nio.charset.StandardCharsets.UTF_8
-    t1.writeText("test")
+    val charset = java.nio.charset.StandardCharsets.UTF_8
+    t1.writeText("test", charset = charset)
     md5(t1) shouldEqual "098F6BCD4621D373CADE4E832627B4F6"
     sha1(t1) shouldEqual "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3"
     sha256(t1) shouldEqual "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08"
-    sha512(
-      t1
-    ) shouldEqual "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF"
+    sha512(t1) shouldEqual
+      "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF"
   }
 
   it should "copy" in {
     (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Hello World")
     (fb / "t5" / "t5.txt").createIfNotExists(createParents = true).writeText("Scala Awesome")
-    (fb / "t5" / "t3").notExists shouldBe true
+    (fb / "t5" / "t3").notExists() shouldBe true
     cp(fb / "t3", fb / "t5")
-    (fb / "t3").exists shouldBe true
-    (fb / "t5" / "t3").exists shouldBe true
-    (fb / "t5" / "t5.txt").contentAsString shouldEqual "Scala Awesome"
+    (fb / "t3").exists() shouldBe true
+    (fb / "t5" / "t3").exists() shouldBe true
+    (fb / "t5" / "t5.txt").contentAsString() shouldEqual "Scala Awesome"
     assert((fb / "t3") isSameContentAs (fb / "t5" / "t3"))
   }
 
   it should "move" in {
     (fb / "t3" / "t4.txt").createIfNotExists(createParents = true).writeText("Hello World")
     mv(fb / "t3", fb / "t5")
-    (fb / "t5" / "t4.txt").contentAsString shouldEqual "Hello World"
-    (fb / "t3").notExists shouldBe true
+    (fb / "t5" / "t4.txt").contentAsString() shouldEqual "Hello World"
+    (fb / "t3").notExists() shouldBe true
   }
 
   it should "delete" in {
-    fb.exists shouldBe true
+    fb.exists() shouldBe true
     fb.delete()
-    fb.exists shouldBe false
+    fb.exists() shouldBe false
   }
 
   it should "touch" in {
-    (fb / "z1").exists shouldBe false
-    (fb / "z1").isEmpty shouldBe true
+    (fb / "z1").exists() shouldBe false
+    (fb / "z1").isEmpty() shouldBe true
     (fb / "z1").touch()
-    (fb / "z1").exists shouldBe true
-    (fb / "z1").isEmpty shouldBe true
+    (fb / "z1").exists() shouldBe true
+    (fb / "z1").isEmpty() shouldBe true
     Thread.sleep(1000)
-    (fb / "z1").lastModifiedTime.getEpochSecond should be < (fb / "z1").touch().lastModifiedTime.getEpochSecond
+    (fb / "z1").lastModifiedTime().getEpochSecond should be < (fb / "z1").touch().lastModifiedTime().getEpochSecond
   }
 
   it should "md5" in {
     val h1     = t1.hashCode
-    val actual = (t1 < "hello world").md5
+    val actual = (t1 < "hello world").md5()
     val h2     = t1.hashCode
     h1 shouldEqual h2
     import scala.sys.process._
     val expected = Try(s"md5sum ${t1.path}" !!) getOrElse (s"md5 ${t1.path}" !!)
     expected.toUpperCase should include(actual)
     actual should not equal h1
-    actual shouldEqual t1.newInputStream.withMessageDigest("md5").hexDigest()
+    actual shouldEqual t1.newInputStream().withMessageDigest("md5").hexDigest()
   }
 
   it should "support file in/out" in {
     t1 < "hello world"
     for {
-      in  <- t1.inputStream
-      out <- t2.outputStream
+      in  <- t1.inputStream()
+      out <- t2.outputStream()
     } in.pipeTo(out)
-    t2.contentAsString shouldEqual "hello world"
-    t2.newInputStream.asString() shouldEqual "hello world"
+    t2.contentAsString() shouldEqual "hello world"
+    t2.newInputStream().asString() shouldEqual "hello world"
   }
 
   it should "zip/unzip directories" in {
     assume(Properties.javaVersion.startsWith("1.8"))
     t1.writeText("hello world")
     val zipFile = testRoot.zip()
-    zipFile.size should be > 100L
+    zipFile.size() should be > 100L
     zipFile.name should endWith(".zip")
 
     def test(output: File) = {
       import better.files.Dsl._
-      (output / "a" / "a1" / "t1.txt").contentAsString shouldEqual "hello world"
+      (output / "a" / "a1" / "t1.txt").contentAsString() shouldEqual "hello world"
       output === testRoot shouldBe true
       (output / "a" / "a1" / "t1.txt").overwrite("hello")
       (output !== testRoot) shouldBe true
@@ -505,10 +501,10 @@ class FileSpec extends CommonSpec {
     assume(Properties.javaVersion.startsWith("1.8"))
     t1.writeText("hello world")
     val zipFile = t1.zip()
-    zipFile.size should be > 100L
+    zipFile.size() should be > 100L
     zipFile.name should endWith(".zip")
     val destination = unzip(zipFile)(File.newTemporaryDirectory())
-    (destination / "t1.txt").contentAsString shouldEqual "hello world"
+    (destination / "t1.txt").contentAsString() shouldEqual "hello world"
   }
 
   it should "zip/unzip multiple files" in {
@@ -516,7 +512,7 @@ class FileSpec extends CommonSpec {
       val f1      = (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
       val f2      = (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
-      val lines   = zipFile.newZipInputStream.foldMap(_.lines.toSeq).flatten
+      val lines   = zipFile.newZipInputStream().foldMap(_.lines.toSeq).flatten
       lines.toSeq shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
     }
   }
@@ -527,14 +523,14 @@ class FileSpec extends CommonSpec {
       (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip")
       val zipped  = dir.zipTo(zipFile.path)
-      zipped.unzipTo().listRecursively.toList.map(_.name).forall(!_.contains("zip")) shouldBe true
+      zipped.unzipTo().listRecursively().toList.map(_.name).forall(!_.contains("zip")) shouldBe true
     }
   }
 
   it should "handle backslashes in zip entry name" in {
     val list = File("core/src/test/resources/better/files/issues-262.zip")
       .unzipTo()
-      .listRecursively
+      .listRecursively()
       .toList
     assert(list.length === 3)
   }
@@ -542,11 +538,11 @@ class FileSpec extends CommonSpec {
   it should "ungzip" in {
     val data = Seq("hello", "world")
     for {
-      pw   <- (testRoot / "test.gz").newOutputStream.asGzipOutputStream().printWriter().autoClosed
+      pw   <- (testRoot / "test.gz").newOutputStream().asGzipOutputStream().printWriter().autoClosed
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream.flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
+    (testRoot / "test.gz").inputStream().flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
   }
 
   it should "gzip" in {
@@ -554,7 +550,7 @@ class FileSpec extends CommonSpec {
       .writeText("hello world")
       .gzipTo()
       .unGzipTo()
-      .contentAsString
+      .contentAsString()
 
     assert(actual === "hello world")
 
@@ -565,22 +561,22 @@ class FileSpec extends CommonSpec {
   it should "read bytebuffers" in {
     t1.writeText("hello world")
     for {
-      fileChannel <- t1.newFileChannel.autoClosed
+      fileChannel <- t1.newFileChannel().autoClosed
     } fileChannel.toMappedByteBuffer.remaining() shouldEqual t1.bytes.length
 
-    (t2 writeBytes t1.bytes).contentAsString shouldEqual t1.contentAsString
+    (t2 writeBytes t1.bytes).contentAsString() shouldEqual t1.contentAsString()
 
-    t1.newInputStream.bytes.toArray shouldEqual t1.newInputStream.byteArray
+    t1.newInputStream().bytes.toArray shouldEqual t1.newInputStream().byteArray
   }
 
   it should "convert readers to inputstreams and writers to outputstreams" in {
     File.temporaryFile() foreach { f =>
       val text = List.fill(10000)("hello world")
       for {
-        writer <- f.bufferedWriter
-        out    <- writer.outputstream.autoClosed
+        writer <- f.bufferedWriter()
+        out    <- writer.outputstream().autoClosed
       } out.write(text.mkString("\n").getBytes)
-      val t = f.bufferedReader.flatMap(_.toInputStream.lines)
+      val t = f.bufferedReader().flatMap(_.toInputStream.lines)
       t.toList shouldEqual text
     }
   }
@@ -593,14 +589,14 @@ class FileSpec extends CommonSpec {
     val p1 = new Person("Chris", 34)
 
     File.temporaryFile() foreach { f => // serialization round-trip test
-      assert(f.isEmpty)
+      assert(f.isEmpty())
       f.writeSerialized(p1)
-      assert(f.nonEmpty)
+      assert(f.nonEmpty())
       val p2: Person = f.readDeserialized[Person]()
       assert(p1.name === p2.name)
       assert(p1.age === p2.age)
 
-      val p3 = f.inputStream.apply(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
+      val p3 = f.inputStream().apply(_.asObjectInputStreamUsingClassLoader().deserialize[Person])
       assert(p3.name === p2.name)
       assert(p3.age === p2.age)
     }

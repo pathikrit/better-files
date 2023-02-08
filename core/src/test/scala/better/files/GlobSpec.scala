@@ -156,7 +156,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     )
     val paths = globTree.glob("*.txt")
     verify(paths, refPaths, globTree)
-    assert(globTree.glob("*.txt", includePath = false)(File.PathMatcherSyntax.glob).isEmpty)
+    assert(globTree.glob("*.txt", includePath = false, syntax = File.PathMatcherSyntax.glob).isEmpty)
   }
 
   it should "match fixed sub dir and file-glob  (e.g. '**/subdir/*.ext')" in {
@@ -290,13 +290,13 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
 
     // TODO: DOC: File behaviour, links are resolved (abs + normalized path)
 
-    val p1s = globTree.glob("link_to_a/**.txt")(visitOptions = File.VisitOptions.follow)
+    val p1s = globTree.glob("link_to_a/**.txt", visitOptions = File.VisitOptions.follow)
     verify(p1s, refPaths, globTree)
 
     val p2s = globTree.glob("link_to_a/**.txt").toSeq
     assert(p2s.isEmpty)
 
-    val p3s = testDir.glob("globtree/link_to_a/**.txt")(visitOptions = File.VisitOptions.follow)
+    val p3s = testDir.glob("globtree/link_to_a/**.txt", visitOptions = File.VisitOptions.follow)
     verify(p3s, refPaths, globTree)
 
     val p4s = testDir.glob("globtree/link_to_a/**.txt")
@@ -322,7 +322,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "b/b.txt",
       "b/a/ba.txt"
     )
-    val paths = globTree.glob(".*" + separator + ".*\\.txt")(File.PathMatcherSyntax.regex)
+    val paths = globTree.glob(".*" + separator + ".*\\.txt", syntax = File.PathMatcherSyntax.regex)
 
     verify(paths, refPaths, globTree)
   }
@@ -330,7 +330,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   it should "match the same if `Regex` is used" in {
     val pattern = (".*" + separator + ".*\\.txt").r
 
-    val pathsGlob  = globTree.glob(pattern.regex)(File.PathMatcherSyntax.regex)
+    val pathsGlob  = globTree.glob(pattern.regex, syntax = File.PathMatcherSyntax.regex)
     val pathsRegex = globTree.globRegex(pattern)
 
     verify(pathsRegex, pathsGlob.toSeq.map(_.toString), globTree)
@@ -345,16 +345,16 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "a/a2/a2.txt",
       "a/a2/x.txt"
     )
-    val paths = globTree.glob("a" + separator + ".*\\.txt")(File.PathMatcherSyntax.regex)
+    val paths = globTree.glob("a" + separator + ".*\\.txt", syntax = File.PathMatcherSyntax.regex)
 
     verify(paths, refPaths, globTree)
-    assert(globTree.glob("a/.*\\.txt", includePath = false)(File.PathMatcherSyntax.regex).isEmpty)
+    assert(globTree.glob("a/.*\\.txt", includePath = false, syntax = File.PathMatcherSyntax.regex).isEmpty)
   }
 
   it should "not use dir name as wildcard (e.g. dirname is .*)" in {
     assume(isUnixOS)
     val d     = regexWildcardPath // "path" / "with" / ".*"
-    val paths = d.glob("a\\.txt")(File.PathMatcherSyntax.regex)
+    val paths = d.glob("a\\.txt", syntax = File.PathMatcherSyntax.regex)
     assert(paths.isEmpty)
   }
 }

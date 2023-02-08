@@ -170,7 +170,7 @@ Dead simple I/O:
 val file = root/"tmp"/"test.txt"
 file.overwrite("hello")
 file.appendLine().append("world")
-assert(file.contentAsString == "hello\nworld")
+assert(file.contentAsString() == "hello\nworld")
 ```
 If you are someone who likes symbols, then the above code can also be written as:
 ```scala
@@ -197,7 +197,7 @@ val bytes: Array[Byte] = file.loadBytes
   .moveToDirectory(home/"Documents")
   .renameTo("princess_diary.txt")
   .changeExtensionTo(".md")
-  .lines
+  .lines()
 ```
 
 ### Resource APIs
@@ -217,9 +217,9 @@ val resource        : InputStream   = Resource.at[MyClass].getAsStream("foo.txt"
 ### Streams
 Various ways to slurp a file without loading its contents into memory:
  ```scala
-val bytes  : Iterator[Byte]            = file.bytes
-val chars  : Iterator[Char]            = file.chars
-val lines  : Iterator[String]          = file.lineIterator      //file.lines loads all lines in memory
+val bytes  : Iterator[Byte]            = file.bytes()
+val chars  : Iterator[Char]            = file.chars()
+val lines  : Iterator[String]          = file.lineIterator()     //file.lines loads all lines in memory
 ```
 Note: The above APIs can be traversed at most once e.g. `file.bytes` is a `Iterator[Byte]` which only allows `TraversableOnce`.
 To traverse it multiple times without creating a new iterator instance, convert it into some other collection e.g. `file.bytes.toStream`
@@ -239,14 +239,14 @@ s3.printWriter.println(s"Hello world") // gets written to both s1 and s2
 ### Encodings
 You can supply your own charset too for anything that does a read/write (it assumes `java.nio.charset.Charset.defaultCharset()` if you don't provide one):
 ```scala
-val content: String = file.contentAsString  // default charset
+val content: String = file.contentAsString()  // default charset
 
 // custom charset:
 import java.nio.charset.Charset
 file.contentAsString(charset = Charset.forName("US-ASCII"))
 
 //or simply using implicit conversion from Strings
-file.write("hello world")(charset = "US-ASCII")
+file.write("hello world", charset = "US-ASCII")
  ```
 
 Note: By default, `better-files` [correctly handles BOMs while decoding](core/src/main/scala/better/files/UnicodeCharset.scala).
@@ -258,7 +258,7 @@ file.contentAsString(charset = Charset.forName("UTF-8"))    // Default incorrect
 
 If you also wish to write BOMs while encoding, you would need to supply it as:
 ```scala
-file.write("hello world")(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
+file.write("hello world", charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
 ```
 
 ### Java serialization utils
@@ -268,19 +268,19 @@ case class Person(name: String, age: Int)
 val person = new Person("Chris", 24)
 
 // Write
-file.newOutputStream.asObjectOutputStream.serialize(obj).flush()
+file.newOutputStream().asObjectOutputStream.serialize(obj).flush()
 
 // Read
-val person2 = file.newInputStream.asObjectInputStream.deserialize[Person]
+val person2 = file.newInputStream().asObjectInputStream.deserialize[Person]
 assert(person == person2)
 
 // Read using custom class loader:
-file.newInputStream.asObjectInputStreamUsingClassLoader(classLoader = myClassLoader).deserialize[Person]
+file.newInputStream().asObjectInputStreamUsingClassLoader(classLoader = myClassLoader).deserialize[Person]
 ```
 
 The above can be simply written as:
 ```scala
-val person2: Person = file.writeSerialized(person).readDeserialized[Person]()
+val person2: Person = file.writeSerialized(person).readDeserialized()
 assert(person == person2)
 ```
 
@@ -291,37 +291,37 @@ val file: File = tmp / "hello.txt"
 val javaFile     : java.io.File                 = file.toJava
 val uri          : java.net.URI                 = file.uri
 val url          : java.net.URL                 = file.url
-val reader       : java.io.BufferedReader       = file.newBufferedReader
-val outputstream : java.io.OutputStream         = file.newOutputStream
-val writer       : java.io.BufferedWriter       = file.newBufferedWriter
-val inputstream  : java.io.InputStream          = file.newInputStream
+val reader       : java.io.BufferedReader       = file.newBufferedReader()
+val outputstream : java.io.OutputStream         = file.newOutputStream()
+val writer       : java.io.BufferedWriter       = file.newBufferedWriter()
+val inputstream  : java.io.InputStream          = file.newInputStream()
 val path         : java.nio.file.Path           = file.path
 val fs           : java.nio.file.FileSystem     = file.fileSystem
-val channel      : java.nio.channel.FileChannel = file.newFileChannel
-val ram          : java.io.RandomAccessFile     = file.newRandomAccess
-val fr           : java.io.FileReader           = file.newFileReader
+val channel      : java.nio.channel.FileChannel = file.newFileChannel()
+val ram          : java.io.RandomAccessFile     = file.newRandomAccess()
+val fr           : java.io.FileReader           = file.newFileReader()
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
-val printer      : java.io.PrintWriter          = file.newPrintWriter
+val printer      : java.io.PrintWriter          = file.newPrintWriter()
 ```
 The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits.html) to above classes e.g.:
 ```scala
-file1.reader > file2.writer       // pipes a reader to a writer
+file1.reader() > file2.writer ()      // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
 src.pipeTo(sink)                  // if you don't like symbols
 
-val bytes   : Iterator[Byte]        = inputstream.bytes
-val bis     : BufferedInputStream   = inputstream.buffered
-val bos     : BufferedOutputStream  = outputstream.buffered
-val reader  : InputStreamReader     = inputstream.reader
-val writer  : OutputStreamWriter    = outputstream.writer
-val printer : PrintWriter           = outputstream.printWriter
-val br      : BufferedReader        = reader.buffered
-val bw      : BufferedWriter        = writer.buffered
-val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer
-val str     : String                = inputstream.asString  //Read a string from an InputStream
-val in      : InputStream           = str.inputStream
-val reader  : Reader                = str.reader
-val lines   : Seq[String]           = str.lines
+val bytes   : Iterator[Byte]        = inputstream.bytes()
+val bis     : BufferedInputStream   = inputstream.buffered()
+val bos     : BufferedOutputStream  = outputstream.buffered()
+val reader  : InputStreamReader     = inputstream.reader()
+val writer  : OutputStreamWriter    = outputstream.writer()
+val printer : PrintWriter           = outputstream.printWriter()
+val br      : BufferedReader        = reader.buffered()
+val bw      : BufferedWriter        = writer.buffered()
+val mm      : MappedByteBuffer      = fileChannel.toMappedByteBuffer()
+val str     : String                = inputstream.asString()  //Read a string from an InputStream
+val in      : InputStream           = str.inputStream()
+val reader  : Reader                = str.reader()
+val lines   : Seq[String]           = str.lines()
 ```
 `better-files` also supports [certain conversions that are not supported out of the box by the JDK](https://stackoverflow.com/questions/62241/how-to-convert-a-reader-to-inputstream-and-a-writer-to-outputstream)
 
@@ -331,7 +331,7 @@ No need to port [this](http://docs.oracle.com/javase/tutorial/essential/io/find.
 val dir = "src"/"test"
 val matches: Iterator[File] = dir.glob("**/*.{java,scala}")
 // above code is equivalent to:
-dir.listRecursively.filter(f => f.extension == Some(".java") || f.extension == Some(".scala"))
+dir.listRecursively().filter(f => f.extension == Some(".java") || f.extension == Some(".scala"))
 ```
 
 You can even use more advanced regex syntax instead of [glob syntax](http://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob):
@@ -371,17 +371,17 @@ file.setOwner(user: String)      // chown user file
 file.setGroup(group: String)     // chgrp group file
 Seq(file1, file2) `>:` file3     // same as cat file1 file2 > file3 (must import import better.files.Dsl.SymbolicOperations)
 Seq(file1, file2) >>: file3      // same as cat file1 file2 >> file3 (must import import better.files.Dsl.SymbolicOperations)
-file.isReadLocked; file.isWriteLocked; file.isLocked
-File.numberOfOpenFileDescriptors        // number of open file descriptors
+file.isReadLocked(); file.isWriteLocked(); file.isLocked()
+File.numberOfOpenFileDescriptors()        // number of open file descriptors
 ```
 
 ### Checksums
 One liner checksum for files:
 ```scala
-file.md5 // equivalent to file.checksum("md5")
-file.sha1
-file.sha256
-file.sha512
+file.md5() // equivalent to file.checksum("md5")
+file.sha1()
+file.sha256()
+file.sha512()
 ```
 Note: The above also works for directories (it recursively computes for each file in the directory).
 
@@ -460,19 +460,19 @@ gzip(file)(targetGZipFile)
 Query various file attributes e.g.:
 ```scala
 file.name       // simpler than java.io.File#getName
-file.extension
-file.contentType
-file.lastModifiedTime     // returns JSR-310 time
-file.owner
-file.group
-file.isDirectory; file.isSymbolicLink; file.isRegularFile
-file.isHidden
+file.extension()
+file.contentType()
+file.lastModifiedTime ()    // returns JSR-310 time
+file.owner()
+file.group()
+file.isDirectory(); file.isSymbolicLink(); file.isRegularFile()
+file.isHidden()
 file.hide(); file.unhide()
-file.isOwnerExecutable; file.isGroupReadable // etc. see file.permissions
-file.size                 // for a directory, computes the directory size
-file.posixAttributes; file.dosAttributes  // see file.attributes
-file.isEmpty      // true if file has no content (or no children if directory) or does not exist
-file.isParentOf; file.isChildOf; file.isSiblingOf; file.siblings
+file.isOwnerExecutable(); file.isGroupReadable() // etc. see file.permissions
+file.size()                 // for a directory, computes the directory size
+file.posixAttributes(); file.dosAttributes()  // see file.attributes
+file.isEmpty(); file.nonEmpty()      // true if file has no content (or no children if directory) or does not exist and vice-versa
+file.isParentOf(); file.isChildOf(); file.isSiblingOf(); file.siblings()
 file("dos:system") = true  // set custom meta-data for file (similar to Files.setAttribute)
 ```
 All the above APIs let you specify the [`LinkOption`](http://docs.oracle.com/javase/8/docs/api/java/nio/file/LinkOption.html) either directly:
@@ -489,12 +489,12 @@ file.isDirectory(File.LinkOptions.noFollow)
 import java.nio.file.attribute.PosixFilePermission
 file.addPermission(PosixFilePermission.OWNER_EXECUTE)      // chmod +X file
 file.removePermission(PosixFilePermission.OWNER_WRITE)     // chmod -w file
-assert(file.permissionsAsString == "rw-r--r--")
+assert(file.permissionsAsString() == "rw-r--r--")
 
 // The following are all equivalent:
 assert(file.permissions contains PosixFilePermission.OWNER_EXECUTE)
 assert(file.testPermission(PosixFilePermission.OWNER_EXECUTE))
-assert(file.isOwnerExecutable)
+assert(file.isOwnerExecutable())
 ```
 
 ### File comparison
@@ -545,7 +545,7 @@ File("big-data.csv").gzipTo(File("big-data.csv.gz"))
 File("big-data.csv.gz").unGzipTo(File("big-data.csv"))
 
 // GZIP stream handling:
-File("countries.gz").newInputStream.asGzipInputStream().lines.take(10).foreach(println)
+File("countries.gz").newInputStream().asGzipInputStream().lines.take(10).foreach(println)
 
 def write(out: OutputStream, countries: Seq[String]) =
   out.asGzipOutputStream().printWriter().printLines(countries).close()
@@ -555,31 +555,31 @@ def write(out: OutputStream, countries: Seq[String]) =
 Auto-close Java closeables:
 ```scala
 for {
-  in <- file1.newInputStream.autoClosed
-  out <- file2.newOutputStream.autoClosed
+  in <- file1.newInputStream().autoClosed
+  out <- file2.newOutputStream().autoClosed
 } in.pipeTo(out)
 // The input and output streams are auto-closed once out of scope
 ```
 `better-files` provides convenient managed versions of all the Java closeables e.g. instead of writing:
 ```scala
 for {
- reader <- file.newBufferedReader.autoClosed
+ reader <- file.newBufferedReader().autoClosed
 } foo(reader)
 ```
 You can write:
 ```scala
 for {
- reader <- file.bufferedReader    // returns Dispose[BufferedReader]
+ reader <- file.bufferedReader()    // returns Dispose[BufferedReader]
 } foo(reader)
 
 // or simply:
-file.bufferedReader.foreach(foo)
+file.bufferedReader().foreach(foo)
 ```
 
 Similarly:
 ```scala
 for {
- reader <- file.bufferedReader
+ reader <- file.bufferedReader()
 } yield foo(reader)
 
 // Simpler
@@ -594,7 +594,7 @@ If `foo` itself is lazy and depends on `reader` being open, you should `flatMap`
 def lines(reader: BufferedReader): Iterator[String] = ???
 
 for {
-  reader <- file.bufferedReader
+  reader <- file.bufferedReader()
   line <- lines(reader)
 } yield line
 

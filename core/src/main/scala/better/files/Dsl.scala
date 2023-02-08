@@ -43,20 +43,18 @@ object Dsl {
       file.appendLines(line)(charset)
 
     def <(
-        text: String
-    )(implicit
+        text: String,
         openOptions: File.OpenOptions = File.OpenOptions.default,
         charset: Charset = DefaultCharset
     ): file.type =
-      file.write(text)(openOptions, charset)
+      file.write(text, openOptions, charset)
 
     def `>:`(
-        text: String
-    )(implicit
+        text: String,
         openOptions: File.OpenOptions = File.OpenOptions.default,
         charset: Charset = DefaultCharset
     ): file.type =
-      file.write(text)(openOptions, charset)
+      file.write(text, openOptions, charset)
 
     def `!`(implicit charset: Charset = DefaultCharset): String =
       file.contentAsString(charset)
@@ -69,7 +67,7 @@ object Dsl {
   }
 
   def cp(from: File, to: File): File = {
-    if (to.isDirectory) {
+    if (to.isDirectory()) {
       from.copyToDirectory(to)
     } else {
       from.copyTo(to, overwrite = true)
@@ -77,10 +75,10 @@ object Dsl {
   }
 
   def mv(from: File, to: File): File = {
-    if (to.isDirectory) {
+    if (to.isDirectory()) {
       from.moveToDirectory(to)
     } else {
-      from.moveTo(to)(File.CopyOptions(overwrite = true))
+      from.moveTo(to, File.CopyOptions(overwrite = true))
     }
   }
 
@@ -106,7 +104,7 @@ object Dsl {
     ls(file)
 
   def ls_r(file: File): Iterator[File] =
-    file.listRecursively
+    file.listRecursively()
 
   def touch(file: File): File =
     file.touch()
@@ -115,16 +113,16 @@ object Dsl {
     file.createDirectory()
 
   def md5(file: File): String =
-    file.md5
+    file.md5()
 
   def sha1(file: File): String =
-    file.sha1
+    file.sha1()
 
   def sha256(file: File): String =
-    file.sha256
+    file.sha256()
 
   def sha512(file: File): String =
-    file.sha512
+    file.sha512()
 
   def mkdirs(file: File): File =
     file.createDirectories()
@@ -151,17 +149,15 @@ object Dsl {
     file.removePermission(permission)
 
   def stat(file: File): PosixFileAttributes =
-    file.posixAttributes
+    file.posixAttributes()
 
-  def unzip(zipFile: File)(destination: File)(implicit charset: Charset = DefaultCharset): destination.type =
-    zipFile.unzipTo(destination)(charset)
+  def unzip(zipFile: File)(destination: File, charset: Charset = DefaultCharset): File = // TODO: return destination.type here?
+    zipFile.unzipTo(destination, charset = charset)
 
   def zip(
       files: File*
-  )(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION)(implicit
-      charset: Charset = DefaultCharset
-  ): destination.type =
-    destination.zipIn(files.iterator, compressionLevel)(charset)
+  )(destination: File, compressionLevel: Int = Deflater.DEFAULT_COMPRESSION, charset: Charset = DefaultCharset): destination.type =
+    destination.zipIn(files.iterator, compressionLevel, charset)
 
   def ungzip(gzipFile: File)(destination: File): File =
     gzipFile.unGzipTo(destination)

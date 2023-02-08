@@ -268,10 +268,10 @@ class DisposeSpec extends CommonSpec {
 
       val expected = data.tail
 
-      assert(f.contentAsString === expected.mkString("", "\n", "\n"))
+      assert(f.contentAsString() === expected.mkString("", "\n", "\n"))
 
       val actual = for {
-        reader <- f.bufferedReader
+        reader <- f.bufferedReader()
         line   <- reader.lines().toAutoClosedIterator.toList
       } yield line
 

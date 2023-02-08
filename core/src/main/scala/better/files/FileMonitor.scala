@@ -20,7 +20,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
     * @param target
     * @return
     */
-  protected[this] def reactTo(target: File) = root.isDirectory || root.isSamePathAs(target)
+  protected[this] def reactTo(target: File) = root.isDirectory() || root.isSamePathAs(target)
 
   protected[this] def process(key: WatchKey) = {
     val path = key.watchable().asInstanceOf[Path]
@@ -43,10 +43,10 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
 
   protected[this] def watch(file: File, depth: Int): Unit = {
     def toWatch: Iterator[File] =
-      if (file.isDirectory) {
-        file.walk(depth).filter(f => f.isDirectory && f.exists)
+      if (file.isDirectory()) {
+        file.walk(depth).filter(f => f.isDirectory() && f.exists())
       } else {
-        when(file.exists)(file.parent).iterator // There is no way to watch a regular file; so watch its parent instead
+        when(file.exists())(file.parent).iterator // There is no way to watch a regular file; so watch its parent instead
       }
     try {
       toWatch.foreach(f => Try[Unit](f.register(service)).recover { case e => onException(e) }.get)
