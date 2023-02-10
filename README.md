@@ -663,7 +663,7 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
-The [shapeless-scanner](core/src/test/scala/better/files/ShapelessScannerSpec.scala) lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
+The [shapeless-scanner](core/src/test/scala-2/better/files/ShapelessScannerSpec.scala) lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
 ```scala
 val in = Scanner("""
   12 Bob True
@@ -713,7 +713,7 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/File.scala#1100):
+`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/File.scala#L1400):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File, count: Int) = println(s"$file got created")

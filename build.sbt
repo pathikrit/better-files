@@ -59,12 +59,8 @@ lazy val core = (project in file("core"))
       Dependencies.commonsio,
       Dependencies.fastjavaio
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, _)) =>
-        Seq(
-          Dependencies.shapeless,
-          Dependencies.scalaReflect(scalaVersion.value)
-        )
-      case _ => Seq.empty
+      case Some((2, _)) => Seq(Dependencies.shapeless, Dependencies.scalaReflect(scalaVersion.value))
+      case _            => Nil
     })
   )
 
@@ -73,12 +69,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name        := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += (CrossVersion.partialVersion(scalaVersion.value) match {
-      // scala-steward:off
-      case Some((2, 11)) => "com.typesafe.akka" %% "akka-actor" % "2.5.32"
-      // scala-steward:on
-      case _ => Dependencies.akka
-    })
+    libraryDependencies += Dependencies.akka(CrossVersion.partialVersion(scalaVersion.value))
   )
   .dependsOn(core % "test->test;compile->compile")
 

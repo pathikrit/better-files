@@ -14,7 +14,8 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 -----------
 
 ## v4.0.0 [WIP]
-* [x] [PR #584](https://github.com/pathikrit/better-files/pull/621): Remove implicit options from all APIs
+* [x] [PR #584](https://github.com/pathikrit/better-files/pull/584): Remove implicit options from all APIs.
+  - Migration Guide: Some API calls would need extra parens e.g. `file.size` is now `file.size()`       
 * [ ] [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [ ] [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [ ] [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs
