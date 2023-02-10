@@ -24,7 +24,7 @@ lazy val commonSettings = Seq(
   crossVersion       := CrossVersion.binary,
   scalacOptions      := myScalacOptions(scalaVersion.value, scalacOptions.value),
   Compile / doc / scalacOptions += "-groups",
-  libraryDependencies += Dependencies.scalatest,
+  libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value),
   Compile / compile := (Compile / compile).dependsOn(formatAll).value,
   Test / test       := (Test / test).dependsOn(checkFormat).value,
   formatAll := {
@@ -54,14 +54,7 @@ lazy val core = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(
     name        := repo,
-    description := "Simple, safe and intuitive I/O in Scala",
-    libraryDependencies ++= Seq(
-      Dependencies.commonsio,
-      Dependencies.fastjavaio
-    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, _)) => Seq(Dependencies.shapeless, Dependencies.scalaReflect(scalaVersion.value))
-      case _            => Nil
-    })
+    description := "Simple, safe and intuitive I/O in Scala"
   )
 
 lazy val akka = (project in file("akka"))
@@ -69,7 +62,7 @@ lazy val akka = (project in file("akka"))
   .settings(
     name        := s"$repo-akka",
     description := "Reactive file watcher using Akka actors",
-    libraryDependencies += Dependencies.akka(CrossVersion.partialVersion(scalaVersion.value))
+    libraryDependencies += Dependencies.akka(scalaVersion.value)
   )
   .dependsOn(core % "test->test;compile->compile")
 
