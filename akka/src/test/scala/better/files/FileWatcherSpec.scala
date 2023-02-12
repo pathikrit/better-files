@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 class FileWatcherSpec extends CommonSpec {
   "file watcher" should "watch directories" in {
-    assume(isCI)
+    assume(isLinux)
     File.usingTemporaryDirectory() { dir =>
       (dir / "a" / "b" / "c.txt").createIfNotExists(createParents = true)
 
