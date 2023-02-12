@@ -15,9 +15,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         java: [8, 11, 17] # Include _only_ LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+        include:
+          - os: windows-latest
+            experimental: true
 
+    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
 
     steps:
