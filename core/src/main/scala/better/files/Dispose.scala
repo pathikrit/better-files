@@ -6,9 +6,7 @@ import scala.collection.GenTraversableOnce
 import scala.util.Try
 import scala.util.control.NonFatal
 
-/** A typeclass to denote a disposable resource
-  * @tparam A
-  */
+/** A typeclass to denote a disposable resource */
 trait Disposable[-A] {
   def dispose(resource: A): Unit
 

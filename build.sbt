@@ -20,7 +20,7 @@ inThisBuild(
 lazy val commonSettings = Seq(
   organization       := s"com.github.$username",
   scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"), // when you change this line, also change .github/workflows/scala.yml
+  crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"), // when you change this line, also change .github/workflows/test.yml
   crossVersion       := CrossVersion.binary,
   scalacOptions      := myScalacOptions(scalaVersion.value, scalacOptions.value),
   Compile / doc / scalacOptions += "-groups",
