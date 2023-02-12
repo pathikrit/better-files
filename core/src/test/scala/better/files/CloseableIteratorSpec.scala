@@ -3,37 +3,44 @@ package better.files
 import scala.util.Try
 
 class CloseableIteratorSpec extends CommonSpec {
-  "iterators" can "handle completions" in {
+  class TestIterator(n: Int) {
+    var isClosed = false
+
+    def vanilla() = (1 to n).toIterator
+
+    val iterator = CloseableIterator(
+      vanilla(),
+      () => {
+        assert(!isClosed, "Already closed!")
+        isClosed = true
+      }
+    )
+  }
+
+  "closeable iterators" should "close" in {
     def check[A](name: Symbol, f: Iterator[Int] => A) = withClue(name) {
-      var closed     = false
-      def iterator() = (1 to 10).toIterator
-      val it = CloseableIterator(
-        iterator(),
-        () => {
-          assert(!closed, "Already closed!")
-          closed = true
-        }
-      )
-      f(it) match {
+      val n    = 10
+      val test = new TestIterator(n)
+      f(test.iterator) match {
         case result: Iterator[_] => // Test when we make new iterators e.g. .map()
-          assert(!closed, "We just made an iterator, closed must not be called yet")
-          (1 to 4).foreach(_ => it.hasNext) // Call hasNext bunch of times to make sure we call close() atmost once
-          assert(!closed)
+          assert(!test.isClosed, "We just made an iterator, closed must not be called yet")
+          (1 to 4).foreach(_ => test.iterator.hasNext) // Call hasNext bunch of times to make sure we call close() atmost once
+          assert(!test.isClosed)
           val _ = result.asInstanceOf[Iterator[A]].size // Trigger onComplete
 
         case (l: Iterator[_], r: Iterator[_]) => // Test .partition(), .span(), .duplicate() etc.
-          assert(!closed, "Creating 2 iterators must not trigger close")
+          assert(!test.isClosed, "Creating 2 iterators must not trigger close")
           assert(Try(l.isEmpty).isSuccess)
-          assert(!closed, "Atleast l or r must be completed to trigger close")
+          assert(!test.isClosed, "Atleast l or r must be completed to trigger close")
           assert(Try(r.isEmpty).isSuccess)
-          assert(!closed, "Atleast l or r must be completed to trigger close")
+          assert(!test.isClosed, "Atleast l or r must be completed to trigger close")
           val _ = l.size + r.size // Triggers completion
 
         case result =>
-          (1 to 4).foreach(_ => it.hasNext) // Call hasNext bunch of times to make sure we call close() atmost once
-          assert(result == f(iterator()), "Different result found over native iterator")
+          (1 to 4).foreach(_ => test.iterator.hasNext) // Call hasNext bunch of times to make sure we call close() atmost once
+          assert(result == f(test.vanilla()), "Different result found over vanilla iterator")
       }
-      assert(closed)
+      assert(test.isClosed)
     }
 
     check('zipWithIndex, _.zipWithIndex)
@@ -95,5 +102,23 @@ class CloseableIteratorSpec extends CommonSpec {
     check('appendAndTakeMore, it => (it ++ Iterator(11, 12, 13)).take(11))
   }
 
-  // TODO: Check for multi iterator
+  "closeable iterators" can "be chained" in {
+    def check[A](name: Symbol, f: (Iterator[Int], Iterator[Int]) => Iterator[A]) = withClue(name) {
+      val n              = 10
+      val t1             = new TestIterator(n)
+      val t2             = new TestIterator(2 * n)
+      val resultIterator = f(t1.iterator, t2.iterator)
+      assert(!t1.isClosed && !t2.isClosed, "Cannot be closed before evaluation")
+      val result = resultIterator.toList // Trigger completion
+      assert(t1.isClosed, "First close() was not invoked")
+      assert(t2.isClosed, "Second close() was not invoked")
+      assert(result === f(t1.vanilla(), t2.vanilla()).toList, "Different result found over vanilla iterator")
+    }
+
+    check('append, _ ++ _)
+    check('zip, _.zip(_))
+    check('zipWithTake, (t1, t2) => t1.take(5).zip(t2.take(3)))
+    check('zipAll, _.zipAll(_, -100, 100))
+    check('forComprehension, (t1, t2) => for { i <- t1; j <- t2 } yield i + j)
+  }
 }

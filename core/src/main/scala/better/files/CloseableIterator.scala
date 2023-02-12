@@ -23,12 +23,15 @@ trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
   override def indexOf[B >: A](elem: B, from: Int)    = evalAndClose(super.indexOf(elem, from))
 
   override def ++[B >: A](that: => GenTraversableOnce[B])     = closeInTheEnd(super.++(that))
-  override def zip[B](that: Iterator[B]): Iterator[(A, B)]    = closeInTheEnd(super.zip(that))
   override def takeWhile(p: A => Boolean)                     = closeInTheEnd(super.takeWhile(p))
   override protected def sliceIterator(from: Int, until: Int) = closeInTheEnd(super.sliceIterator(from, until))
   override def drop(n: Int) = slice(n, Int.MaxValue) // This is because of a bad implementation in Scala's standard library
 
-//  override def patch[B >: A](from: Int, patchElems: Iterator[B], replaced: Int): Iterator[B] = super.patch(from, patchElems, replaced)
+  override def zip[B](that: Iterator[B]) =
+    that match {
+      case other: CloseableIterator[_] => CloseableIterator(super.zip(that), () => other.evalAndClose(this.closeOnce()))
+      case _                           => closeInTheEnd(super.zip(that))
+    }
 
   private val isClosed  = new AtomicBoolean(false)
   def closeOnce(): Unit = if (!isClosed.getAndSet(true)) close()
