@@ -131,6 +131,10 @@ class CloseableIteratorSpec extends CommonSpec {
       val (csv, other) = dir.listRecursively().partition(_.extension().contains(".csv"))
       assert(csv.size == 2)
       assert(other.size == 1)
+
+      val (ones, twos) = dir.glob("*.csv").partition(_.nameWithoutExtension == "1")
+      assert(ones.size == 1)
+      assert(twos.size == 1)
     }
   }
 }
