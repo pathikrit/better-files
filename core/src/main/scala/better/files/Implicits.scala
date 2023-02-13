@@ -412,10 +412,10 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   implicit class JStreamExtensions[A](stream: JStream[A]) {
 
     /** Closes this stream when iteration is complete
-      * It will NOT close the stream if it is not depleted!
+      * @see CloseableIterator
       */
     def toAutoClosedIterator: Iterator[A] =
-      stream.autoClosed.flatMap(_.iterator().asScala)
+      CloseableIterator(stream.iterator().asScala, stream.close)
   }
 
   private[files] implicit class OrderingExtensions[A](order: Ordering[A]) {
