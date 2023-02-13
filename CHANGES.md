@@ -14,8 +14,18 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 -----------
 
 ## v4.0.0 [WIP]
+* [ ] [Issue #589](https://github.com/pathikrit/better-files/issues/589): Methods that do I/O has parens `()`
+  - **Migration Guide**: Some API calls would need extra parens e.g. `file.size` is now `file.size()` and `dir.list` is now `dir.list()`
 * [x] [PR #584](https://github.com/pathikrit/better-files/pull/584): Remove implicit options from all APIs.
-  - Migration Guide: Some API calls would need extra parens e.g. `file.size` is now `file.size()`       
+  - **Migration Guide**: Instead of implicit params like `implicit charset: Charset`, it is now explicitly passed in:
+    ```scala
+    // Before
+    def appendText(text: String)(implicit charset: Charset = DefaultCharset)
+    
+    // Now
+    def appendText(text: String, charset: Charset = DefaultCharset)
+    ```
+* [ ] [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
 * [ ] [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [ ] [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * [ ] [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs

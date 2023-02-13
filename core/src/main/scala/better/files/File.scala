@@ -20,8 +20,6 @@ import scala.util.matching.Regex
 /** Scala wrapper around java.nio.files.Path */
 @SerialVersionUID(3435L)
 class File private (val path: Path)(implicit val fileSystem: FileSystem = path.getFileSystem) extends Serializable {
-  // TODO: LinkOption?
-
   def pathAsString: String =
     path.toString
 
@@ -291,13 +289,17 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   }
 
   /** For large number of lines that may not fit in memory, use printLines */
-  def appendLines(lines: String*)(implicit charset: Charset = DefaultCharset): this.type = {
+  def appendLines(lines: Seq[String], charset: Charset = DefaultCharset): this.type = {
     Files.write(path, lines.asJava, charset, File.OpenOptions.append: _*)
     this
   }
 
+  /** If you need to specify a charset, use the above version */
+  def appendLines(lines: String*): this.type =
+    appendLines(lines)
+
   def appendLine(line: String = "", charset: Charset = DefaultCharset): this.type =
-    appendLines(line)(charset)
+    appendLines(Seq(line), charset)
 
   def append(text: String, charset: Charset = DefaultCharset): this.type =
     appendByteArray(text.getBytes(charset))
@@ -355,7 +357,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     new RandomAccessFile(toJava, mode.value)
 
   def randomAccess(mode: File.RandomAccessMode = File.RandomAccessMode.read): Dispose[RandomAccessFile] =
-    newRandomAccess(mode).autoClosed // TODO: Mode enum?
+    newRandomAccess(mode).autoClosed
 
   def newBufferedReader(charset: Charset = DefaultCharset): BufferedReader =
     Files.newBufferedReader(path, charset)
@@ -686,7 +688,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       maxDepth: Int = Int.MaxValue,
       visitOptions: File.VisitOptions = File.VisitOptions.default
   ): Iterator[File] =
-    Files.walk(path, maxDepth, visitOptions: _*) // TODO: that ignores I/O errors?
+    Files.walk(path, maxDepth, visitOptions: _*)
 
   def pathMatcher(syntax: File.PathMatcherSyntax, includePath: Boolean)(pattern: String): PathMatcher =
     syntax(this, pattern, includePath)
@@ -911,13 +913,14 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   }
 
   /** Copy this file to destination similar to unix cp command
+    *
     * @see copyToDirectory() if you want to copy _into_ another directory
     */
-  def copyTo(destination: File, overwrite: Boolean = false)(implicit
-      copyOptions: File.CopyOptions = File.CopyOptions(overwrite)
-  ): destination.type = {
+  def copyTo(destination: File, overwrite: Boolean = false): destination.type =
+    copyTo(destination, File.CopyOptions(overwrite))
 
-    if (isDirectory()) { // TODO: maxDepth?
+  def copyTo(destination: File, copyOptions: File.CopyOptions): destination.type = {
+    if (isDirectory()) {
       Files.walkFileTree(
         path,
         new SimpleFileVisitor[Path] {
@@ -946,11 +949,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def copyToDirectory(
       directory: File,
       overwrite: Boolean = false,
-      linkOptions: File.LinkOptions = File.LinkOptions.default,
-      copyOptions: File.CopyOptions = File.CopyOptions.default
+      linkOptions: File.LinkOptions = File.LinkOptions.default
   ): File = {
     require(directory.isDirectory(linkOptions), s"$directory must be a directory")
-    copyTo(directory / this.name, overwrite)(copyOptions)
+    copyTo(directory / this.name, overwrite)
   }
 
   def symbolicLinkTo(
@@ -1174,8 +1176,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     */
   def toTemporary: Dispose[File] =
     new Dispose(this)(Disposable.fileDisposer)
-
-  // TODO: add features from https://github.com/sbt/io
 }
 
 object File {

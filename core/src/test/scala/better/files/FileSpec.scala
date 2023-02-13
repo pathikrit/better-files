@@ -29,7 +29,7 @@ class FileSpec extends CommonSpec {
     }
   }
 
-  var testRoot: File = _ // TODO: Get rid of mutable test vars
+  var testRoot: File = _
   var fa: File       = _
   var a1: File       = _
   var a2: File       = _
@@ -173,13 +173,12 @@ class FileSpec extends CommonSpec {
     val lines           = Seq("Line 1", "Line 2")
     val expectedContent = lines.mkString(start = "", sep = "\n", end = "\n")
     File.temporaryFile() foreach { file =>
-      file.appendLines(lines: _*)(charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
+      file.appendLines(lines, charset = UnicodeCharset("UTF-8", writeByteOrderMarkers = true))
       file.contentAsString(charset = "UTF-8") should not equal expectedContent
       file.contentAsString() shouldEqual expectedContent
     }
   }
 
-// TODO: Do not depend on self-referential tests
 //  it should "glob" in {
 //    assume(isCI)
 //    a1.glob("*.txt").map(_.name).toSeq.sorted shouldEqual Seq("t1.txt", "t2.txt")

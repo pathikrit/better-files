@@ -31,10 +31,10 @@ object Dsl {
       f(file)
 
     def <<(line: String)(implicit charset: Charset = DefaultCharset): file.type =
-      file.appendLines(line)(charset)
+      file.appendLine(line, charset)
 
     def >>:(line: String)(implicit charset: Charset = DefaultCharset): file.type =
-      file.appendLines(line)(charset)
+      file.appendLine(line, charset)
 
     def <(
         text: String,

@@ -18,8 +18,6 @@ import java.net.URI
 /** Container for various implicits */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
 
-  // TODO: Rename all Ops to Extensions
-
   implicit class StringInterpolations(sc: StringContext) {
     def file(args: Any*): File =
       value(args).toFile

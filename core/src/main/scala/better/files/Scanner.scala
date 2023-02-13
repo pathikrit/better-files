@@ -58,7 +58,7 @@ object Scanner {
       override def close()      = reader.close()
     }
 
-  trait Read[A] { // TODO: Move to own subproject when this is fixed https://github.com/typelevel/cats/issues/932
+  trait Read[A] {
     def apply(s: String): A
   }
 
@@ -71,7 +71,7 @@ object Scanner {
     trait Implicits {
       implicit val stringRead: Read[String]             = Read(identity)
       implicit val booleanRead: Read[Boolean]           = Read(_.toBoolean)
-      implicit val byteRead: Read[Byte]                 = Read(_.toByte) // TODO: https://issues.scala-lang.org/browse/SI-9706
+      implicit val byteRead: Read[Byte]                 = Read(_.toByte)
       implicit val shortRead: Read[Short]               = Read(_.toShort)
       implicit val intRead: Read[Int]                   = Read(_.toInt)
       implicit val longRead: Read[Long]                 = Read(_.toLong)
