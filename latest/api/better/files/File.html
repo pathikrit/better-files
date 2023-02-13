@@ -524,9 +524,9 @@
       
       
     </li><li name="better.files.File#appendLines" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="appendLines(lines:String*)(implicitcharset:java.nio.charset.Charset):File.this.type"></a><a id="appendLines(String*)(Charset):File.this.type"></a>
+      <a id="appendLines(lines:String*):File.this.type"></a><a id="appendLines(String*):File.this.type"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#appendLines(lines:String*)(implicitcharset:java.nio.charset.Charset):File.this.type" title="Permalink">
+      <a href="../../better/files/File.html#appendLines(lines:String*):File.this.type" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -535,7 +535,23 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">appendLines</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
+        <span class="name">appendLines</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.Predef.String">String</span>*</span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
+      </span>
+      
+      <p class="shortcomment cmt">If you need to specify a charset, use the above version</p>
+    </li><li name="better.files.File#appendLines" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="appendLines(lines:Seq[String],charset:java.nio.charset.Charset):File.this.type"></a><a id="appendLines(Seq[String],Charset):File.this.type"></a>
+      <span class="permalink">
+      <a href="../../better/files/File.html#appendLines(lines:Seq[String],charset:java.nio.charset.Charset):File.this.type" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">appendLines</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a>.this.type</span>
       </span>
       
       <p class="shortcomment cmt">For large number of lines that may not fit in memory, use printLines</p>
@@ -877,10 +893,10 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
       </span>
       
       <p class="shortcomment cmt">return the content type of the file e.g.</p><div class="fullcomment"><div class="comment cmt"><p>return the content type of the file e.g. text/html</p></div></div>
-    </li><li name="better.files.File#copyTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="copyTo(destination:better.files.File,overwrite:Boolean)(implicitcopyOptions:better.files.File.CopyOptions):destination.type"></a><a id="copyTo(File,Boolean)(CopyOptions):destination.type"></a>
+    </li><li name="better.files.File#copyTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="copyTo(destination:better.files.File,copyOptions:better.files.File.CopyOptions):destination.type"></a><a id="copyTo(File,CopyOptions):destination.type"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#copyTo(destination:better.files.File,overwrite:Boolean)(implicitcopyOptions:better.files.File.CopyOptions):destination.type" title="Permalink">
+      <a href="../../better/files/File.html#copyTo(destination:better.files.File,copyOptions:better.files.File.CopyOptions):destination.type" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -889,14 +905,14 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">copyTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="overwrite">overwrite: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="copyOptions">copyOptions: <a href="File$.html#CopyOptions=Seq[java.nio.file.CopyOption]" class="extmbr" name="better.files.File.CopyOptions">CopyOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.CopyOptions(overwrite)</a></span></span></span>)</span><span class="result">: <span class="extype" name="better.files.File.copyTo.destination">destination</span>.type</span>
+        <span class="name">copyTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="copyOptions">copyOptions: <a href="File$.html#CopyOptions=Seq[java.nio.file.CopyOption]" class="extmbr" name="better.files.File.CopyOptions">CopyOptions</a></span>)</span><span class="result">: <span class="extype" name="better.files.File.copyTo.destination">destination</span>.type</span>
       </span>
       
-      <p class="shortcomment cmt">Copy this file to destination similar to unix cp command</p><div class="fullcomment"><div class="comment cmt"><p>Copy this file to destination similar to unix cp command</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>copyToDirectory() if you want to copy _into_ another directory</p></span></dd></dl></div>
-    </li><li name="better.files.File#copyToDirectory" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="copyToDirectory(directory:better.files.File,overwrite:Boolean,linkOptions:better.files.File.LinkOptions,copyOptions:better.files.File.CopyOptions):better.files.File"></a><a id="copyToDirectory(File,Boolean,LinkOptions,CopyOptions):File"></a>
+      
+    </li><li name="better.files.File#copyTo" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="copyTo(destination:better.files.File,overwrite:Boolean):destination.type"></a><a id="copyTo(File,Boolean):destination.type"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#copyToDirectory(directory:better.files.File,overwrite:Boolean,linkOptions:better.files.File.LinkOptions,copyOptions:better.files.File.CopyOptions):better.files.File" title="Permalink">
+      <a href="../../better/files/File.html#copyTo(destination:better.files.File,overwrite:Boolean):destination.type" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -905,7 +921,25 @@ Note: This is lazy (returns an Iterator) and won't evaluate till we reify the it
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">copyToDirectory</span><span class="params">(<span name="directory">directory: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="overwrite">overwrite: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>, <span name="copyOptions">copyOptions: <a href="File$.html#CopyOptions=Seq[java.nio.file.CopyOption]" class="extmbr" name="better.files.File.CopyOptions">CopyOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.CopyOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
+        <span class="name">copyTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="overwrite">overwrite: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="better.files.File.copyTo.destination">destination</span>.type</span>
+      </span>
+      
+      <p class="shortcomment cmt">Copy this file to destination similar to unix cp command
+</p><div class="fullcomment"><div class="comment cmt"><p>Copy this file to destination similar to unix cp command
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>copyToDirectory() if you want to copy _into_ another directory</p></span></dd></dl></div>
+    </li><li name="better.files.File#copyToDirectory" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="copyToDirectory(directory:better.files.File,overwrite:Boolean,linkOptions:better.files.File.LinkOptions):better.files.File"></a><a id="copyToDirectory(File,Boolean,LinkOptions):File"></a>
+      <span class="permalink">
+      <a href="../../better/files/File.html#copyToDirectory(directory:better.files.File,overwrite:Boolean,linkOptions:better.files.File.LinkOptions):better.files.File" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">copyToDirectory</span><span class="params">(<span name="directory">directory: <a href="" class="extype" name="better.files.File">File</a></span>, <span name="overwrite">overwrite: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="linkOptions">linkOptions: <a href="File$.html#LinkOptions=Seq[java.nio.file.LinkOption]" class="extmbr" name="better.files.File.LinkOptions">LinkOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.LinkOptions.default</a></span></span></span>)</span><span class="result">: <a href="" class="extype" name="better.files.File">File</a></span>
       </span>
       
       <p class="shortcomment cmt">Copies this file into the given directory</p><div class="fullcomment"><div class="comment cmt"><p>Copies this file into the given directory</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the File referencing the new file created under destination</p></dd></dl></div>
