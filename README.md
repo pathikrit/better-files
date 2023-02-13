@@ -94,8 +94,8 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
 
-[githubActionsImg]: https://github.com/pathikrit/better-files/actions/workflows/build.yml/badge.svg
-[githubActionsLink]:https://github.com/pathikrit/better-files/actions/workflows/build.yml
+[githubActionsImg]: https://github.com/pathikrit/better-files/actions/workflows/build.yml/badge.svg?branch=master
+[githubActionsLink]:https://github.com/pathikrit/better-files/actions/workflows/build.yml?query=branch:master
 
 [codecovImg]: https://img.shields.io/codecov/c/github/pathikrit/better-files/master.svg
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
@@ -625,6 +625,18 @@ for {
 val lines: List[String] = using(file.newInputStream) { stream =>
   stream.lines.toList   // Must be eager so .toList
 }
+```
+
+Auto-closed instances also have a useful method to generate [self-closing iterators](core/src/main/scala/better/files/CloseableIterator.scala) that auto closes the parent resource on exhaustion:
+```scala
+val in = fine.newInputStream().autoClosed
+val lineIterator: Iterator[String] = in.iterate(_.lines) // This will auto close the underlying inputstream on exhaustion
+
+lineIterator.find(_ == "hello world") //This will auto close the stream if nothing is found OR if the item is found
+lineIterator.take(10).size //This will close the stream even if stream has >10 lines
+
+// If you don't want this auto closing behaviour
+lineIterator.nonClosing().take(10).size // This would leave stream open if it has >10 lines
 ```
 
 ### Scanner

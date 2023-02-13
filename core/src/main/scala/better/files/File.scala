@@ -85,7 +85,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       if (toLowerCase) extension.toLowerCase else extension
     }
 
-  private[this] def indexOfExtension(includeAll: Boolean) =
+  private[this] def indexOfExtension(includeAll: Boolean): Int =
     if (includeAll) name.indexOf(".") else name.lastIndexOf(".")
 
   /** Returns the extension if file is a regular file
@@ -203,7 +203,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
 
   /** Check if this directory contains this file
     *
-    * @param file
     * @param strict If strict is false, it would return true for self.contains(self)
     * @return true if this is a directory and it contains this file
     */
@@ -214,7 +213,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     contains(child)
 
   def bytes: Iterator[Byte] =
-    newInputStream().buffered.bytes // TODO: Dispose here?
+    newInputStream().buffered.bytes
 
   /** load bytes into memory - for large files you want to use @see bytes which uses an iterator */
   def loadBytes: Array[Byte] =
@@ -247,7 +246,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
 
   /** @return characters of this file */
   def chars(charset: Charset = DefaultCharset): Iterator[Char] =
-    newBufferedReader(charset).chars // TODO: Dispose here?
+    newBufferedReader(charset).chars
 
   /** Load all lines from this file
     * Note: Large files may cause an OutOfMemory in which case, use the streaming version @see lineIterator
@@ -258,11 +257,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     Files.readAllLines(path, charset).asScala
 
   /** @return number of lines in this file */
-  def lineCount(charset: Charset = DefaultCharset): Long =
-    Files.lines(path, charset).count()
+  def lineCount(charset: Charset = DefaultCharset): Int =
+    lineIterator(charset).size
 
   /** Iterate over lines in a file (auto-close stream on complete)
-    * NOTE: If the iteration is partial, it may leave a stream open
     * If you want partial iteration use @see lines()
     */
   def lineIterator(charset: Charset = DefaultCharset): Iterator[String] =
@@ -670,7 +668,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     isLocked(File.RandomAccessMode.readWrite, position, size, isShared)
 
   def list: Iterator[File] =
-    Files.list(path) // TODO: this needs to be closed
+    Files.list(path)
 
   def children: Iterator[File] = list
 
@@ -680,8 +678,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     walk(visitOptions = visitOptions).filterNot(isSamePathAs)
 
   /** Walk the directory tree recursively upto maxDepth
-    *
-    * @param maxDepth
     * @return List of children in BFS maxDepth level deep (includes self since self is at depth = 0)
     */
   def walk(

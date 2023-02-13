@@ -78,6 +78,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
         override def hasNext = f && it.hasNext
         override def next()  = it.next()
       }
+
+    /** Returns a non closing version of this iterator */
+    def nonClosing(): Iterator[A] = it match {
+      case c: CloseableIterator[A] => c.nonClosing()
+      case _                       => it
+    }
   }
 
   implicit class InputStreamExtensions(in: InputStream) {
@@ -176,7 +182,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
+      in.autoClosed.iterator(res => eofReader(res.read()).map(_.toByte))
 
     def byteArray: Array[Byte] = {
       for {
@@ -274,7 +280,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new ReaderInputStream(reader)(charset)
 
     def chars: Iterator[Char] =
-      new Dispose(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
+      reader.autoClosed.iterator(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderExtensions(reader: BufferedReader) {
@@ -296,7 +302,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class PathMatcherExtensions(matcher: PathMatcher) {
-    def matches(file: File, maxDepth: Int, visitOptions: File.VisitOptions = File.VisitOptions.default) =
+    def matches(file: File, maxDepth: Int, visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] =
       file.collectChildren(child => matcher.matches(child.path), maxDepth, visitOptions)
   }
 
@@ -316,9 +322,6 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     /** Correctly set the compression level
       * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
-      *
-      * @param level
-      * @return
       */
     def withCompressionLevel(level: Int): out.type = {
       out.setLevel(level)
@@ -410,10 +413,10 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   implicit class JStreamExtensions[A](stream: JStream[A]) {
 
     /** Closes this stream when iteration is complete
-      * It will NOT close the stream if it is not depleted!
+      * @see CloseableIterator
       */
     def toAutoClosedIterator: Iterator[A] =
-      stream.autoClosed.flatMap(_.iterator().asScala)
+      CloseableIterator(stream.iterator().asScala, stream.close)
   }
 
   private[files] implicit class OrderingExtensions[A](order: Ordering[A]) {

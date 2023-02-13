@@ -25,6 +25,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
     // Now
     def appendText(text: String, charset: Charset = DefaultCharset)
     ```
+* [x] [Issue #295](https://github.com/pathikrit/better-files/pull/587): `CloseableIterators` fixes resource leaks on partial iterations ([#270](https://github.com/pathikrit/better-files/issues/270), [#403](https://github.com/pathikrit/better-files/issues/403), [#553](https://github.com/pathikrit/better-files/issues/553))    
 * [ ] [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
 * [ ] [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * [ ] [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
