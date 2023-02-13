@@ -17,12 +17,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         java: [8, 11, 17] # Include _only_ LTS Java versions in matrix: https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+        experimental: [false]
         include:
           - os: windows-latest
             experimental: true
 
-    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     steps:
       - name: Checkout
@@ -42,7 +43,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
-    #needs: test
+    needs: test
     if: github.ref == 'refs/heads/master'
 
     steps:
