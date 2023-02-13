@@ -13,7 +13,8 @@ inThisBuild(
         email = "pathikritbhowmick@msn.com",
         url = new URL(s"http://github.com/${username}")
       )
-    )
+    ),
+    Global / onChangedBuildSource := ReloadOnSourceChanges
   )
 )
 
@@ -27,6 +28,7 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value),
   Compile / compile := (Compile / compile).dependsOn(formatAll).value,
   Test / test       := (Test / test).dependsOn(checkFormat).value,
+  Test / testOptions += Tests.Argument("-oDF"),
   formatAll := {
     (Compile / scalafmt).value
     (Test / scalafmt).value

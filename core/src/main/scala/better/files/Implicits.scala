@@ -178,7 +178,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
-      in.autoClosed.flatMap(res => eofReader(res.read()).map(_.toByte))
+      in.autoClosed.iterator(res => eofReader(res.read()).map(_.toByte))
 
     def byteArray: Array[Byte] = {
       for {
@@ -276,7 +276,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
       new ReaderInputStream(reader)(charset)
 
     def chars: Iterator[Char] =
-      new Dispose(reader).flatMap(res => eofReader(res.read()).map(_.toChar))
+      reader.autoClosed.iterator(res => eofReader(res.read()).map(_.toChar))
   }
 
   implicit class BufferedReaderExtensions(reader: BufferedReader) {
@@ -298,7 +298,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class PathMatcherExtensions(matcher: PathMatcher) {
-    def matches(file: File, maxDepth: Int, visitOptions: File.VisitOptions = File.VisitOptions.default) =
+    def matches(file: File, maxDepth: Int, visitOptions: File.VisitOptions = File.VisitOptions.default): Iterator[File] =
       file.collectChildren(child => matcher.matches(child.path), maxDepth, visitOptions)
   }
 
@@ -318,9 +318,6 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     /** Correctly set the compression level
       * See: http://stackoverflow.com/questions/1206970/creating-zip-using-zip-utility
-      *
-      * @param level
-      * @return
       */
     def withCompressionLevel(level: Int): out.type = {
       out.setLevel(level)
