@@ -60,8 +60,8 @@ class CloseableIteratorSpec extends CommonSpec {
     check('collectSome, _.collect({ case i if i % 2 == 0 => i }))
     check('scanLeft, _.scanLeft(0)(_ + _))
     check('scanRight, _.scanRight(0)(_ + _).toList) // scanRight does close because it needs to go to end
-    // check('takeNone, _.takeWhile(_ < 0))
-    // check('takeSome, _.takeWhile(_ < 5))
+    check('takeNone, _.takeWhile(_ < 0))
+    check('takeSome, _.takeWhile(_ < 5))
     check('dropNone, _.dropWhile(_ < 0))
     check('dropSome, _.dropWhile(_ < 5))
     check('partition, _.partition(_ % 2 == 0))

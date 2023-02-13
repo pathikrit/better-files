@@ -83,7 +83,7 @@ class StreamingScanner(reader: BufferedReader) extends AbstractScanner(reader) w
 
 /** Based on a reusable StringBuilder */
 class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  private[this] val chars  = reader.chars
+  private[this] val chars  = reader.chars.nonClosing()
   private[this] val buffer = new StringBuilder()
 
   override def next() = {
@@ -98,7 +98,7 @@ class StringBuilderScanner(reader: BufferedReader) extends AbstractScanner(reade
 
 /** Scala version of the ArrayBufferScanner */
 class CharBufferScanner(reader: BufferedReader) extends AbstractScanner(reader) with Iterator[String] {
-  private[this] val chars  = reader.chars
+  private[this] val chars  = reader.chars.nonClosing()
   private[this] var buffer = Array.ofDim[Char](1 << 4)
 
   override def next() = {

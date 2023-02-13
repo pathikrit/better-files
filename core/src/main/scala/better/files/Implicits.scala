@@ -78,6 +78,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
         override def hasNext = f && it.hasNext
         override def next()  = it.next()
       }
+
+    /** Returns a non closing version of this iterator */
+    def nonClosing(): Iterator[A] = it match {
+      case c: CloseableIterator[A] => c.nonClosing()
+      case _                       => it
+    }
   }
 
   implicit class InputStreamExtensions(in: InputStream) {

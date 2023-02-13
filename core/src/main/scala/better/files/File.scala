@@ -667,7 +667,7 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def isWriteLocked(position: Long = 0L, size: Long = Long.MaxValue, isShared: Boolean = false) =
     isLocked(File.RandomAccessMode.readWrite, position, size, isShared)
 
-  def list: Iterator[File] = // TODO: change to .list() ?
+  def list: Iterator[File] =
     Files.list(path)
 
   def children: Iterator[File] = list
