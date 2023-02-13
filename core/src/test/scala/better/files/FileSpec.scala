@@ -20,12 +20,12 @@ class FileSpec extends CommonSpec {
     * @return path in native format
     */
   def unixToNative(path: String): String = {
-    if (isUnixOS) {
-      path
-    } else {
+    if (Properties.isWin) {
       path
         .replaceFirst("^/", rootStr.replaceAllLiterally("\\", "\\\\")) // we must escape '\' in C:\
         .replaceAllLiterally("/", separator)
+    } else {
+      path
     }
   }
 
@@ -379,7 +379,6 @@ class FileSpec extends CommonSpec {
   }
 
   it should "support creating hard links with ln" in {
-    assume(isUnixOS)
     val magicWord = "Hello World"
     t1 writeText magicWord
     t1.linkTo(t3, symbolic = false)

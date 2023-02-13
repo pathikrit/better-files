@@ -12,8 +12,6 @@ trait CommonSpec extends AnyFlatSpec with BeforeAndAfterEach with Matchers {
 
   val isCI = sys.env.get("CI").exists(_.toBoolean)
 
-  val isUnixOS = isLinux || isMac
-
   val scalaVersion = versionNumberString
 
   def sleep(t: FiniteDuration = 2.second) = Thread.sleep(t.toMillis)

@@ -70,9 +70,7 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
 
     mkdir(globTree / "empty")
 
-    if (isUnixOS) {
-      ln_s(globTree / "link_to_a", a)
-    }
+    ln_s(globTree / "link_to_a", a)
 
     touch(globTree / "one.txt")
     touch(globTree / "two.txt")
@@ -82,19 +80,16 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     // Special target with path name components as wildcards
     specialTree = testDir / "special"
 
-    // Windows does not support '*' in file names
-    if (isUnixOS) {
-      // regex
-      mkdir(specialTree)
-      regexWildcardPath = mkdir(specialTree / ".*")
-      mkdir(specialTree / ".*" / "a")
-      touch(specialTree / ".*" / "a" / "a.txt")
+    // regex
+    mkdir(specialTree)
+    regexWildcardPath = mkdir(specialTree / ".*")
+    mkdir(specialTree / ".*" / "a")
+    touch(specialTree / ".*" / "a" / "a.txt")
 
-      // glob
-      globWildcardPath = mkdir(specialTree / "**")
-      mkdir(specialTree / "**" / "a")
-      touch(specialTree / "**" / "a" / "a.txt")
-    }
+    // glob
+    globWildcardPath = mkdir(specialTree / "**")
+    mkdir(specialTree / "**" / "a")
+    touch(specialTree / "**" / "a" / "a.txt")
 
     ()
   }
@@ -271,16 +266,15 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
       "one.txt",
       "readme.md",
       "three.txt",
-      "two.txt"
-    ) ++
-      when(isUnixOS)("link_to_a")
+      "two.txt",
+      "link_to_a"
+    )
 
     val paths = testDir.glob("globtree/**")
     verify(paths, refPaths, globTree)
   }
 
   it should "work with links (e.g. 'link_to_a/**.txt')" in {
-    assume(isUnixOS)
     val refPaths = Seq(
       "a/a.txt",
       "a/x.txt",
@@ -304,7 +298,6 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   it should "not use dir name as wildcard (e.g. dirname is **)" in {
-    assume(isUnixOS)
     val d     = globWildcardPath // "path" / "with" / "**"
     val paths = d.glob("*.txt")
 
@@ -352,7 +345,6 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
   }
 
   it should "not use dir name as wildcard (e.g. dirname is .*)" in {
-    assume(isUnixOS)
     val d     = regexWildcardPath // "path" / "with" / ".*"
     val paths = d.glob("a\\.txt", syntax = File.PathMatcherSyntax.regex)
     assert(paths.isEmpty)
