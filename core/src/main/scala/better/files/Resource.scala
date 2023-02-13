@@ -94,7 +94,7 @@ trait Resource {
   * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResource(java.lang.String) Class#getResource]]
   * @see [[https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResource(java.lang.String) ClassLoader#getResource]]
   */
-object Resource extends Resource with ResourceScalaCompat {
+object Resource extends Resource with ResourceCompat {
 
   @throws[NoSuchElementException]
   def notFound(name: String): Nothing =

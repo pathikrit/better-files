@@ -2,7 +2,7 @@ package better.files
 
 import scala.collection.GenTraversableOnce
 
-trait CloseableIteratorCompat[+A] extends CloseableIterator[A] {
+private[files] trait CloseableIteratorCompat[+A] extends CloseableIterator[A] {
   override protected def sliceIterator(from: Int, until: Int) = closeInTheEnd(super.sliceIterator(from, until))
   override def indexWhere(p: A => Boolean, from: Int)         = evalAndClose(super.indexWhere(p, from))
   override def indexOf[B >: A](elem: B, from: Int)            = evalAndClose(super.indexOf(elem, from))

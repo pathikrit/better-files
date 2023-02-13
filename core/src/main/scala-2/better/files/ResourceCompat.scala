@@ -3,7 +3,7 @@ package better.files
 import scala.language.experimental.macros
 import scala.reflect.macros.{ReificationException, blackbox}
 
-private[files] trait ResourceScalaCompat {
+private[files] trait ResourceCompat {
 
   /** Look up class resource files.
     *

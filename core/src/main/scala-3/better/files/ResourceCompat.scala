@@ -3,7 +3,7 @@ package better.files
 import scala.quoted.{Quotes, Expr}
 import scala.quoted.*
 
-private[files] trait ResourceScalaCompat {
+private[files] trait ResourceCompat {
 
   /** Look up class resource files.
     *
