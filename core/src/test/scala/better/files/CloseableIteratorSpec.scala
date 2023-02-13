@@ -66,6 +66,7 @@ class CloseableIteratorSpec extends CommonSpec {
     check('dropSome, _.dropWhile(_ < 5))
     check('partition, _.partition(_ % 2 == 0))
     check('partitionSwap, _.partition(_ % 2 == 0).swap)
+    check('filterPartition, _.filter(_ > 5).partition(_ % 2 == 0))
     check('span, _.span(_ > 5))
     check('spanEmpty, _.span(_ < 0))
     check('padTo, _.padTo(100, 0))
@@ -120,5 +121,16 @@ class CloseableIteratorSpec extends CommonSpec {
     check('zipWithTake, (t1, t2) => t1.take(5).zip(t2.take(3)))
     check('zipAll, _.zipAll(_, -100, 100))
     check('forComprehension, (t1, t2) => for { i <- t1; j <- t2 } yield i + j)
+  }
+
+  "streams" can "be partitioned" in {
+    File.usingTemporaryDirectory() { dir =>
+      (dir / "1.csv").touch()
+      (dir / "2.csv").touch()
+      (dir / "3.txt").touch()
+      val (csv, other) = dir.listRecursively().partition(_.extension().contains(".csv"))
+      assert(csv.size == 2)
+      assert(other.size == 1)
+    }
   }
 }

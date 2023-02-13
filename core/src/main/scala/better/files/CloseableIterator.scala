@@ -7,13 +7,13 @@ import scala.collection.GenTraversableOnce
   * An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration
   * Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators
   * Note:
-  *   1) This assumes "exhaustion" on certain operations like find(), exists(), contains(), indexWhere(), forall() and takeWhile()
-  *      e.g.
-  *       when find() finds an element we assume iterator exhaustion and thus we trigger close
-  *       Similarly, for takeWhile(), we return an iterator that invokes the close once takeWhile() finishes iterating
+  *   1) This assumes "exhaustion" on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.
+  *      e.g. when find() finds an element we assume iterator exhaustion and thus we trigger close
   *
   *   2) For certain operations that return 2 Iterators e.g. span() and partition(),
   *      to guarantee closing BOTH iterators must be consumed
+  *
+  *   3) Once close() has been invoked hasNext will always return false and next will throw an IllegalStateException
   */
 trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
   override def find(p: A => Boolean)                  = evalAndClose(super.find(p))
@@ -33,8 +33,8 @@ trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
       case _                           => closeInTheEnd(super.zip(that))
     }
 
-  private val isClosed  = new AtomicBoolean(false)
-  def closeOnce(): Unit = if (!isClosed.getAndSet(true)) close()
+  protected val isClosed = new AtomicBoolean(false)
+  def closeOnce(): Unit  = if (!isClosed.getAndSet(true)) close()
 
   /** Close at end of iteration */
   private def closeInTheEnd[T](t: Iterator[T]): Iterator[T] = CloseableIterator(t, closeOnce)
@@ -65,12 +65,16 @@ object CloseableIterator {
 
   /** Make a closeable iterator given an existing iterator and a close function */
   def apply[A](it: Iterator[A], closeFn: () => Unit): CloseableIterator[A] = new CloseableIterator[A] {
-    override def hasNext = {
+    override def hasNext = !isClosed.get() && {
       val res = closeIfError(it.hasNext)
       if (!res) closeOnce()
       res
     }
-    override def next()  = closeIfError(it.next())
+
+    override def next() = {
+      require(!isClosed.get(), "Iterator is already closed")
+      closeIfError(it.next())
+    }
     override def close() = closeFn()
   }
 }
