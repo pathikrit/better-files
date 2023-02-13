@@ -110,7 +110,7 @@
                         <a class="class" href="Implicits$BufferedReaderExtensions.html" title=""></a>
                         <a href="Implicits$BufferedReaderExtensions.html" title="">BufferedReaderExtensions</a>
                       </li><li class="current-entities indented2">
-                        <a class="object" href="CloseableIterator$.html" title=""></a>
+                        <a class="object" href="" title=""></a>
                         <a class="trait" href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc."></a>
                         <a href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.">CloseableIterator</a>
                       </li><li class="current-entities indented2">
@@ -151,8 +151,8 @@
                         <a href="Implicits$FileExtensions.html" title="">FileExtensions</a>
                       </li><li class="current-entities indented2">
                         <span class="separator"></span>
-                        <a class="class" href="" title="Implementation of File.Monitor"></a>
-                        <a href="" title="Implementation of File.Monitor">FileMonitor</a>
+                        <a class="class" href="FileMonitor.html" title="Implementation of File.Monitor"></a>
+                        <a href="FileMonitor.html" title="Implementation of File.Monitor">FileMonitor</a>
                       </li><li class="current-entities indented2">
                         <a class="object" href="FileWatcher$.html" title=""></a>
                         <a class="class" href="FileWatcher.html" title="An actor that can watch a file or a directory Instead of directly calling the constructor of this, call file.newWatcher to create the actor"></a>
@@ -286,34 +286,36 @@
             </div>
           </div>
           <div id="content">
-            <body class="class type">
+            <body class="object value">
       <div id="definition">
-        <div class="big-circle class">c</div>
+        <a href="CloseableIterator.html" title="See companion trait"><div class="big-circle object-companion-trait">o</div></a>
         <p id="owner"><a href="../index.html" class="extype" name="better">better</a>.<a href="index.html" class="extype" name="better.files">files</a></p>
-        <h1>FileMonitor<span class="permalink">
-      <a href="../../better/files/FileMonitor.html" title="Permalink">
+        <h1><a href="CloseableIterator.html" title="See companion trait">CloseableIterator</a><span class="permalink">
+      <a href="../../better/files/CloseableIterator$.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span></h1>
-        <h3><span class="morelinks"></span></h3>
+        <h3><span class="morelinks"><div>
+            Companion <a href="CloseableIterator.html" title="See companion trait">trait CloseableIterator</a>
+          </div></span></h3>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">class</span>
+        <span class="modifier"></span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">FileMonitor</span><span class="result"> extends <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></span>
+        <span class="name">CloseableIterator</span>
       </span>
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Implementation of File.Monitor</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a>, <span class="extype" name="java.lang.AutoCloseable">AutoCloseable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -339,7 +341,7 @@
                   <span class="filtertype">Inherited<br />
                   </span>
                   <ol id="linearization">
-                    <li class="in" name="better.files.FileMonitor"><span>FileMonitor</span></li><li class="in" name="better.files.File.Monitor"><span>Monitor</span></li><li class="in" name="java.lang.AutoCloseable"><span>AutoCloseable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                    <li class="in" name="better.files.CloseableIterator"><span>CloseableIterator</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                   </ol>
                 </div><div class="ancestors">
               <span class="filtertype"></span>
@@ -357,42 +359,7 @@
 
       <div id="template">
         <div id="allMembers">
-        <div id="constructors" class="members">
-              <h3>Instance Constructors</h3>
-              <ol><li name="better.files.FileMonitor#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(root:better.files.File,recursive:Boolean):better.files.FileMonitor"></a><a id="&lt;init&gt;:FileMonitor"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#&lt;init&gt;(root:better.files.File,recursive:Boolean):better.files.FileMonitor" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">new</span>
-      </span>
-      <span class="symbol">
-        <span class="name">FileMonitor</span><span class="params">(<span name="root">root: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="recursive">recursive: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span>
-      </span>
-      
-      
-    </li><li name="better.files.FileMonitor#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(root:better.files.File,maxDepth:Int):better.files.FileMonitor"></a><a id="&lt;init&gt;:FileMonitor"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#&lt;init&gt;(root:better.files.File,maxDepth:Int):better.files.FileMonitor" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">new</span>
-      </span>
-      <span class="symbol">
-        <span class="name">FileMonitor</span><span class="params">(<span name="root">root: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="maxDepth">maxDepth: <span class="extype" name="scala.Int">Int</span></span>)</span>
-      </span>
-      
-      
-    </li></ol>
-            </div>
+        
 
         
 
@@ -404,7 +371,7 @@
                 <li name="scala.AnyRef#!=" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a><a id="!=(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#!=(x$1:Any):Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#!=(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -420,7 +387,7 @@
     </li><li name="scala.AnyRef###" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html###():Int" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html###():Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -436,7 +403,7 @@
     </li><li name="scala.AnyRef#==" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a><a id="==(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#==(x$1:Any):Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#==(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -449,10 +416,26 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="better.files.CloseableIterator#apply" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="apply[A](it:Iterator[A],closeFn:()=&gt;Unit):better.files.CloseableIterator[A]"></a><a id="apply[A](Iterator[A],()⇒Unit):CloseableIterator[A]"></a>
+      <span class="permalink">
+      <a href="../../better/files/CloseableIterator$.html#apply[A](it:Iterator[A],closeFn:()=&gt;Unit):better.files.CloseableIterator[A]" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="it">it: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="better.files.CloseableIterator.apply.A">A</span>]</span>, <span name="closeFn">closeFn: () ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="CloseableIterator.html" class="extype" name="better.files.CloseableIterator">CloseableIterator</a>[<span class="extype" name="better.files.CloseableIterator.apply.A">A</span>]</span>
+      </span>
+      
+      <p class="shortcomment cmt">Make a closeable iterator given an existing iterator and a close function</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#asInstanceOf[T0]:T0" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#asInstanceOf[T0]:T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -468,7 +451,7 @@
     </li><li name="scala.AnyRef#clone" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a><a id="clone():AnyRef"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#clone():Object" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#clone():Object" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -489,26 +472,10 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="better.files.FileMonitor#close" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="close():Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#close():Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">close</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → AutoCloseable</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#eq(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#eq(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -524,7 +491,7 @@
     </li><li name="scala.AnyRef#equals" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a><a id="equals(Any):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#equals(x$1:Any):Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#equals(x$1:Any):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -540,7 +507,7 @@
     </li><li name="scala.AnyRef#finalize" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#finalize():Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#finalize():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -562,7 +529,7 @@
     </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#getClass():Class[_]" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#getClass():Class[_]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -581,7 +548,7 @@
     </li><li name="scala.AnyRef#hashCode" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#hashCode():Int" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#hashCode():Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -600,7 +567,7 @@
     </li><li name="scala.Any#isInstanceOf" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#isInstanceOf[T0]:Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#isInstanceOf[T0]:Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -616,7 +583,7 @@
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#ne(x$1:AnyRef):Boolean" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#ne(x$1:AnyRef):Boolean" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -632,7 +599,7 @@
     </li><li name="scala.AnyRef#notify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#notify():Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#notify():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -651,7 +618,7 @@
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#notifyAll():Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#notifyAll():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -667,206 +634,10 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="better.files.FileMonitor#onCreate" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onCreate(file:better.files.File,count:Int):Unit"></a><a id="onCreate(File,Int):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onCreate(file:better.files.File,count:Int):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onCreate</span><span class="params">(<span name="file">file: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="count">count: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#onDelete" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onDelete(file:better.files.File,count:Int):Unit"></a><a id="onDelete(File,Int):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onDelete(file:better.files.File,count:Int):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onDelete</span><span class="params">(<span name="file">file: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="count">count: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.File.Monitor#onEvent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onEvent(eventType:java.nio.file.WatchEvent.Kind[java.nio.file.Path],file:better.files.File,count:Int):Unit"></a><a id="onEvent(Kind[Path],File,Int):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onEvent(eventType:java.nio.file.WatchEvent.Kind[java.nio.file.Path],file:better.files.File,count:Int):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onEvent</span><span class="params">(<span name="eventType">eventType: <span class="extype" name="java.nio.file.WatchEvent.Kind">Kind</span>[<span class="extype" name="java.nio.file.Path">Path</span>]</span>, <span name="file">file: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="count">count: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">Dispatch a StandardWatchEventKind to an appropriate callback
-Override this if you don't want to manually handle onDelete/onCreate/onModify separately
-</p><div class="fullcomment"><div class="comment cmt"><p>Dispatch a StandardWatchEventKind to an appropriate callback
-Override this if you don't want to manually handle onDelete/onCreate/onModify separately
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#onException" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onException(exception:Throwable):Unit"></a><a id="onException(Throwable):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onException(exception:Throwable):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onException</span><span class="params">(<span name="exception">exception: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#onModify" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onModify(file:better.files.File,count:Int):Unit"></a><a id="onModify(File,Int):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onModify(file:better.files.File,count:Int):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onModify</span><span class="params">(<span name="file">file: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="count">count: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#onUnknownEvent" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onUnknownEvent(event:java.nio.file.WatchEvent[_]):Unit"></a><a id="onUnknownEvent(WatchEvent[_]):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#onUnknownEvent(event:java.nio.file.WatchEvent[_]):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onUnknownEvent</span><span class="params">(<span name="event">event: <span class="extype" name="java.nio.file.WatchEvent">WatchEvent</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#process" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="process(key:java.nio.file.WatchKey):Boolean"></a><a id="process(WatchKey):Boolean"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#process(key:java.nio.file.WatchKey):Boolean" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">process</span><span class="params">(<span name="key">key: <span class="extype" name="java.nio.file.WatchKey">WatchKey</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
-    </li><li name="better.files.FileMonitor#reactTo" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="reactTo(target:better.files.File):Boolean"></a><a id="reactTo(File):Boolean"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#reactTo(target:better.files.File):Boolean" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">reactTo</span><span class="params">(<span name="target">target: <a href="File.html" class="extype" name="better.files.File">File</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      
-      <p class="shortcomment cmt">If watching non-directory, don't react to siblings</p><div class="fullcomment"><div class="comment cmt"><p>If watching non-directory, don't react to siblings</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
-    </li><li name="better.files.FileMonitor#root" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="root:better.files.File"></a><a id="root:File"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#root:better.files.File" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">root</span><span class="result">: <a href="File.html" class="extype" name="better.files.File">File</a></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.FileMonitor#service" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="service:java.nio.file.WatchService"></a><a id="service:WatchService"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#service:java.nio.file.WatchService" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">service</span><span class="result">: <span class="extype" name="java.nio.file.WatchService">WatchService</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
-    </li><li name="better.files.FileMonitor#start" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="start()(implicitexecutionContext:scala.concurrent.ExecutionContext):Unit"></a><a id="start()(ExecutionContext):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#start()(implicitexecutionContext:scala.concurrent.ExecutionContext):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">start</span><span class="params">()</span><span class="params">(<span class="implicit">implicit </span><span name="executionContext">executionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="better.files.FileMonitor">FileMonitor</a> → <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
-    </li><li name="better.files.File.Monitor#stop" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="stop():Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#stop():Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">stop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a><a id="synchronized[T0](⇒T0):T0"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#synchronized[T0](x$1:=&gt;T0):T0" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -882,7 +653,7 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
     </li><li name="scala.AnyRef#toString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#toString():String" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#toString():String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -898,7 +669,7 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#wait():Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#wait():Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -920,7 +691,7 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long,x$2:Int):Unit"></a><a id="wait(Long,Int):Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#wait(x$1:Long,x$2:Int):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -942,7 +713,7 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
     </li><li name="scala.AnyRef#wait" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait(x$1:Long):Unit"></a><a id="wait(Long):Unit"></a>
       <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#wait(x$1:Long):Unit" title="Permalink">
+      <a href="../../better/files/CloseableIterator$.html#wait(x$1:Long):Unit" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -963,22 +734,6 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="better.files.FileMonitor#watch" visbl="prt" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="watch(file:better.files.File,depth:Int):Unit"></a><a id="watch(File,Int):Unit"></a>
-      <span class="permalink">
-      <a href="../../better/files/FileMonitor.html#watch(file:better.files.File,depth:Int):Unit" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">watch</span><span class="params">(<span name="file">file: <a href="File.html" class="extype" name="better.files.File">File</a></span>, <span name="depth">depth: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
     </li>
               </ol>
             </div>
@@ -989,11 +744,7 @@ Override this if you don't want to manually handle onDelete/onCreate/onModify se
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="better.files.File.Monitor">
-              <h3>Inherited from <a href="File$$Monitor.html" class="extype" name="better.files.File.Monitor">Monitor</a></h3>
-            </div><div class="parent" name="java.lang.AutoCloseable">
-              <h3>Inherited from <span class="extype" name="java.lang.AutoCloseable">AutoCloseable</span></h3>
-            </div><div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

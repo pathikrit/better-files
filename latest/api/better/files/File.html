@@ -110,6 +110,14 @@
                         <a class="class" href="Implicits$BufferedReaderExtensions.html" title=""></a>
                         <a href="Implicits$BufferedReaderExtensions.html" title="">BufferedReaderExtensions</a>
                       </li><li class="current-entities indented2">
+                        <a class="object" href="CloseableIterator$.html" title=""></a>
+                        <a class="trait" href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc."></a>
+                        <a href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.">CloseableIterator</a>
+                      </li><li class="current-entities indented2">
+                        <span class="separator"></span>
+                        <a class="trait" href="CloseableIteratorCompat.html" title=""></a>
+                        <a href="CloseableIteratorCompat.html" title="">CloseableIteratorCompat</a>
+                      </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="class" href="Implicits$DigestInputStreamExtensions.html" title=""></a>
                         <a href="Implicits$DigestInputStreamExtensions.html" title="">DigestInputStreamExtensions</a>
@@ -1983,9 +1991,9 @@ Also works for directories
       
       
     </li><li name="better.files.File#lineCount" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="lineCount(charset:java.nio.charset.Charset):Long"></a><a id="lineCount(Charset):Long"></a>
+      <a id="lineCount(charset:java.nio.charset.Charset):Int"></a><a id="lineCount(Charset):Int"></a>
       <span class="permalink">
-      <a href="../../better/files/File.html#lineCount(charset:java.nio.charset.Charset):Long" title="Permalink">
+      <a href="../../better/files/File.html#lineCount(charset:java.nio.charset.Charset):Int" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -1994,7 +2002,7 @@ Also works for directories
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">lineCount</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+        <span class="name">lineCount</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>number of lines in this file</p></dd></dl></div>
@@ -2014,7 +2022,6 @@ Also works for directories
       </span>
       
       <p class="shortcomment cmt">Iterate over lines in a file (auto-close stream on complete)
-NOTE: If the iteration is partial, it may leave a stream open
 If you want partial iteration use @see lines()
 </p>
     </li><li name="better.files.File#lines" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -3528,9 +3535,7 @@ for long running systems with millions of temporary files as:
         <span class="name">walk</span><span class="params">(<span name="maxDepth">maxDepth: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">Int.MaxValue</span></span>, <span name="visitOptions">visitOptions: <a href="File$.html#VisitOptions=Seq[java.nio.file.FileVisitOption]" class="extmbr" name="better.files.File.VisitOptions">VisitOptions</a> = <span class="symbol"><span class="name"><a href="File$.html">File.VisitOptions.default</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<a href="" class="extype" name="better.files.File">File</a>]</span>
       </span>
       
-      <p class="shortcomment cmt">Walk the directory tree recursively upto maxDepth
-</p><div class="fullcomment"><div class="comment cmt"><p>Walk the directory tree recursively upto maxDepth
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>List of children in BFS maxDepth level deep (includes self since self is at depth = 0)</p></dd></dl></div>
+      <p class="shortcomment cmt">Walk the directory tree recursively upto maxDepth</p><div class="fullcomment"><div class="comment cmt"><p>Walk the directory tree recursively upto maxDepth</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>List of children in BFS maxDepth level deep (includes self since self is at depth = 0)</p></dd></dl></div>
     </li><li name="better.files.File#watchService" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="watchService:better.files.Dispose[java.nio.file.WatchService]"></a><a id="watchService:Dispose[WatchService]"></a>
       <span class="permalink">

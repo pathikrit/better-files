@@ -110,6 +110,14 @@
                         <a class="class" href="Implicits$BufferedReaderExtensions.html" title=""></a>
                         <a href="Implicits$BufferedReaderExtensions.html" title="">BufferedReaderExtensions</a>
                       </li><li class="current-entities indented2">
+                        <a class="object" href="CloseableIterator$.html" title=""></a>
+                        <a class="trait" href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc."></a>
+                        <a href="CloseableIterator.html" title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.">CloseableIterator</a>
+                      </li><li class="current-entities indented2">
+                        <span class="separator"></span>
+                        <a class="trait" href="CloseableIteratorCompat.html" title=""></a>
+                        <a href="CloseableIteratorCompat.html" title="">CloseableIteratorCompat</a>
+                      </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="class" href="Implicits$DigestInputStreamExtensions.html" title=""></a>
                         <a href="Implicits$DigestInputStreamExtensions.html" title="">DigestInputStreamExtensions</a>
@@ -369,6 +377,47 @@
       </span>
       
       <p class="shortcomment cmt">Encoder that writes the BOM for this charset</p>
+    </li><li name="better.files.CloseableIterator" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="CloseableIterator[+A]extendsIterator[A]withAutoCloseable"></a><a id="CloseableIterator[+A]:CloseableIterator[A]"></a>
+      <span class="permalink">
+      <a href="../../better/files/CloseableIterator.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators Note: 1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc." href="CloseableIterator.html"><span class="name">CloseableIterator</span></a><span class="tparams">[<span name="A">+A</span>]</span><span class="result"> extends <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="better.files.CloseableIterator.A">A</span>] with <span class="extype" name="java.lang.AutoCloseable">AutoCloseable</span></span>
+      </span>
+      
+      <p class="shortcomment cmt">An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration
+Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators
+Note:
+  1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.</p><div class="fullcomment"><div class="comment cmt"><p>An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration
+Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators
+Note:
+  1) This assumes &quot;exhaustion&quot; on certain operations like find(), exists(), contains(), indexWhere(), forall() etc.
+     e.g. when find() finds an element we assume iterator exhaustion and thus we trigger close</p><p>  2) For certain operations that return 2 Iterators e.g. span() and partition(),
+     to guarantee closing BOTH iterators must be consumed</p><p>  3) Once close() has been invoked hasNext will always return false and next will throw an IllegalStateException
+</p></div></div>
+    </li><li name="better.files.CloseableIteratorCompat" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CloseableIteratorCompat[+A]extendsCloseableIterator[A]"></a><a id="CloseableIteratorCompat[+A]:CloseableIteratorCompat[A]"></a>
+      <span class="permalink">
+      <a href="../../better/files/CloseableIteratorCompat.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="CloseableIteratorCompat.html"><span class="name">CloseableIteratorCompat</span></a><span class="tparams">[<span name="A">+A</span>]</span><span class="result"> extends <a href="CloseableIterator.html" class="extype" name="better.files.CloseableIterator">CloseableIterator</a>[<span class="extype" name="better.files.CloseableIteratorCompat.A">A</span>]</span>
+      </span>
+      
+      
     </li><li name="better.files.Disposable" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="Disposable[-A]extendsAnyRef"></a><a id="Disposable[-A]:Disposable[A]"></a>
       <span class="permalink">
@@ -1643,6 +1692,22 @@ this let's you use and dispose a resource e.g.</p><p>{{
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Scanner$$Read$$Implicits.html" class="extype" name="better.files.Scanner.Read.Implicits">Implicits</a></dd></dl></div>
+    </li><li name="better.files.CloseableIterator" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CloseableIterator"></a><a id="CloseableIterator:CloseableIterator"></a>
+      <span class="permalink">
+      <a href="../../better/files/CloseableIterator$.html" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a title="" href="CloseableIterator$.html"><span class="name">CloseableIterator</span></a>
+      </span>
+      
+      
     </li><li name="better.files.Disposable" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Disposable"></a><a id="Disposable:Disposable"></a>
       <span class="permalink">
