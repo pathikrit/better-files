@@ -458,9 +458,9 @@ and <code>my</code> searches from the class, trait, or object surrounding the ca
               
         </dd><dt>See also</dt><dd><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/Class.html#getResourceAsStream(java.lang.String)" target="_blank">Class#getResourceAsStream</a></p></span><span class="cmt"><p><a href="https://docs.oracle.com/javase/10/docs/api/java/lang/ClassLoader.html#getResourceAsStream(java.lang.String)" target="_blank">ClassLoader#getResourceAsStream</a></p></span></dd></dl></div>
     </li><li name="better.files.Resource#asString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asString(name:String,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):Option[String]"></a><a id="asString(String,Int)(Charset):Option[String]"></a>
+      <a id="asString(name:String,bufferSize:Int,charset:java.nio.charset.Charset):Option[String]"></a><a id="asString(String,Int,Charset):Option[String]"></a>
       <span class="permalink">
-      <a href="../../better/files/Resource$.html#asString(name:String,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):Option[String]" title="Permalink">
+      <a href="../../better/files/Resource$.html#asString(name:String,bufferSize:Int,charset:java.nio.charset.Charset):Option[String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -469,7 +469,7 @@ and <code>my</code> searches from the class, trait, or object surrounding the ca
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">asString</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">asString</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></dd></dl></div>
@@ -633,9 +633,9 @@ For example, if <code>com.example.ExampleClass</code> is given for <code>T</code
 </p><div class="fullcomment"><div class="comment cmt"><p>Same as asStream but throws a NoSuchElementException if resource is not found
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></dd></dl></div>
     </li><li name="better.files.Resource#getAsString" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getAsString(name:String,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):String"></a><a id="getAsString(String,Int)(Charset):String"></a>
+      <a id="getAsString(name:String,bufferSize:Int,charset:java.nio.charset.Charset):String"></a><a id="getAsString(String,Int,Charset):String"></a>
       <span class="permalink">
-      <a href="../../better/files/Resource$.html#getAsString(name:String,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):String" title="Permalink">
+      <a href="../../better/files/Resource$.html#getAsString(name:String,bufferSize:Int,charset:java.nio.charset.Charset):String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -644,7 +644,7 @@ For example, if <code>com.example.ExampleClass</code> is given for <code>T</code
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAsString</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">getAsString</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Resource.html" class="extype" name="better.files.Resource">Resource</a></dd></dl></div>

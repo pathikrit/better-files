@@ -453,9 +453,9 @@ Code adapted from:
 https://github.com/apache/commons-io/blob/master/src/main/java/org/apache/commons/io/input/ClassLoaderObjectInputStream.java</p></dd><dt>returns</dt><dd class="cmt"><p>A special ObjectInputStream that loads a class based on a specified ClassLoader rather than the default
 This is useful in dynamic container environments.</p></dd></dl></div>
     </li><li name="better.files.Implicits.InputStreamExtensions#asString" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="asString(closeStream:Boolean,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):String"></a><a id="asString(Boolean,Int)(Charset):String"></a>
+      <a id="asString(closeStream:Boolean,bufferSize:Int,charset:java.nio.charset.Charset):String"></a><a id="asString(Boolean,Int,Charset):String"></a>
       <span class="permalink">
-      <a href="../../better/files/Implicits$InputStreamExtensions.html#asString(closeStream:Boolean,bufferSize:Int)(implicitcharset:java.nio.charset.Charset):String" title="Permalink">
+      <a href="../../better/files/Implicits$InputStreamExtensions.html#asString(closeStream:Boolean,bufferSize:Int,charset:java.nio.charset.Charset):String" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -464,14 +464,14 @@ This is useful in dynamic container environments.</p></dd></dl></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">asString</span><span class="params">(<span name="closeStream">closeStream: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">asString</span><span class="params">(<span name="closeStream">closeStream: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="bufferSize">bufferSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultBufferSize:Int">DefaultBufferSize</a></span></span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       
       
     </li><li name="better.files.Implicits.InputStreamExtensions#asZipInputStream" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="asZipInputStream(implicitcharset:java.nio.charset.Charset):java.util.zip.ZipInputStream"></a><a id="asZipInputStream(Charset):ZipInputStream"></a>
+      <a id="asZipInputStream(charset:java.nio.charset.Charset):java.util.zip.ZipInputStream"></a><a id="asZipInputStream(Charset):ZipInputStream"></a>
       <span class="permalink">
-      <a href="../../better/files/Implicits$InputStreamExtensions.html#asZipInputStream(implicitcharset:java.nio.charset.Charset):java.util.zip.ZipInputStream" title="Permalink">
+      <a href="../../better/files/Implicits$InputStreamExtensions.html#asZipInputStream(charset:java.nio.charset.Charset):java.util.zip.ZipInputStream" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -480,7 +480,7 @@ This is useful in dynamic container environments.</p></dd></dl></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">asZipInputStream</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="java.util.zip.ZipInputStream">ZipInputStream</span></span>
+        <span class="name">asZipInputStream</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="java.util.zip.ZipInputStream">ZipInputStream</span></span>
       </span>
       
       
@@ -697,9 +697,9 @@ This is useful in dynamic container environments.</p></dd></dl></div>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="better.files.Implicits.InputStreamExtensions#lines" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lines(implicitcharset:java.nio.charset.Charset):Iterator[String]"></a><a id="lines(Charset):Iterator[String]"></a>
+      <a id="lines(charset:java.nio.charset.Charset):Iterator[String]"></a><a id="lines(Charset):Iterator[String]"></a>
       <span class="permalink">
-      <a href="../../better/files/Implicits$InputStreamExtensions.html#lines(implicitcharset:java.nio.charset.Charset):Iterator[String]" title="Permalink">
+      <a href="../../better/files/Implicits$InputStreamExtensions.html#lines(charset:java.nio.charset.Charset):Iterator[String]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -708,7 +708,7 @@ This is useful in dynamic container environments.</p></dd></dl></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">lines</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">lines</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       
       
@@ -818,9 +818,9 @@ This is useful in dynamic container environments.</p></dd></dl></div>
       
       
     </li><li name="better.files.Implicits.InputStreamExtensions#reader" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="reader(implicitcharset:java.nio.charset.Charset):java.io.InputStreamReader"></a><a id="reader(Charset):InputStreamReader"></a>
+      <a id="reader(charset:java.nio.charset.Charset):java.io.InputStreamReader"></a><a id="reader(Charset):InputStreamReader"></a>
       <span class="permalink">
-      <a href="../../better/files/Implicits$InputStreamExtensions.html#reader(implicitcharset:java.nio.charset.Charset):java.io.InputStreamReader" title="Permalink">
+      <a href="../../better/files/Implicits$InputStreamExtensions.html#reader(charset:java.nio.charset.Charset):java.io.InputStreamReader" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -829,7 +829,7 @@ This is useful in dynamic container environments.</p></dd></dl></div>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">reader</span><span class="params">(<span class="implicit">implicit </span><span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="java.io.InputStreamReader">InputStreamReader</span></span>
+        <span class="name">reader</span><span class="params">(<span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="index.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="java.io.InputStreamReader">InputStreamReader</span></span>
       </span>
       
       
