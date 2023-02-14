@@ -15,7 +15,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 
 ## v4.0.0 [WIP]
 * (_Planned_) [Issue #589](https://github.com/pathikrit/better-files/issues/589): Methods that do I/O has parens `()`
-  - **Migration Guide**: Some API calls would need extra parens e.g. `file.size` is now `file.size()` and `dir.list` is now `dir.list()`
+  - **Migration Guide**: Some APIs need extra parens e.g. `file.size` is now `file.size()` and `dir.list` is now `dir.list()`
 * [PR #584](https://github.com/pathikrit/better-files/pull/584): Remove implicit options from all APIs.
   - **Migration Guide**: Instead of implicit params like `implicit charset: Charset`, it is now explicitly passed in:
     ```scala
@@ -25,8 +25,25 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
     // Now
     def appendText(text: String, charset: Charset = DefaultCharset)
     ```
-* [Issue #295](https://github.com/pathikrit/better-files/pull/587): `CloseableIterators` fixes resource leaks on partial iterations ([#270](https://github.com/pathikrit/better-files/issues/270), [#403](https://github.com/pathikrit/better-files/issues/403), [#553](https://github.com/pathikrit/better-files/issues/553))    
+* [Issue #295](https://github.com/pathikrit/better-files/pull/587): `CloseableIterators` fixes resource leaks on partial iterations ([#270](https://github.com/pathikrit/better-files/issues/270), [#403](https://github.com/pathikrit/better-files/issues/403), [#553](https://github.com/pathikrit/better-files/issues/553))
+  - **Migration Guide**
+    ```scala
+    val lines: Iterator[String] = file.lines()  // This will auto close the underlying stream on iterator exhaustion
+
+    lines.find(_ == "hello world") //This will auto close the stream if nothing is found OR if the item is found
+    lines.take(10).size //This will close the stream even if stream has >10 lines
+    
+    // BEFORE: The above _partial_ operations would leave the stream open
+    // NOW: The streams would be closed
+
+    // If you still want the previous auto closing behaviour:
+    lines.nonClosing().take(10).size // This would leave stream open if it has >10 lines
+    ```
+* (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Path ASTs for relative vs. absolute path
 * (_Planned_) [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
+* (_Planned_) [Issue #591](https://github.com/pathikrit/better-files/issues/591): New APIs
+* (_Planned_) [Issue #3](https://github.com/pathikrit/better-files/issues/3): Walk File Tree APIs
+* (_Planned_) [Issue #221](https://github.com/pathikrit/better-files/issues/221): `linkTo` bug fix
 * (_Planned_) [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * (_Planned_) [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs

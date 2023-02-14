@@ -629,14 +629,13 @@ val lines: List[String] = using(file.newInputStream) { stream =>
 
 Auto-closed instances also have a useful method to generate [self-closing iterators](core/src/main/scala/better/files/CloseableIterator.scala) that auto closes the parent resource on exhaustion:
 ```scala
-val in = fine.newInputStream().autoClosed
-val lineIterator: Iterator[String] = in.iterate(_.lines) // This will auto close the underlying inputstream on exhaustion
+val lines: Iterator[String] = file.lines()  // This will auto close the underlying stream on iterator exhaustion
 
-lineIterator.find(_ == "hello world") //This will auto close the stream if nothing is found OR if the item is found
-lineIterator.take(10).size //This will close the stream even if stream has >10 lines
+lines.find(_ == "hello world") //This will auto close the stream if nothing is found OR if the item is found
+lines.take(10).size //This will close the stream even if stream has >10 lines
 
 // If you don't want this auto closing behaviour
-lineIterator.nonClosing().take(10).size // This would leave stream open if it has >10 lines
+lines.nonClosing().take(10).size // This would leave stream open if it has >10 lines
 ```
 
 ### Scanner
