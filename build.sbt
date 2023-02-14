@@ -57,15 +57,6 @@ lazy val core = (project in file("core"))
     description := "Simple, safe and intuitive I/O in Scala"
   )
 
-lazy val akka = (project in file("akka"))
-  .settings(commonSettings: _*)
-  .settings(
-    name        := s"$repo-akka",
-    description := "Reactive file watcher using Akka actors",
-    libraryDependencies += Dependencies.akka(scalaVersion.value)
-  )
-  .dependsOn(core % "test->test;compile->compile")
-
 lazy val root = (project in file("."))
   .settings(name := s"$repo-root")
   .settings(commonSettings: _*)
@@ -73,11 +64,10 @@ lazy val root = (project in file("."))
   .settings(publish / skip := true)
   .enablePlugins(ScalaUnidocPlugin)
   .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka)
 
 lazy val docSettings = Seq(
   autoAPIMappings                            := true,
-  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, akka),
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core),
   siteSourceDirectory                        := baseDirectory.value / "site",
   ScalaUnidoc / siteSubdirName               := "latest/api",
   addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),

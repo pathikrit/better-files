@@ -63,13 +63,6 @@ In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
-To use the [Akka based file monitor](akka), also add this:
-```scala
-libraryDependencies ++= Seq(
-  "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.6.13"
-)
-```
 Latest version: [![Scaladex][scaladexImg]][scaladexLink]
 
 Other available versions:  
@@ -87,7 +80,7 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 ## Tests [![Tests][githubActionsImg]][githubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
 
 * [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
-* [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
+* [FileWatcherSpec](core/src/test/scala/better/files/akka/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
 
 [licenseImg]: https://img.shields.io/github/license/pathikrit/better-files.svg
@@ -755,7 +748,7 @@ There is also an external module which gives high performance file monitoring an
 See: https://github.com/gmethvin/directory-watcher#better-files-integration-scala
 
 ### Akka File Watcher
-`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala)
+`better-files` also provides an [example of how to build a reactive file watcher](src/test/scala/better/files/akka)
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
