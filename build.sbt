@@ -3,7 +3,7 @@ val repo     = "better-files"
 
 inThisBuild(
   List(
-    organization.withRank(KeyRanks.Invisible) := "better.files", // TODO: repo.replace("-", ".")
+    organization.withRank(KeyRanks.Invisible) := repo.replace("-", "."),
     homepage                                  := Some(url(s"https://github.com/$username/$repo")),
     licenses                                  := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
     developers := List(
@@ -31,26 +31,27 @@ lazy val main = (project in file("."))
     crossVersion       := CrossVersion.binary,
 
     // Compile settings
-    scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
-    Compile / doc / scalacOptions += "-groups",
-    Compile / compile := (Compile / compile).dependsOn(formatAll).value,
+    scalacOptions     := myScalacOptions(scalaVersion.value, scalacOptions.value),
+    Compile / compile := (Compile / compile).dependsOn(formatAll).value, // auto format on compile
+
+    // Test settings
+    Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
+    Test / test := (Test / test).dependsOn(checkFormat).value, // fail tests if code is not formatted
+
+    // Dependencies
+    libraryDependencies ++= dependencies(scalaVersion.value),
+
+    // Formatting tasks
     formatAll := {
       (Compile / scalafmt).value
       (Test / scalafmt).value
       (Compile / scalafmtSbt).value
     },
-
-    // Test settings
-    Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
-    Test / test := (Test / test).dependsOn(checkFormat).value,
     checkFormat := {
       (Compile / scalafmtCheck).value
       (Test / scalafmtCheck).value
       (Compile / scalafmtSbtCheck).value
-    },
-
-    // Dependencies
-    libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value)
+    }
   )
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
@@ -62,15 +63,17 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
     case _             => Nil
   }
 
-lazy val docSettings = Seq(
-  autoAPIMappings                            := true,
-  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(main),
-  siteSourceDirectory                        := baseDirectory.value / "site",
-  ScalaUnidoc / siteSubdirName               := "latest/api",
-  addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
-  git.remoteRepo                                             := s"git@github.com:$username/$repo.git",
-  ghpagesPushSite / envVars += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
-)
+/** My dependencies - note this is a zero dependency library, so following are only for Tests */
+def dependencies(scalaVersion: String) =
+  Seq(
+    "2" -> ("org.scala-lang" % "scala-reflect" % scalaVersion % Provided),
+    "2" -> ("com.chuusai"   %% "shapeless"     % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
+    "*" -> ("org.scalatest" %% "scalatest"     % "3.2.15"     % Test),
+    "*" -> ("commons-io"     % "commons-io"    % "2.11.0"     % Test),
+    "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
+    "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
+  ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
-lazy val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
-lazy val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
+// Useful formatting tasks
+lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
+lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
