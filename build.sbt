@@ -26,7 +26,6 @@ lazy val main = (project in file("."))
     organization := s"com.github.$username",
 
     // scalac versions
-    scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
     crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
     crossVersion       := CrossVersion.binary,
 
@@ -58,18 +57,18 @@ lazy val main = (project in file("."))
       import java.nio.file.Paths
       val destination = Paths.get("target/site")
       crossScalaVersions.value foreach { scalaVersion =>
-        val version = scalaVersion.split("\\.")
-        val docFolder =  "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
+        val version   = scalaVersion.split("\\.")
+        val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
         IO.copyDirectory(new File(s"target/$docFolder/api"), destination.resolve("api").resolve(version.take(2).mkString(".")).toFile)
       }
-      IO.copyFile(new File("site/index.html"), destination.resolve("index.html").toFile)
+      IO.copyFile(new File("src/site/index.html"), destination.resolve("index.html").toFile)
     }
   )
 
 // Useful formatting tasks
 lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
 lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
-lazy val makeSite = taskKey[Unit]("Generate the website")
+lazy val makeSite    = taskKey[Unit]("Generate the website")
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
@@ -90,5 +89,3 @@ def myDependencies(scalaVersion: String) =
     "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
-
-
