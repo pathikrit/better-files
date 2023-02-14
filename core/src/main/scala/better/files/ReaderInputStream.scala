@@ -11,7 +11,7 @@ import scala.annotation.tailrec
   */
 class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int) extends InputStream {
 
-  def this(reader: Reader, bufferSize: Int = DefaultBufferSize)(implicit charset: Charset = DefaultCharset) =
+  def this(reader: Reader, bufferSize: Int = DefaultBufferSize, charset: Charset = DefaultCharset) =
     this(
       reader = reader,
       encoder = charset.newEncoder.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE),

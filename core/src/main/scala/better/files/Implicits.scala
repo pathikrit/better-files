@@ -33,7 +33,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def /(child: String): File =
       toFile / child
 
-    def inputStream(implicit charset: Charset = DefaultCharset): InputStream =
+    def inputStream(charset: Charset = DefaultCharset): InputStream =
       new ByteArrayInputStream(str.getBytes(charset))
 
     def reader: Reader =
@@ -103,8 +103,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
 
     def asString(
         closeStream: Boolean = true,
-        bufferSize: Int = DefaultBufferSize
-    )(implicit
+        bufferSize: Int = DefaultBufferSize,
         charset: Charset = DefaultCharset
     ): String = {
       try {
@@ -148,7 +147,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asGzipInputStream(bufferSize: Int = DefaultBufferSize): GZIPInputStream =
       new GZIPInputStream(in, bufferSize)
 
-    def asZipInputStream(implicit charset: Charset = DefaultCharset): ZipInputStream =
+    def asZipInputStream(charset: Charset = DefaultCharset): ZipInputStream =
       new ZipInputStream(in, charset)
 
     /** If bufferSize is set to less than or equal to 0, we don't buffer */
@@ -175,10 +174,10 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
           }
       }
 
-    def reader(implicit charset: Charset = DefaultCharset): InputStreamReader =
+    def reader(charset: Charset = DefaultCharset): InputStreamReader =
       new InputStreamReader(in, charset)
 
-    def lines(implicit charset: Charset = DefaultCharset): Iterator[String] =
+    def lines(charset: Charset = DefaultCharset): Iterator[String] =
       reader(charset).buffered.lines().toAutoClosedIterator
 
     def bytes: Iterator[Byte] =
@@ -221,7 +220,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def withChecksum(checksum: Checksum): CheckedOutputStream =
       new CheckedOutputStream(out, checksum)
 
-    def writer(implicit charset: Charset = DefaultCharset): OutputStreamWriter =
+    def writer(charset: Charset = DefaultCharset): OutputStreamWriter =
       new OutputStreamWriter(out, charset)
 
     def printWriter(autoFlush: Boolean = false): PrintWriter =
@@ -251,8 +250,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def adler32: CheckedOutputStream =
       withChecksum(new Adler32)
 
-    def writeAndClose(str: String)(implicit charset: Charset = DefaultCharset): Unit =
-      out.writer.autoClosed.foreach(_.write(str))
+    def writeAndClose(str: String, charset: Charset = DefaultCharset): Unit =
+      out.writer(charset).autoClosed.foreach(_.write(str))
 
     def tee(out2: OutputStream): OutputStream =
       new TeeOutputStream(out, out2)
@@ -261,7 +260,7 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def asObjectOutputStream(bufferSize: Int = DefaultBufferSize): ObjectOutputStream =
       new ObjectOutputStream(if (bufferSize <= 0) out else buffered(bufferSize))
 
-    def asZipOutputStream(implicit charset: Charset): ZipOutputStream =
+    def asZipOutputStream(charset: Charset): ZipOutputStream =
       new ZipOutputStream(out, charset)
   }
 
@@ -276,8 +275,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def buffered: BufferedReader =
       new BufferedReader(reader)
 
-    def toInputStream(implicit charset: Charset = DefaultCharset): InputStream =
-      new ReaderInputStream(reader)(charset)
+    def toInputStream(bufferSize: Int = DefaultBufferSize, charset: Charset = DefaultCharset): InputStream =
+      new ReaderInputStream(reader, bufferSize, charset)
 
     def chars: Iterator[Char] =
       reader.autoClosed.iterator(res => eofReader(res.read()).map(_.toChar))
@@ -292,8 +291,12 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
     def buffered: BufferedWriter =
       new BufferedWriter(writer)
 
-    def outputstream(implicit charset: Charset = DefaultCharset): OutputStream =
-      new WriterOutputStream(writer)(charset)
+    def outputstream(
+        bufferSize: Int = DefaultBufferSize,
+        flushImmediately: Boolean = false,
+        charset: Charset = DefaultCharset
+    ): OutputStream =
+      new WriterOutputStream(writer, bufferSize, flushImmediately, charset)
   }
 
   implicit class FileChannelExtensions(fc: FileChannel) {

@@ -510,7 +510,7 @@ class FileSpec extends CommonSpec {
       val f1      = (dir / Symbol("f1")).touch().appendLines("Line 1", "Line 2")
       val f2      = (dir / Symbol("f2")).touch().appendLines("Line 3", "Line 4")
       val zipFile = (dir / "f.zip").zipIn(Iterator(f1, f2))
-      val lines   = zipFile.newZipInputStream().foldMap(_.lines.toSeq).flatten
+      val lines   = zipFile.newZipInputStream().foldMap(_.lines().toSeq).flatten
       lines.toSeq shouldEqual Seq("Line 1", "Line 2", "Line 3", "Line 4")
     }
   }
@@ -540,7 +540,7 @@ class FileSpec extends CommonSpec {
       line <- data
     } pw.println(line)
 
-    (testRoot / "test.gz").inputStream().flatMap(_.asGzipInputStream().lines).toSeq shouldEqual data
+    (testRoot / "test.gz").inputStream().flatMap(_.asGzipInputStream().lines()).toSeq shouldEqual data
   }
 
   it should "gzip" in {
@@ -574,7 +574,7 @@ class FileSpec extends CommonSpec {
         writer <- f.bufferedWriter()
         out    <- writer.outputstream().autoClosed
       } out.write(text.mkString("\n").getBytes)
-      val t = f.bufferedReader().flatMap(_.toInputStream.lines)
+      val t = f.bufferedReader().flatMap(_.toInputStream().lines())
       t.toList shouldEqual text
     }
   }

@@ -14,9 +14,9 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 -----------
 
 ## v4.0.0 [WIP]
-* [ ] [Issue #589](https://github.com/pathikrit/better-files/issues/589): Methods that do I/O has parens `()`
+* (_Planned_) [Issue #589](https://github.com/pathikrit/better-files/issues/589): Methods that do I/O has parens `()`
   - **Migration Guide**: Some API calls would need extra parens e.g. `file.size` is now `file.size()` and `dir.list` is now `dir.list()`
-* [x] [PR #584](https://github.com/pathikrit/better-files/pull/584): Remove implicit options from all APIs.
+* [PR #584](https://github.com/pathikrit/better-files/pull/584): Remove implicit options from all APIs.
   - **Migration Guide**: Instead of implicit params like `implicit charset: Charset`, it is now explicitly passed in:
     ```scala
     // Before
@@ -25,12 +25,12 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
     // Now
     def appendText(text: String, charset: Charset = DefaultCharset)
     ```
-* [x] [Issue #295](https://github.com/pathikrit/better-files/pull/587): `CloseableIterators` fixes resource leaks on partial iterations ([#270](https://github.com/pathikrit/better-files/issues/270), [#403](https://github.com/pathikrit/better-files/issues/403), [#553](https://github.com/pathikrit/better-files/issues/553))    
-* [ ] [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
-* [ ] [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
-* [ ] [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
-* [ ] [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs
-* [ ] Remove akka utils
+* [Issue #295](https://github.com/pathikrit/better-files/pull/587): `CloseableIterators` fixes resource leaks on partial iterations ([#270](https://github.com/pathikrit/better-files/issues/270), [#403](https://github.com/pathikrit/better-files/issues/403), [#553](https://github.com/pathikrit/better-files/issues/553))    
+* (_Planned_) [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
+* (_Planned_) [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
+* (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
+* (_Planned_) [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs
+* (_Planned_)  Remove akka utils
 
 ##  [v3.9.2](https://github.com/pathikrit/better-files/releases/tag/v3.9.2)
 * [PR #573](https://github.com/pathikrit/better-files/pull/573): Scala 3 Support!

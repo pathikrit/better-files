@@ -131,7 +131,7 @@ class FastJavaIOScanner(reader: BufferedReader) extends AbstractScanner(reader) 
 
 /** Same as FastJavaIOScanner but uses better-files's Reader => InputStream */
 class FastJavaIOScanner2(reader: BufferedReader) extends FastJavaIOScanner(reader) {
-  override def is = reader.toInputStream
+  override def is = reader.toInputStream()
 }
 
 /** Based on the better-files implementation */

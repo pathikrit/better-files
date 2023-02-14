@@ -22,8 +22,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
   def this(
       writer: Writer,
       bufferSize: Int = DefaultBufferSize,
-      flushImmediately: Boolean = false
-  )(implicit
+      flushImmediately: Boolean = false,
       charset: Charset = DefaultCharset
   ) =
     this(
