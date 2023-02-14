@@ -23,11 +23,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: coursier/cache-action@v6
 
-      - uses: olafurpg/setup-scala@v13
+      - name: Set up JDK ${{matrix.java}}
+        uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
+          java-version: ${{matrix.java}}
+          distribution: 'temurin'
+          cache: sbt
 
       - name: Unit test
         run: sbt +test
@@ -41,7 +43,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: coursier/cache-action@v6
       - uses: olafurpg/setup-scala@v13
 
       - name: Generate reports
