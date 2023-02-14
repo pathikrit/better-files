@@ -440,10 +440,10 @@ Note:
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Iterator</dd></dl></div>
-    </li><li name="better.files.CloseableIterator#nonClosing" visbl="pub" class="indented0 " data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="nonClosing():Iterator[A]"></a>
+    </li><li name="better.files.CloseableIterator#nonClosing" visbl="pub" class="indented0 " data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="nonClosing(closeInTheEnd:Boolean):Iterator[A]"></a><a id="nonClosing(Boolean):Iterator[A]"></a>
       <span class="permalink">
-      <a href="../../better/files/CloseableIterator.html#nonClosing():Iterator[A]" title="Permalink">
+      <a href="../../better/files/CloseableIterator.html#nonClosing(closeInTheEnd:Boolean):Iterator[A]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -452,10 +452,17 @@ Note:
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">nonClosing</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="better.files.CloseableIterator.A">A</span>]</span>
+        <span class="name">nonClosing</span><span class="params">(<span name="closeInTheEnd">closeInTheEnd: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<span class="extype" name="better.files.CloseableIterator.A">A</span>]</span>
       </span>
       
-      <p class="shortcomment cmt">Returns a non closing iterator</p>
+      <p class="shortcomment cmt">Returns a non closing version of this iterator
+This means partial operations like find() and drop() will NOT close the iterator
+</p><div class="fullcomment"><div class="comment cmt"><p>Returns a non closing version of this iterator
+This means partial operations like find() and drop() will NOT close the iterator
+</p></div><dl class="paramcmts block"><dt class="param">closeInTheEnd</dt><dd class="cmt"><p>If this is true, it will ONLY close the iterator in the end when it has no more elements (default behaviour)
+                     and not on partial evaluations like find() and take() etc.
+                     If this is false, iterator will be ALWAYS left open i.e. close() will be NEVER invoked
+                     and is up to user to close any underlying resources</p></dd></dl></div>
     </li></ol>
             </div>
 
