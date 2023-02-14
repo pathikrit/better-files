@@ -47,7 +47,7 @@ jobs:
       - uses: olafurpg/setup-scala@v13
 
       - name: Generate reports
-        run: sbt coverage test coverageReport coverageAggregate makeSite
+        run: sbt coverage test coverageReport coverageAggregate +doc makeSite
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

@@ -39,7 +39,7 @@ lazy val main = (project in file("."))
     Test / test := (Test / test).dependsOn(checkFormat).value, // fail tests if code is not formatted
 
     // Dependencies
-    libraryDependencies ++= dependencies(scalaVersion.value),
+    libraryDependencies ++= myDependencies(scalaVersion.value),
 
     // Formatting tasks
     formatAll := {
@@ -51,8 +51,25 @@ lazy val main = (project in file("."))
       (Compile / scalafmtCheck).value
       (Test / scalafmtCheck).value
       (Compile / scalafmtSbtCheck).value
+    },
+
+    // make site task
+    makeSite := {
+      import java.nio.file.Paths
+      val destination = Paths.get("target/site")
+      crossScalaVersions.value foreach { scalaVersion =>
+        val version = scalaVersion.split("\\.")
+        val docFolder =  "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
+        IO.copyDirectory(new File(s"target/$docFolder/api"), destination.resolve("api").resolve(version.take(2).mkString(".")).toFile)
+      }
+      IO.copyFile(new File("site/index.html"), destination.resolve("index.html").toFile)
     }
   )
+
+// Useful formatting tasks
+lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
+lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
+lazy val makeSite = taskKey[Unit]("Generate the website")
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
@@ -64,7 +81,7 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
   }
 
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
-def dependencies(scalaVersion: String) =
+def myDependencies(scalaVersion: String) =
   Seq(
     "2" -> ("org.scala-lang" % "scala-reflect" % scalaVersion % Provided),
     "2" -> ("com.chuusai"   %% "shapeless"     % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
@@ -74,6 +91,4 @@ def dependencies(scalaVersion: String) =
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
-// Useful formatting tasks
-lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
-lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
+
