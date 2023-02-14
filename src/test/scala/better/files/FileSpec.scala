@@ -396,7 +396,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "read chinese" in {
-    val lines = "core/src/test/resources/better/files/issues-326.txt".toFile.lines().toSeq
+    val lines = "src/test/resources/better/files/issues-326.txt".toFile.lines().toSeq
     assert(lines.length > 20)
   }
 
@@ -526,7 +526,7 @@ class FileSpec extends CommonSpec {
   }
 
   it should "handle backslashes in zip entry name" in {
-    val list = File("core/src/test/resources/better/files/issues-262.zip")
+    val list = File("src/test/resources/better/files/issues-262.zip")
       .unzipTo()
       .listRecursively()
       .toList

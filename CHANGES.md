@@ -47,7 +47,6 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
 * (_Planned_) [Issue #129](https://github.com/pathikrit/better-files/issues/129): JSR-203 and JimFS compatibility
 * (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Strongly typed relative and absolute path APIs
 * (_Planned_) [Issue #204](https://github.com/pathikrit/better-files/issues/204): Universal converter APIs
-* (_Planned_)  Remove akka utils
 
 ##  [v3.9.2](https://github.com/pathikrit/better-files/releases/tag/v3.9.2)
 * [PR #573](https://github.com/pathikrit/better-files/pull/573): Scala 3 Support!

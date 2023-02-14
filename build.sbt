@@ -3,7 +3,7 @@ val repo     = "better-files"
 
 inThisBuild(
   List(
-    organization.withRank(KeyRanks.Invisible) := "better.files",
+    organization.withRank(KeyRanks.Invisible) := repo.replace("-", "."),
     homepage                                  := Some(url(s"https://github.com/$username/$repo")),
     licenses                                  := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
     developers := List(
@@ -11,35 +11,55 @@ inThisBuild(
         id = username,
         name = "Pathikrit Bhowmick",
         email = "pathikritbhowmick@msn.com",
-        url = new URL(s"http://github.com/${username}")
+        url = new URL(s"http://github.com/$username")
       )
     ),
     Global / onChangedBuildSource := ReloadOnSourceChanges
   )
 )
 
-lazy val commonSettings = Seq(
-  organization       := s"com.github.$username",
-  scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
-  crossVersion       := CrossVersion.binary,
-  scalacOptions      := myScalacOptions(scalaVersion.value, scalacOptions.value),
-  Compile / doc / scalacOptions += "-groups",
-  libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value),
-  Compile / compile := (Compile / compile).dependsOn(formatAll).value,
-  Test / test       := (Test / test).dependsOn(checkFormat).value,
-  Test / testOptions += Tests.Argument("-oDF"),
-  formatAll := {
-    (Compile / scalafmt).value
-    (Test / scalafmt).value
-    (Compile / scalafmtSbt).value
-  },
-  checkFormat := {
-    (Compile / scalafmtCheck).value
-    (Test / scalafmtCheck).value
-    (Compile / scalafmtSbtCheck).value
-  }
-)
+lazy val main = (project in file("."))
+  .settings(
+    // Names
+    name         := repo,
+    description  := "Simple, safe and intuitive I/O in Scala",
+    organization := s"com.github.$username",
+
+    // scalac versions
+    crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
+    crossVersion       := CrossVersion.binary,
+
+    // Compile settings
+    scalacOptions     := myScalacOptions(scalaVersion.value, scalacOptions.value),
+    Compile / compile := (Compile / compile).dependsOn(formatAll).value, // auto format on compile
+
+    // Test settings
+    Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
+    Test / test := (Test / test).dependsOn(checkFormat).value, // fail tests if code is not formatted
+
+    // Dependencies
+    libraryDependencies ++= myDependencies(scalaVersion.value),
+
+    // Formatting tasks
+    formatAll := {
+      (Compile / scalafmt).value
+      (Test / scalafmt).value
+      (Compile / scalafmtSbt).value
+    },
+    checkFormat := {
+      (Compile / scalafmtCheck).value
+      (Test / scalafmtCheck).value
+      (Compile / scalafmtSbtCheck).value
+    },
+
+    // make site task
+    makeSite := copyDocs(crossScalaVersions.value, destination = file("target/site"), site = file("src/site"))
+  )
+
+// Useful formatting tasks
+lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
+lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
+lazy val makeSite    = taskKey[Unit]("Generate the website")
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
@@ -50,40 +70,22 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
     case _             => Nil
   }
 
-lazy val core = (project in file("core"))
-  .settings(commonSettings: _*)
-  .settings(
-    name        := repo,
-    description := "Simple, safe and intuitive I/O in Scala"
-  )
+/** My dependencies - note this is a zero dependency library, so following are only for Tests */
+def myDependencies(scalaVersion: String) =
+  Seq(
+    "2" -> ("org.scala-lang" % "scala-reflect" % scalaVersion % Provided),
+    "2" -> ("com.chuusai"   %% "shapeless"     % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
+    "*" -> ("org.scalatest" %% "scalatest"     % "3.2.15"     % Test),
+    "*" -> ("commons-io"     % "commons-io"    % "2.11.0"     % Test),
+    "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
+    "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
+  ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
-lazy val akka = (project in file("akka"))
-  .settings(commonSettings: _*)
-  .settings(
-    name        := s"$repo-akka",
-    description := "Reactive file watcher using Akka actors",
-    libraryDependencies += Dependencies.akka(scalaVersion.value)
-  )
-  .dependsOn(core % "test->test;compile->compile")
-
-lazy val root = (project in file("."))
-  .settings(name := s"$repo-root")
-  .settings(commonSettings: _*)
-  .settings(docSettings: _*)
-  .settings(publish / skip := true)
-  .enablePlugins(ScalaUnidocPlugin)
-  .enablePlugins(GhpagesPlugin)
-  .aggregate(core, akka)
-
-lazy val docSettings = Seq(
-  autoAPIMappings                            := true,
-  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, akka),
-  siteSourceDirectory                        := baseDirectory.value / "site",
-  ScalaUnidoc / siteSubdirName               := "latest/api",
-  addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
-  git.remoteRepo                                             := s"git@github.com:$username/$repo.git",
-  ghpagesPushSite / envVars += ("SBT_GHPAGES_COMMIT_MESSAGE" -> s"Publishing Scaladoc [CI SKIP]")
-)
-
-lazy val formatAll   = taskKey[Unit]("Format all the source code which includes src, test, and build files")
-lazy val checkFormat = taskKey[Unit]("Check all the source code which includes src, test, and build files")
+def copyDocs(scalaVersions: Seq[String], destination: File, site: File) = {
+  IO.copyDirectory(site, destination)
+  scalaVersions foreach { scalaVersion =>
+    val version   = scalaVersion.split("\\.")
+    val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
+    IO.copyDirectory(file(s"target/$docFolder/api"), destination / "api" / (version.take(2).mkString(".")))
+  }
+}

@@ -1,6 +1,6 @@
 # better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink]  [![Scaladoc][scaladocImg]][scaladocLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](core/src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+`better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
 ## Motivation
 Imagine you have to write the following method:
@@ -63,13 +63,6 @@ In your `build.sbt`, add this:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
-To use the [Akka based file monitor](akka), also add this:
-```scala
-libraryDependencies ++= Seq(
-  "com.github.pathikrit"  %% "better-files-akka"  % version,
-  "com.typesafe.akka"     %% "akka-actor"         % "2.6.13"
-)
-```
 Latest version: [![Scaladex][scaladexImg]][scaladexLink]
 
 Other available versions:  
@@ -86,8 +79,8 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 
 ## Tests [![Tests][githubActionsImg]][githubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
 
-* [FileSpec](core/src/test/scala/better/files/FileSpec.scala)
-* [FileWatcherSpec](akka/src/test/scala/better/files/FileWatcherSpec.scala)
+* [FileSpec](src/test/scala/better/files/FileSpec.scala)
+* [FileWatcherSpec](src/test/scala/better/files/akka/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
 
 [licenseImg]: https://img.shields.io/github/license/pathikrit/better-files.svg
@@ -250,7 +243,7 @@ file.contentAsString(charset = Charset.forName("US-ASCII"))
 file.write("hello world", charset = "US-ASCII")
  ```
 
-Note: By default, `better-files` [correctly handles BOMs while decoding](core/src/main/scala/better/files/UnicodeCharset.scala).
+Note: By default, `better-files` [correctly handles BOMs while decoding](src/main/scala/better/files/UnicodeCharset.scala).
 If you wish to have the [incorrect JDK behaviour](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4508058),
 you would need to supply Java's UTF-8 charset e.g.:
 ```scala
@@ -627,7 +620,7 @@ val lines: List[String] = using(file.newInputStream) { stream =>
 }
 ```
 
-Auto-closed instances also have a useful method to generate [self-closing iterators](core/src/main/scala/better/files/CloseableIterator.scala) that auto closes the parent resource on exhaustion:
+Auto-closed instances also have a useful method to generate [self-closing iterators](src/main/scala/better/files/CloseableIterator.scala) that auto closes the parent resource on exhaustion:
 ```scala
 val lines: Iterator[String] = file.lines()  // This will auto close the underlying stream on iterator exhaustion
 
@@ -646,7 +639,7 @@ Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/uti
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
 `better-files` provides a [faster](#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html)
-that [does not use regexes](core/src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
+that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val f1 = File("/tmp/temp.txt")
 val data = f1.overwrite(s"""Hello World
@@ -678,7 +671,7 @@ val scanner = file.newScanner()
 println(scanner.next[Animal])
 ```
 
-The [shapeless-scanner](core/src/test/scala-2/better/files/ShapelessScannerSpec.scala) lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
+The [shapeless-scanner](test/scala-2/better/files/ShapelessScannerSpec.scala) lets you scan [`HList`s](https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlists.scala):
 ```scala
 val in = Scanner("""
   12 Bob True
@@ -728,7 +721,7 @@ are based on a blocking [polling-based model](http://docs.oracle.com/javase/8/do
 does not easily allow [recursive watching of directories](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java)
 and nor does it easily allow [watching regular files](http://stackoverflow.com/questions/16251273/) without writing a lot of Java boilerplate.
 
-`better-files` abstracts all the above ugliness behind a [simple interface](core/src/main/scala/better/files/File.scala#L1400):
+`better-files` abstracts all the above ugliness behind a [simple interface](src/main/scala/better/files/File.scala#L1400):
 ```scala
 val watcher = new FileMonitor(myDir, recursive = true) {
   override def onCreate(file: File, count: Int) = println(s"$file got created")
@@ -755,7 +748,7 @@ There is also an external module which gives high performance file monitoring an
 See: https://github.com/gmethvin/directory-watcher#better-files-integration-scala
 
 ### Akka File Watcher
-`better-files` also provides a powerful yet concise [reactive file watcher](akka/src/main/scala/better/files/FileWatcher.scala)
+`better-files` also provides an [example of how to build a reactive file watcher](src/test/scala/better/files/akka)
 based on [Akka actors](http://doc.akka.io/docs/akka/snapshot/scala/actors.html) that supports dynamic dispatches:
  ```scala
 import akka.actor.{ActorRef, ActorSystem}
@@ -781,9 +774,9 @@ watcher ! when(events = EventType.ENTRY_CREATE, EventType.ENTRY_MODIFY) {
 ```
 
 ## Benchmarks
-* [Scanner benchmarks](core/src/test/scala/better/files/benchmarks/Scanners.scala):
+* [Scanner benchmarks](src/test/scala/better/files/benchmarks/Scanners.scala):
 ```shell
-> sbt "core/testOnly better.files.benchmarks.*"
+> sbt "testOnly better.files.benchmarks.*"
 JavaScanner              : 2191 ms
 StringBuilderScanner     : 1325 ms
 CharBufferScanner        : 1117 ms

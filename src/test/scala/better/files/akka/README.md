@@ -37,7 +37,7 @@ def foo(x: Int, y: Int): Unit = {
 ```
 
 
-All the code presented here is available under MIT license as part of the [better-files][better-files-watcher]  library on [GitHub][better-files].
+All the code presented here is available under MIT license as part of the [better-files][better-files-watcher] library on [GitHub][better-files].
 
 -----------
 
