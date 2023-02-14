@@ -79,9 +79,15 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
         override def next()  = it.next()
       }
 
-    /** Returns a non closing version of this iterator */
-    def nonClosing(): Iterator[A] = it match {
-      case c: CloseableIterator[A] => c.nonClosing()
+    /** Returns a non closing version of this iterator
+      * This means partial operations like find() and drop() will NOT close the iterator
+      * This was the behaviour prior to v4.0.0 - see: https://github.com/pathikrit/better-files/pull/587
+      * @param closeInTheEnd If this is true, it will ONLY close the iterator in the end when it has no more elements (default behaviour)
+      *                      and not on partial evaluations like find() and take()
+      *                      If this is false, iterator will be left open EVEN when it has no more elements
+      */
+    def nonClosing(closeInTheEnd: Boolean = true): Iterator[A] = it match {
+      case c: CloseableIterator[A] => c.nonClosing(closeInTheEnd)
       case _                       => it
     }
   }

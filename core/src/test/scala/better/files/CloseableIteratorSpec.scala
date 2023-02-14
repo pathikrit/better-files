@@ -40,7 +40,8 @@ class CloseableIteratorSpec extends CommonSpec {
           (1 to 4).foreach(_ => test.iterator.hasNext) // Call hasNext bunch of times to make sure we call close() atmost once
           assert(result == f(test.vanilla()), "Different result found over vanilla iterator")
       }
-      assert(test.isClosed)
+      assert(test.isClosed, "Iterator must be closed by now")
+      assertThrows[IllegalStateException](test.iterator.next()) // , "Cannot call next() on a closed iterator")
     }
 
     check("zipWithIndex", _.zipWithIndex)
@@ -123,6 +124,27 @@ class CloseableIteratorSpec extends CommonSpec {
     check("zipWithTake", (t1, t2) => t1.take(5).zip(t2.take(3)))
     check("zipAll", _.zipAll(_, -100, 100))
     check("forComprehension", (t1, t2) => for { i <- t1; j <- t2 } yield i + j)
+  }
+
+  "non closing versions" should "not close on partial evals" in {
+    val t1 = new TestIterator(10)
+    assert(!t1.isClosed, "Cannot be closed before evaluation")
+    assert(t1.iterator.take(3).size == 3)
+    assert(t1.isClosed, "Must be closed")
+
+    val t2 = new TestIterator(10)
+    assert(!t2.isClosed, "Cannot be closed before evaluation")
+    assert(t2.iterator.nonClosing().take(3).size == 3)
+    assert(!t2.isClosed, "Non closing iterator should not close on partial evaluation")
+    assert(t2.iterator.length > 0)
+    assert(t2.isClosed, "Must close in the end")
+
+    val t3 = new TestIterator(10)
+    assert(!t3.isClosed, "Cannot be closed before evaluation")
+    assert(t3.iterator.nonClosing(closeInTheEnd = false).take(3).size == 3)
+    assert(!t3.isClosed, "Non closing iterator should not close on partial evaluation")
+    assert(t3.iterator.length > 0)
+    assert(t3.isClosed, "Must NOT close in the end")
   }
 
   "streams" can "be partitioned" in {

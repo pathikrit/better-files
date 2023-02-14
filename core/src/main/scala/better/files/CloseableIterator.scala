@@ -47,14 +47,21 @@ trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
         throw outer
     }
 
-  /** Returns a non closing iterator */
-  def nonClosing(): Iterator[A]
+  /** Returns a non closing version of this iterator
+    * This means partial operations like find() and drop() will NOT close the iterator
+    *
+    * @param closeInTheEnd If this is true, it will ONLY close the iterator in the end when it has no more elements (default behaviour)
+    *                      and not on partial evaluations like find() and take() etc.
+    *                      If this is false, iterator will be ALWAYS left open i.e. close() will be NEVER invoked
+    *                      and is up to user to close any underlying resources
+    */
+  def nonClosing(closeInTheEnd: Boolean): Iterator[A]
 }
 
 object CloseableIterator {
 
   /** Make a closeable iterator given an existing iterator and a close function */
-  def apply[A](it: Iterator[A], closeFn: () => Unit): CloseableIterator[A] = new CloseableIteratorCompat[A] {
+  def apply[A](it: Iterator[A], closeFn: () => Unit): CloseableIterator[A] = new CloseableIteratorCompat[A] { self =>
     override def hasNext = !isClosed.get() && {
       val res = closeIfError(it.hasNext)
       if (!res) closeOnce()
@@ -62,15 +69,20 @@ object CloseableIterator {
     }
 
     override def next() = {
-      require(!isClosed.get(), "Iterator is already closed")
+      if (isClosed.get()) throw new IllegalStateException("Iterator is already closed")
       closeIfError(it.next())
     }
 
     override def close() = closeFn()
 
-    override def nonClosing() = it match {
-      case c: CloseableIterator[A] => c.nonClosing()
-      case _                       => it
+    override def nonClosing(closeInTheEnd: Boolean) = it match {
+      case c: CloseableIterator[A] => c.nonClosing(closeInTheEnd)
+      case _ if !closeInTheEnd     => it
+      case _ =>
+        new Iterator[A] {
+          override def hasNext = self.hasNext
+          override def next()  = self.next()
+        }
     }
   }
 }

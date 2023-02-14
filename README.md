@@ -635,7 +635,10 @@ lines.find(_ == "hello world") //This will auto close the stream if nothing is f
 lines.take(10).size //This will close the stream even if stream has >10 lines
 
 // If you don't want this auto closing behaviour
-lines.nonClosing().take(10).size // This would leave stream open if it has >10 lines
+lines.nonClosing().take(10).size // This would leave stream open if it has >10 lines and only close if stream has no more elements in it
+
+// If you don't even want it to close when underlying stream has no more elements
+lines.nonClosing(closeInTheEnd = false) // This will NEVER close the underlying stream - you should probably never need to do this!
 ```
 
 ### Scanner
