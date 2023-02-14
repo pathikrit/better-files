@@ -53,7 +53,7 @@ lazy val main = (project in file("."))
     },
 
     // make site task
-    makeSite := copyDocs(crossScalaVersions.value, destination = file("target/site"), homepage = file("src/site/index.html"))
+    makeSite := copyDocs(crossScalaVersions.value, destination = file("target/site"), site = file("src/site"))
   )
 
 // Useful formatting tasks
@@ -81,11 +81,11 @@ def myDependencies(scalaVersion: String) =
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
-def copyDocs(scalaVersions: Seq[String], destination: File, homepage: File) = {
+def copyDocs(scalaVersions: Seq[String], destination: File, site: File) = {
+  IO.copyDirectory(site, destination)
   scalaVersions foreach { scalaVersion =>
     val version   = scalaVersion.split("\\.")
     val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
     IO.copyDirectory(file(s"target/$docFolder/api"), destination / "api" / (version.take(2).mkString(".")))
   }
-  IO.copyFile(homepage, destination / "index.html")
 }
