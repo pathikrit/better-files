@@ -85,4 +85,7 @@ object CloseableIterator {
         }
     }
   }
+
+  def from[A](resource: AutoCloseable)(f: resource.type => Iterator[A]): CloseableIterator[A] =
+    CloseableIterator(f(resource), resource.close)
 }
