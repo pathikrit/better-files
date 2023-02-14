@@ -3,7 +3,7 @@ val repo     = "better-files"
 
 inThisBuild(
   List(
-    organization.withRank(KeyRanks.Invisible) := "better.files",
+    organization.withRank(KeyRanks.Invisible) := "better.files", // TODO: repo.replace("-", ".")
     homepage                                  := Some(url(s"https://github.com/$username/$repo")),
     licenses                                  := List("MIT" -> url(s"https://github.com/$username/$repo/blob/master/LICENSE")),
     developers := List(
@@ -11,35 +11,47 @@ inThisBuild(
         id = username,
         name = "Pathikrit Bhowmick",
         email = "pathikritbhowmick@msn.com",
-        url = new URL(s"http://github.com/${username}")
+        url = new URL(s"http://github.com/$username")
       )
     ),
     Global / onChangedBuildSource := ReloadOnSourceChanges
   )
 )
 
-lazy val commonSettings = Seq(
-  organization       := s"com.github.$username",
-  scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
-  crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
-  crossVersion       := CrossVersion.binary,
-  scalacOptions      := myScalacOptions(scalaVersion.value, scalacOptions.value),
-  Compile / doc / scalacOptions += "-groups",
-  libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value),
-  Compile / compile := (Compile / compile).dependsOn(formatAll).value,
-  Test / test       := (Test / test).dependsOn(checkFormat).value,
-  Test / testOptions += Tests.Argument("-oDF"),
-  formatAll := {
-    (Compile / scalafmt).value
-    (Test / scalafmt).value
-    (Compile / scalafmtSbt).value
-  },
-  checkFormat := {
-    (Compile / scalafmtCheck).value
-    (Test / scalafmtCheck).value
-    (Compile / scalafmtSbtCheck).value
-  }
-)
+lazy val main = (project in file("."))
+  .settings(
+    // Names
+    name         := repo,
+    description  := "Simple, safe and intuitive I/O in Scala",
+    organization := s"com.github.$username",
+
+    // scalac versions
+    scalaVersion       := crossScalaVersions.value.find(_.startsWith("2.12")).get,
+    crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
+    crossVersion       := CrossVersion.binary,
+
+    // Compile settings
+    scalacOptions := myScalacOptions(scalaVersion.value, scalacOptions.value),
+    Compile / doc / scalacOptions += "-groups",
+    Compile / compile := (Compile / compile).dependsOn(formatAll).value,
+    formatAll := {
+      (Compile / scalafmt).value
+      (Test / scalafmt).value
+      (Compile / scalafmtSbt).value
+    },
+
+    // Test settings
+    Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
+    Test / test := (Test / test).dependsOn(checkFormat).value,
+    checkFormat := {
+      (Compile / scalafmtCheck).value
+      (Test / scalafmtCheck).value
+      (Compile / scalafmtSbtCheck).value
+    },
+
+    // Dependencies
+    libraryDependencies ++= Dependencies.testDependencies(scalaVersion.value)
+  )
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
@@ -50,24 +62,9 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
     case _             => Nil
   }
 
-lazy val core = (project in file("core"))
-  .settings(commonSettings: _*)
-  .settings(
-    name        := repo,
-    description := "Simple, safe and intuitive I/O in Scala"
-  )
-
-lazy val root = (project in file("."))
-  .settings(name := s"$repo-root")
-  .settings(commonSettings: _*)
-  .settings(docSettings: _*)
-  .settings(publish / skip := true)
-  .enablePlugins(ScalaUnidocPlugin)
-  .enablePlugins(GhpagesPlugin)
-
 lazy val docSettings = Seq(
   autoAPIMappings                            := true,
-  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core),
+  ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(main),
   siteSourceDirectory                        := baseDirectory.value / "site",
   ScalaUnidoc / siteSubdirName               := "latest/api",
   addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
