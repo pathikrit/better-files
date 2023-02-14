@@ -53,16 +53,7 @@ lazy val main = (project in file("."))
     },
 
     // make site task
-    makeSite := {
-      import java.nio.file.Paths
-      val destination = Paths.get("target/site")
-      crossScalaVersions.value foreach { scalaVersion =>
-        val version   = scalaVersion.split("\\.")
-        val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
-        IO.copyDirectory(new File(s"target/$docFolder/api"), destination.resolve("api").resolve(version.take(2).mkString(".")).toFile)
-      }
-      IO.copyFile(new File("src/site/index.html"), destination.resolve("index.html").toFile)
-    }
+    makeSite := copyDocs(crossScalaVersions.value, destination = file("target/site"), homepage = file("src/site/index.html"))
   )
 
 // Useful formatting tasks
@@ -89,3 +80,12 @@ def myDependencies(scalaVersion: String) =
     "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
+
+def copyDocs(scalaVersions: Seq[String], destination: File, homepage: File) = {
+  scalaVersions foreach { scalaVersion =>
+    val version   = scalaVersion.split("\\.")
+    val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
+    IO.copyDirectory(file(s"target/$docFolder/api"), destination / "api" / (version.take(2).mkString(".")))
+  }
+  IO.copyFile(homepage, destination / "index.html")
+}
