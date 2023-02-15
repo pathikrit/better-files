@@ -1,6 +1,6 @@
 # better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink]  [![Scaladoc][scaladocImg]][scaladocLink] [![Gitter][gitterImg]][gitterLink]
 
-`better-files` is a [dependency-free](project/Dependencies.scala) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+`better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
 ## Motivation
 Imagine you have to write the following method:
@@ -31,7 +31,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
 
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=uaYKkpqs6CE" target="_blank">
-    <img src="site/tech_talk_preview.png" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
+    <img src="src/site/tech_talk_preview.png" alt="ScalaDays NYC 2016: Introduction to better-files" width="480" height="360" border="10" />
   </a>
 
   - [ScalaDays Berlin 2016][scalaDaysBerlin2016Event] ([video][scalaDaysBerlin2016Video], [slides][scalaDaysBerlin2016Slides])
@@ -112,7 +112,7 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 [scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
 [scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE
 <!--[scalaDaysNyc2016VideoPreview]: http://img.youtube.com/vi/uaYKkpqs6CE/0.jpg-->
-[scalaDaysNyc2016VideoPreview]: site/tech_talk_preview.png
+[scalaDaysNyc2016VideoPreview]: src/site/tech_talk_preview.png
 [scalaDaysNyc2016Slides]: https://slides.com/pathikrit/better-files/
 
 [scalaDaysBerlin2016Event]: http://event.scaladays.org/scaladays-berlin-2016#!#schedulePopupExtras-7668
