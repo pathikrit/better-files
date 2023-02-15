@@ -1,28 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>better-files</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script>
-    </script>
-  </head>
-  <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm">
-        <a href="api/2.11/better/files/File.html">Scala 2.11</a>
-      </div>
-      <div class="col-sm">
-        <a href="api/2.12/better/files/File.html">Scala 2.12</a>
-      </div>
-      <div class="col-sm">
-        <a href="api/2.13/better/files/File.html">Scala 2.13</a>
-      </div>
-      <div class="col-sm">
-        <a href="api/3.2/better/files/File.html">Scala 3.2</a>
-      </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <title>better-files</title>
+</head>
+<body>
+
+<ul class="nav nav-pills justify-content-center" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#scala-2.11" type="button" role="tab" aria-controls="scala-2.11" aria-selected="true">Scala 2.11</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#scala-2.12" type="button" role="tab" aria-controls="scala-2.12" aria-selected="false">Scala 2.12</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#scala-2.13" type="button" role="tab" aria-controls="scala-2.13" aria-selected="false">Scala 2.13</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#scala-3.2" type="button" role="tab" aria-controls="scala-3.2" aria-selected="false">Scala 3.2</button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="scala-2.11" role="tabpanel" aria-labelledby="scala-2.11" tabindex="0">
+    <div class="ratio ratio-16x9">
+      <iframe src="api/2.11/better/files/File.html"></iframe>
     </div>
   </div>
-  </body>
+  <div class="tab-pane fade" id="scala-2.12" role="tabpanel" aria-labelledby="scala-2.12" tabindex="0">
+    <div class="ratio ratio-16x9">
+      <iframe src="api/2.12/better/files/File.html"></iframe>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="scala-2.13" role="tabpanel" aria-labelledby="scala-2.13" tabindex="0">
+    <div class="ratio ratio-16x9">
+      <iframe src="api/2.13/better/files/File.html"></iframe>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="scala-3.2" role="tabpanel" aria-labelledby="scala-3.2" tabindex="0">
+    <div class="ratio ratio-16x9">
+      <iframe src="api/3.2/better/files/File.html"></iframe>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
 </html>
