@@ -58,7 +58,7 @@ jobs:
           SONATYPE_USERNAME: ${{secrets.SONATYPE_USERNAME}}
 
       - name: Generate reports
-        run: sbt coverage test coverageReport coverageAggregate makeSite #makeSite needs +doc but ci-release already does that
+        run: sbt coverage test coverageReport coverageAggregate makeSite makeCrossSite
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

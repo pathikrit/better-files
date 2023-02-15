@@ -50,16 +50,19 @@ lazy val main = (project in file("."))
       (Compile / scalafmtCheck).value
       (Test / scalafmtCheck).value
       (Compile / scalafmtSbtCheck).value
-    },
-
-    // make site task
-    makeSite := copyDocs(crossScalaVersions.value, site = file("src/site"), destination = file("target/site"))
+    }
+  )
+  // makeSite settings
+  .enablePlugins(SiteScaladocPlugin, PreprocessPlugin)
+  .settings(
+    // SiteScaladoc / siteSubdirName := "api" + "/" + scalaVersion.value,
+    Preprocess / preprocessVars := Map("scalaVersions" -> crossScalaVersions.value.map(v => s"'$v'").mkString("[", ", ", "]")),
+    makeCrossSite               := copyDocs(crossScalaVersions.value, destination = file("target/site"))
   )
 
 // Useful formatting tasks
 lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
 lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
-lazy val makeSite    = taskKey[Unit]("Generate the website")
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
@@ -81,16 +84,12 @@ def myDependencies(scalaVersion: String) =
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
+// TODO: Remove below once https://github.com/sbt/sbt-site/issues/208 is fixed
+lazy val makeCrossSite = taskKey[Unit]("Copy crossScalaVersion Scaladocs")
+
 /** Util that copies scaladocs across scalaVersions + any static site sources into destination */
-def copyDocs(scalaVersions: Seq[String], site: File, destination: File) = {
-  IO.copyDirectory(site, destination)
-  val myVersions = scalaVersions.map({ scalaVersion =>
-    val version      = scalaVersion.split('.')
-    val suffix       = version.take(version.head.toInt).mkString(".")
-    val cleanVersion = version.take(2).mkString(".")
-    IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / cleanVersion)
-    cleanVersion
+def copyDocs(scalaVersions: Seq[String], destination: File) =
+  scalaVersions.foreach({ scalaVersion =>
+    val suffix = scalaVersion.split('.').take(scalaVersion.head.toString.toInt).mkString(".")
+    IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / scalaVersion)
   })
-  val jsVersions = myVersions.map(v => s"'$v'").mkString("[", ", ", "]")
-  IO.write(destination / "index.html", IO.read(site / "index.html").replace("{{scalaVersions}}", jsVersions))
-}
