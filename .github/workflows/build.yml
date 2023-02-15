@@ -25,11 +25,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up JDK ${{matrix.java}}
-        uses: actions/setup-java@v3
+        uses: olafurpg/setup-scala@v13
         with:
           java-version: ${{matrix.java}}
-          distribution: 'temurin'
-          cache: sbt
+
+      - name: Cache scala dependencies
+        uses: coursier/cache-action@v6
 
       - name: Unit test
         run: sbt +test
@@ -43,21 +44,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: olafurpg/setup-scala@v13
-
-      - name: Generate Scaladocs
-        run: sbt +doc
-
-      - name: Generate reports
-        run: sbt coverage test coverageReport coverageAggregate makeSite
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-
-      - name: Publish Github Pages
-        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: target/site
+          fetch-depth: 0
+
+      - uses: olafurpg/setup-scala@v13
 
       - name: Release
         run: sbt ci-release
@@ -66,3 +56,14 @@ jobs:
           PGP_SECRET: ${{secrets.PGP_SECRET}}
           SONATYPE_PASSWORD: ${{secrets.SONATYPE_PASSWORD}}
           SONATYPE_USERNAME: ${{secrets.SONATYPE_USERNAME}}
+
+      - name: Generate reports
+        run: sbt coverage test coverageReport coverageAggregate makeSite #makeSite needs +doc but ci-release already does that
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+
+      - name: Publish Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/site
