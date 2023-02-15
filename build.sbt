@@ -53,7 +53,7 @@ lazy val main = (project in file("."))
     },
 
     // make site task
-    makeSite := copyDocs(crossScalaVersions.value, destination = file("target/site"), site = file("src/site"))
+    makeSite := copyDocs(crossScalaVersions.value, site = file("src/site"), destination = file("target/site"))
   )
 
 // Useful formatting tasks
@@ -81,11 +81,16 @@ def myDependencies(scalaVersion: String) =
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
 
-def copyDocs(scalaVersions: Seq[String], destination: File, site: File) = {
+/** Util that copies scaladocs across scalaVersions + any static site sources into destination */
+def copyDocs(scalaVersions: Seq[String], site: File, destination: File) = {
   IO.copyDirectory(site, destination)
-  scalaVersions foreach { scalaVersion =>
-    val version   = scalaVersion.split("\\.")
-    val docFolder = "scala-" + version.take(if (version.head == "2") 2 else 3).mkString(".")
-    IO.copyDirectory(file(s"target/$docFolder/api"), destination / "api" / (version.take(2).mkString(".")))
-  }
+  val myVersions = scalaVersions.map({ scalaVersion =>
+    val version      = scalaVersion.split('.')
+    val suffix       = version.take(version.head.toInt).mkString(".")
+    val cleanVersion = version.take(2).mkString(".")
+    IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / cleanVersion)
+    cleanVersion
+  })
+  val jsVersions = myVersions.map(v => s"'$v'").mkString("[", ", ", "]")
+  IO.write(destination / "index.html", IO.read(site / "index.html").replace("{{scalaVersions}}", jsVersions))
 }
