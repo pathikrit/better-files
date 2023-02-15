@@ -56,8 +56,10 @@ lazy val main = (project in file("."))
   .enablePlugins(SiteScaladocPlugin, PreprocessPlugin)
   .settings(
     // SiteScaladoc / siteSubdirName := "api" + "/" + scalaVersion.value,
-    Preprocess / preprocessVars := Map("scalaVersions" -> crossScalaVersions.value.map(v => s"'$v'").mkString("[", ", ", "]")),
-    makeCrossSite               := copyDocs(crossScalaVersions.value, destination = file("target/site"))
+    Preprocess / preprocessVars := Map(
+      "scalaVersions" -> crossScalaVersions.value.map(_.split('.').take(2).mkString(".")).map(v => s"'$v'").mkString(", ")
+    ),
+    makeCrossSite := copyDocs(crossScalaVersions.value, destination = file("target/site"))
   )
 
 // Useful formatting tasks
@@ -89,7 +91,9 @@ lazy val makeCrossSite = taskKey[Unit]("Copy crossScalaVersion Scaladocs")
 
 /** Util that copies scaladocs across scalaVersions + any static site sources into destination */
 def copyDocs(scalaVersions: Seq[String], destination: File) =
-  scalaVersions.foreach({ scalaVersion =>
-    val suffix = scalaVersion.split('.').take(scalaVersion.head.toString.toInt).mkString(".")
-    IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / scalaVersion)
-  })
+  scalaVersions
+    .map(_.split('.'))
+    .foreach({ scalaVersion =>
+      val suffix = scalaVersion.take(scalaVersion.head.toInt).mkString(".")
+      IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / scalaVersion.take(2).mkString("."))
+    })

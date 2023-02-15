@@ -35,7 +35,7 @@
 <script>
   const template = Handlebars.compile($('#template').html());
   const context = {
-    scalaVersions: @scalaVersions@
+    scalaVersions: [@scalaVersions@]
   };
   $('#template').replaceWith(template(context));
 </script>
