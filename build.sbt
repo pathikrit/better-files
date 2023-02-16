@@ -20,37 +20,16 @@ inThisBuild(
 
 lazy val main = (project in file("."))
   .settings(
-    // Names
-    name         := repo,
-    description  := "Simple, safe and intuitive I/O in Scala",
-    organization := s"com.github.$username",
-
-    // scalac versions
+    name               := repo,
+    description        := "Simple, safe and intuitive I/O in Scala",
+    organization       := s"com.github.$username",
     crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
     crossVersion       := CrossVersion.binary,
-
-    // Compile settings
-    scalacOptions     := scalacOptions.value diff rmCompilerFlags(scalaVersion.value),
-    Compile / compile := (Compile / compile).dependsOn(formatAll).value, // auto format on compile
-
-    // Test settings
+    scalacOptions      := scalacOptions.value diff rmCompilerFlags(scalaVersion.value),
+    Compile / compile  := (Compile / compile).dependsOn(Compile / scalafmt, Test / scalafmt, Compile / scalafmtSbt).value,
+    Test / test        := (Test / test).dependsOn(Compile / scalafmtCheck, Test / scalafmtCheck, Compile / scalafmtSbtCheck).value,
     Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
-    Test / test := (Test / test).dependsOn(checkFormat).value, // fail tests if code is not formatted
-
-    // Dependencies
-    libraryDependencies ++= myDependencies(scalaVersion.value),
-
-    // Formatting tasks
-    formatAll := {
-      (Compile / scalafmt).value
-      (Test / scalafmt).value
-      (Compile / scalafmtSbt).value
-    },
-    checkFormat := {
-      (Compile / scalafmtCheck).value
-      (Test / scalafmtCheck).value
-      (Compile / scalafmtSbtCheck).value
-    }
+    libraryDependencies ++= dependencies(scalaVersion.value)
   )
   // makeSite settings
   .enablePlugins(SiteScaladocPlugin, PreprocessPlugin)
@@ -62,10 +41,6 @@ lazy val main = (project in file("."))
     makeCrossSite := crossScalaVersions.value.foreach(copyDocs(_, destination = file("target/site")))
   )
 
-// Useful formatting tasks
-lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
-lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
-
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but this gives us a way to remove some unruly flags */
 def rmCompilerFlags(scalaVersion: String): Seq[String] =
   partialVersion(scalaVersion) match {
@@ -74,7 +49,7 @@ def rmCompilerFlags(scalaVersion: String): Seq[String] =
   }
 
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
-def myDependencies(scalaVersion: String): Seq[ModuleID] =
+def dependencies(scalaVersion: String): Seq[ModuleID] =
   Seq(
     "2" -> ("org.scala-lang" % "scala-reflect" % scalaVersion % Provided),
     "2" -> ("com.chuusai"   %% "shapeless"     % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
