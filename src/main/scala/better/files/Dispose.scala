@@ -104,7 +104,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
 }
 
 object Dispose {
-  // Hack to get around issue in Scala 2.11: https://stackoverflow.com/questions/47598333/
+  // TODO: rm this hack once we drop Scala 2.11 (see: https://stackoverflow.com/questions/47598333/)
   sealed trait FlatMap[-F[_]] {
     type Output[_]
     def apply[A, B](a: Dispose[A])(f: A => F[B]): Output[B]
@@ -114,32 +114,17 @@ object Dispose {
     trait Implicits {
 
       /** Compose this managed resource with another managed resource closing the outer one after the inner one */
-      implicit object disposeFlatMap extends FlatMap[Dispose] {
+      implicit object dispose extends FlatMap[Dispose] {
         override type Output[X] = Dispose[X]
         override def apply[A, B](m: Dispose[A])(f: A => Dispose[B]) =
           f(m.resource).withAdditionalDisposeTask(m.disposeOnce())
       }
 
       /** Use the current managed resource as a generator needed to create another sequence */
-      implicit object traversableFlatMap extends FlatMap[IterableOnce] {
+      implicit object iterable extends FlatMap[IterableOnce] {
         override type Output[X] = Iterator[X]
-        override def apply[A, B](m: Dispose[A])(f: A => IterableOnce[B]) = {
-          val it =
-            try {
-              f(m.resource).iterator
-            } catch {
-              case NonFatal(e) => m.disposeOnceAndThrow(e)
-            }
-          it withHasNext {
-            try {
-              val result = it.hasNext
-              if (!result) m.disposeOnce()
-              result
-            } catch {
-              case e1: Throwable => m.disposeOnceAndThrow(e1)
-            }
-          }
-        }
+        override def apply[A, B](m: Dispose[A])(f: A => IterableOnce[B]) =
+          m.iterator(f(_).iterator)
       }
     }
   }

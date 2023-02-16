@@ -37,9 +37,9 @@ lazy val main = (project in file("."))
     Preprocess / preprocessVars := Map(
       "scalaVersions" -> crossScalaVersions.value.map(CrossVersion.binaryScalaVersion).map(v => s"'$v'").mkString(", ")
     ),
-    // See https://github.com/sbt/sbt/discussions/7151: Hack to make makeSite play well with crossScalaVersion
     makeSite := {
       val dest = makeSite.value
+      // See https://github.com/sbt/sbt/discussions/7151: Hack to make makeSite play well with crossScalaVersion
       IO.copyDirectory(source = (Compile / doc).value, target = dest / "api" / CrossVersion.binaryScalaVersion(scalaVersion.value))
       dest
     }
@@ -56,7 +56,7 @@ def rmCompilerFlags(scalaVersion: String): Seq[String] =
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
 def dependencies(scalaVersion: String): Seq[ModuleID] =
   Seq(
-    // TODO: Get rid of scala-collection-compat when we drop support for Scala 2.1 and -Wunused:imports since it triggers https://github.com/scala/scala-collection-compat/issues/240
+    // TODO: Get rid of scala-collection-compat when we drop support for Scala 2.12 and -Wunused:imports since it triggers https://github.com/scala/scala-collection-compat/issues/240
     "*" -> "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0",
     "2" -> ("org.scala-lang"         % "scala-reflect"           % scalaVersion % Provided),
     "2" -> ("com.chuusai"           %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
