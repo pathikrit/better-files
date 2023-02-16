@@ -57,8 +57,11 @@ jobs:
           SONATYPE_PASSWORD: ${{secrets.SONATYPE_PASSWORD}}
           SONATYPE_USERNAME: ${{secrets.SONATYPE_USERNAME}}
 
-      - name: Generate reports
-        run: sbt coverage test coverageReport coverageAggregate makeSite makeCrossSite
+      - name: Generate scaladoc
+        run: sbt +makeSite
+
+      - name: Generate coverage reports
+        run: sbt coverage test coverageReport coverageAggregate
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

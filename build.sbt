@@ -36,22 +36,19 @@ lazy val main = (project in file("."))
   .settings(
     SiteScaladoc / siteSubdirName := "api/default",
     Preprocess / preprocessVars := Map(
-      "scalaVersions" -> crossScalaVersions.value.map(prefix(_)).map(v => s"'$v'").mkString(", ")
+      "scalaVersions" -> crossScalaVersions.value.map(CrossVersion.binaryScalaVersion).map(v => s"'$v'").mkString(", ")
     ),
-    makeCrossSite := crossScalaVersions.value.foreach({ scalaVersion =>
-      IO.copyDirectory(
-        source = file("target") / s"scala-${prefix(scalaVersion, scalaVersion.head.toString.toInt)}" / "api",
-        target = file("target") / "site" / "api" / prefix(scalaVersion)
-      )
-    })
+    // See https://github.com/sbt/sbt/discussions/7151: Hack to make makeSite play well with crossScalaVersion
+    makeSite := {
+      val dest = makeSite.value
+      IO.copyDirectory(source = (Compile / doc).value, target = dest / "api" / CrossVersion.binaryScalaVersion(scalaVersion.value))
+      dest
+    }
   )
-
-/** Given a version X.Y.Z returns X.Y */
-def prefix(version: String, n: Int = 2): String = version.split('.').take(n).mkString(".")
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but this gives us a way to remove some unruly flags */
 def rmCompilerFlags(scalaVersion: String): Seq[String] =
-  prefix(scalaVersion) match {
+  CrossVersion.binaryScalaVersion(scalaVersion) match {
     case "2.13" | "3.2" => Seq("-Xfatal-warnings")
     case _              => Nil
   }
@@ -66,6 +63,3 @@ def dependencies(scalaVersion: String): Seq[ModuleID] =
     "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
-
-lazy val makeCrossSite =
-  taskKey[Unit]("Copy crossScalaVersion Scaladocs") // TODO: rm once https://github.com/sbt/sbt-site/issues/208 is fixed
