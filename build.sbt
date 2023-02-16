@@ -22,6 +22,7 @@ lazy val main = (project in file("."))
   .settings(
     name               := repo,
     description        := "Simple, safe and intuitive I/O in Scala",
+    organization       := s"com.github.$username",
     crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
     crossVersion       := CrossVersion.binary,
     scalacOptions      := scalacOptions.value diff rmCompilerFlags(scalaVersion.value),

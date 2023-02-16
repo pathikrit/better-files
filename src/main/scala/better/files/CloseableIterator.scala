@@ -1,7 +1,5 @@
 package better.files
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 /**
   * An iterator with a close() function that gets called on iterator exhaustion OR any exceptions during iteration
   * Similar in functionality to Geny's self closing generators: https://github.com/com-lihaoyi/geny#self-closing-generators
@@ -20,8 +18,8 @@ trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
   override def forall(p: A => Boolean)    = evalAndClose(super.forall(p))
   override def takeWhile(p: A => Boolean) = closeInTheEnd(super.takeWhile(p))
 
-  private[files] val isClosed          = new AtomicBoolean(false)
-  private[files] def closeOnce(): Unit = if (!isClosed.getAndSet(true)) close()
+  private[files] val closeOnce  = Once(close)
+  private[files] def isClosed() = closeOnce.isInvoked()
 
   /** Close at end of iteration */
   private[files] def closeInTheEnd[T](t: Iterator[T]): Iterator[T] =
@@ -50,14 +48,14 @@ object CloseableIterator {
 
   /** Make a closeable iterator given an existing iterator and a close function */
   def apply[A](it: Iterator[A], closeFn: () => Unit): CloseableIterator[A] = new CloseableIteratorCompat[A] { self =>
-    override def hasNext = !isClosed.get() && {
+    override def hasNext = !isClosed() && {
       val res = closeIfError(it.hasNext)
       if (!res) closeOnce()
       res
     }
 
     override def next() = {
-      if (isClosed.get()) throw new IllegalStateException("Iterator is already closed")
+      if (isClosed()) throw new IllegalStateException("Iterator is already closed")
       closeIfError(it.next())
     }
 

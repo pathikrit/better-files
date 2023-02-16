@@ -1,7 +1,6 @@
 package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
-
 import scala.collection.compat._
 import scala.util.Try
 
@@ -36,8 +35,7 @@ object Disposable {
 
 /** Given a disposable resource, this actually does the disposing */
 class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable[A]) {
-  private[Dispose] val isDisposed    = new AtomicBoolean(false)
-  private[Dispose] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
+  private[Dispose] val disposeOnce = Once(() => disposer.dispose(resource))
 
   private[Dispose] def withAdditionalDisposeTask[U](f: => U): Dispose[A] =
     new Dispose[A](resource)(Disposable {
@@ -107,4 +105,13 @@ object Dispose {
       }
     }
   }
+}
+
+/** Converts a given function to something that can be called only once */
+private[files] case class Once(f: () => Unit) extends (() => Unit) {
+  private[this] val flag = new AtomicBoolean(false)
+
+  override def apply() = if (!flag.getAndSet(true)) f()
+
+  def isInvoked(): Boolean = flag.get()
 }
