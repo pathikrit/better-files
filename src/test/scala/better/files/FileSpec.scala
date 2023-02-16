@@ -1,10 +1,10 @@
 package better.files
 
 import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
-
 import better.files.Dsl._
 import better.files.File.{home, root}
 
+import scala.collection.compat.immutable.LazyList
 import scala.language.postfixOps
 import scala.util.{Properties, Try}
 
@@ -22,8 +22,8 @@ class FileSpec extends CommonSpec {
   def unixToNative(path: String): String = {
     if (Properties.isWin) {
       path
-        .replaceFirst("^/", rootStr.replaceAllLiterally("\\", "\\\\")) // we must escape '\' in C:\
-        .replaceAllLiterally("/", separator)
+        .replaceFirst("^/", rootStr.replace("\\", "\\\\")) // we must escape '\' in C:\
+        .replace("/", separator)
     } else {
       path
     }
@@ -65,9 +65,8 @@ class FileSpec extends CommonSpec {
     Seq(t1, t2) foreach touch
   }
 
-  override def afterEach() = {
-    val _ = rm(testRoot)
-  }
+  override def afterEach() =
+    rm(testRoot)
 
   override def withFixture(test: NoArgTest) = {
     // val before = File.numberOfOpenFileDescriptors()
@@ -152,7 +151,7 @@ class FileSpec extends CommonSpec {
     t1.contentAsString() shouldEqual "hello"
     t1.appendLine() << "world"
     (t1 !) shouldEqual String.format("hello%nworld%n")
-    t1.chars().toStream should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
+    t1.chars().to(LazyList) should contain theSameElementsInOrderAs String.format("hello%nworld%n").toSeq
     "foo" `>:` t1
     "bar" >>: t1
     t1.contentAsString() shouldEqual String.format("foobar%n")

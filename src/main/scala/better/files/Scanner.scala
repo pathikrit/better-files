@@ -4,6 +4,7 @@ import java.io._
 import java.nio.charset.Charset
 import java.time.format.DateTimeFormatter
 import java.util.StringTokenizer
+import scala.collection.compat.IterableOnce
 
 trait Scanner extends Iterator[String] with AutoCloseable {
   def lineNumber(): Int
@@ -134,7 +135,7 @@ object Scannable {
 }
 
 trait StringSplitter {
-  def split(s: String): TraversableOnce[String]
+  def split(s: String): IterableOnce[String]
 }
 object StringSplitter {
   val Default = StringSplitter.anyOf(" \t\t\n\r")

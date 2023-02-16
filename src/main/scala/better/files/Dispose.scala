@@ -2,25 +2,24 @@ package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
 
-import scala.collection.GenTraversableOnce
-import scala.util.Try
+import scala.collection.compat._
 import scala.util.control.NonFatal
+import scala.util.Try
 
 /** A typeclass to denote a disposable resource */
 trait Disposable[-A] {
   def dispose(resource: A): Unit
 
-  def disposeSilently(resource: A): Unit = {
-    val _ = Try(dispose(resource))
-  }
+  def disposeSilently(resource: A): Unit =
+    Try(dispose(resource))
+
 }
 
 object Disposable {
   def apply[A](disposeFunction: A => Any): Disposable[A] =
     new Disposable[A] {
-      override def dispose(resource: A) = {
-        val _ = disposeFunction(resource)
-      }
+      override def dispose(resource: A) =
+        disposeFunction(resource)
     }
 
   def apply[A](disposeMethod: => Unit): Disposable[A] =
@@ -29,7 +28,7 @@ object Disposable {
   implicit val closableDisposer: Disposable[AutoCloseable] =
     Disposable(_.close())
 
-  implicit def traversableDisposer[A](implicit disposer: Disposable[A]): Disposable[Traversable[A]] =
+  implicit def traversableDisposer[A](implicit disposer: Disposable[A]): Disposable[Iterable[A]] =
     Disposable(_.foreach(disposer.dispose))
 
   val fileDisposer: Disposable[File] =
@@ -60,7 +59,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
       try {
         disposeOnce()
       } finally {
-        val _ = f
+        f: Unit
       }
     })
 
@@ -83,9 +82,8 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
     apply(identity)
 
   /** This will immediately apply f on the resource and close the resource */
-  def foreach[U](f: A => U): Unit = {
-    val _ = apply(f)
-  }
+  def foreach[U](f: A => U): Unit =
+    apply(f): Unit
 
   /** This will apply f on the resource while it is open */
   def map[B](f: A => B): Dispose[B] =
@@ -123,12 +121,12 @@ object Dispose {
       }
 
       /** Use the current managed resource as a generator needed to create another sequence */
-      implicit object traversableFlatMap extends FlatMap[GenTraversableOnce] {
+      implicit object traversableFlatMap extends FlatMap[IterableOnce] {
         override type Output[X] = Iterator[X]
-        override def apply[A, B](m: Dispose[A])(f: A => GenTraversableOnce[B]) = {
+        override def apply[A, B](m: Dispose[A])(f: A => IterableOnce[B]) = {
           val it =
             try {
-              f(m.resource).toIterator
+              f(m.resource).iterator
             } catch {
               case NonFatal(e) => m.disposeOnceAndThrow(e)
             }

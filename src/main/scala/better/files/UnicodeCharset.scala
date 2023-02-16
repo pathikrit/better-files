@@ -3,7 +3,7 @@ package better.files
 import java.nio.charset._
 import java.nio.{BufferOverflowException, ByteBuffer, CharBuffer}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /** A Unicode charset that handles byte-order markers
   *
@@ -81,7 +81,7 @@ class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
   override def encodeLoop(in: CharBuffer, out: ByteBuffer): CoderResult = {
     if (!isBomWritten) {
       try {
-        val _ = out.put(bom)
+        out.put(bom): Unit
       } catch {
         case _: BufferOverflowException => return CoderResult.OVERFLOW
       } finally {

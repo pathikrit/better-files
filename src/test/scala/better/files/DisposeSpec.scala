@@ -3,7 +3,6 @@ package better.files
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 import scala.reflect.ClassTag
-import scala.util.control.ControlThrowable
 
 class DisposeSpec extends CommonSpec {
   // Test classes
@@ -33,8 +32,10 @@ class DisposeSpec extends CommonSpec {
   private class TestDisposeException      extends Exception
   private class TestDisposeFatalException extends InterruptedException
 
-  // Custom matchers
+  /** see https://dotty.epfl.ch/docs/reference/dropped-features/nonlocal-returns.html */
+  private class NonLocalReturn[A](val value: A) extends Exception
 
+  // Custom matchers
   private class HaveSuppressedMatcher(classes: Class[_ <: Throwable]*) extends Matcher[Throwable] {
     override def apply(left: Throwable): MatchResult = {
       MatchResult(
@@ -166,30 +167,36 @@ class DisposeSpec extends CommonSpec {
   it should "handle non-local returns correctly" in {
     val t = new TestDisposable
 
-    def doTheThing(): String = {
-      throw the[ControlThrowable] thrownBy {
+    def doTheThing(): String =
+      try {
         for {
           _ <- t.autoClosed
         } {
           t.closeCount shouldBe 0
-          return "hello"
+          throw new NonLocalReturn("hello")
         }
+        "can't reach here"
+      } catch {
+        case ex: NonLocalReturn[_] => ex.value.asInstanceOf[String]
       }
-    }
+
     doTheThing() shouldBe "hello"
     t.closeCount shouldBe 1
 
-    def doTheThings(): String = {
-      throw the[ControlThrowable] thrownBy {
+    def doTheThings(): String =
+      try {
         for {
           _ <- t.autoClosed
           v <- Iterator("one", "two", "three")
         } {
           t.closeCount shouldBe 1
-          if (v == "two") return v
+          if (v == "two") throw new NonLocalReturn(v)
         }
+        "can't reach here"
+      } catch {
+        case ex: NonLocalReturn[_] => ex.value.asInstanceOf[String]
       }
-    }
+
     doTheThings() shouldBe "two"
     t.closeCount shouldBe 2
   }
@@ -253,8 +260,8 @@ class DisposeSpec extends CommonSpec {
   it should "support for-comprehension" in {
     val data = List(
       List("key", "value"),
-      List("hello", 0),
-      List("world", 1)
+      List("hello", "0"),
+      List("world", "1")
     ).map(_.mkString(","))
 
     File.usingTemporaryFile() { f =>
