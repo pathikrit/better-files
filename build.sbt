@@ -24,13 +24,9 @@ lazy val main = (project in file("."))
     description        := "Simple, safe and intuitive I/O in Scala",
     crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10", "3.2.2"),
     crossVersion       := CrossVersion.binary,
-    scalacOptions := scalacOptions.value diff Seq(
-      "-Wvalue-discard",
-      "-Ywarn-value-discard",
-      "-Wnonunit-statement"
-    ), // We use https://github.com/DavidGregory084/sbt-tpolecat scalac flags but without the warnings on unit discards
-    Compile / compile := (Compile / compile).dependsOn(Compile / scalafmt, Test / scalafmt, Compile / scalafmtSbt).value,
-    Test / test       := (Test / test).dependsOn(Compile / scalafmtCheck, Test / scalafmtCheck, Compile / scalafmtSbtCheck).value,
+    scalacOptions      := scalacOptions.value diff rmCompilerFlags(scalaVersion.value),
+    Compile / compile  := (Compile / compile).dependsOn(Compile / scalafmt, Test / scalafmt, Compile / scalafmtSbt).value,
+    Test / test        := (Test / test).dependsOn(Compile / scalafmtCheck, Test / scalafmtCheck, Compile / scalafmtSbtCheck).value,
     Test / testOptions += Tests.Argument("-oDF"), // show full stack trace on test failures
     libraryDependencies ++= dependencies(scalaVersion.value)
   )
@@ -49,10 +45,19 @@ lazy val main = (project in file("."))
     }
   )
 
+/** We use https://github.com/DavidGregory084/sbt-tpolecat but this gives us a way to remove some unruly flags */
+def rmCompilerFlags(scalaVersion: String): Seq[String] =
+  CrossVersion.binaryScalaVersion(scalaVersion) match {
+    case "2.11" | "2.12" => Seq("-Ywarn-value-discard")
+    case "2.13"          => Seq("-Wvalue-discard", "-Wnonunit-statement", "-Wunused:imports")
+    case _               => Nil
+  }
+
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
 def dependencies(scalaVersion: String): Seq[ModuleID] =
   Seq(
-    "*" -> "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0", // TODO: Get rid of this when we drop support for Scala 2.12
+    // TODO: Get rid of scala-collection-compat when we drop support for Scala 2.1 and -Wunused:imports since it triggers https://github.com/scala/scala-collection-compat/issues/240
+    "*" -> "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0",
     "2" -> ("org.scala-lang"         % "scala-reflect"           % scalaVersion % Provided),
     "2" -> ("com.chuusai"           %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
     "*" -> ("org.scalatest"         %% "scalatest"               % "3.2.15"     % Test),

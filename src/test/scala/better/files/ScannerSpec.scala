@@ -3,14 +3,13 @@ package better.files
 import Dsl._
 
 import scala.collection.compat._
-import scala.language.existentials
 
 class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
 
   "splitter" should "split" in {
     val csvSplitter      = StringSplitter.on(',')
-    def split(s: String) = csvSplitter.split(s).to(List)
+    def split(s: String) = csvSplitter.split(s).iterator.to(List)
 
     assert(split(",") === List("", ""))
     assert(split("") === List(""))
