@@ -55,11 +55,11 @@ lazy val main = (project in file("."))
   // makeSite settings
   .enablePlugins(SiteScaladocPlugin, PreprocessPlugin)
   .settings(
-    //SiteScaladoc / siteSubdirName := "api" + "/" + sanitizeVersion(scalaVersion.value),
+    // SiteScaladoc / siteSubdirName := "api" + "/" + scalaVersion.value,
     Preprocess / preprocessVars := Map(
-      "scalaVersions" -> crossScalaVersions.value.map(sanitizeVersion(_)).map(v => s"'$v'").mkString(", ")
+      "scalaVersions" -> crossScalaVersions.value.map(_.split('.').take(2).mkString(".")).map(v => s"'$v'").mkString(", ")
     ),
-    makeCrossSite := crossScalaVersions.value.foreach(copyDocs(_, destination = file("target/site")))
+    makeCrossSite := copyDocs(crossScalaVersions.value, destination = file("target/site"))
   )
 
 // Useful formatting tasks
@@ -76,7 +76,7 @@ def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[St
   }
 
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
-def myDependencies(scalaVersion: String): Seq[ModuleID] =
+def myDependencies(scalaVersion: String) =
   Seq(
     "2" -> ("org.scala-lang" % "scala-reflect" % scalaVersion % Provided),
     "2" -> ("com.chuusai"   %% "shapeless"     % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
@@ -90,10 +90,10 @@ def myDependencies(scalaVersion: String): Seq[ModuleID] =
 lazy val makeCrossSite = taskKey[Unit]("Copy crossScalaVersion Scaladocs")
 
 /** Util that copies scaladocs across scalaVersions + any static site sources into destination */
-def copyDocs(scalaVersion: String, destination: File) =
-  IO.copyDirectory(
-    source = file("target") / s"scala-${sanitizeVersion(scalaVersion, scalaVersion.head.toInt)}" / "api",
-    target = destination / "api" / sanitizeVersion(scalaVersion)
-  )
-
-def sanitizeVersion(scalaVersion: String, n: Int = 2): String = scalaVersion.split('.').take(n).mkString(".")
+def copyDocs(scalaVersions: Seq[String], destination: File) =
+  scalaVersions
+    .map(_.split('.'))
+    .foreach({ scalaVersion =>
+      val suffix = scalaVersion.take(scalaVersion.head.toInt).mkString(".")
+      IO.copyDirectory(file("target") / s"scala-$suffix" / "api", destination / "api" / scalaVersion.take(2).mkString("."))
+    })
