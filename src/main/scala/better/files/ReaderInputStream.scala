@@ -31,7 +31,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
   private[this] var lastCoderResult = CoderResult.UNDERFLOW
   private[this] var endOfInput      = false
 
-  private[this] def fillBuffer() = {
+  private[this] def fillBuffer(): Unit = {
     assert(!endOfInput)
     if (lastCoderResult.isUnderflow) {
       val position = encoderIn.compact().position()
@@ -44,7 +44,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
       encoderIn.flip()
     }
     lastCoderResult = encoder.encode(encoderIn, encoderOut.compact(), endOfInput)
-    encoderOut.flip()
+    val _ = encoderOut.flip()
   }
 
   override def read(b: Array[Byte], off: Int, len: Int) = {

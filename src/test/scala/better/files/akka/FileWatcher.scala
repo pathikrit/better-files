@@ -1,6 +1,7 @@
 package better.files
 
 import akka.actor._
+import scala.collection.mutable
 
 /** An actor that can watch a file or a directory
   * Instead of directly calling the constructor of this, call file.newWatcher to create the actor
@@ -13,7 +14,8 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
 
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
-  protected[this] val callbacks = newMultiMap[Event, Callback]
+  protected[this] val callbacks: mutable.Map[Event, mutable.Set[Callback]] =
+    mutable.Map.empty.withDefaultValue(mutable.Set.empty)
 
   protected[this] val monitor: File.Monitor = new FileMonitor(file, maxDepth) {
     override def onEvent(event: Event, file: File, count: Int) = self ! Message.NewEvent(event, file, count)
@@ -25,8 +27,8 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   override def receive = {
     case Message.NewEvent(event, target, count) if callbacks.contains(event) =>
       callbacks(event).foreach(f => repeat(count)(f(event -> target)))
-    case Message.RegisterCallback(events, callback) => events.foreach(event => callbacks.addBinding(event, callback))
-    case Message.RemoveCallback(event, callback)    => callbacks.removeBinding(event, callback)
+    case Message.RegisterCallback(events, callback) => events.foreach(event => callbacks(event) += callback)
+    case Message.RemoveCallback(event, callback)    => val _ = callbacks(event) -= callback
   }
 
   override def postStop() = monitor.stop()

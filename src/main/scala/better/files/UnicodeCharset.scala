@@ -71,9 +71,7 @@ class UnicodeDecoder(defaultCharset: Charset) extends CharsetDecoder(defaultChar
     inferredCharset.getOrElse(throw new IllegalStateException("Insufficient bytes read to determine charset"))
 }
 
-/** Encoder that writes the BOM for this charset
-  * @param charset
-  */
+/** Encoder that writes the BOM for this charset */
 class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
   private[this] val bom = UnicodeCharset.bomTable
     .getOrElse(charset, throw new IllegalArgumentException(s"$charset does not support BOMs"))
@@ -83,7 +81,7 @@ class BomEncoder(charset: Charset) extends CharsetEncoder(charset, 1, 1) {
   override def encodeLoop(in: CharBuffer, out: ByteBuffer): CoderResult = {
     if (!isBomWritten) {
       try {
-        out.put(bom)
+        val _ = out.put(bom)
       } catch {
         case _: BufferOverflowException => return CoderResult.OVERFLOW
       } finally {

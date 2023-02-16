@@ -60,7 +60,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
     writer.close()
   }
 
-  private[this] def processInput(endOfInput: Boolean) = {
+  private[this] def processInput(endOfInput: Boolean): Unit = {
     decoderIn.flip()
     @tailrec def loop(): Unit = {
       val coderResult = decoder.decode(decoderIn, decoderOut, endOfInput)
@@ -72,7 +72,7 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
       }
     }
     loop()
-    decoderIn.compact()
+    val _ = decoderIn.compact()
   }
 
   private[this] def flushOutput(): Unit = {

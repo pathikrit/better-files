@@ -30,7 +30,7 @@ lazy val main = (project in file("."))
     crossVersion       := CrossVersion.binary,
 
     // Compile settings
-    scalacOptions     := myScalacOptions(scalaVersion.value, scalacOptions.value),
+    scalacOptions     := scalacOptions.value diff rmCompilerFlags(scalaVersion.value),
     Compile / compile := (Compile / compile).dependsOn(formatAll).value, // auto format on compile
 
     // Test settings
@@ -57,7 +57,7 @@ lazy val main = (project in file("."))
   .settings(
     SiteScaladoc / siteSubdirName := "api/default",
     Preprocess / preprocessVars := Map(
-      "scalaVersions" -> crossScalaVersions.value.map(sanitizeVersion(_)).map(v => s"'$v'").mkString(", ")
+      "scalaVersions" -> crossScalaVersions.value.map(partialVersion(_)).map(v => s"'$v'").mkString(", ")
     ),
     makeCrossSite := crossScalaVersions.value.foreach(copyDocs(_, destination = file("target/site")))
   )
@@ -66,13 +66,11 @@ lazy val main = (project in file("."))
 lazy val formatAll   = taskKey[Unit]("Format all the source (src, test, and build files)")
 lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test, and build files)")
 
-/** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
-def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
-  scalaVersion match {
-    case v if v.startsWith("2.10") => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
-    case v if v.startsWith("2.11") => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
-    case v if v.startsWith("2.12") => suggestedOptions
-    case _                         => Nil
+/** We use https://github.com/DavidGregory084/sbt-tpolecat but this gives us a way to remove some unruly flags */
+def rmCompilerFlags(scalaVersion: String): Seq[String] =
+  partialVersion(scalaVersion) match {
+    case "2.13" | "3.2" => Seq("-Xfatal-warnings")
+    case _              => Nil
   }
 
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */
@@ -92,8 +90,8 @@ lazy val makeCrossSite = taskKey[Unit]("Copy crossScalaVersion Scaladocs")
 /** Util that copies scaladocs across scalaVersions + any static site sources into destination */
 def copyDocs(scalaVersion: String, destination: File) =
   IO.copyDirectory(
-    source = file("target") / s"scala-${sanitizeVersion(scalaVersion, scalaVersion.head.toInt)}" / "api",
-    target = destination / "api" / sanitizeVersion(scalaVersion)
+    source = file("target") / s"scala-${partialVersion(scalaVersion, scalaVersion.head.toInt)}" / "api",
+    target = destination / "api" / partialVersion(scalaVersion)
   )
 
-def sanitizeVersion(scalaVersion: String, n: Int = 2): String = scalaVersion.split('.').take(n).mkString(".")
+def partialVersion(scalaVersion: String, n: Int = 2): String = scalaVersion.split('.').take(n).mkString(".")

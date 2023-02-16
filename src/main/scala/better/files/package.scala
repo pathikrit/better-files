@@ -3,7 +3,6 @@ package better
 import java.io.StreamTokenizer
 import java.nio.charset.Charset
 
-import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 package object files extends Implicits {
@@ -33,10 +32,6 @@ package object files extends Implicits {
     */
   def using[A: Disposable, B](resource: A)(f: A => B): B =
     new Dispose(resource).apply(f)
-
-  // Some utils:
-  private[files] def newMultiMap[A, B]: mutable.MultiMap[A, B] =
-    new mutable.HashMap[A, mutable.Set[B]] with mutable.MultiMap[A, B]
 
   @inline private[files] def when[A](condition: Boolean)(f: => A): Option[A] = if (condition) Some(f) else None
 

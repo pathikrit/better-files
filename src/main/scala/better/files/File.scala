@@ -1400,6 +1400,7 @@ object File {
         case StandardWatchEventKinds.ENTRY_CREATE => onCreate(file, count)
         case StandardWatchEventKinds.ENTRY_MODIFY => onModify(file, count)
         case StandardWatchEventKinds.ENTRY_DELETE => onDelete(file, count)
+        case _                                    => onUnknownEvent(null)
       }
 
     def start()(implicit executionContext: ExecutionContext): Unit
