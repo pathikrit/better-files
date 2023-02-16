@@ -94,9 +94,8 @@ class GlobSpec extends CommonSpec with BeforeAndAfterAll {
     ()
   }
 
-  override def afterAll() = {
-    val _ = rm(testDir)
-  }
+  override def afterAll() =
+    rm(testDir)
 
   /** Helper in case something goes wrong...
     */

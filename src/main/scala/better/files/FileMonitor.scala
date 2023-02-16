@@ -18,7 +18,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
   protected[this] def process(key: WatchKey) = {
     val path = key.watchable().asInstanceOf[Path]
 
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     key.pollEvents().asScala foreach {
       case event: WatchEvent[Path] @unchecked if (event.context() != null) =>
         val target: File = path.resolve(event.context())
@@ -42,7 +42,7 @@ abstract class FileMonitor(val root: File, maxDepth: Int) extends File.Monitor {
         when(file.exists())(file.parent).iterator // There is no way to watch a regular file; so watch its parent instead
       }
     try {
-      toWatch.foreach(f => Try[Unit]({ val _ = f.register(service) }).recover { case e => onException(e) }.get)
+      toWatch.foreach(f => Try[Unit](f.register(service)).recover { case e => onException(e) }.get)
     } catch {
       case NonFatal(e) => onException(e)
     }

@@ -72,14 +72,14 @@ class WriterOutputStream(writer: Writer, decoder: CharsetDecoder, bufferSize: In
       }
     }
     loop()
-    val _ = decoderIn.compact()
+    decoderIn.compact()
   }
 
   private[this] def flushOutput(): Unit = {
     val p = decoderOut.position()
     if (p > 0) {
       writer.write(decoderOut.array, 0, p)
-      val _ = decoderOut.rewind()
+      decoderOut.rewind()
     }
   }
 }

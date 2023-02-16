@@ -44,7 +44,7 @@ class ReaderInputStream(reader: Reader, encoder: CharsetEncoder, bufferSize: Int
       encoderIn.flip()
     }
     lastCoderResult = encoder.encode(encoderIn, encoderOut.compact(), endOfInput)
-    val _ = encoderOut.flip()
+    encoderOut.flip()
   }
 
   override def read(b: Array[Byte], off: Int, len: Int) = {

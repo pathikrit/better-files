@@ -15,7 +15,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
 
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
-  protected[this] val callbacks = new mutable.HashMap[Event, mutable.Set[Callback]] with mutable.MultiMap[Event, Callback]
+  protected[this] val callbacks = new MutableMultiMap[Event, Callback]
 
   protected[this] val monitor: File.Monitor = new FileMonitor(file, maxDepth) {
     override def onEvent(event: Event, file: File, count: Int) = self ! Message.NewEvent(event, file, count)
@@ -28,7 +28,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
     case Message.NewEvent(event, target, count) if callbacks.contains(event) =>
       callbacks(event).foreach(f => repeat(count)(f(event -> target)))
     case Message.RegisterCallback(events, callback) => events.foreach(event => callbacks.addBinding(event, callback))
-    case Message.RemoveCallback(event, callback)    => val _ = callbacks.removeBinding(event, callback)
+    case Message.RemoveCallback(event, callback)    => callbacks.removeBinding(event, callback)
   }
 
   override def postStop() = monitor.stop()
@@ -42,9 +42,9 @@ object FileWatcher {
 
   sealed trait Message
   object Message {
-    case class NewEvent(event: Event, file: File, count: Int)                   extends Message
-    case class RegisterCallback(events: Traversable[Event], callback: Callback) extends Message
-    case class RemoveCallback(event: Event, callback: Callback)                 extends Message
+    case class NewEvent(event: Event, file: File, count: Int)                extends Message
+    case class RegisterCallback(events: Iterable[Event], callback: Callback) extends Message
+    case class RemoveCallback(event: Event, callback: Callback)              extends Message
   }
 
   implicit val disposeActorSystem: Disposable[ActorSystem] =
@@ -66,4 +66,12 @@ object FileWatcher {
 
   def stop(event: Event, callback: Callback): Message =
     Message.RemoveCallback(event, callback)
+}
+
+class MutableMultiMap[K, V] {
+  private[this] val table             = mutable.Map.empty[K, mutable.Set[V]]
+  def contains(k: K): Boolean         = table.contains(k)
+  def apply(k: K): Set[V]             = table.getOrElse(k, mutable.Set.empty).toSet
+  def addBinding(k: K, v: V): Unit    = table.getOrElseUpdate(k, mutable.Set.empty) += v
+  def removeBinding(k: K, v: V): Unit = if (contains(k)) table(k) -= v
 }

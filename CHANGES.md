@@ -40,6 +40,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
     lines.nonClosing().take(10).size // This would leave stream open if it has >10 lines
     ```
 * (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Path ASTs for relative vs. absolute path
+* [Issue #593](https://github.com/pathikrit/better-files/issues/593): Remove compilation warnings for Scala 2.13 and Scala 3
 * (_Planned_) [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
 * (_Planned_) [Issue #591](https://github.com/pathikrit/better-files/issues/591): New APIs
 * (_Planned_) [Issue #3](https://github.com/pathikrit/better-files/issues/3): Walk File Tree APIs

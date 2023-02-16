@@ -138,6 +138,6 @@ class FastJavaIOScanner2(reader: BufferedReader) extends FastJavaIOScanner(reade
 class BetterFilesScanner(reader: BufferedReader) extends AbstractScanner(reader) {
   private[this] val scanner = Scanner(reader)
   override def hasNext      = scanner.hasNext
-  override def next()       = scanner.next
+  override def next()       = scanner.next()
   override def nextLine()   = scanner.nextLine()
 }

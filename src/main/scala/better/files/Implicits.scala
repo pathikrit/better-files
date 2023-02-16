@@ -9,11 +9,11 @@ import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
+import java.net.{URI, URL}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
-import java.net.URL
-import java.net.URI
+import scala.jdk.CollectionConverters._
+import scala.collection.compat._
 
 /** Container for various implicits */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {
@@ -271,8 +271,8 @@ trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits wi
   }
 
   implicit class PrintWriterExtensions(pw: PrintWriter) {
-    def printLines(lines: TraversableOnce[_]): PrintWriter = {
-      lines.foreach(pw.println)
+    def printLines(lines: IterableOnce[_]): PrintWriter = {
+      lines.iterator.foreach(pw.println)
       pw
     }
   }

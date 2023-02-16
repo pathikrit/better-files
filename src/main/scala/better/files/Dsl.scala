@@ -4,7 +4,7 @@ import java.nio.charset.Charset
 import java.nio.file.attribute.{PosixFileAttributes, PosixFilePermission, PosixFilePermissions}
 import java.util.zip.Deflater
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /** Do file ops using a UNIX command line DSL */
 object Dsl {

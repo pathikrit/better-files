@@ -253,8 +253,8 @@ class DisposeSpec extends CommonSpec {
   it should "support for-comprehension" in {
     val data = List(
       List("key", "value"),
-      List("hello", 0),
-      List("world", 1)
+      List("hello", "0"),
+      List("world", "1")
     ).map(_.mkString(","))
 
     File.usingTemporaryFile() { f =>

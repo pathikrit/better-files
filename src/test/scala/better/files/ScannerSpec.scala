@@ -2,6 +2,7 @@ package better.files
 
 import Dsl._
 
+import scala.collection.compat._
 import scala.language.existentials
 
 class ScannerSpec extends CommonSpec {
@@ -9,7 +10,7 @@ class ScannerSpec extends CommonSpec {
 
   "splitter" should "split" in {
     val csvSplitter      = StringSplitter.on(',')
-    def split(s: String) = csvSplitter.split(s).toList
+    def split(s: String) = csvSplitter.split(s).to(List)
 
     assert(split(",") === List("", ""))
     assert(split("") === List(""))
