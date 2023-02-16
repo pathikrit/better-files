@@ -65,7 +65,7 @@ lazy val makeCrossSite = taskKey[Unit]("Copy crossScalaVersion Scaladocs")
 /** Util that copies scaladocs across scalaVersions + any static site sources into destination */
 def copyDocs(scalaVersion: String, destination: File) =
   IO.copyDirectory(
-    source = file("target") / s"scala-${partialVersion(scalaVersion, scalaVersion.head.toInt)}" / "api",
+    source = file("target") / s"scala-${partialVersion(scalaVersion, scalaVersion.head.toString.toInt)}" / "api",
     target = destination / "api" / partialVersion(scalaVersion)
   )
 

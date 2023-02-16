@@ -15,7 +15,7 @@ class FileWatcher(file: File, maxDepth: Int) extends Actor {
   def this(file: File, recursive: Boolean = true) = this(file, if (recursive) Int.MaxValue else 0)
 
   protected[this] val callbacks: mutable.Map[Event, mutable.Set[Callback]] =
-    mutable.Map.empty.withDefaultValue(mutable.Set.empty)
+    mutable.Map.empty.withDefault(_ => mutable.Set.empty)
 
   protected[this] val monitor: File.Monitor = new FileMonitor(file, maxDepth) {
     override def onEvent(event: Event, file: File, count: Int) = self ! Message.NewEvent(event, file, count)
