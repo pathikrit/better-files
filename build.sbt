@@ -55,6 +55,7 @@ lazy val main = (project in file("."))
   // makeSite settings
   .enablePlugins(SiteScaladocPlugin, PreprocessPlugin)
   .settings(
+    SiteScaladoc / siteSubdirName := "api/default",
     Preprocess / preprocessVars := Map(
       "scalaVersions" -> crossScalaVersions.value.map(sanitizeVersion(_)).map(v => s"'$v'").mkString(", ")
     ),
@@ -67,11 +68,11 @@ lazy val checkFormat = taskKey[Unit]("Check format for all the source (src, test
 
 /** We use https://github.com/DavidGregory084/sbt-tpolecat but some of these are broken */
 def myScalacOptions(scalaVersion: String, suggestedOptions: Seq[String]): Seq[String] =
-  CrossVersion.partialVersion(scalaVersion) match {
-    case Some((2, 10)) => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
-    case Some((2, 11)) => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
-    case Some((2, 12)) => suggestedOptions
-    case _             => Nil
+  scalaVersion match {
+    case v if v.startsWith("2.10") => suggestedOptions diff Seq("-Ywarn-numeric-widen") // buggy in 2.10
+    case v if v.startsWith("2.11") => suggestedOptions diff Seq("-Ywarn-value-discard") // This is broken in 2.11 for Unit types
+    case v if v.startsWith("2.12") => suggestedOptions
+    case _                         => Nil
   }
 
 /** My dependencies - note this is a zero dependency library, so following are only for Tests */

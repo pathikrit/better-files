@@ -300,7 +300,7 @@ val fr           : java.io.FileReader           = file.newFileReader()
 val fw           : java.io.FileWriter           = file.newFileWriter(append = true)
 val printer      : java.io.PrintWriter          = file.newPrintWriter()
 ```
-The library also adds some useful [implicits](http://pathikrit.github.io/better-files/latest/api/better/files/Implicits.html) to above classes e.g.:
+The library also adds some useful [implicits](http://pathikrit.github.io/better-files/api/default/better/files/Implicits.html) to above classes e.g.:
 ```scala
 file1.reader() > file2.writer ()      // pipes a reader to a writer
 System.in > file2.out             // pipes an inputstream to an outputstream
@@ -425,7 +425,7 @@ for {
 ```
 
 ### UNIX DSL
-All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/latest/api/better/files/Dsl$.html) reminiscent of the command line:
+All the above can also be expressed using [methods](http://pathikrit.github.io/better-files/api/default/better/files/Dsl$.html) reminiscent of the command line:
 ```scala
 import better.files._
 import better.files.Dsl._   // must import Dsl._ to bring in these utils
@@ -476,7 +476,7 @@ All the above APIs let you specify the [`LinkOption`](http://docs.oracle.com/jav
 ```scala
 file.isDirectory(LinkOption.NOFOLLOW_LINKS)
 ```
-Or using the [`File.LinkOptions`](http://pathikrit.github.io/better-files/latest/api/better/files/File$$LinkOptions$.html) helper:
+Or using the [`File.LinkOptions`](http://pathikrit.github.io/better-files/api/default/better/files/File$$LinkOptions$.html) helper:
 ```scala
 file.isDirectory(File.LinkOptions.noFollow)
 ```
@@ -502,7 +502,7 @@ file1 === file2   // equivalent to `file1.isSameContentAs(file2)` (works for reg
 file1 != file2    // equivalent to `!file1.isSamePathAs(file2)`
 file1 !== file2   // equivalent to `!file1.isSameContentAs(file2)`
 ```
-There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/latest/api/better/files/File$$Order$.html) included, e.g.:
+There are also various [`Ordering[File]` instances](http://pathikrit.github.io/better-files/api/default/better/files/File$$Order$.html) included, e.g.:
 ```scala
 val files = myDir.list.toSeq
 files.sorted(File.Order.byName)
@@ -641,7 +641,7 @@ lines.nonClosing(closeInTheEnd = false) // This will NEVER close the underlying 
 Although [`java.util.Scanner`](http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html) has a feature-rich API, it only allows parsing primitives.
 It is also [notoriously slow](https://www.cpe.ku.ac.th/~jim/java-io.html) since it uses regexes and does un-Scala things like returns nulls and throws exceptions.
 
-`better-files` provides a [faster](#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/latest/api/better/files/Scanner.html)
+`better-files` provides a [faster](#benchmarks), richer, safer, more idiomatic and compossible [Scala replacement](http://pathikrit.github.io/better-files/api/default/better/files/Scanner.html)
 that [does not use regexes](src/main/scala/better/files/Scanner.scala), allows peeking, accessing line numbers, returns `Option`s whenever possible and lets the user mixin custom parsers:
 ```scala
 val f1 = File("/tmp/temp.txt")
