@@ -1,6 +1,7 @@
-package better.files
+package better.files.akka
 
-import Dsl._
+import better.files._
+import better.files.Dsl._
 
 import scala.concurrent.duration._
 import scala.collection.mutable
@@ -25,7 +26,7 @@ class FileWatcherSpec extends CommonSpec {
       import java.nio.file.{StandardWatchEventKinds => Events}
       import FileWatcher._
 
-      import akka.actor._
+      import _root_.akka.actor._
       implicit val system = ActorSystem()
 
       val watcher: ActorRef = dir.newWatcher()
