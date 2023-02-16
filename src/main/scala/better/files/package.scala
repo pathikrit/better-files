@@ -3,6 +3,7 @@ package better
 import java.io.StreamTokenizer
 import java.nio.charset.Charset
 
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 package object files extends Implicits {
@@ -38,6 +39,28 @@ package object files extends Implicits {
   @inline private[files] def repeat[U](n: Int)(f: => U): Unit = (1 to n).foreach(_ => f)
 
   private[files] def eofReader(read: => Int): Iterator[Int] = Iterator.continually(read).takeWhile(_ != EOF)
+
+  /** This is the Scala equivalent of how javac compiles try-with-resources,
+    * Except that fatal exceptions while disposing take precedence over exceptions thrown previously
+    */
+  private[files] def tryWith[A](f: => A, close: () => Unit, finallyClose: Boolean): A =
+    try {
+      f
+    } catch {
+      case evalError: Throwable =>
+        try {
+          close()
+        } catch {
+          case NonFatal(closingError) =>
+            evalError.addSuppressed(closingError)
+          case fatalClosingError: Throwable =>
+            fatalClosingError.addSuppressed(evalError)
+            throw fatalClosingError
+        }
+        throw evalError
+    } finally {
+      if (finallyClose) close()
+    }
 
   /** Utility to apply f on all xs skipping over errors
     * Throws the last error that happened

@@ -3,7 +3,6 @@ package better.files
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.compat._
-import scala.util.control.NonFatal
 import scala.util.Try
 
 /** A typeclass to denote a disposable resource */
@@ -40,20 +39,6 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
   private[Dispose] val isDisposed    = new AtomicBoolean(false)
   private[Dispose] def disposeOnce() = if (!isDisposed.getAndSet(true)) disposer.dispose(resource)
 
-  // This is the Scala equivalent of how javac compiles try-with-resources,
-  // Except that fatal exceptions while disposing take precedence over exceptions thrown previously
-  private[Dispose] def disposeOnceAndThrow(e1: Throwable) = {
-    try {
-      disposeOnce()
-    } catch {
-      case NonFatal(e2) => e1.addSuppressed(e2)
-      case e2: Throwable =>
-        e2.addSuppressed(e1)
-        throw e2
-    }
-    throw e1
-  }
-
   private[Dispose] def withAdditionalDisposeTask[U](f: => U): Dispose[A] =
     new Dispose[A](resource)(Disposable {
       try {
@@ -67,13 +52,7 @@ class Dispose[A](private[Dispose] val resource: A)(implicit disposer: Disposable
     * If you don't wish to close the resource (e.g. if you are creating an iterator on file contents), use flatMap instead
     */
   def apply[B](f: A => B): B =
-    try {
-      f(resource)
-    } catch {
-      case e1: Throwable => disposeOnceAndThrow(e1)
-    } finally {
-      disposeOnce()
-    }
+    tryWith(f(resource), disposeOnce, finallyClose = true)
 
   /** Dispose this resource and return it
     * Note: If you are using map followed by get, consider using apply instead

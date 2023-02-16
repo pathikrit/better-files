@@ -24,28 +24,16 @@ trait CloseableIterator[+A] extends Iterator[A] with AutoCloseable {
   private[files] def closeOnce(): Unit = if (!isClosed.getAndSet(true)) close()
 
   /** Close at end of iteration */
-  private[files] def closeInTheEnd[T](t: Iterator[T]): Iterator[T] = CloseableIterator(t, closeOnce)
+  private[files] def closeInTheEnd[T](t: Iterator[T]): Iterator[T] =
+    CloseableIterator(t, closeOnce)
 
   /** Close this after evaluating f */
   private[files] def evalAndClose[T](f: => T): T =
-    try { f }
-    finally { closeOnce() }
+    tryWith(f, closeOnce, finallyClose = true)
 
   /** Close if there is an exception */
   private[files] def closeIfError[T](f: => T): T =
-    try {
-      f
-    } catch {
-      case outer: Throwable =>
-        try {
-          closeOnce()
-        } catch {
-          case inner: Throwable =>
-            inner.addSuppressed(outer)
-            throw inner
-        }
-        throw outer
-    }
+    tryWith(f, closeOnce, finallyClose = false)
 
   /** Returns a non closing version of this iterator
     * This means partial operations like find() and drop() will NOT close the iterator
