@@ -1,6 +1,8 @@
-# better-files [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink] [![Scaladoc][scaladocImg]][scaladocLink] [![Gitter][gitterImg]][gitterLink] [![Average time to resolve an issue][isItMaintainedImg]][isItMaintainedLink]
+# better-files [![License][licenseImg]][licenseLink] [![Scaladex][scaladexImg]][scaladexLink] [![Scala Steward badge][scalaStewardImg]](https://scala-steward.org) [![Gitter][gitterImg]][gitterLink] [![Average time to resolve an issue][isItMaintainedImg]][isItMaintainedLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
+
+Consult [the changelog](CHANGES.md) if you are upgrading your library. 
 
 ## Motivation
 Imagine you have to write the following method:
@@ -27,6 +29,12 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 }
 ```
 
+## Tests [![Tests][githubActionsImg]][githubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
+
+* [FileSpec](src/test/scala/better/files/FileSpec.scala)
+* [FileWatcherSpec](src/test/scala/better/files/akka/FileWatcherSpec.scala)
+* [Benchmarks](#benchmarks)
+
 ## Talks
   - [ScalaDays NYC 2016][scalaDaysNyc2016Event] ([slides][scalaDaysNyc2016Slides])
 
@@ -38,6 +46,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
   - [Scalæ by the Bay 2016][scalæByTheBay2016Event] ([video][scalæByTheBay2016Video], [slides][scalæByTheBay2016Slides])
 
 ## Tutorial
+  0. [Installation](#installation)
   0. [Instantiation](#instantiation)
   0. [Simple I/O](#file-readwrite)
   0. [Resource APIs](#resource-apis)
@@ -58,31 +67,6 @@ def run(inputDir: File, outputDir: File, n: Int) = {
   0. [File Monitoring](#file-monitoring)
   0. [Reactive File Watcher](#akka-file-watcher)
 
-## sbt [![Scala Steward badge][scalaStewardImg]](https://scala-steward.org)
-In your `build.sbt`, add this:
-```scala
-libraryDependencies += "com.github.pathikrit" %% "better-files" % version
-```
-Latest version: [![Scaladex][scaladexImg]][scaladexLink]
-
-Other available versions:  
-* [Sonatype](https://oss.sonatype.org/#nexus-search;quick~better-files)
-  - [Scala 3](https://search.maven.org/artifact/com.github.pathikrit/better-files_3)
-  - [Scala 2.13](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13)
-  - [Scala 2.12](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12)
-  - [Scala 2.11](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11)
-  - [Scala 2.10](https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10)
-* [Maven](https://repo1.maven.org/maven2/com/github/pathikrit/) 
-* [Snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/) 
-
-Consult [the changelog](CHANGES.md) if you are upgrading your library. 
-
-## Tests [![Tests][githubActionsImg]][githubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
-
-* [FileSpec](src/test/scala/better/files/FileSpec.scala)
-* [FileWatcherSpec](src/test/scala/better/files/akka/FileWatcherSpec.scala)
-* [Benchmarks](#benchmarks)
-
 [licenseImg]: https://img.shields.io/github/license/pathikrit/better-files.svg
 [licenseImg2]: https://img.shields.io/:license-mit-blue.svg
 [licenseLink]: LICENSE
@@ -94,20 +78,12 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 [codecovImg2]: https://codecov.io/github/pathikrit/better-files/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/pathikrit/better-files?branch=master
 
-[mavenImg]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
-[mavenImg2]: https://maven-badges.herokuapp.com/maven-central/com.github.pathikrit/better-files_2.12/badge.svg
-[mavenLink]: http://search.maven.org/#search%7Cga%7C1%7Cbetter-files
-
 [gitterImg]: https://img.shields.io/gitter/room/pathikrit/better-files.svg
 [gitterImg2]: https://badges.gitter.im/Join%20Chat.svg
 [gitterLink]: https://gitter.im/pathikrit/better-files
 
 [scaladexImg]: https://index.scala-lang.org/pathikrit/better-files/better-files/latest.svg
 [scaladexLink]: https://index.scala-lang.org/pathikrit/better-files
-
-[scaladocImg]: https://www.javadoc.io/badge/com.github.pathikrit/better-files_2.12.svg?color=blue&label=scaladocs
-<!--[scaladocLink]: https://www.javadoc.io/page/com.github.pathikrit/better-files_2.12/latest/better/files/File.html-->
-[scaladocLink]: http://pathikrit.github.io/better-files/
 
 [scalaDaysNyc2016Event]: http://event.scaladays.org/scaladays-nyc-2016/#!#schedulePopupExtras-7664
 [scalaDaysNyc2016Video]: https://www.youtube.com/watch?v=uaYKkpqs6CE
@@ -131,7 +107,58 @@ Consult [the changelog](CHANGES.md) if you are upgrading your library.
 [isItMaintainedImg]: http://isitmaintained.com/badge/resolution/pathikrit/better-files.svg
 [isItMaintainedLink]: http://isitmaintained.com/project/pathikrit/better-files
 
+[mavenLink]: https://repo1.maven.org/maven2/com/github/pathikrit/
+
+[scalaDocImg-3]: https://javadoc.io/badge2/com.github.pathikrit/better-files_3/javadoc.svg
+[scalaDocLink-3]: https://javadoc.io/doc/com.github.pathikrit/better-files_3
+[mavenImg-3]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_3.svg
+[mavenLink-3]: https://search.maven.org/artifact/com.github.pathikrit/better-files_3
+[snapshotImg-3]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_3?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotLink-3]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_3/
+
+[scalaDocImg-2.13]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.13/javadoc.svg
+[scalaDocLink-2.13]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.13
+[mavenImg-2.13]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.13.svg
+[mavenLink-2.13]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13
+[snapshotImg-2.13]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.13?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotLink-2.13]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.13/
+
+[scalaDocImg-2.12]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.12/javadoc.svg
+[scalaDocLink-2.12]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.12
+[mavenImg-2.12]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
+[mavenLink-2.12]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12
+[snapshotImg-2.12]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.12?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotLink-2.12]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.12/
+
+[scalaDocImg-2.11]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.11/javadoc.svg
+[scalaDocLink-2.11]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.11
+[mavenImg-2.11]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
+[mavenLink-2.11]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11
+[snapshotImg-2.11]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.11?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotLink-2.11]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.11/
+
+[scalaDocImg-2.10]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.10/javadoc.svg
+[scalaDocLink-2.10]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.10
+[mavenImg-2.10]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.10.svg
+[mavenLink-2.10]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10
+[snapshotImg-2.10]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.10?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotLink-2.10]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.10/
+
 -------
+### Installation
+In your `build.sbt`, add this:
+```scala
+libraryDependencies += "com.github.pathikrit" %% "better-files" % version
+```
+| Scala      | Scaladoc                                 | [Maven Releases][mavenLink]        | Sonatype Snapshots                       |
+| :---:      | :---:                                    | :---:                              | :---:                                    |
+| Scala 3    | [![scalaDocImg-3]][scalaDocLink-3]       | [![mavenImg-3]][mavenLink-3]       | [![snapshotImg-3]][snapshotLink-3]       |
+| Scala 2.13 | [![scalaDocImg-2.13]][scalaDocLink-2.13] | [![mavenImg-2.13]][mavenLink-2.13] | [![snapshotImg-2.13]][snapshotLink-2.13] |
+| Scala 2.12 | [![scalaDocImg-2.12]][scalaDocLink-2.12] | [![mavenImg-2.12]][mavenLink-2.12] | [![snapshotImg-2.12]][snapshotLink-2.12] |
+| Scala 2.11 | [![scalaDocImg-2.11]][scalaDocLink-2.11] | [![mavenImg-2.11]][mavenLink-2.11] | [![snapshotImg-2.11]][snapshotLink-2.11] |
+| Scala 2.10 | [![scalaDocImg-2.10]][scalaDocLink-2.10] | [![mavenImg-2.10]][mavenLink-2.10] | [![snapshotImg-2.10]][snapshotLink-2.10] |
+
+
 ### Instantiation
 The following are all equivalent:
 ```scala
