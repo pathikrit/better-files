@@ -3,8 +3,8 @@ package better
 import java.io.StreamTokenizer
 import java.nio.charset.Charset
 
-import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 package object files extends Implicits {
 

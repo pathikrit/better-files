@@ -1,10 +1,10 @@
 package better.files.benchmarks
 
-import better.files._
-
 import java.nio.charset.Charset
 
 import scala.util.Random
+
+import better.files._
 
 class EncodingBenchmark extends Benchmark {
 

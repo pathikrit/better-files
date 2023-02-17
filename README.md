@@ -122,39 +122,39 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 
 [mavenLink]: https://repo1.maven.org/maven2/com/github/pathikrit/
 
-[scalaDocImg-3]: https://javadoc.io/badge2/com.github.pathikrit/better-files_3/javadoc.svg
+[scalaDocImg-3]: https://javadoc.io/badge2/com.github.pathikrit/better-files_3/javadoc.svg?label=scaladoc&color=informational
 [scalaDocLink-3]: https://javadoc.io/doc/com.github.pathikrit/better-files_3/latest/better/files/File.html
-[mavenImg-3]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_3.svg
+[mavenImg-3]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_3.svg?label=maven&color=brightgreen
 [mavenLink-3]: https://search.maven.org/artifact/com.github.pathikrit/better-files_3
-[snapshotImg-3]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_3?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotImg-3]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_3?color=yellow&server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-3]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_3/
 
-[scalaDocImg-2.13]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.13/javadoc.svg
+[scalaDocImg-2.13]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.13/javadoc.svg?label=scaladoc&color=informational
 [scalaDocLink-2.13]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.13/latest/better/files/File.html
-[mavenImg-2.13]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.13.svg
+[mavenImg-2.13]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.13.svg?label=maven&color=brightgreen
 [mavenLink-2.13]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13
-[snapshotImg-2.13]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.13?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotImg-2.13]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.13?color=yellow&server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.13]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.13/
 
-[scalaDocImg-2.12]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.12/javadoc.svg
+[scalaDocImg-2.12]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.12/javadoc.svg?label=scaladoc&color=informational
 [scalaDocLink-2.12]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.12/latest/better/files/File.html
-[mavenImg-2.12]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
+[mavenImg-2.12]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg?label=maven&color=brightgreen
 [mavenLink-2.12]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12
-[snapshotImg-2.12]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.12?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotImg-2.12]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.12?color=yellow&server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.12]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.12/
 
-[scalaDocImg-2.11]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.11/javadoc.svg
+[scalaDocImg-2.11]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.11/javadoc.svg?label=scaladoc&color=informational
 [scalaDocLink-2.11]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.11/latest/better/files/File.html
-[mavenImg-2.11]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
+[mavenImg-2.11]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg?label=maven&color=brightgreen
 [mavenLink-2.11]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11
-[snapshotImg-2.11]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.11?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotImg-2.11]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.11?color=yellow&server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.11]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.11/
 
-[scalaDocImg-2.10]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.10/javadoc.svg
+[scalaDocImg-2.10]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.10/javadoc.svg?label=scaladoc&color=informational
 [scalaDocLink-2.10]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.10/latest/better/files/File.html
-[mavenImg-2.10]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.10.svg
+[mavenImg-2.10]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.10.svg?label=maven&color=brightgreen
 [mavenLink-2.10]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10
-[snapshotImg-2.10]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.10?server=https%3A%2F%2Foss.sonatype.org%2F
+[snapshotImg-2.10]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.10?color=yellow&server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.10]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.10/
 
 -------

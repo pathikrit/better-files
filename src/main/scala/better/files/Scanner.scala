@@ -4,6 +4,7 @@ import java.io._
 import java.nio.charset.Charset
 import java.time.format.DateTimeFormatter
 import java.util.StringTokenizer
+
 import scala.collection.compat.IterableOnce
 
 trait Scanner extends Iterator[String] with AutoCloseable {
@@ -83,8 +84,8 @@ object Scanner {
       implicit def optionRead[A: Read]: Read[Option[A]] = Read(s => when(s.nonEmpty)(implicitly[Read[A]].apply(s)))
 
       // Java's time readers
-      import java.time._
       import java.sql.{Date => SqlDate, Time => SqlTime, Timestamp => SqlTimestamp}
+      import java.time._
 
       implicit val durationRead: Read[Duration]             = Read(Duration.parse(_))
       implicit val instantRead: Read[Instant]               = Read(Instant.parse(_))

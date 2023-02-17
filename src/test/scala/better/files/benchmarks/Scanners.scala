@@ -1,8 +1,8 @@
 package better.files.benchmarks
 
-import better.files._
-
 import java.io.BufferedReader
+
+import better.files._
 
 /** Base interface to test */
 abstract class AbstractScanner(protected[this] val reader: BufferedReader) {

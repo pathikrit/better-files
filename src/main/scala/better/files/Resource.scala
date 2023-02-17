@@ -1,6 +1,6 @@
 package better.files
 
-import java.io.{IOException, InputStream}
+import java.io.{InputStream, IOException}
 import java.net.URL
 import java.nio.charset.Charset
 

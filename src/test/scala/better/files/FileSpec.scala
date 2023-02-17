@@ -1,12 +1,13 @@
 package better.files
 
-import java.nio.file.{FileAlreadyExistsException, FileSystems, Files => JFiles}
-import better.files.Dsl._
-import better.files.File.{home, root}
+import java.nio.file.{FileAlreadyExistsException, Files => JFiles, FileSystems}
 
 import scala.collection.compat.immutable.LazyList
 import scala.language.postfixOps
 import scala.util.{Properties, Try}
+
+import better.files.Dsl._
+import better.files.File.{home, root}
 
 class FileSpec extends CommonSpec {
 

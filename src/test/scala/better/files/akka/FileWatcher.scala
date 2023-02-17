@@ -1,8 +1,10 @@
 package better.files.akka
 
-import akka.actor._
 import scala.collection.mutable
+
 import better.files._
+
+import _root_.akka.actor._
 
 /** An actor that can watch a file or a directory
   * Instead of directly calling the constructor of this, call file.newWatcher to create the actor

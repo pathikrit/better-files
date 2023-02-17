@@ -1,6 +1,7 @@
 package better.files
 
 import java.util.concurrent.atomic.AtomicBoolean
+
 import scala.collection.compat._
 import scala.util.Try
 

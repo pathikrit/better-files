@@ -1,6 +1,6 @@
 package better.files
 
-import scala.reflect.macros.{ReificationException, blackbox}
+import scala.reflect.macros.{blackbox, ReificationException}
 
 private[files] trait ResourceCompat {
 
@@ -57,8 +57,8 @@ private[files] trait ResourceCompat {
   */
 private[files] final class Macros(val c: blackbox.Context) {
 
-  import c.universe._
   import c.Expr
+  import c.universe._
 
   def atStaticImpl[T](implicit T: WeakTypeTag[T]): Expr[Resource] = {
     val rtc = Expr[Class[_]] {

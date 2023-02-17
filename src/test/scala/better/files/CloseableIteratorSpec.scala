@@ -1,7 +1,7 @@
 package better.files
 
-import scala.util.Try
 import scala.collection.compat._
+import scala.util.Try
 
 class CloseableIteratorSpec extends CommonSpec {
   class TestIterator(n: Int) {

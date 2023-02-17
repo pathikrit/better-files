@@ -1,8 +1,8 @@
 package better.files
 
 import java.io.{OutputStream, Writer}
-import java.nio.charset.{Charset, CharsetDecoder, CodingErrorAction}
 import java.nio.{ByteBuffer, CharBuffer}
+import java.nio.charset.{Charset, CharsetDecoder, CodingErrorAction}
 
 import scala.annotation.tailrec
 

@@ -1,10 +1,10 @@
 package better.files
 
+import scala.util.Try
+
 import better.files.Scanner.Read
 
 import shapeless._
-
-import scala.util.Try
 
 object ShapelessScanner {
   implicit val hNilScannable: Scannable[HNil] =

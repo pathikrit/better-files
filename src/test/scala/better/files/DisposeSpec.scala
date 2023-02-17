@@ -1,8 +1,8 @@
 package better.files
 
-import org.scalatest.matchers.{MatchResult, Matcher}
-
 import scala.reflect.ClassTag
+
+import org.scalatest.matchers.{Matcher, MatchResult}
 
 class DisposeSpec extends CommonSpec {
   // Test classes

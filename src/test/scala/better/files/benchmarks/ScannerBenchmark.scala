@@ -1,8 +1,8 @@
 package better.files.benchmarks
 
-import better.files._
-
 import java.io.{BufferedReader, StringReader}
+
+import better.files._
 
 class ScannerBenchmark extends Benchmark {
   val file = File.newTemporaryFile()

@@ -1,8 +1,8 @@
 package better.files
 
-import better.files.Dsl._
-
 import java.io.File.separator
+
+import better.files.Dsl._
 
 import org.scalatest.BeforeAndAfterAll
 

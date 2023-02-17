@@ -1,11 +1,11 @@
 package better.files.akka
 
+import scala.collection.mutable
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 import better.files._
 import better.files.Dsl._
-
-import scala.concurrent.duration._
-import scala.collection.mutable
-import scala.language.postfixOps
 
 class FileWatcherSpec extends CommonSpec {
   "file watcher" should "watch directories" in {

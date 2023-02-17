@@ -1,6 +1,7 @@
 package better.files
 
 import java.io.{File => JFile, _}
+import java.net.{URI, URL}
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
@@ -9,11 +10,10 @@ import java.security.{DigestInputStream, DigestOutputStream, MessageDigest}
 import java.util.StringTokenizer
 import java.util.stream.{Stream => JStream}
 import java.util.zip._
-import java.net.{URI, URL}
 
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
 import scala.collection.compat._
+import scala.jdk.CollectionConverters._
 
 /** Container for various implicits */
 trait Implicits extends Dispose.FlatMap.Implicits with Scanner.Read.Implicits with Scanner.Source.Implicits {

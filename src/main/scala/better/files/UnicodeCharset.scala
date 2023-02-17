@@ -1,7 +1,7 @@
 package better.files
 
-import java.nio.charset._
 import java.nio.{BufferOverflowException, ByteBuffer, CharBuffer}
+import java.nio.charset._
 
 import scala.jdk.CollectionConverters._
 

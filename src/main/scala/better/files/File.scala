@@ -2,8 +2,8 @@ package better.files
 
 import java.io.{File => JFile, _}
 import java.net.{URI, URL}
-import java.nio.charset.Charset
 import java.nio.channels._
+import java.nio.charset.Charset
 import java.nio.file._
 import java.nio.file.attribute._
 import java.security.MessageDigest
@@ -13,8 +13,8 @@ import java.util.regex.Pattern
 import java.util.zip._
 
 import scala.collection.compat._
-import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters._
 import scala.util.Properties
 import scala.util.matching.Regex
 

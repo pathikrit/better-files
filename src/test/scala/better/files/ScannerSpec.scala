@@ -1,8 +1,8 @@
 package better.files
 
-import Dsl._
-
 import scala.collection.compat._
+
+import Dsl._
 
 class ScannerSpec extends CommonSpec {
   def t1 = File.newTemporaryFile()
