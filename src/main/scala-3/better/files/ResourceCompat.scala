@@ -1,6 +1,5 @@
 package better.files
 
-import scala.quoted.{Quotes, Expr}
 import scala.quoted.*
 
 private[files] trait ResourceCompat {

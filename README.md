@@ -1,16 +1,6 @@
-# better-files [![Tests][githubActionsImg]][githubActionsLink] [![License][licenseImg]][licenseLink]
+# better-files [![Scaladex][scaladexImg]][scaladexLink] [![License][licenseImg]][licenseLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
-
-Following versions of `better-files` are available:
-
-| Scala      | Scaladoc                                 | [Maven Releases][mavenLink]        | Sonatype Snapshots                       |
-| :---:      | :---:                                    | :---:                              | :---:                                    |
-| Scala 3    | [![scalaDocImg-3]][scalaDocLink-3]       | [![mavenImg-3]][mavenLink-3]       | [![snapshotImg-3]][snapshotLink-3]       |
-| Scala 2.13 | [![scalaDocImg-2.13]][scalaDocLink-2.13] | [![mavenImg-2.13]][mavenLink-2.13] | [![snapshotImg-2.13]][snapshotLink-2.13] |
-| Scala 2.12 | [![scalaDocImg-2.12]][scalaDocLink-2.12] | [![mavenImg-2.12]][mavenLink-2.12] | [![snapshotImg-2.12]][snapshotLink-2.12] |
-| Scala 2.11 | [![scalaDocImg-2.11]][scalaDocLink-2.11] | [![mavenImg-2.11]][mavenLink-2.11] | [![snapshotImg-2.11]][snapshotLink-2.11] |
-| Scala 2.10 | [![scalaDocImg-2.10]][scalaDocLink-2.10] | [![mavenImg-2.10]][mavenLink-2.10] | [![snapshotImg-2.10]][snapshotLink-2.10] |
 
 Consult [the changelog](CHANGES.md) if you are upgrading your library.
 
@@ -42,7 +32,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 }
 ```
 
-## Tests [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
+## Tests [![Tests][githubActionsImg]][githubActionsLink] [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
 * [FileSpec](src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](src/test/scala/better/files/akka/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
@@ -174,7 +164,16 @@ object moduleName extends ScalaModule {
   )
 }
 ```
-Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
+Available Versions:
+
+| Scala      | Scaladoc                                 | [Maven Releases][mavenLink]        | Sonatype Snapshots                       |
+| :---:      | :---:                                    | :---:                              | :---:                                    |
+| Scala 3    | [![scalaDocImg-3]][scalaDocLink-3]       | [![mavenImg-3]][mavenLink-3]       | [![snapshotImg-3]][snapshotLink-3]       |
+| Scala 2.13 | [![scalaDocImg-2.13]][scalaDocLink-2.13] | [![mavenImg-2.13]][mavenLink-2.13] | [![snapshotImg-2.13]][snapshotLink-2.13] |
+| Scala 2.12 | [![scalaDocImg-2.12]][scalaDocLink-2.12] | [![mavenImg-2.12]][mavenLink-2.12] | [![snapshotImg-2.12]][snapshotLink-2.12] |
+| Scala 2.11 | [![scalaDocImg-2.11]][scalaDocLink-2.11] | [![mavenImg-2.11]][mavenLink-2.11] | [![snapshotImg-2.11]][snapshotLink-2.11] |
+| Scala 2.10 | [![scalaDocImg-2.10]][scalaDocLink-2.10] | [![mavenImg-2.10]][mavenLink-2.10] | [![snapshotImg-2.10]][snapshotLink-2.10] |
+
 
 ### Instantiation
 The following are all equivalent:
