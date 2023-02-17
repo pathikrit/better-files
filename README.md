@@ -1,8 +1,21 @@
-# better-files [![License][licenseImg]][licenseLink] [![Scaladex][scaladexImg]][scaladexLink] [![Scala Steward badge][scalaStewardImg]](https://scala-steward.org) [![Gitter][gitterImg]][gitterLink] [![Average time to resolve an issue][isItMaintainedImg]][isItMaintainedLink]
+# better-files [![Tests][githubActionsImg]][githubActionsLink] [![License][licenseImg]][licenseLink]
 
 `better-files` is a [dependency-free](build.sbt) *pragmatic* [thin Scala wrapper](src/main/scala/better/files/File.scala) around [Java NIO](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html).
 
-Consult [the changelog](CHANGES.md) if you are upgrading your library. 
+Following versions of `better-files` are available:
+
+| Scala      | Scaladoc                                 | [Maven Releases][mavenLink]        | Sonatype Snapshots                       |
+| :---:      | :---:                                    | :---:                              | :---:                                    |
+| Scala 3    | [![scalaDocImg-3]][scalaDocLink-3]       | [![mavenImg-3]][mavenLink-3]       | [![snapshotImg-3]][snapshotLink-3]       |
+| Scala 2.13 | [![scalaDocImg-2.13]][scalaDocLink-2.13] | [![mavenImg-2.13]][mavenLink-2.13] | [![snapshotImg-2.13]][snapshotLink-2.13] |
+| Scala 2.12 | [![scalaDocImg-2.12]][scalaDocLink-2.12] | [![mavenImg-2.12]][mavenLink-2.12] | [![snapshotImg-2.12]][snapshotLink-2.12] |
+| Scala 2.11 | [![scalaDocImg-2.11]][scalaDocLink-2.11] | [![mavenImg-2.11]][mavenLink-2.11] | [![snapshotImg-2.11]][snapshotLink-2.11] |
+| Scala 2.10 | [![scalaDocImg-2.10]][scalaDocLink-2.10] | [![mavenImg-2.10]][mavenLink-2.10] | [![snapshotImg-2.10]][snapshotLink-2.10] |
+
+Consult [the changelog](CHANGES.md) if you are upgrading your library.
+
+### Questions? [![Gitter][gitterImg]][gitterLink] [![Average time to resolve an issue][isItMaintainedImg]][isItMaintainedLink]
+Ask in our gitter channel or [file an issue with the question tag](https://github.com/pathikrit/better-files/labels/question)
 
 ## Motivation
 Imagine you have to write the following method:
@@ -29,8 +42,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 }
 ```
 
-## Tests [![Tests][githubActionsImg]][githubActionsLink]  [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
-
+## Tests [![codecov][codecovImg]][codecovLink] [![Known Vulnerabilities][snykImg]][snykLink]
 * [FileSpec](src/test/scala/better/files/FileSpec.scala)
 * [FileWatcherSpec](src/test/scala/better/files/akka/FileWatcherSpec.scala)
 * [Benchmarks](#benchmarks)
@@ -103,6 +115,7 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 [snykLink]: https://snyk.io/test/github/pathikrit/better-files?targetFile=build.sbt
 
 [scalaStewardImg]: https://img.shields.io/badge/Scala_Steward-helping-brightgreen.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=
+[scalaStewardLink]: https://scala-steward.org
 
 [isItMaintainedImg]: http://isitmaintained.com/badge/resolution/pathikrit/better-files.svg
 [isItMaintainedLink]: http://isitmaintained.com/project/pathikrit/better-files
@@ -110,35 +123,35 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 [mavenLink]: https://repo1.maven.org/maven2/com/github/pathikrit/
 
 [scalaDocImg-3]: https://javadoc.io/badge2/com.github.pathikrit/better-files_3/javadoc.svg
-[scalaDocLink-3]: https://javadoc.io/doc/com.github.pathikrit/better-files_3
+[scalaDocLink-3]: https://javadoc.io/doc/com.github.pathikrit/better-files_3/latest/better/files/File.html
 [mavenImg-3]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_3.svg
 [mavenLink-3]: https://search.maven.org/artifact/com.github.pathikrit/better-files_3
 [snapshotImg-3]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_3?server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-3]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_3/
 
 [scalaDocImg-2.13]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.13/javadoc.svg
-[scalaDocLink-2.13]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.13
+[scalaDocLink-2.13]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.13/latest/better/files/File.html
 [mavenImg-2.13]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.13.svg
 [mavenLink-2.13]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.13
 [snapshotImg-2.13]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.13?server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.13]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.13/
 
 [scalaDocImg-2.12]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.12/javadoc.svg
-[scalaDocLink-2.12]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.12
+[scalaDocLink-2.12]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.12/latest/better/files/File.html
 [mavenImg-2.12]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.12.svg
 [mavenLink-2.12]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.12
 [snapshotImg-2.12]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.12?server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.12]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.12/
 
 [scalaDocImg-2.11]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.11/javadoc.svg
-[scalaDocLink-2.11]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.11
+[scalaDocLink-2.11]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.11/latest/better/files/File.html
 [mavenImg-2.11]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.11.svg
 [mavenLink-2.11]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.11
 [snapshotImg-2.11]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.11?server=https%3A%2F%2Foss.sonatype.org%2F
 [snapshotLink-2.11]: https://oss.sonatype.org/content/repositories/snapshots/com/github/pathikrit/better-files_2.11/
 
 [scalaDocImg-2.10]: https://javadoc.io/badge2/com.github.pathikrit/better-files_2.10/javadoc.svg
-[scalaDocLink-2.10]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.10
+[scalaDocLink-2.10]: https://javadoc.io/doc/com.github.pathikrit/better-files_2.10/latest/better/files/File.html
 [mavenImg-2.10]: https://img.shields.io/maven-central/v/com.github.pathikrit/better-files_2.10.svg
 [mavenLink-2.10]: https://search.maven.org/artifact/com.github.pathikrit/better-files_2.10
 [snapshotImg-2.10]: https://img.shields.io/nexus/s/com.github.pathikrit/better-files_2.10?server=https%3A%2F%2Foss.sonatype.org%2F
@@ -146,18 +159,22 @@ def run(inputDir: File, outputDir: File, n: Int) = {
 
 -------
 ### Installation
-In your `build.sbt`, add this:
+`sbt`:
 ```scala
 libraryDependencies += "com.github.pathikrit" %% "better-files" % version
 ```
-| Scala      | Scaladoc                                 | [Maven Releases][mavenLink]        | Sonatype Snapshots                       |
-| :---:      | :---:                                    | :---:                              | :---:                                    |
-| Scala 3    | [![scalaDocImg-3]][scalaDocLink-3]       | [![mavenImg-3]][mavenLink-3]       | [![snapshotImg-3]][snapshotLink-3]       |
-| Scala 2.13 | [![scalaDocImg-2.13]][scalaDocLink-2.13] | [![mavenImg-2.13]][mavenLink-2.13] | [![snapshotImg-2.13]][snapshotLink-2.13] |
-| Scala 2.12 | [![scalaDocImg-2.12]][scalaDocLink-2.12] | [![mavenImg-2.12]][mavenLink-2.12] | [![snapshotImg-2.12]][snapshotLink-2.12] |
-| Scala 2.11 | [![scalaDocImg-2.11]][scalaDocLink-2.11] | [![mavenImg-2.11]][mavenLink-2.11] | [![snapshotImg-2.11]][snapshotLink-2.11] |
-| Scala 2.10 | [![scalaDocImg-2.10]][scalaDocLink-2.10] | [![mavenImg-2.10]][mavenLink-2.10] | [![snapshotImg-2.10]][snapshotLink-2.10] |
 
+`mill`:    
+```scala
+import mill._, scalalib._
+
+object moduleName extends ScalaModule {
+  override def ivyDeps = Agg(
+    ivy"com.github.pathikrit::better-files:${version}"
+  )
+}
+```
+Latest `version`: [![Scaladex][scaladexImg]][scaladexLink]
 
 ### Instantiation
 The following are all equivalent:
@@ -820,6 +837,7 @@ FastJavaIOScanner        :  179 ms
 ```
 
 ----
+[![Scala Steward badge][scalaStewardImg]][scalaStewardLink]
 
 [![YourKit](https://www.yourkit.com/images/yklogo.png)](https://www.yourkit.com/)
 

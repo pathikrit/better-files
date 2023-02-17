@@ -54,15 +54,15 @@ def rmCompilerFlags(scalaVersion: String): Seq[String] =
     case _               => Nil
   }
 
-/** My dependencies - note this is a zero dependency library, so following are only for Tests */
+/** My dependencies - note this is a zero dependency library, so following are only for Tests or cross build support */
 def dependencies(scalaVersion: String): Seq[ModuleID] =
   Seq(
     // TODO: Get rid of scala-collection-compat when we drop support for Scala 2.12 and -Wunused:imports since it triggers https://github.com/scala/scala-collection-compat/issues/240
-    "*" -> "org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0",
-    "2" -> ("org.scala-lang"         % "scala-reflect"           % scalaVersion % Provided),
-    "2" -> ("com.chuusai"           %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
-    "*" -> ("org.scalatest"         %% "scalatest"               % "3.2.15"     % Test),
-    "*" -> ("commons-io"             % "commons-io"              % "2.11.0"     % Test),
-    "*" -> ("fastjavaio" % "fastjavaio" % "1.0" % Test from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar"), // Benchmarks
+    "*" -> ("org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"),
+    "2" -> ("org.scala-lang"          % "scala-reflect"           % scalaVersion % Provided),
+    "2" -> ("com.chuusai"            %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
+    "*" -> ("org.scalatest"          %% "scalatest"               % "3.2.15"     % Test),
+    "*" -> ("commons-io"              % "commons-io"              % "2.11.0"     % Test),
+    "*" -> ("fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar") % Test, // Benchmarks
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
