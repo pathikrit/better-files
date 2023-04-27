@@ -58,7 +58,7 @@ def rmCompilerFlags(scalaVersion: String): Seq[String] =
 def dependencies(scalaVersion: String): Seq[ModuleID] =
   Seq(
     // TODO: Get rid of scala-collection-compat when we drop support for Scala 2.12 and -Wunused:imports since it triggers https://github.com/scala/scala-collection-compat/issues/240
-    "*" -> ("org.scala-lang.modules" %% "scala-collection-compat" % "2.9.0"),
+    "*" -> ("org.scala-lang.modules" %% "scala-collection-compat" % "2.10.0"),
     "2" -> ("org.scala-lang"          % "scala-reflect"           % scalaVersion % Provided),
     "2" -> ("com.chuusai"            %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
     "*" -> ("org.scalatest"          %% "scalatest"               % "3.2.15"     % Test),
