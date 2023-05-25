@@ -62,7 +62,7 @@ def dependencies(scalaVersion: String): Seq[ModuleID] =
     "2" -> ("org.scala-lang"          % "scala-reflect"           % scalaVersion % Provided),
     "2" -> ("com.chuusai"            %% "shapeless"               % "2.3.4"      % Test), // For shapeless based Reader/Scanner in tests
     "*" -> ("org.scalatest"          %% "scalatest"               % "3.2.15"     % Test),
-    "*" -> ("commons-io"              % "commons-io"              % "2.11.0"     % Test),
+    "*" -> ("commons-io"              % "commons-io"              % "2.12.0"     % Test),
     "*" -> ("fastjavaio" % "fastjavaio" % "1.0" from "https://github.com/williamfiset/FastJavaIO/releases/download/v1.0/fastjavaio.jar") % Test, // Benchmarks
     "*" -> ("com.typesafe.akka" %% "akka-actor" % (if (scalaVersion.startsWith("2.11")) "2.5.32" else "2.7.0") % Test)
   ).collect({ case (v, lib) if v == "*" || scalaVersion.startsWith(v) => lib })
