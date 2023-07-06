@@ -61,7 +61,7 @@ class ScannerBenchmark extends Benchmark {
       val l = scanner.nextLine()
       assert(l == "Hello World", l)
       assert(scanner.nextInt() == 19)
-    // assert(!scanner.hasNext)
+      // assert(!scanner.hasNext)
     }
 
     info("Running benchmark ...")
