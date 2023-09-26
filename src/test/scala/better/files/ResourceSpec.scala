@@ -1,6 +1,6 @@
 package better.files
 
-// import java.net.{URL, URLClassLoader}
+import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
 
 import better.files.test_pkg.ResourceSpecHelper
@@ -18,11 +18,11 @@ final class ResourceSpec extends CommonSpec {
     assert(Resource.asStream(testFile).get.asString() startsWith testFileText)
   }
 
-  // it can "look up from a specified class loader" in {
-  //   val clURL = new URL(Resource.my.getUrl("ResourceSpec.class"), "../")
-  //   assert(clURL.toExternalForm endsWith "/")
-  //   assert(Resource.from(new URLClassLoader(Array(clURL))).getAsString(testFileFromCL) startsWith testFileText)
-  // }
+  it can "look up from a specified class loader" in {
+    val clURL = new URL(Resource.my.getUrl("ResourceSpec.class"), "../")
+    assert(clURL.toExternalForm endsWith "/")
+    assert(Resource.from(new URLClassLoader(Array(clURL))).getAsString(testFileFromCL) startsWith testFileText)
+  }
 
   it can "look up from the call site" in {
     assert(Resource.my.asStream(testFileRel).get.asString() startsWith testFileText)
