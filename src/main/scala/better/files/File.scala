@@ -1085,15 +1085,15 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
       destination: File,
       zipEntry: ZipEntry,
       zipFile: ZipFile
-  ): Unit = {
+  ): destination.type = {
     // https://developer.android.com/topic/security/risks/zip-path-traversal
     val entryName          = zipEntry.getName()
     val entryDestination   = File(destination, entryName)
     val entryCanonicalPath = entryDestination.canonicalPath
-    println(entryCanonicalPath)
     if (entryCanonicalPath.startsWith(destination.canonicalPath + JFile.separator)) {
       zipEntry.extractTo(destination, zipFile.getInputStream(zipEntry))
     }
+    destination
   }
 
   /** Unzips this zip file
