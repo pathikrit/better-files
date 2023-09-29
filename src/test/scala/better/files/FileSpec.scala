@@ -1,6 +1,7 @@
 package better.files
 
 import java.nio.file.{FileAlreadyExistsException, Files => JFiles, FileSystems}
+import java.nio.file.AccessDeniedException
 
 import scala.collection.compat.immutable.LazyList
 import scala.language.postfixOps
@@ -531,6 +532,34 @@ class FileSpec extends CommonSpec {
       .listRecursively()
       .toList
     assert(list.length === 3)
+  }
+
+  it should "unzip safely by default" in {
+    val list = File("src/test/resources/better/files/issue-624.zip")
+      .unzipTo()
+      .listRecursively()
+      .toList
+    assert(
+      list.length === 1
+    ) // Three total entries in the zip file: 1 without directory traversal characters and 2 with. Default secure unzip should only unzip the entry without directory traversal characters.
+  }
+
+  it should "unzip unsafely when safe unzip is disabled" in {
+    // Unsafe unzip with a zipslip attack may result in OS access denied exceptions. If these occur, the test should still pass.
+    try {
+      val list = File("src/test/resources/better/files/issue-624.zip")
+        .unzipTo(safeUnzip = false)
+        .listRecursively()
+        .toList
+      assert(
+        list.length === 3
+      ) // Three total entries in the zip file: 1 without directory traversal characters and 2 with. Unsafe unzip should try to extract all entries, might result in access denied exception from OS.
+    } catch {
+      case exception: Throwable =>
+        assert(
+          exception.isInstanceOf[AccessDeniedException]
+        )
+    }
   }
 
   it should "ungzip" in {
