@@ -1074,28 +1074,6 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
   def zip(compressionLevel: Int = Deflater.DEFAULT_COMPRESSION, charset: Charset = DefaultCharset): File =
     zipTo(destination = File.newTemporaryFile(prefix = name, suffix = ".zip"), compressionLevel, charset)
 
-  /**
-    * Skips unzipping a ZipEntry from a ZipFile if the entry is going outside the target directory
-    *
-    * @param destination destination folder to extract zipEntry to
-    * @param zipEntry Instantiated ZipEntry to unzip
-    * @param zipFile Instantiated ZipFile to unzip from
-    */
-  private def safeExtractTo(
-      destination: File,
-      zipEntry: ZipEntry,
-      zipFile: ZipFile
-  ): destination.type = {
-    // https://developer.android.com/topic/security/risks/zip-path-traversal
-    val entryName          = zipEntry.getName()
-    val entryDestination   = File(destination, entryName)
-    val entryCanonicalPath = entryDestination.canonicalPath
-    if (entryCanonicalPath.startsWith(destination.canonicalPath + JFile.separator)) {
-      zipEntry.extractTo(destination, zipFile.getInputStream(zipEntry))
-    }
-    destination
-  }
-
   /** Unzips this zip file
     *
     * @param destination destination folder; Creates this if it does not exist
@@ -1113,8 +1091,10 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     for {
       zipFile <- new ZipFile(toJava, charset).autoClosed
       entry   <- zipFile.entries().asScala if zipFilter(entry)
-    } if (safeUnzip) safeExtractTo(destination, entry, zipFile)
-    else entry.extractTo(destination, zipFile.getInputStream(entry))
+    } if (safeUnzip && File(destination, entry.getName).canonicalPath.startsWith(destination.canonicalPath + JFile.separator)) {
+      // https://developer.android.com/topic/security/risks/zip-path-traversal
+      entry.extractTo(destination, zipFile.getInputStream(entry))
+    } else entry.extractTo(destination, zipFile.getInputStream(entry))
     destination
   }
 

@@ -41,6 +41,7 @@ better-files follows the following `MAJOR.MINOR.PATCH` release conventions:
     ```
 * (_Planned_) [Issue #88](https://github.com/pathikrit/better-files/issues/88): Path ASTs for relative vs. absolute path
 * [Issue #593](https://github.com/pathikrit/better-files/pull/598): Remove compilation warnings for Scala 2.13 and Scala 3
+* [Issue #624](https://github.com/pathikrit/better-files/pull/633): Fix zip-slip vulnerability
 * (_Planned_) [Issue #590](https://github.com/pathikrit/better-files/issues/590): `file.walk()` can handle errors
 * (_Planned_) [Issue #591](https://github.com/pathikrit/better-files/issues/591): New APIs
 * (_Planned_) [Issue #3](https://github.com/pathikrit/better-files/issues/3): Walk File Tree APIs
