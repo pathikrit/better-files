@@ -544,19 +544,28 @@ class FileSpec extends CommonSpec {
   }
 
   it should "unzip unsafely when safe unzip is disabled" in {
-    assume(isLinux) // See: https://github.com/pathikrit/better-files/pull/633#issuecomment-1741292532
     // Unsafe unzip with a zipslip attack may result in OS access denied exceptions. If these occur, the test should still pass.
-    var list = List.empty[File]
+    var destList = List.empty[File]
+    var list     = List.empty[File]
     try {
-      list = File("src/test/resources/better/files/issue-624.zip")
-        .unzipTo(safeUnzip = false)
+      // create the directory structure safe for issue 624 zip file
+      val toplevel = File.newTemporaryDirectory("issue-624")
+      val dest     = (toplevel / "a" / "b").createDirectories()
+
+      destList = File("src/test/resources/better/files/issue-624.zip")
+        .unzipTo(destination = dest, safeUnzip = false)
         .listRecursively()
+        .toList
+      list = toplevel
+        .listRecursively()
+        .filterNot(_.isDirectory())
         .toList
     } catch {
       // Unsafe unzip should try to extract all entries, might result in access denied exception from OS.
       case exception: Throwable => assert(exception.isInstanceOf[AccessDeniedException])
     }
     // Three total entries in the zip file: 1 without directory traversal characters and 2 with.
+    assert(destList.length === 1)
     assert(list.length === 3)
   }
 
