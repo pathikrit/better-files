@@ -1094,7 +1094,9 @@ class File private (val path: Path)(implicit val fileSystem: FileSystem = path.g
     } if (safeUnzip && File(destination, entry.getName).canonicalPath.startsWith(destination.canonicalPath + JFile.separator)) {
       // https://developer.android.com/topic/security/risks/zip-path-traversal
       entry.extractTo(destination, zipFile.getInputStream(entry))
-    } else entry.extractTo(destination, zipFile.getInputStream(entry))
+    } else if (!safeUnzip) {
+      entry.extractTo(destination, zipFile.getInputStream(entry))
+    }
     destination
   }
 
