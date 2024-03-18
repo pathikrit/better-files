@@ -3250,24 +3250,24 @@ for long running systems with millions of temporary files as:
 </p><div class="fullcomment"><div class="comment cmt"><p>unzip to a temporary zip file
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>the zip file</p></dd></dl></div>
     </li><li name="better.files.File#unzipTo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="unzipTo(destination:better.files.File,zipFilter:java.util.zip.ZipEntry=&gt;Boolean,charset:java.nio.charset.Charset):destination.type"></a>
-      <a id="unzipTo(File,(ZipEntry)⇒Boolean,Charset):destination.type"></a>
+      <a id="unzipTo(destination:better.files.File,zipFilter:java.util.zip.ZipEntry=&gt;Boolean,charset:java.nio.charset.Charset,safeUnzip:Boolean):destination.type"></a>
+      <a id="unzipTo(File,(ZipEntry)⇒Boolean,Charset,Boolean):destination.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">unzipTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a> = <span class="defval" name='<span class="name"><a href="File$.html">File.newTemporaryDirectory(name.stripSuffix(&quot;.zip&quot;))</a></span>'>...</span></span>, <span name="zipFilter">zipFilter: (<span class="extype" name="java.util.zip.ZipEntry">ZipEntry</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">_ =&gt; true</span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="package.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>)</span><span class="result">: <span class="extype" name="better.files.File.unzipTo.destination">destination</span>.type</span>
+        <span class="name">unzipTo</span><span class="params">(<span name="destination">destination: <a href="" class="extype" name="better.files.File">File</a> = <span class="defval" name='<span class="name"><a href="File$.html">File.newTemporaryDirectory(name.stripSuffix(&quot;.zip&quot;))</a></span>'>...</span></span>, <span name="zipFilter">zipFilter: (<span class="extype" name="java.util.zip.ZipEntry">ZipEntry</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">_ =&gt; true</span></span>, <span name="charset">charset: <span class="extype" name="java.nio.charset.Charset">Charset</span> = <span class="symbol"><span class="name"><a href="package.html#DefaultCharset:java.nio.charset.Charset">DefaultCharset</a></span></span></span>, <span name="safeUnzip">safeUnzip: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="better.files.File.unzipTo.destination">destination</span>.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../index.html#better.files.File@unzipTo(destination:better.files.File,zipFilter:java.util.zip.ZipEntry=&gt;Boolean,charset:java.nio.charset.Charset):destination.type" title="Permalink" target="_top">
+      <a href="../../index.html#better.files.File@unzipTo(destination:better.files.File,zipFilter:java.util.zip.ZipEntry=&gt;Boolean,charset:java.nio.charset.Charset,safeUnzip:Boolean):destination.type" title="Permalink" target="_top">
         <img src="../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Unzips this zip file
 </p><div class="fullcomment"><div class="comment cmt"><p>Unzips this zip file
-</p></div><dl class="paramcmts block"><dt class="param">destination</dt><dd class="cmt"><p>destination folder; Creates this if it does not exist</p></dd><dt class="param">zipFilter</dt><dd class="cmt"><p>An optional param to reject or accept unzipping a file</p></dd><dt>returns</dt><dd class="cmt"><p>The destination where contents are unzipped</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">destination</dt><dd class="cmt"><p>destination folder; Creates this if it does not exist</p></dd><dt class="param">zipFilter</dt><dd class="cmt"><p>An optional param to reject or accept unzipping a file</p></dd><dt class="param">charset</dt><dd class="cmt"><p>Optional charset parameter</p></dd><dt class="param">safeUnzip</dt><dd class="cmt"><p>Optional parameter to set whether unzipTo should unzip entries containing directory traversal characters to directories outside the destination</p></dd><dt>returns</dt><dd class="cmt"><p>The destination where contents are unzipped</p></dd></dl></div>
     </li><li name="better.files.File#update" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="update(attribute:String,value:Any,linkOptions:better.files.File.LinkOptions):File.this.type"></a>
       <a id="update(String,Any,LinkOptions):File.this.type"></a>

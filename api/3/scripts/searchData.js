@@ -242,7 +242,7 @@ pages = [{"l":"index.html#","e":false,"i":"","n":"better-files","t":"better-file
 {"l":"better/files/File.html#touch-af","e":false,"i":"","n":"touch","t":"touch(time: Instant, attributes: Attributes, linkOptions: LinkOptions): File.this.type","d":"better.files.File","k":"def"},
 {"l":"better/files/File.html#unGzipTo-5f9","e":false,"i":"","n":"unGzipTo","t":"unGzipTo(destination: File, append: Boolean, bufferSize: Int): File","d":"better.files.File","k":"def"},
 {"l":"better/files/File.html#unzip-39c","e":false,"i":"","n":"unzip","t":"unzip(zipFilter: ZipEntry => Boolean, charset: Charset): File","d":"better.files.File","k":"def"},
-{"l":"better/files/File.html#unzipTo-20d","e":false,"i":"","n":"unzipTo","t":"unzipTo(destination: File, zipFilter: ZipEntry => Boolean, charset: Charset): File","d":"better.files.File","k":"def"},
+{"l":"better/files/File.html#unzipTo-af5","e":false,"i":"","n":"unzipTo","t":"unzipTo(destination: File, zipFilter: ZipEntry => Boolean, charset: Charset, safeUnzip: Boolean): File","d":"better.files.File","k":"def"},
 {"l":"better/files/File.html#update-fffff1ae","e":false,"i":"","n":"update","t":"update(attribute: String, value: Any, linkOptions: LinkOptions): File.this.type","d":"better.files.File","k":"def"},
 {"l":"better/files/File.html#uri-0","e":false,"i":"","n":"uri","t":"uri: URI","d":"better.files.File","k":"def"},
 {"l":"better/files/File.html#url-0","e":false,"i":"","n":"url","t":"url: URL","d":"better.files.File","k":"def"},
